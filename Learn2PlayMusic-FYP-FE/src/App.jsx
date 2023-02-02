@@ -1,7 +1,6 @@
-import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import "./App.css";
-import DefaultAppBar from "./components/AppBar/DefaultAppBar";
+import { useState } from 'react'
+import './App.css'
+import DefaultAppBar from './components/AppBar/DefaultAppBar'
 import ThemeProvider from './theme/index'
 
 function App() {
