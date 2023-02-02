@@ -1,19 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import {
-  useTheme,
-  Avatar,
-  Button,
-  CssBaseline,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Link,
-  Grid,
-  Box,
-  Typography,
-  Container,
-} from "@mui/material";
+import { Auth } from 'aws-amplify';
+import { useTheme, Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, } from "@mui/material";
 import { toast } from "react-toastify";
 import DefaultAppBar from "./AppBar/DefaultAppBar";
 
@@ -37,113 +24,119 @@ export default function SignIn() {
   // const navigate = useNavigate();
   const theme = useTheme();
 
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   const data = new FormData(event.currentTarget);
-  // console.log({
-  //   email: data.get("email"),
-  //   password: data.get("password"),
-  // });
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
 
-  //   fetch(`${import.meta.env.VITE_DOMAIN_NAMEPATH}/auth/login`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       email: data.get("email"),
-  //       password: data.get("password"),
-  //     }),
-  //   })
-  //     .then((response) => {
-  //       const data = response.json();
-  //       console.log(data);
-  //       return data;
-  //     })
-  //     .then((data) => {
-  //       console.log(data);
+    Auth.signIn(data.get("email"), data.get("password"))
+      .then(user => console.log(user))
+      .catch(err => console.log(err));
 
-  //       if (
-  //         data.status == 401 &&
-  //         data.message == "User has not verified their email"
-  //       ) {
-  //         toast.warning("Please verify your email");
-  //       } else {
-  //         if (data.data.length > 1) {
-  //           handleSetRole("adminemployee");
-  //           navigate("/admin");
-  //           return;
-  //         }
-  //         handleSetRole(data.data[0]);
-  //         navigate(`/${data.data[0]}`);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       toast.error("Invalid Credentials");
-  //     });
-  // };
+    console.log({
+      email: data.get("email"),
+      password: data.get("password"),
+    });
+  }
 
-  return (
-    <Container
-      component="main"
-      maxWidth="xs"
-      sx={{
-        bgcolor: "background.paper",
-        borderRadius: 2,
-        boxShadow: theme.shadows[10],
-      }}>
-      <CssBaseline />
-      <Box
+    //   fetch(`${import.meta.env.VITE_DOMAIN_NAMEPATH}/auth/login`, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //       email: data.get("email"),
+    //       password: data.get("password"),
+    //     }),
+    //   })
+    //     .then((response) => {
+    //       const data = response.json();
+    //       console.log(data);
+    //       return data;
+    //     })
+    //     .then((data) => {
+    //       console.log(data);
+
+    //       if (
+    //         data.status == 401 &&
+    //         data.message == "User has not verified their email"
+    //       ) {
+    //         toast.warning("Please verify your email");
+    //       } else {
+    //         if (data.data.length > 1) {
+    //           handleSetRole("adminemployee");
+    //           navigate("/admin");
+    //           return;
+    //         }
+    //         handleSetRole(data.data[0]);
+    //         navigate(`/${data.data[0]}`);
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       toast.error("Invalid Credentials");
+    //     });
+    // };
+
+    return (
+      <Container
+        component="main"
+        maxWidth="xs"
         sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          p: 2,
-          py: 5
+          bgcolor: "background.paper",
+          borderRadius: 2,
+          boxShadow: theme.shadows[10],
         }}>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        <Box component="form" noValidate sx={{ mt: 1 }}>
-          {" "}
-          {/* onSubmit={handleSubmit} */}
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <Grid container sx={{ pl: 1, mt: 1, mb: 2 }}>
-            <Grid item xs>
-              <Link href="#" variant="body2" color="primary.dark">
-                Forgot password?
-              </Link>
+        <CssBaseline />
+        <Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            p: 2,
+            py: 5
+          }}>
+          <Typography component="h1" variant="h5">
+            Sign in
+          </Typography>
+          <Box component="form" noValidate sx={{ mt: 1 }}
+              onSubmit={handleSubmit}
+                      >
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email"
+              name="email"
+              autoComplete="email"
+              autoFocus
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+            />
+            <Grid container sx={{ pl: 1, mt: 1, mb: 2 }}>
+              <Grid item xs>
+                <Link href="#" variant="body2" color="primary.dark">
+                  Forgot password?
+                </Link>
+              </Grid>
             </Grid>
-          </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained">
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained">
               Sign In
-          </Button>
+            </Button>
+          </Box>
         </Box>
-      </Box>
-      {/* <Copyright sx={{ mt: 5, pb: 2 }} /> */}
-    </Container>
-  );
-}
+        {/* <Copyright sx={{ mt: 5, pb: 2 }} /> */}
+      </Container>
+    );
+  }
