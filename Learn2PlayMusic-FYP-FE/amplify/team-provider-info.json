@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-learn2playmusicfypfe-dev-123646-authRole",
+      "UnauthRoleArn": "arn:aws:iam::568463424400:role/amplify-learn2playmusicfypfe-dev-123646-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::568463424400:role/amplify-learn2playmusicfypfe-dev-123646-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-learn2playmusicfypfe-dev-123646-deployment",
+      "UnauthRoleName": "amplify-learn2playmusicfypfe-dev-123646-unauthRole",
+      "StackName": "amplify-learn2playmusicfypfe-dev-123646",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:568463424400:stack/amplify-learn2playmusicfypfe-dev-123646/3618bcf0-a2b3-11ed-a309-02cbae0dd39c",
+      "AmplifyAppId": "dm9lt6826v1lr"
+    },
+    "categories": {
+      "auth": {
+        "learn2playmusicfypfe86b1b73e86b1b73e": {}
+      }
+    }
+  }
+}
