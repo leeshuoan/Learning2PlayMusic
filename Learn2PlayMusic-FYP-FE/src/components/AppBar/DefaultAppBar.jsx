@@ -18,9 +18,9 @@ function DefaultAppBar({ role, handleResetRoles }) {
 
   const handleRoute = (page) => {
     if (page === 'Our Website') {
-      navigate(`https://www.learn2playmusic.sg/`)
+      window.open(`https://www.learn2playmusic.sg/`, '_blank')
     } else if (page === "Contact Us") {
-      navigate(`https://www.learn2playmusic.sg/contact-us.html`)
+      window.open(`https://www.learn2playmusic.sg/contact-us.html`, '_blank')
     }
   }
 
@@ -65,7 +65,7 @@ function DefaultAppBar({ role, handleResetRoles }) {
                       >
                         {pages.map((page) => (
                           <MenuItem key={page} onClick={() => handleRoute(page)}>
-                            <Typography textAlign="center" color="primary">{page}</Typography>
+                            <Typography textAlign="center" >{page}</Typography>
                           </MenuItem>
                         ))}
                       </Menu>
@@ -76,7 +76,7 @@ function DefaultAppBar({ role, handleResetRoles }) {
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                       {pages.map((page) => (
                         <MenuItem key={page} onClick={() => handleRoute(page)}>
-                          <Typography textAlign="center" color="primary">{page}</Typography>
+                          <Typography textAlign="center" >{page}</Typography>
                         </MenuItem>
                       ))}
                     </Box>
