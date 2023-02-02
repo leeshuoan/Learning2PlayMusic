@@ -1,19 +1,29 @@
-import Skeleton from '@mui/material/Skeleton';
-import { AppBar, Box, Toolbar, IconButton, Container, MenuItem, useTheme } from '@mui/material';
+import Skeleton from "@mui/material/Skeleton";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Container,
+  MenuItem,
+  useTheme,
+} from "@mui/material";
 
 function DefaultAppBar({ role, handleResetRoles }) {
-  const theme = useTheme()
+  const theme = useTheme();
 
   return (
     <>
       {
-        <AppBar position="static" sx={{ bgcolor: theme.palette.background.paper }}>
+        <AppBar
+          position="static"
+          sx={{ bgcolor: theme.palette.background.paper }}>
           <Container maxWidth="xl">
             <Toolbar disableGutters>
               <IconButton disableRipple>
-                <img src="/SSSLogo1.png" width="70px" />
+                <img src="/l2pm_logo.png" width="170px" />
               </IconButton>
-              <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+              <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
                 <MenuItem>
                   <Skeleton variant="rounded" width={150} height={40} />
                 </MenuItem>
@@ -24,7 +34,7 @@ function DefaultAppBar({ role, handleResetRoles }) {
                   <Skeleton variant="rounded" width={150} height={40} />
                 </MenuItem>
               </Box>
-              <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+              <Box sx={{ display: { xs: "none", md: "flex" } }}>
                 <MenuItem>
                   <Skeleton variant="rounded" width={150} height={40} />
                 </MenuItem>
@@ -34,7 +44,7 @@ function DefaultAppBar({ role, handleResetRoles }) {
         </AppBar>
       }
     </>
-  )
+  );
 }
 
-export default DefaultAppBar
+export default DefaultAppBar;
