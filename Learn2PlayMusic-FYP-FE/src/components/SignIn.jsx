@@ -1,8 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Auth } from 'aws-amplify';
-import { useTheme, Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox, Link, Grid, Box, Typography, Container, } from "@mui/material";
-import { toast } from "react-toastify";
-import DefaultAppBar from "./AppBar/DefaultAppBar";
+import { useTheme, Button, CssBaseline, TextField, Link, Grid, Box, Typography, Container, } from "@mui/material";
 
 function Copyright(props) {
   return (
@@ -20,9 +18,9 @@ function Copyright(props) {
   );
 }
 
-export default function SignIn() {
-  // const navigate = useNavigate();
+export default function SignIn({ handleSetRole }) {
   const theme = useTheme();
+  const navigate = useNavigate()
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -35,8 +33,12 @@ export default function SignIn() {
           if (err) {
             console.log(err);
           }
-          console.log(session);
-          console.log(session.getIdToken());
+          console.log(session.getIdToken().payload);
+          if (session.getIdToken().payload["userRole"] == "Admin") {
+            handleSetRole("admin");
+            navigate("/admin");
+            return;
+          }
         })
       })
       .catch(err => console.log(err));
@@ -46,44 +48,6 @@ export default function SignIn() {
       password: data.get("password"),
     });
   }
-
-  //   fetch(`${import.meta.env.VITE_DOMAIN_NAMEPATH}/auth/login`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       email: data.get("email"),
-  //       password: data.get("password"),
-  //     }),
-  //   })
-  //     .then((response) => {
-  //       const data = response.json();
-  //       console.log(data);
-  //       return data;
-  //     })
-  //     .then((data) => {
-  //       console.log(data);
-
-  //       if (
-  //         data.status == 401 &&
-  //         data.message == "User has not verified their email"
-  //       ) {
-  //         toast.warning("Please verify your email");
-  //       } else {
-  //         if (data.data.length > 1) {
-  //           handleSetRole("adminemployee");
-  //           navigate("/admin");
-  //           return;
-  //         }
-  //         handleSetRole(data.data[0]);
-  //         navigate(`/${data.data[0]}`);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       toast.error("Invalid Credentials");
-  //     });
-  // };
 
   return (
     <Container
@@ -145,7 +109,6 @@ export default function SignIn() {
           </Button>
         </Box>
       </Box>
-      {/* <Copyright sx={{ mt: 5, pb: 2 }} /> */}
     </Container>
   );
 }
