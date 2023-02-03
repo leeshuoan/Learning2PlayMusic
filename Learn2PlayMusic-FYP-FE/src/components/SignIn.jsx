@@ -36,7 +36,7 @@ export default function SignIn() {
             console.log(err);
           }
           console.log(session);
-          console.log(session.getIdToken().getJwtToken());
+          console.log(session.getIdToken());
         })
       })
       .catch(err => console.log(err));
