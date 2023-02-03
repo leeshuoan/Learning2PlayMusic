@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, MenuItem, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Auth } from 'aws-amplify';
+import { useNavigate } from 'react-router-dom';
 
 const AdminAppBar = ({ handleResetRoles }) => {
   const theme = useTheme()
+  const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const pages = ["Hello"]
+  const pages = ["AdminTemp"]
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -16,12 +18,15 @@ const AdminAppBar = ({ handleResetRoles }) => {
     setAnchorElNav(null);
   };
 
+  const handleLogout = () => {
+    handleResetRoles()
+    Auth.signOut().then(() => {
+      console.log("Signed out")
+      navigate('/')
+    }).catch((err) => console.log(err))
+  };
+
   const handleRoute = (page) => {
-    if (page === 'Our Website') {
-      window.open(`https://www.learn2playmusic.sg/`, '_blank')
-    } else if (page === "Contact Us") {
-      window.open(`https://www.learn2playmusic.sg/contact-us.html`, '_blank')
-    }
   }
   return (
     <>
@@ -63,6 +68,9 @@ const AdminAppBar = ({ handleResetRoles }) => {
                       <Typography textAlign="center" >{page}</Typography>
                     </MenuItem>
                   ))}
+                  <MenuItem onClick={handleLogout}>
+                  <Typography textAlign="center">Log Out</Typography>
+                </MenuItem>
                 </Menu>
               </Box>
               <IconButton disableRipple>
@@ -74,6 +82,9 @@ const AdminAppBar = ({ handleResetRoles }) => {
                     <Typography textAlign="center" >{page}</Typography>
                   </MenuItem>
                 ))}
+                <MenuItem onClick={handleLogout}>
+                  <Typography textAlign="center">Log Out</Typography>
+                </MenuItem>
               </Box>
             </Toolbar>
           </Container>

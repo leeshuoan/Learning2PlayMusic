@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Auth } from 'aws-amplify';
+import { toast } from "react-toastify";
 import { useTheme, Button, CssBaseline, TextField, Link, Grid, Box, Typography, Container, } from "@mui/material";
 
 function Copyright(props) {
@@ -26,12 +27,18 @@ export default function SignIn({ handleSetRole }) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
+    if (data.get("email") == "" || data.get("password") == "") {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
     Auth.signIn(data.get("email"), data.get("password"))
       .then((user) => {
         console.log(user)
         user.getSession((err, session) => {
           if (err) {
             console.log(err);
+
           }
           console.log(session.getIdToken().payload);
           if (session.getIdToken().payload["userRole"] == "Admin") {
@@ -41,7 +48,9 @@ export default function SignIn({ handleSetRole }) {
           }
         })
       })
-      .catch(err => console.log(err));
+      .catch(err =>{
+        toast.error(err.message);
+      });
 
     console.log({
       email: data.get("email"),
