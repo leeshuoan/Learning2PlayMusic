@@ -1,8 +1,8 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "resourceNameTruncated": "learn286b1b73e",
-    "userPoolName": "learn2playmusicfypfe86b1b73e_userpool_86b1b73e",
+    "resourceNameTruncated": "learn2994dc030",
+    "userPoolName": "learn2playmusicfypfe994dc030_userpool_994dc030",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -29,10 +29,10 @@
     "userpoolClientReadAttributes": [
       "email"
     ],
-    "userpoolClientLambdaRole": "learn286b1b73e_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "learn2994dc030_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "86b1b73e",
-    "resourceName": "learn2playmusicfypfe86b1b73e86b1b73e",
+    "sharedId": "994dc030",
+    "resourceName": "learn2playmusicfypfe994dc030994dc030",
     "authSelections": "userPoolOnly",
     "useDefault": "manual",
     "usernameAttributes": [

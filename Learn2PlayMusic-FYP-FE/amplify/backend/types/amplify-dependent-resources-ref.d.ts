@@ -1,6 +1,6 @@
 export type AmplifyDependentResourcesAttributes = {
   "auth": {
-    "learn2playmusicfypfe86b1b73e86b1b73e": {
+    "learn2playmusicfypfe994dc030994dc030": {
       "AppClientID": "string",
       "AppClientIDWeb": "string",
       "UserPoolArn": "string",
