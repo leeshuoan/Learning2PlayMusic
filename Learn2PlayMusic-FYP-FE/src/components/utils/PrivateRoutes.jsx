@@ -19,6 +19,8 @@ const PrivateRoutes = ({userType}) => {
         }
         let userRole = session.getIdToken().payload["userRole"];
         setUserRole(userRole)
+        console.log(userRole)
+        console.log(userType)
         if (userRole == userType) {
           setIsAuth(true)
         } else {

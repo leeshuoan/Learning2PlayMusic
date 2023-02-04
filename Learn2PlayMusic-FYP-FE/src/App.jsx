@@ -51,10 +51,9 @@ function App() {
           <Route path="/">
             <Route index element={<SignIn handleSetRole={handleSetRole} />} />
           </Route>
-          <Route path="admin"component={props => <PrivateRoutes {...props} userType="Admin" ></PrivateRoutes>}>
-
+          <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}>
           </Route>
-          <Route path="teacher" component={props => <PrivateRoutes {...props} userType="Teacher" ></PrivateRoutes>}>
+          <Route path="teacher" element={<PrivateRoutes userType="Teacher" ></PrivateRoutes>}>
             <Route index element={<TeacherHome />} />
           </Route>
         </Routes>
