@@ -113,7 +113,7 @@ const AdminAppBar = ({ handleResetRoles }) => {
                       aria-expanded={open ? 'true' : undefined}
                     >
                       <Avatar sx={{ width: 32, height: 32 }}>A</Avatar>
-                    </IconButton>
+                    </IconButton>i
                   </Tooltip>
                 </Box>
                 <Menu
