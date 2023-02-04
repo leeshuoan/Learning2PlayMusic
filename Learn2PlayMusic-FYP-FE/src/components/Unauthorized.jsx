@@ -1,12 +1,24 @@
 import { Link } from "react-router-dom";
+import { Typography } from "@mui/material";
 
-export default function Unauthorized() {
+const Unauthorized = ({userRole}) => {
+  let redirectLink = "/"
+
+  console.log(userRole)
+  if (userRole === "Admin") {
+    redirectLink = "/admin"
+  } else if (userRole === "Teacher") {
+    redirectLink = "/teacher"
+  }
+
     return (
       <div>
-        <h2>You are not authorized to visit this page</h2>
-        <p>
-          <Link to="/">Go to the home page</Link>
-        </p>
+        <Typography variant="h4" sx={{ pt:3, textAlign:"center" }}>You are not authorized to visit this page</Typography>
+        <Typography sx={{ pt:1, textAlign:"center" }}>
+          <Link to={ redirectLink }>Go to the home page</Link>
+        </Typography>
       </div>
     );
   }
+
+export default Unauthorized;

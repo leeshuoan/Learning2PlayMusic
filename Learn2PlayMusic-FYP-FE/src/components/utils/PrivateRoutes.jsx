@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Unauthorized from '../Unauthorized'
-// Amplify setup
-import aws_exports from '../../aws-exports';
-import { Amplify } from 'aws-amplify'
 import { Auth } from 'aws-amplify';
-Amplify.configure(aws_exports);
 
 const PrivateRoutes = ({userType}) => {
   const [isAuth, setIsAuth] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [userRole, setUserRole] = useState("")
 
   useEffect(() => {
     Auth.currentAuthenticatedUser().then((user) => {
@@ -18,11 +15,10 @@ const PrivateRoutes = ({userType}) => {
         setLoading(false)
         if (err) {
           console.log(err);
-          setRole("home")
+          setUserRole("home")
         }
         let userRole = session.getIdToken().payload["userRole"];
-        console.log(userRole)
-        console.log(userType)
+        setUserRole(userRole)
         if (userRole == userType) {
           setIsAuth(true)
         } else {
@@ -34,7 +30,7 @@ const PrivateRoutes = ({userType}) => {
 
   return (
     <>
-      {loading ? null : isAuth ? <Outlet /> : <Unauthorized/>}
+      {loading ? null : isAuth ? <Outlet /> : <Unauthorized userRole={userRole}/>}
     </>
   )
 }

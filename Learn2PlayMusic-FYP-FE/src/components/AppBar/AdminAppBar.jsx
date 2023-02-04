@@ -17,13 +17,13 @@ const AdminAppBar = ({ handleResetRoles }) => {
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
+  
+    const handleCloseNavMenu = () => {
+      setAnchorElNav(null);
+    };
+  
   const open = Boolean(anchorEl);
-
+  
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };

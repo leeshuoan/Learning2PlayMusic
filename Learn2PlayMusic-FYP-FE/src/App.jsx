@@ -8,6 +8,7 @@ import PrivateRoutes from './components/utils/PrivateRoutes'
 // App components
 import DefaultAppBar from './components/AppBar/DefaultAppBar'
 import SignIn from './components/SignIn'
+import TeacherHome from './components/Teacher/TeacherHome'
 // Amplify setup
 import aws_exports from './aws-exports';
 import { Amplify } from 'aws-amplify'
