@@ -4,15 +4,17 @@ import MenuIcon from '@mui/icons-material/Menu';
 import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import ChatIcon from '@mui/icons-material/Chat';
 import { Auth } from 'aws-amplify';
 import { useNavigate } from 'react-router-dom';
 
-const AdminAppBar = ({ handleResetRoles }) => {
+const TeacherAppBar = ({ handleResetRoles }) => {
   const theme = useTheme()
   const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const pages = ["AdminTemp"]
+  const pages = ["Home", "Courses"]
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -41,13 +43,18 @@ const AdminAppBar = ({ handleResetRoles }) => {
   };
 
   const handleRoute = (page) => {
+    if (page === "Home") {
+      navigate("/teacher")
+    } else if (page === "Courses") {
+      navigate("/teacher/courses")
+    }
   }
   return (
     <>
       {
         <AppBar position="static" sx={{ bgcolor: theme.palette.background.paper }}>
           <Container maxWidth="xl" sx={{ width: 0.9 }}>
-            <Toolbar disableGutters style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Toolbar disableGutters sx={{ display: "flex", justifyContent: "space-between" }}>
 
               {/* MOBILE NAV */}
               <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -94,7 +101,7 @@ const AdminAppBar = ({ handleResetRoles }) => {
               {/* DESKTOP NAV */}
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                 {pages.map((page) => (
-                  <MenuItem key={page} onClick={() => handleRoute(page)}>
+                  <MenuItem sx={{ bgcolor: "background.paper" }} key={page} onClick={() => handleRoute(page)}>
                     <Typography textAlign="center" >{page}</Typography>
                   </MenuItem>
                 ))}
@@ -103,16 +110,22 @@ const AdminAppBar = ({ handleResetRoles }) => {
               {/* USER MENU */}
               <Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+                  <Avatar sx={{ display: { xs: 'none', md: 'flex' }, width: 32, height: 32, bgcolor: "grey[100]" }}>
+                    <NotificationsIcon />
+                  </Avatar>
+                  <Avatar sx={{ display: { xs: 'none', md: 'flex' }, ml: 2, width: 32, height: 32, bgcolor: "grey[100]" }}>
+                    <ChatIcon />
+                  </Avatar>
                   <Tooltip title="Account settings">
                     <IconButton
                       onClick={handleClick}
                       size="small"
-                      sx={{ ml: 2 }}
+                      sx={{ ml: 1 }}
                       aria-controls={open ? 'account-menu' : undefined}
                       aria-haspopup="true"
                       aria-expanded={open ? 'true' : undefined}
                     >
-                      <Avatar sx={{ width: 32, height: 32 }}>A</Avatar>
+                      <Avatar sx={{ width: 32, height: 32 }}>T</Avatar>
                     </IconButton>
                   </Tooltip>
                 </Box>
@@ -186,4 +199,4 @@ const AdminAppBar = ({ handleResetRoles }) => {
   );
 }
 
-export default AdminAppBar;
+export default TeacherAppBar;

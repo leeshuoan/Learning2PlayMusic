@@ -28,8 +28,8 @@ function App() {
           console.log(err);
           setRole("home")
         }
-        console.log(session.getIdToken().payload);
-        const newRole = session.getIdToken().payload["userRole"] == "Admin" ? "admin" : "home"
+        let userRole = session.getIdToken().payload["userRole"];
+        const newRole = userRole == "Admin" ? "admin" : "Teacher" ? "teacher" :"home"
         setRole(newRole)
       })
     })
@@ -45,6 +45,8 @@ function App() {
             <Route index element={<SignIn handleSetRole={handleSetRole} />} />
           </Route>
           <Route path="admin">
+          </Route>
+          <Route path="teacher">
           </Route>
         </Routes>
       </ThemeProvider>

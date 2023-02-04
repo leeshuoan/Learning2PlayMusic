@@ -40,10 +40,14 @@ export default function SignIn({ handleSetRole }) {
             console.log(err);
 
           }
-          console.log(session.getIdToken().payload);
-          if (session.getIdToken().payload["userRole"] == "Admin") {
+          let userRole = session.getIdToken().payload["userRole"]; 
+          if (userRole == "Admin") {
             handleSetRole("admin");
             navigate("/admin");
+            return;
+          } else if (userRole == "Teacher") {
+            handleSetRole("teacher");
+            navigate("/teacher");
             return;
           }
         })
