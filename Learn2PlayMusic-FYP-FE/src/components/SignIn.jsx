@@ -40,19 +40,20 @@ export default function SignIn({ handleSetRole }) {
             console.log(err);
 
           }
-          let userRole = session.getIdToken().payload["userRole"]; 
+          let userRole = session.getIdToken().payload["userRole"];
+          console.log(userRole)
           if (userRole == "Admin") {
-            handleSetRole("admin");
+            handleSetRole("Admin");
             navigate("/admin");
             return;
           } else if (userRole == "Teacher") {
-            handleSetRole("teacher");
+            handleSetRole("Teacher");
             navigate("/teacher");
             return;
           }
         })
       })
-      .catch(err =>{
+      .catch(err => {
         toast.error(err.message);
       });
 

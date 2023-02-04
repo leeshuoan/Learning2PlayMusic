@@ -11,10 +11,10 @@ function DefaultAppBar({ role, handleResetRoles }) {
   return (
     <>
       {
-        role === 'admin' ? <AdminAppBar handleResetRoles={handleResetRoles} />
-          : role === "teacher" ? <TeacherAppBar handleResetRoles={handleResetRoles} />
-            : role === "user" ? <UserAppBar handleResetRoles={handleResetRoles} />
-              : role === "home" ? <HomeAppBar handleResetRoles={handleResetRoles} />
+        role === 'Admin' ? <AdminAppBar handleResetRoles={handleResetRoles} />
+          : role === "Teacher" ? <TeacherAppBar handleResetRoles={handleResetRoles} />
+            : role === "User" ? <UserAppBar handleResetRoles={handleResetRoles} />
+              : role === "Home" ? <HomeAppBar handleResetRoles={handleResetRoles} />
                 :
                 <AppBar position="static" sx={{ bgcolor: theme.palette.background.paper }}>
                   <Container maxWidth="xl">

@@ -2,7 +2,9 @@ import React from 'react'
 
 const TeacherHome = () => {
   return (
-    <div>TeacherHome</div>
+    <Grid container spacing={0}>
+      
+    </Grid>
   )
 }
 

@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ThemeProvider from './theme/index'
+import PrivateRoutes from './components/utils/PrivateRoutes'
 // App components
 import DefaultAppBar from './components/AppBar/DefaultAppBar'
 import SignIn from './components/SignIn'
@@ -29,8 +30,13 @@ function App() {
           setRole("home")
         }
         let userRole = session.getIdToken().payload["userRole"];
-        const newRole = userRole == "Admin" ? "admin" : "Teacher" ? "teacher" :"home"
-        setRole(newRole)
+        console.log(userRole)
+        const roles = ["Admin", "Teacher"]
+        if (roles.includes(userRole)) {
+          setRole(userRole)
+        } else {
+          setRole("Home")
+        }
       })
     })
   }, [])
@@ -44,9 +50,11 @@ function App() {
           <Route path="/">
             <Route index element={<SignIn handleSetRole={handleSetRole} />} />
           </Route>
-          <Route path="admin">
+          <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}>
+
           </Route>
-          <Route path="teacher">
+          <Route path="teacher" element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
+            
           </Route>
         </Routes>
       </ThemeProvider>
