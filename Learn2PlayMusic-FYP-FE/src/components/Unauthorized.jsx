@@ -8,6 +8,8 @@ const Unauthorized = ({userRole}) => {
     redirectLink = "admin"
   } else if (userRole === "Teacher") {
     redirectLink = "teacher"
+  } else if (userRole === "User") {
+    redirectLink = "home"
   }
 
     return (

@@ -2,6 +2,7 @@ import React from 'react';
 import HomeAppBar from './HomeAppBar';
 import AdminAppBar from './AdminAppBar';
 import TeacherAppBar from './TeacherAppBar';
+import UserAppBar from './UserAppBar';
 
 function DefaultAppBar({ userInfo, handleResetUserInfo }) {
   console.log(userInfo)

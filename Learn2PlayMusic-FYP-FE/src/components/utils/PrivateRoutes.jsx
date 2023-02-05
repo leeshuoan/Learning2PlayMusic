@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom'
 import Unauthorized from '../Unauthorized'
 import { Auth } from 'aws-amplify';
 
-const PrivateRoutes = ({userType}) => {
+const PrivateRoutes = ({ userType }) => {
   const [isAuth, setIsAuth] = useState(false)
   const [loading, setLoading] = useState(true)
   const [userInfo, setUserInfo] = useState({})
@@ -46,7 +46,10 @@ const PrivateRoutes = ({userType}) => {
 
   return (
     <>
-      {loading ? null : (isAuth&&(userInfo.role=="Teacher")) ? <Outlet context={{ userInfo }} /> : <Unauthorized userRole={userInfo.role}/>}
+      {loading ? null
+        : (isAuth && (userInfo.role == "Teacher")) ? <Outlet context={{ userInfo }} />
+          : (isAuth && (userInfo.role == "User")) ? <Outlet context={{ userInfo }} />
+            : <Unauthorized userRole={userInfo.role} />}
     </>
   )
 }
