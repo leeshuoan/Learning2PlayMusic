@@ -30,21 +30,18 @@ function App() {
 
   useEffect(() => {
     Auth.currentAuthenticatedUser().then((user) => {
-      console.log(user)
       user.getSession((err, session) => {
         if (err) {
           console.log(err);
           handleResetUserInfo()
         }
         let userRole = session.getIdToken().payload["userRole"];
-        console.log(userRole)
         const roles = ["Admin", "Teacher"]
         if (roles.includes(userRole)) {
           let userInfo = {
             "name": session.getIdToken().payload["name"],
             "role": userRole
           }
-          console.log(userInfo)
           setUserInfo(userInfo)
         } else {
           handleResetUserInfo()

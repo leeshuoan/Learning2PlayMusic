@@ -8,27 +8,29 @@ const PrivateRoutes = ({userType}) => {
   const [loading, setLoading] = useState(true)
   const [userInfo, setUserInfo] = useState({})
 
+  const handleResetUserInfo = () => {
+    setUserInfo({
+      role: "home"
+    })
+  }
+
   useEffect(() => {
     Auth.currentAuthenticatedUser().then((user) => {
       user.getSession((err, session) => {
-        setLoading(false)
         if (err) {
           console.log(err);
-          setUserInfo({
-            role: "home"
-          })
+          handleResetUserInfo()
         }
+
         let userRole = session.getIdToken().payload["userRole"];
-        setUserInfo({
-          role: "home"
-        })
+        let userInfo = {
+          "name": session.getIdToken().payload["name"],
+          "role": userRole
+        }
+        setUserInfo(userInfo)
+        setLoading(false)
+
         if (userRole == userType) {
-          let userInfo = {
-            "name": session.getIdToken().payload["name"],
-            "role": userRole
-          }
-          console.log(userInfo)
-          setUserInfo(userInfo)
           setIsAuth(true)
         } else {
           setIsAuth(false)
@@ -36,6 +38,7 @@ const PrivateRoutes = ({userType}) => {
       })
     }).catch((err) => {
       console.log(err)
+      handleResetUserInfo()
       setLoading(false)
       setIsAuth(false)
     })
@@ -43,7 +46,7 @@ const PrivateRoutes = ({userType}) => {
 
   return (
     <>
-      {loading ? null : isAuth&&(userInfo.role=="Teacher") ? <Outlet context={{ userInfo }} /> : <Unauthorized userRole={userRole}/>}
+      {loading ? null : (isAuth&&(userInfo.role=="Teacher")) ? <Outlet context={{ userInfo }} /> : <Unauthorized userRole={userInfo.role}/>}
     </>
   )
 }
