@@ -8,6 +8,7 @@ import PrivateRoutes from "./components/utils/PrivateRoutes";
 // App components
 import DefaultAppBar from "./components/AppBar/DefaultAppBar";
 import SignIn from "./components/SignIn";
+import NotFound from "./components/NotFound";
 import TeacherHome from "./components/Teacher/TeacherHome";
 import UserHome from "./components/User/UserHome";
 import UserCourse from "./components/User/UserCourse";
@@ -89,7 +90,7 @@ function App() {
             <Route index element={<UserHome userInfo={userInfo} />} />
             <Route path="course/:courseid" element={<UserCourse />} />
           </Route>
-
+          <Route path='*' element={<NotFound userRole={userInfo.role}/>}/>
         </Routes>
       </ThemeProvider>
     </div>

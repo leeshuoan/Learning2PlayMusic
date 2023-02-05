@@ -70,7 +70,7 @@ const UserCourse = () => {
 
   return (
     <Container maxWidth="xl" sx={{ width: 0.9 }}>
-      <Box sx={{ mt: 3, display: "flex", "&:hover": { cursor: "pointer" } }} onClick={back}>
+      <Box sx={{ mt: 3, display: "flex", "&:hover": { cursor: "pointer", color:"primary.main" } }} onClick={back}>
         <ArrowBackIosIcon />
         <Typography variant='subtitle1' sx={{ pl: 1, pr: 1 }}>Back to Home</Typography>
         <HomeIcon />
