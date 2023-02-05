@@ -9,6 +9,7 @@ import Backdrop from './Backdrop';
 import Typography from './Typography';
 import CssBaseline from './CssBaseline';
 import Autocomplete from './Autocomplete';
+import Link from './Link';
 
 // ----------------------------------------------------------------------
 
@@ -23,5 +24,6 @@ export default function ComponentsOverrides(theme) {
     Typography(theme),
     CssBaseline(theme),
     Autocomplete(theme),
+    Link(theme)
   );
 }

@@ -10,7 +10,6 @@ const PrivateRoutes = ({userType}) => {
 
   useEffect(() => {
     Auth.currentAuthenticatedUser().then((user) => {
-      console.log(user)
       user.getSession((err, session) => {
         setLoading(false)
         if (err) {
@@ -27,6 +26,10 @@ const PrivateRoutes = ({userType}) => {
           setIsAuth(false)
         }
       })
+    }).catch((err) => {
+      console.log(err)
+      setLoading(false)
+      setIsAuth(false)
     })
   }, [])
 

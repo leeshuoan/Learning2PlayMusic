@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------------
 
+import { palette } from "@mui/system";
+
 function pxToRem(value) {
   return `${value / 16}rem`;
 }
@@ -70,6 +72,11 @@ const typography = {
     fontWeight: 600,
     lineHeight: 22 / 14,
     fontSize: pxToRem(14),
+  },
+  subsubtitle: {
+    lineHeight: 1.5,
+    fontSize: pxToRem(12),
+    color: "#BBBBBB"
   },
   body1: {
     lineHeight: 1.5,

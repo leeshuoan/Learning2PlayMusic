@@ -1,12 +1,68 @@
-import { Typography, Container, Grid } from '@mui/material'
+import { Typography, Container, Grid, Card, bottomNavigationClasses } from '@mui/material'
 import React from 'react'
 
 const TeacherHome = () => {
+  const announcements = [
+    {
+      title: "New Course Available",
+      date: "31 Jan 2023",
+      content: "The Premium Children's Piano Course for age 5 and above. Students are prepared for graded examinations of The Associated Board Royal Schools of Music (ABRSM). 'Enjoyment through achievement' is a phrase that sums up ABRSM's philosophy, and earning an ABRSM certificate is a rewarding experience."
+    },
+    {
+      title: "New Course Available",
+      date: "31 Jan 2023",
+      content: "The Premium Children's Piano Course for age 5 and above. Students are prepared for graded examinations of The Associated Board Royal Schools of Music (ABRSM). 'Enjoyment through achievement' is a phrase that sums up ABRSM's philosophy, and earning an ABRSM certificate is a rewarding experience."
+    },
+    {
+      title: "New Course Available",
+      date: "31 Jan 2023",
+      content: "The Premium Children's Piano Course for age 5 and above. Students are prepared for graded examinations of The Associated Board Royal Schools of Music (ABRSM). 'Enjoyment through achievement' is a phrase that sums up ABRSM's philosophy, and earning an ABRSM certificate is a rewarding experience."
+    }
+  ]
+
+  const upcomingClasses = [
+    {
+      title: "Piano",
+      date: "31 Jan 2023, 4:00pm",
+    },
+    {
+      title: "Piano",
+      date: "31 Jan 2023, 4:00pm",
+    },
+    {
+      title: "Piano",
+      date: "31 Jan 2023, 4:00pm",
+    }
+  ]
+
   return (
     <>
       <Container maxWidth="xl" sx={{ width: 0.9 }}>
-        <Typography variant='h4' sx={{ mt: 2 }}>WELCOME BACK, XXX</Typography>
-        <Grid container spacing={0}>
+        <Typography variant='h4' sx={{ mt: 3, textAlign: "center" }}>WELCOME BACK, XXX</Typography>
+        <Grid container spacing={2} sx={{ mt: 1 }}>
+          <Grid item xs={9}>
+            <Card sx={{ py: 3, px: 4 }}>
+              <Typography variant='h6'>Annoucements</Typography>
+              {announcements.map((announcement, index) => (
+                <Card variant='outlined' sx={{ boxShadow: "none", my: 1, p: 2 }} key={index}>
+                  <Typography variant='subtitle2'>{announcement.title}</Typography>
+                  <Typography variant='subsubtitle'>Posted {announcement.date}</Typography>
+                  <Typography variant='body2' sx={{ mt: 1 }}>{announcement.content}</Typography>
+                </Card>
+              ))}
+            </Card>
+          </Grid>
+          <Grid item xs={3}>
+          <Card sx={{ py: 3, px: 2 }}>
+              <Typography variant='h6' sx={{ textAlign: "center" }}>Upcoming Classes</Typography>
+              {upcomingClasses.map((upcomingClass, index) => (
+                <Card variant='outlined' sx={{ boxShadow: "none", my: 1, p: 2 }} key={index}>
+                  <Typography variant='subtitle2'>{upcomingClass.title}</Typography>
+                  <Typography variant='subsubtitle'>Date: {upcomingClass.date}</Typography>
+                </Card>
+              ))}
+            </Card>
+          </Grid>
         </Grid>
       </Container>
     </>

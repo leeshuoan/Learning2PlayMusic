@@ -38,7 +38,6 @@ export default function SignIn({ handleSetRole }) {
         user.getSession((err, session) => {
           if (err) {
             console.log(err);
-
           }
           let userRole = session.getIdToken().payload["userRole"];
           console.log(userRole)
