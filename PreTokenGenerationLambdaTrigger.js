@@ -5,9 +5,6 @@ var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
 // PretokenGeneration Lambda
 exports.handler = async function (event, context) {
-    var eventUserName = "";
-    var userRole = "";
-
     if (!event.userName) {
         return event;
     }
@@ -19,7 +16,7 @@ exports.handler = async function (event, context) {
             }
         },
         KeyConditionExpression: "UserName = :v1",
-        ProjectionExpression: "UserRole",
+        ProjectionExpression: "UserRole, UserAlias",
         TableName: "UserInfoTable"
     };
 
@@ -27,7 +24,8 @@ exports.handler = async function (event, context) {
         "claimsOverrideDetails": {
             "claimsToAddOrOverride": {
                 "userName": event.userName,
-                "userRole": null
+                "userRole": null,
+                "name": null
             },
         }
     };
@@ -38,8 +36,11 @@ exports.handler = async function (event, context) {
         if (result.Items.length > 0) {
             console.log(result.Items)
             const userRole = result.Items[0]["UserRole"]["S"];
+            const name = result.Items[0]["UserAlias"]["S"];
             console.log("userRole = " + userRole);
+            console.log("name = " + name)
             event.response.claimsOverrideDetails.claimsToAddOrOverride.userRole = userRole;
+            event.response.claimsOverrideDetails.claimsToAddOrOverride.name = name;
         }
     }
     catch (error) {
