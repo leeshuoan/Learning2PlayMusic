@@ -1,60 +1,70 @@
-import './App.css'
-import { useState, useEffect } from 'react'
-import { Routes, Route } from "react-router-dom"
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import ThemeProvider from './theme/index'
-import PrivateRoutes from './components/utils/PrivateRoutes'
+import "./App.css";
+import { useState, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ThemeProvider from "./theme/index";
+import PrivateRoutes from "./components/utils/PrivateRoutes";
 // App components
-import DefaultAppBar from './components/AppBar/DefaultAppBar'
-import SignIn from './components/SignIn'
-import TeacherHome from './components/Teacher/TeacherHome'
+import DefaultAppBar from "./components/AppBar/DefaultAppBar";
+import SignIn from "./components/SignIn";
+import TeacherHome from "./components/Teacher/TeacherHome";
+
 // Amplify setup
-import aws_exports from './aws-exports';
-import { Amplify } from 'aws-amplify'
-import { Auth } from 'aws-amplify';
+import aws_exports from "./aws-exports";
+import { Amplify } from "aws-amplify";
+import { Auth } from "aws-amplify";
+import ChatBase from "./components/Chat/ChatBase";
+import ChatBase2 from "./components/Chat/ChatBase2";
 Amplify.configure(aws_exports);
 
 function App() {
   const [role, setRole] = useState("home");
 
   const handleSetRole = (role) => {
-    setRole(role)
-  }
+    setRole(role);
+  };
 
   useEffect(() => {
     Auth.currentAuthenticatedUser().then((user) => {
-      console.log(user)
+      console.log(user);
       user.getSession((err, session) => {
         if (err) {
           console.log(err);
-          setRole("home")
+          setRole("home");
         }
         let userRole = session.getIdToken().payload["userRole"];
-        console.log(userRole)
-        const roles = ["Admin", "Teacher"]
+        console.log(userRole);
+        const roles = ["Admin", "Teacher"];
         if (roles.includes(userRole)) {
-          setRole(userRole)
+          setRole(userRole);
         } else {
-          setRole("Home")
+          setRole("Home");
         }
-      })
-    })
-  }, [])
+      });
+    });
+  }, []);
 
   return (
     <div className="App">
       <ThemeProvider>
-        <DefaultAppBar role={role} handleResetRoles={() => handleSetRole("home")} />
+        <DefaultAppBar
+          role={role}
+          handleResetRoles={() => handleSetRole("home")}
+        />
         <ToastContainer />
         <Routes>
           <Route path="/">
             <Route index element={<SignIn handleSetRole={handleSetRole} />} />
           </Route>
-          <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}>
-          </Route>
-          <Route path="teacher" element={<PrivateRoutes userType="Teacher" ></PrivateRoutes>}>
+          <Route
+            path="admin"
+            element={<PrivateRoutes userType="Admin"></PrivateRoutes>}></Route>
+          <Route
+            path="teacher"
+            element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
             <Route index element={<TeacherHome />} />
+            <Route path="chat" element={<ChatBase2 />} />
           </Route>
         </Routes>
       </ThemeProvider>
