@@ -19,7 +19,7 @@ function Copyright(props) {
   );
 }
 
-export default function SignIn({ handleSetRole }) {
+export default function SignIn({ handleSetUserInfo }) {
   const theme = useTheme();
   const navigate = useNavigate()
 
@@ -41,12 +41,15 @@ export default function SignIn({ handleSetRole }) {
           }
           let userRole = session.getIdToken().payload["userRole"];
           console.log(userRole)
+          let userInfo = {
+            "name": session.getIdToken().payload["name"],
+            "role": userRole
+          }
+          handleSetUserInfo(userInfo);
           if (userRole == "Admin") {
-            handleSetRole("Admin");
             navigate("/admin");
             return;
           } else if (userRole == "Teacher") {
-            handleSetRole("Teacher");
             navigate("/teacher");
             return;
           }

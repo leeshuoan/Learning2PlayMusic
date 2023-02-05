@@ -16,10 +16,16 @@ import { Auth } from 'aws-amplify';
 Amplify.configure(aws_exports);
 
 function App() {
-  const [role, setRole] = useState("home");
+  const [userInfo, setUserInfo] = useState({})
 
-  const handleSetRole = (role) => {
-    setRole(role)
+  const handleResetUserInfo = () => {
+    setUserInfo({
+      role: "home"
+    })
+  }
+
+  const handleSetUserInfo = (userInfo) => {
+    setUserInfo(userInfo)
   }
 
   useEffect(() => {
@@ -28,33 +34,41 @@ function App() {
       user.getSession((err, session) => {
         if (err) {
           console.log(err);
-          setRole("home")
+          handleResetUserInfo()
         }
         let userRole = session.getIdToken().payload["userRole"];
         console.log(userRole)
         const roles = ["Admin", "Teacher"]
         if (roles.includes(userRole)) {
-          setRole(userRole)
+          let userInfo = {
+            "name": session.getIdToken().payload["name"],
+            "role": userRole
+          }
+          console.log(userInfo)
+          setUserInfo(userInfo)
         } else {
-          setRole("Home")
+          handleResetUserInfo()
         }
       })
+    }).catch((err) => {
+      console.log(err)
+      handleResetUserInfo()
     })
   }, [])
 
   return (
     <div className="App">
       <ThemeProvider>
-        <DefaultAppBar role={role} handleResetRoles={() => handleSetRole("home")} />
+        <DefaultAppBar userInfo={userInfo} handleResetUserInfo={() => handleResetUserInfo()} />
         <ToastContainer />
         <Routes>
           <Route path="/">
-            <Route index element={<SignIn handleSetRole={handleSetRole} />} />
+            <Route index element={<SignIn handleSetUserInfo={handleSetUserInfo} />} />
           </Route>
           <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}>
           </Route>
           <Route path="teacher" element={<PrivateRoutes userType="Teacher" ></PrivateRoutes>}>
-            <Route index element={<TeacherHome />} />
+            <Route index element={<TeacherHome userInfo ={userInfo} />} />
           </Route>
         </Routes>
       </ThemeProvider>

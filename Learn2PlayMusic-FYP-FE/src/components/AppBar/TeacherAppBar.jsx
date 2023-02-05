@@ -9,12 +9,12 @@ import ChatIcon from '@mui/icons-material/Chat';
 import { Auth } from 'aws-amplify';
 import { useNavigate } from 'react-router-dom';
 
-const TeacherAppBar = ({ handleResetRoles }) => {
+const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
   const theme = useTheme()
   const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const pages = ["Home", "Courses"]
+  // const pages = ["Home", "Courses"]
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -35,7 +35,7 @@ const TeacherAppBar = ({ handleResetRoles }) => {
   };
 
   const handleLogout = () => {
-    handleResetRoles()
+    handleResetUserInfo()
     Auth.signOut().then(() => {
       console.log("Signed out")
       navigate('/')
@@ -86,26 +86,27 @@ const TeacherAppBar = ({ handleResetRoles }) => {
                     display: { xs: 'block', md: 'none' },
                   }}
                 >
-                  {pages.map((page) => (
+                  {/* {pages.map((page) => (
                     <MenuItem key={page} onClick={() => handleRoute(page)}>
                       <Typography textAlign="center" >{page}</Typography>
                     </MenuItem>
-                  ))}
+                  ))} */}
+                  <MenuItem>NOTHING HERE YET</MenuItem>
                 </Menu>
               </Box>
 
               <IconButton disableRipple>
-                <img src="/logo.png" width="150px" />
+              <img src="/l2pm_logo.png" width="150px" />
               </IconButton>
 
               {/* DESKTOP NAV */}
-              <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+              {/* <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                 {pages.map((page) => (
                   <MenuItem sx={{ bgcolor: "background.paper" }} key={page} onClick={() => handleRoute(page)}>
                     <Typography textAlign="center" >{page}</Typography>
                   </MenuItem>
                 ))}
-              </Box>
+              </Box> */}
 
               {/* USER MENU */}
               <Box>

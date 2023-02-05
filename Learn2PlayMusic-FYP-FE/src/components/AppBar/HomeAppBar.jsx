@@ -71,7 +71,7 @@ function DefaultAppBar({ role, handleResetRoles }) {
                       </Menu>
                     </Box>
                     <IconButton disableRipple>
-                      <img src="/logo.png" width="150px" />
+                      <img src="/l2pm_logo.png" width="150px" />
                     </IconButton>
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                       {pages.map((page) => (

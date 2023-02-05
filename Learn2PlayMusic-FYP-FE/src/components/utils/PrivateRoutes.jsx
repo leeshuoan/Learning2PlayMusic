@@ -6,7 +6,7 @@ import { Auth } from 'aws-amplify';
 const PrivateRoutes = ({userType}) => {
   const [isAuth, setIsAuth] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [userRole, setUserRole] = useState("")
+  const [userInfo, setUserInfo] = useState({})
 
   useEffect(() => {
     Auth.currentAuthenticatedUser().then((user) => {
@@ -14,13 +14,21 @@ const PrivateRoutes = ({userType}) => {
         setLoading(false)
         if (err) {
           console.log(err);
-          setUserRole("home")
+          setUserInfo({
+            role: "home"
+          })
         }
         let userRole = session.getIdToken().payload["userRole"];
-        setUserRole(userRole)
-        console.log(userRole)
-        console.log(userType)
+        setUserInfo({
+          role: "home"
+        })
         if (userRole == userType) {
+          let userInfo = {
+            "name": session.getIdToken().payload["name"],
+            "role": userRole
+          }
+          console.log(userInfo)
+          setUserInfo(userInfo)
           setIsAuth(true)
         } else {
           setIsAuth(false)
@@ -35,7 +43,7 @@ const PrivateRoutes = ({userType}) => {
 
   return (
     <>
-      {loading ? null : isAuth ? <Outlet /> : <Unauthorized userRole={userRole}/>}
+      {loading ? null : isAuth&&(userInfo.role=="Teacher") ? <Outlet context={{ userInfo }} /> : <Unauthorized userRole={userRole}/>}
     </>
   )
 }

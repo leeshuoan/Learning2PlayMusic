@@ -3,14 +3,15 @@ import HomeAppBar from './HomeAppBar';
 import AdminAppBar from './AdminAppBar';
 import TeacherAppBar from './TeacherAppBar';
 
-function DefaultAppBar({ role, handleResetRoles }) {
+function DefaultAppBar({ userInfo, handleResetUserInfo }) {
+  console.log(userInfo)
   return (
     <>
       {
-        role === 'Admin' ? <AdminAppBar handleResetRoles={handleResetRoles} />
-          : role === "Teacher" ? <TeacherAppBar handleResetRoles={handleResetRoles} />
-            : role === "User" ? <UserAppBar handleResetRoles={handleResetRoles} />
-              : <HomeAppBar handleResetRoles={handleResetRoles} />
+        userInfo.role === 'Admin' ? <AdminAppBar userInfo={userInfo} handleResetUserInfo={handleResetUserInfo} />
+          : userInfo.role === "Teacher" ? <TeacherAppBar userInfo={userInfo} handleResetUserInfo={handleResetUserInfo} />
+            : userInfo.role === "User" ? <UserAppBar userInfo={userInfo} handleResetUserInfo={handleResetUserInfo} />
+              : <HomeAppBar handleResetUserInfo={handleResetUserInfo} />
       }
     </>
   );

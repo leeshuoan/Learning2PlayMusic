@@ -7,7 +7,7 @@ import Logout from '@mui/icons-material/Logout';
 import { Auth } from 'aws-amplify';
 import { useNavigate } from 'react-router-dom';
 
-const AdminAppBar = ({ handleResetRoles }) => {
+const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
   const theme = useTheme()
   const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -33,7 +33,7 @@ const AdminAppBar = ({ handleResetRoles }) => {
   };
 
   const handleLogout = () => {
-    handleResetRoles()
+    handleResetUserInfo()
     Auth.signOut().then(() => {
       console.log("Signed out")
       navigate('/')
@@ -88,7 +88,7 @@ const AdminAppBar = ({ handleResetRoles }) => {
               </Box>
 
               <IconButton disableRipple>
-                <img src="/logo.png" width="150px" />
+              <img src="/l2pm_logo.png" width="150px" />
               </IconButton>
 
               {/* DESKTOP NAV */}
