@@ -8,7 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import SendIcon from "@mui/icons-material/Send";
 import "../../App.css";
 
-const ChatBase2 = () => {
+const ChatBase = () => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -99,4 +99,4 @@ const ChatBase2 = () => {
   );
 };
 
-export default ChatBase2;
+export default ChatBase;
