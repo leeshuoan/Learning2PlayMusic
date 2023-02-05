@@ -15,7 +15,6 @@ import aws_exports from "./aws-exports";
 import { Amplify } from "aws-amplify";
 import { Auth } from "aws-amplify";
 import ChatBase from "./components/Chat/ChatBase";
-import ChatBase2 from "./components/Chat/ChatBase2";
 Amplify.configure(aws_exports);
 
 function App() {
@@ -64,7 +63,7 @@ function App() {
             path="teacher"
             element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
             <Route index element={<TeacherHome />} />
-            <Route path="chat" element={<ChatBase2 />} />
+            <Route path="chat" element={<ChatBase />} />
           </Route>
         </Routes>
       </ThemeProvider>
