@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { Typography, Container, Grid, Card, Box, Link, MenuItem } from '@mui/material'
+import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button } from '@mui/material'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import HomeIcon from '@mui/icons-material/Home';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import courseImg from '../../assets/course.png'
 
 const UserCourse = () => {
@@ -22,6 +23,35 @@ const UserCourse = () => {
       title: "Change of lesson date",
       date: "31 Jan 2023",
       content: "Dear parents, the lesson date for 31 Jan 2023 has been changed to 1 Feb 2023. Please take note of this change. Thank you."
+    },
+  ]
+
+  const courseMaterials = [
+    {
+      title: "Lesson 2",
+      materials: [
+        {
+          materialTitle: "Exercise 2",
+          materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        },
+        {
+          materialTitle: "Exercise 1",
+          materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        },
+      ]
+    },
+    {
+      title: "Lesson 1",
+      materials: [
+        {
+          materialTitle: "Exercise 2",
+          materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        },
+        {
+          materialTitle: "Exercise 1",
+          materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        },
+      ]
     },
   ]
 
@@ -60,7 +90,7 @@ const UserCourse = () => {
       setDiscussionForumTab("block")
     } else if (tab === "My Progress Report") {
       setProgressReportTab("block")
-    } 
+    }
   }
 
   const back = () => {
@@ -70,7 +100,7 @@ const UserCourse = () => {
 
   return (
     <Container maxWidth="xl" sx={{ width: 0.9 }}>
-      <Box sx={{ mt: 3, display: "flex", "&:hover": { cursor: "pointer", color:"primary.main" } }} onClick={back}>
+      <Box sx={{ mt: 3, display: "flex", "&:hover": { cursor: "pointer", color: "primary.main" } }} onClick={back}>
         <ArrowBackIosIcon />
         <Typography variant='subtitle1' sx={{ pl: 1, pr: 1 }}>Back to Home</Typography>
         <HomeIcon />
@@ -96,7 +126,7 @@ const UserCourse = () => {
         <Grid item xs={12} md={3}>
           <Card sx={{ py: 2, px: 3, mt: 2 }}>
             {menuOptions.map((option) => (
-              <MenuItem sx={{ mb: 1, color:selectedTab==option?"primary.main":"", "&:hover": {color: "primary.main"} }} onClick={() => selectTab(option)}>
+              <MenuItem sx={{ mb: 1, color: selectedTab == option ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => selectTab(option)}>
                 <Typography variant='subtitle1'>{option}</Typography>
               </MenuItem>
             ))}
@@ -105,34 +135,57 @@ const UserCourse = () => {
 
         <Grid item xs={12} md={9}>
           <Box>
-            <Card sx={{ py: 3, px: 5, mt: 2, display:announcementTab }}>
+            <Card sx={{ py: 3, px: 5, mt: 2, display: announcementTab }}>
               <Typography variant='h5'>Class Announcements</Typography>
               {courseAnnouncements.map((announcement) => (
-                <Box sx={{ mt: 2, p:2 }}>
-                  <Typography variant='subtitle1' sx={{  }}>{announcement.title}</Typography>
+                <Card variant='outlined' sx={{ boxShadow: "none", mt: 2, p: 2 }}>
+                  <Typography variant='subtitle1' sx={{}}>{announcement.title}</Typography>
                   <Typography variant='subsubtitle' sx={{ mb: 1 }}>Posted {announcement.date}</Typography>
                   <Typography variant='body2'>{announcement.content}</Typography>
-                </Box>
+                </Card>
               ))}
             </Card>
 
-            <Card sx={{ py: 3, px: 5, mt: 2, display:classMaterialTab }}>
-              <Typography variant='h5'>Class Materials</Typography>
-            </Card>
+            {courseMaterials.map((material) => (
+              <Card sx={{ py: 1, px: 3, mt: 2, display: classMaterialTab }}>
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                  >
+                    <Typography variant='h5'>{material.title}</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    {material.materials.map((item) => (
+                      <Card variant='outlined' sx={{ boxShadow: "none", display: "flex", mb: 2, p: 2 }}>
+                        <Box>
+                          <Typography variant='subtitle1' sx={{ pb: 1 }}>{item.materialTitle}</Typography>
+                          <Link href={item.materialUrl} target="_blank">Download PDF</Link>
+                        </Box>
+                        <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
+                          <Button variant="contained">View</Button>
+                        </Box>
+                      </Card>
+                    ))}
+                  </AccordionDetails>
+                </Accordion>
+              </Card>
+            ))}
 
-            <Card sx={{ py: 3, px: 5, mt: 2, display:quizTab }}>
+            <Card sx={{ py: 3, px: 5, mt: 2, display: quizTab }}>
               <Typography variant='h5'>Quizzes</Typography>
             </Card>
 
-            <Card sx={{ py: 3, px: 5, mt: 2, display:homeworkTab }}>
+            <Card sx={{ py: 3, px: 5, mt: 2, display: homeworkTab }}>
               <Typography variant='h5'>Homework</Typography>
             </Card>
 
-            <Card sx={{ py: 3, px: 5, mt: 2, display:discussionForumTab }}>
+            <Card sx={{ py: 3, px: 5, mt: 2, display: discussionForumTab }}>
               <Typography variant='h5'>Discussion Forum</Typography>
             </Card>
 
-            <Card sx={{ py: 3, px: 5, mt: 2, display:progressReportTab }}>
+            <Card sx={{ py: 3, px: 5, mt: 2, display: progressReportTab }}>
               <Typography variant='h5'>My Progress Report</Typography>
             </Card>
 
