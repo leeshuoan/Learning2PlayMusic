@@ -72,11 +72,6 @@ export default function SignIn({ handleSetUserInfo }) {
       .catch(err => {
         toast.error(err.message);
       });
-
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
   }
 
   return (
@@ -127,7 +122,7 @@ export default function SignIn({ handleSetUserInfo }) {
             />
             <Grid container sx={{ pl: 1, mt: 1, mb: 2 }}>
               <Grid item xs>
-                <Link href="#" variant="body2" color="primary.dark">
+                <Link onClick={() => {navigate("resetpassword")}} variant="body2" color="primary.dark">
                   Forgot password?
                 </Link>
               </Grid>
