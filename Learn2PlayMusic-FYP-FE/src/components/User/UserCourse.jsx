@@ -4,6 +4,10 @@ import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionS
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import HomeIcon from '@mui/icons-material/Home';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import QuizIcon from '@mui/icons-material/Quiz';
+import WorkIcon from '@mui/icons-material/Work';
+import DownloadIcon from '@mui/icons-material/Download';
 import courseImg from '../../assets/course.png'
 
 const UserCourse = () => {
@@ -53,6 +57,76 @@ const UserCourse = () => {
         },
       ]
     },
+  ]
+
+  const courseQuizzes = [
+    {
+      title: "Quiz 1",
+      score: "80%",
+      attempts: 1,
+      maxAttempts: 1
+    },
+    {
+      title: "Quiz 2",
+      score: "93%",
+      attempts: 1,
+      maxAttempts: 1
+    },
+    {
+      title: "Quiz 3",
+      score: "",
+      attempts: 0,
+      maxAttempts: 1
+    },
+  ]
+
+  const courseHomework = [
+    {
+      title: "Homework 1",
+      dueDate: "3 Feb 2023, 23:59PM",
+      score: "80%",
+      submission: 1,
+    },
+    {
+      title: "Homework 2",
+      dueDate: "13 Feb 2023, 23:59PM",
+      score: "80%",
+      submission: 1,
+    },
+    {
+      title: "Homework 1",
+      dueDate: "3 Mar 2023, 23:59PM",
+      score: "",
+      submission: 0,
+    }
+  ]
+
+  const courseForums = [
+    {
+      title: "Do Pianists have longer fingers?",
+      postedDate: "31 Jan 2023",
+    },
+    {
+      title: "How are you coping with your piano lessons so far?",
+      postedDate: "31 Jan 2023",
+    }
+  ]
+
+  const courseProgress = {
+    "attendance": 3,
+    "maxAttendance": 3,
+    "quizzes": 2,
+    "maxQuizzes": 3,
+    "homeworkSubmissions": 2,
+    "homework": 3,
+  }
+
+  const courseProgressReports = [
+    {
+      title: "Progress Report 1",
+      uploadDate: "31 Jan 2023",
+      reportUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    }
   ]
 
   const navigate = useNavigate()
@@ -146,48 +220,154 @@ const UserCourse = () => {
               ))}
             </Card>
 
-            {courseMaterials.map((material) => (
-              <Card sx={{ py: 1, px: 3, mt: 2, display: classMaterialTab }}>
-                <Accordion>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                  >
-                    <Typography variant='h5'>{material.title}</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    {material.materials.map((item) => (
-                      <Card variant='outlined' sx={{ boxShadow: "none", display: "flex", mb: 2, p: 2 }}>
-                        <Box>
-                          <Typography variant='subtitle1' sx={{ pb: 1 }}>{item.materialTitle}</Typography>
-                          <Link href={item.materialUrl} target="_blank">Download PDF</Link>
-                        </Box>
-                        <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
-                          <Button variant="contained">View</Button>
-                        </Box>
-                      </Card>
-                    ))}
-                  </AccordionDetails>
-                </Accordion>
-              </Card>
-            ))}
+            <Box sx={{ display: classMaterialTab }}>
+              {courseMaterials.map((material) => (
+                <Card sx={{ py: 1, px: 3, mt: 2 }}>
+                  <Accordion>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel1a-content"
+                      id="panel1a-header"
+                    >
+                      <Typography variant='h5'>{material.title}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      {material.materials.map((item) => (
+                        <Card variant='outlined' sx={{ boxShadow: "none", display: "flex", mb: 2, p: 2 }}>
+                          <Box>
+                            <Typography variant='subtitle1' sx={{ pb: 1 }}>{item.materialTitle}</Typography>
+                            <Link href={item.materialUrl} target="_blank">Download PDF</Link>
+                          </Box>
+                          <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
+                            <Button variant="contained">View</Button>
+                          </Box>
+                        </Card>
+                      ))}
+                    </AccordionDetails>
+                  </Accordion>
+                </Card>
+              ))}
+            </Box>
 
-            <Card sx={{ py: 3, px: 5, mt: 2, display: quizTab }}>
-              <Typography variant='h5'>Quizzes</Typography>
-            </Card>
+            <Box sx={{ display: quizTab }}>
+              <Grid container spacing={2} sx={{ px: 4, mt: 2 }}>
+                <Grid item xs="6">
+                  <Typography variant='subtitle2'>QUIZ TITLE</Typography>
+                </Grid>
+                <Grid item xs="3">
+                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SCORE</Typography>
+                </Grid>
+                <Grid item xs="3">
+                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>ATTEMPTS</Typography>
+                </Grid>
+              </Grid>
+              {courseQuizzes.map((quiz) => (
+                <Card sx={{ py: 3, px: 4, mt: 2 }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs="6">
+                      <Typography variant='body1' sx={{ color: "primary.main" }}>{quiz.title}</Typography>
+                    </Grid>
+                    <Grid item xs="3">
+                      <Typography variant='body1' sx={{ textAlign: "center" }}>{quiz.score}</Typography>
+                    </Grid>
+                    <Grid item xs="3">
+                      <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '' }}>{quiz.attempts}/{quiz.maxAttempts}</Typography>
+                    </Grid>
+                  </Grid>
+                </Card>
+              ))}
+            </Box>
 
-            <Card sx={{ py: 3, px: 5, mt: 2, display: homeworkTab }}>
-              <Typography variant='h5'>Homework</Typography>
-            </Card>
+            <Box sx={{ display: homeworkTab }}>
+              <Grid container spacing={2} sx={{ px: 4, mt: 2 }}>
+                <Grid item xs="4">
+                  <Typography variant='subtitle2'>HOMEWORK TITLE</Typography>
+                </Grid>
+                <Grid item xs="3">
+                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>DUE DATE</Typography>
+                </Grid>
+                <Grid item xs="3">
+                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SCORE</Typography>
+                </Grid>
+                <Grid item xs="2">
+                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SUBMISSION</Typography>
+                </Grid>
+              </Grid>
+              {
+                courseHomework.map((homework) => (
+                  <Card sx={{ py: 3, px: 4, mt: 2 }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs="4">
+                        <Typography variant='body1' sx={{ color: "primary.main" }}>{homework.title}</Typography>
+                      </Grid>
+                      <Grid item xs="3">
+                        <Typography variant='body1' sx={{ textAlign: "center" }}>{homework.dueDate}</Typography>
+                      </Grid>
+                      <Grid item xs="3">
+                        <Typography variant='body1' sx={{ textAlign: "center" }}>{homework.score}</Typography>
+                      </Grid>
+                      <Grid item xs="2">
+                        <Typography variant='body1' sx={{ textAlign: "center", color: homework.submission == 0 ? 'grey' : '' }}>{homework.submission} FILE</Typography>
+                      </Grid>
+                    </Grid>
+                  </Card>
+                ))}
+            </Box>
 
-            <Card sx={{ py: 3, px: 5, mt: 2, display: discussionForumTab }}>
-              <Typography variant='h5'>Discussion Forum</Typography>
-            </Card>
+            <Box sx={{ display: discussionForumTab }}>
+              {courseForums.map((forum) => (
+                <Card sx={{ py: 3, px: 5, mt: 2 }}>
+                  <Typography variant='h6' sx={{ color: "primary.main" }}>{forum.title}</Typography>
+                  <Typography variant='subsubtitle'>Posted {forum.postedDate}</Typography>
+                </Card>
+              ))}
+            </Box>
 
-            <Card sx={{ py: 3, px: 5, mt: 2, display: progressReportTab }}>
-              <Typography variant='h5'>My Progress Report</Typography>
-            </Card>
+            <Box sx={{ display: progressReportTab }}>
+              <Grid container spacing={2}>
+                <Grid item xs="4">
+                  <Card sx={{ py: 4, px: 5, mt: 2 }}>
+                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+                      <EmojiPeopleIcon />
+                      <Typography variant='h6' sx={{ ml: 1 }}>Attendance Rate</Typography>
+                    </Box>
+                    <Typography variant="h5" sx={{ mt: 1, textAlign: "center", color: "primary.main" }}>{courseProgress.attendance}/{courseProgress.maxAttendance} ({(courseProgress.attendance / courseProgress.maxAttendance * 100).toFixed(1)}%)</Typography>
+                  </Card>
+                </Grid>
+                <Grid item xs="4">
+                  <Card sx={{ py: 4, px: 5, mt: 2 }}>
+                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+                      <QuizIcon />
+                      <Typography variant='h6' sx={{ ml: 1 }}>Quizzes Completed</Typography>
+                    </Box>
+                    <Typography variant="h5" sx={{ mt: 1, textAlign: "center", color: "primary.main" }}>{courseProgress.quizzes}/{courseProgress.maxQuizzes} ({(courseProgress.quizzes / courseProgress.maxQuizzes * 100).toFixed(1)}%)</Typography>
+                  </Card>
+                </Grid>
+                <Grid item xs="4">
+                  <Card sx={{ py: 4, px: 5, mt: 2 }}>
+                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+                      <WorkIcon />
+                      <Typography variant='h6' sx={{ ml: 1 }}>Homework Submitted</Typography>
+                    </Box>
+                    <Typography variant="h5" sx={{ mt: 1, textAlign: "center", color: "primary.main" }}>{courseProgress.homeworkSubmissions}/{courseProgress.homework} ({(courseProgress.homeworkSubmissions / courseProgress.homework * 100).toFixed(1)}%)</Typography>
+                  </Card>
+                </Grid>
+              </Grid>
+              {courseProgressReports.map((report) => (
+                <Card sx={{ py: 3, px: 5, mt: 2, display: "flex" }}>
+                  <Box>
+                    <Typography variant='h6'>{report.title}</Typography>
+                    <Typography variant='subsubtitle'>Uploaded {report.uploadDate}</Typography>
+                  </Box>
+                  <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
+                    <Button variant="contained">
+                      <DownloadIcon sx={{ mr:1 }}/>
+                      Download
+                    </Button>
+                  </Box>
+                </Card>
+              ))}
+            </Box>
 
           </Box>
         </Grid>
