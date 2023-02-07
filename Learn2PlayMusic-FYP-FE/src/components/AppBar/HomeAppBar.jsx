@@ -70,9 +70,10 @@ function DefaultAppBar({ role, handleResetRoles }) {
                         ))}
                       </Menu>
                     </Box>
-                    <IconButton disableRipple>
+                    <IconButton disableRipple onClick={() => {navigate("/")}}>
                       <img src="/l2pm_logo.png" width="150px" />
                     </IconButton>
+
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                       {pages.map((page) => (
                         <MenuItem key={page} onClick={() => handleRoute(page)}>

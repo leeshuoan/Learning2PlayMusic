@@ -113,7 +113,7 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                 </Menu>
               </Box>
 
-              <IconButton disableRipple>
+              <IconButton disableRipple onClick={() => {navigate("/home")}}>
               <img src="/l2pm_logo.png" width="150px" />
               </IconButton>
 

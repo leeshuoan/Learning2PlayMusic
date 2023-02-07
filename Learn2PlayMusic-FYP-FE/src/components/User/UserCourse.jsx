@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button } from '@mui/material'
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Breadcrumbs } from '@mui/material'
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
@@ -177,12 +177,13 @@ const UserCourse = () => {
 
   return (
     <Container maxWidth="xl" sx={{ width: 0.9 }}>
-      {/* might probably change to breadcrumb */}
-      <Box sx={{ mt: 3, display: "flex", "&:hover": { cursor: "pointer", color: "primary.main" }} } onClick={back}>
-        <ArrowBackIosIcon />
-        <Typography variant='subtitle1' sx={{ pl: 1, pr: 1 }} >Back to Home</Typography>
-        <HomeIcon />
-      </Box>
+      <Breadcrumbs aria-label="breadcrumb"  separator={<NavigateNextIcon fontSize="small" />} sx={{ mt:3 }}>
+        <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={back}>
+        <HomeIcon sx={{ mr:0.5 }} />
+          Home
+        </Link>
+        <Typography color="text.primary">Course</Typography>
+      </Breadcrumbs>
 
       <Card sx={{ py: 2, px: 3, mt: 2, display: "flex" }}>
         <img src={courseImg} style={{ maxWidth: 110, borderRadius: 10 }}></img>
@@ -328,7 +329,7 @@ const UserCourse = () => {
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", ml: "auto", color: "#707070" }}>
                       <Typography variant="body2">{forum.comments} comments</Typography>
-                      <ChatBubbleIcon sx={{ ml:1 }} fontSize="xs"/>
+                      <ChatBubbleIcon sx={{ ml: 1 }} fontSize="xs" />
                     </Box>
                   </Box>
                 </Card>
@@ -373,7 +374,7 @@ const UserCourse = () => {
                   </Box>
                   <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
                     <Button variant="contained">
-                      <DownloadIcon sx={{ mr:1 }}/>
+                      <DownloadIcon sx={{ mr: 1 }} />
                       Download
                     </Button>
                   </Box>

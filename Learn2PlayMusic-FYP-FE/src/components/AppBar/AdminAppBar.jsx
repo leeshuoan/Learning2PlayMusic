@@ -87,7 +87,7 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
                 </Menu>
               </Box>
 
-              <IconButton disableRipple>
+              <IconButton disableRipple onClick={() => {navigate("/admin")}}>
               <img src="/l2pm_logo.png" width="150px" />
               </IconButton>
 
