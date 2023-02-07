@@ -9,6 +9,7 @@ import QuizIcon from '@mui/icons-material/Quiz';
 import WorkIcon from '@mui/icons-material/Work';
 import DownloadIcon from '@mui/icons-material/Download';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import ListIcon from '@mui/icons-material/List';
 import courseImg from '../../assets/course.png'
 
 const UserCourse = () => {
@@ -225,23 +226,31 @@ const UserCourse = () => {
             ))}
           </Card>
 
-          <Card sx={{ py: 1, px: 1, display: { xs: "block", sm: "none" } }}>
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography variant='h5'>Menu</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
+          <Card sx={{ py: { sm: 1 }, px: 1, display: { xs: "block", sm: "none" } }}>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <Typography variant='h5' sx={{ color: "primary.main" }}>
+                    {selectedTab == "Class Materials" ? "Class Materials" :
+                      selectedTab == "Quizzes" ? "Quizzes" :
+                        selectedTab == "Homework" ? "Homework" :
+                          selectedTab == "Discussion Forum" ? "Discussion Forum" :
+                            selectedTab == "My Progress Report" ? "My Progress Report" : "Announcements"}
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
                 {menuOptions.map((option) => (
                   <MenuItem sx={{ mb: 0.5, color: selectedTab == option ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => selectTab(option)}>
                     <Typography variant='subtitle1'>{option}</Typography>
                   </MenuItem>
                 ))}
-            </AccordionDetails>
-          </Accordion>
+              </AccordionDetails>
+            </Accordion>
           </Card>
         </Grid>
 
@@ -306,12 +315,12 @@ const UserCourse = () => {
                       <Typography variant='body1' sx={{ color: "primary.main" }}>{quiz.title}</Typography>
                     </Grid>
                     <Grid item xs="12" sm="3">
-                      <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block"} }}>{quiz.score}</Typography>
-                      <Typography variant='body1' sx={{ display: { xs: "block", sm: "none"}  }}>Score: {quiz.score}</Typography>
+                      <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{quiz.score}</Typography>
+                      <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Score: {quiz.score}</Typography>
                     </Grid>
                     <Grid item xs="12" sm="3">
-                      <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block"} }}>{quiz.attempts}/{quiz.maxAttempts}</Typography>
-                      <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "block", sm: "none"} }}>Attempts: {quiz.attempts}/{quiz.maxAttempts}</Typography>
+                      <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block" } }}>{quiz.attempts}/{quiz.maxAttempts}</Typography>
+                      <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "block", sm: "none" } }}>Attempts: {quiz.attempts}/{quiz.maxAttempts}</Typography>
                     </Grid>
                   </Grid>
                 </Card>
@@ -319,7 +328,7 @@ const UserCourse = () => {
             </Box>
 
             <Box sx={{ display: homeworkTab }}>
-              <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" }}}>
+              <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
                 <Grid item xs="4">
                   <Typography variant='subtitle2'>HOMEWORK TITLE</Typography>
                 </Grid>
@@ -342,15 +351,15 @@ const UserCourse = () => {
                       </Grid>
                       <Grid item xs="12" sm="3">
                         <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.dueDate}</Typography>
-                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none"} }}>Due Date: {homework.dueDate}</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Due Date: {homework.dueDate}</Typography>
                       </Grid>
                       <Grid item xs="12" sm="3">
                         <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.score}</Typography>
-                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none"} }}>Score: {homework.score}</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Score: {homework.score}</Typography>
                       </Grid>
                       <Grid item xs="12" sm="2">
                         <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.submission} FILE</Typography>
-                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none"}, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.submission} FILE</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.submission} FILE</Typography>
                       </Grid>
                     </Grid>
                   </Card>
