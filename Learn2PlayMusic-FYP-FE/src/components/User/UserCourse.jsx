@@ -288,7 +288,7 @@ const UserCourse = () => {
             </Box>
 
             <Box sx={{ display: quizTab }}>
-              <Grid container spacing={2} sx={{ px: 4, mt: 2 }}>
+              <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
                 <Grid item xs="6">
                   <Typography variant='subtitle2'>QUIZ TITLE</Typography>
                 </Grid>
@@ -301,15 +301,17 @@ const UserCourse = () => {
               </Grid>
               {courseQuizzes.map((quiz) => (
                 <Card sx={{ py: 3, px: 4, mt: 2 }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs="6">
+                  <Grid container spacing={2} >
+                    <Grid item xs="12" sm="6">
                       <Typography variant='body1' sx={{ color: "primary.main" }}>{quiz.title}</Typography>
                     </Grid>
-                    <Grid item xs="3">
-                      <Typography variant='body1' sx={{ textAlign: "center" }}>{quiz.score}</Typography>
+                    <Grid item xs="12" sm="3">
+                      <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block"} }}>{quiz.score}</Typography>
+                      <Typography variant='body1' sx={{ display: { xs: "block", sm: "none"}  }}>Score: {quiz.score}</Typography>
                     </Grid>
-                    <Grid item xs="3">
-                      <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '' }}>{quiz.attempts}/{quiz.maxAttempts}</Typography>
+                    <Grid item xs="12" sm="3">
+                      <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block"} }}>{quiz.attempts}/{quiz.maxAttempts}</Typography>
+                      <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "block", sm: "none"} }}>Attempts: {quiz.attempts}/{quiz.maxAttempts}</Typography>
                     </Grid>
                   </Grid>
                 </Card>
@@ -317,7 +319,7 @@ const UserCourse = () => {
             </Box>
 
             <Box sx={{ display: homeworkTab }}>
-              <Grid container spacing={2} sx={{ px: 4, mt: 2 }}>
+              <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" }}}>
                 <Grid item xs="4">
                   <Typography variant='subtitle2'>HOMEWORK TITLE</Typography>
                 </Grid>
@@ -335,17 +337,20 @@ const UserCourse = () => {
                 courseHomework.map((homework) => (
                   <Card sx={{ py: 3, px: 4, mt: 2 }}>
                     <Grid container spacing={2}>
-                      <Grid item xs="4">
+                      <Grid item xs="12" sm="4">
                         <Typography variant='body1' sx={{ color: "primary.main" }}>{homework.title}</Typography>
                       </Grid>
-                      <Grid item xs="3">
-                        <Typography variant='body1' sx={{ textAlign: "center" }}>{homework.dueDate}</Typography>
+                      <Grid item xs="12" sm="3">
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.dueDate}</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none"} }}>Due Date: {homework.dueDate}</Typography>
                       </Grid>
-                      <Grid item xs="3">
-                        <Typography variant='body1' sx={{ textAlign: "center" }}>{homework.score}</Typography>
+                      <Grid item xs="12" sm="3">
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.score}</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none"} }}>Score: {homework.score}</Typography>
                       </Grid>
-                      <Grid item xs="2">
-                        <Typography variant='body1' sx={{ textAlign: "center", color: homework.submission == 0 ? 'grey' : '' }}>{homework.submission} FILE</Typography>
+                      <Grid item xs="12" sm="2">
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.submission} FILE</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none"}, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.submission} FILE</Typography>
                       </Grid>
                     </Grid>
                   </Card>
