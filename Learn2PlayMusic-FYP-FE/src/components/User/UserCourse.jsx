@@ -177,15 +177,15 @@ const UserCourse = () => {
 
   return (
     <Container maxWidth="xl" sx={{ width: 0.9 }}>
-      <Breadcrumbs aria-label="breadcrumb"  separator={<NavigateNextIcon fontSize="small" />} sx={{ mt:3 }}>
+      <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
         <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={back}>
-        <HomeIcon sx={{ mr:0.5 }} />
+          <HomeIcon sx={{ mr: 0.5 }} />
           Home
         </Link>
         <Typography color="text.primary">Course</Typography>
       </Breadcrumbs>
 
-      <Card sx={{ py: 2, px: 3, mt: 2, display: "flex" }}>
+      <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "flex" } }}>
         <img src={courseImg} style={{ maxWidth: 110, borderRadius: 10 }}></img>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box sx={{ ml: 2, mb: 1 }}>
@@ -201,14 +201,47 @@ const UserCourse = () => {
         </Box>
       </Card>
 
+      <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "flex", sm: "none" } }}>
+        <img src={courseImg} style={{ maxWidth: 110, borderRadius: 10 }}></img>
+        <Box sx={{ display: "", alignItems: "center" }}>
+          <Box sx={{ ml: 2, mb: 1 }}>
+            <Typography variant='h5' sx={{ color: "primary.main" }}>{course.title}</Typography>
+            <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.date}</Typography>
+          </Box>
+          <Box sx={{ ml: 2, mt: 1 }}>
+            <Typography variant='subtitle1' >{course.teacher}</Typography>
+            <Typography variant='body2' >Teacher</Typography>
+          </Box>
+        </Box>
+      </Card>
+
       <Grid container spacing={2} sx={{ pt: 2 }}>
         <Grid item xs={12} md={3}>
-          <Card sx={{ py: 2, px: 3, mt: 2 }}>
+          <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}>
             {menuOptions.map((option) => (
               <MenuItem sx={{ mb: 1, color: selectedTab == option ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => selectTab(option)}>
                 <Typography variant='subtitle1'>{option}</Typography>
               </MenuItem>
             ))}
+          </Card>
+
+          <Card sx={{ py: 1, px: 1, display: { xs: "block", sm: "none" } }}>
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography variant='h5'>Menu</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                {menuOptions.map((option) => (
+                  <MenuItem sx={{ mb: 0.5, color: selectedTab == option ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => selectTab(option)}>
+                    <Typography variant='subtitle1'>{option}</Typography>
+                  </MenuItem>
+                ))}
+            </AccordionDetails>
+          </Accordion>
           </Card>
         </Grid>
 
@@ -338,8 +371,8 @@ const UserCourse = () => {
 
             <Box sx={{ display: progressReportTab }}>
               <Grid container spacing={2}>
-                <Grid item xs="4">
-                  <Card sx={{ py: 4, px: 5, mt: 2 }}>
+                <Grid item xs="12" sm="4">
+                  <Card sx={{ py: { xs: 2, sm: 4 }, px: 5, mt: { xs: 0, sm: 2 } }}>
                     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
                       <EmojiPeopleIcon />
                       <Typography variant='h6' sx={{ ml: 1 }}>Attendance Rate</Typography>
@@ -347,8 +380,8 @@ const UserCourse = () => {
                     <Typography variant="h5" sx={{ mt: 1, textAlign: "center", color: "primary.main" }}>{courseProgress.attendance}/{courseProgress.maxAttendance} ({(courseProgress.attendance / courseProgress.maxAttendance * 100).toFixed(1)}%)</Typography>
                   </Card>
                 </Grid>
-                <Grid item xs="4">
-                  <Card sx={{ py: 4, px: 5, mt: 2 }}>
+                <Grid item xs="12" sm="4">
+                  <Card sx={{ py: { xs: 2, sm: 4 }, px: 5, mt: { xs: 0, sm: 2 } }}>
                     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
                       <QuizIcon />
                       <Typography variant='h6' sx={{ ml: 1 }}>Quizzes Completed</Typography>
@@ -356,8 +389,8 @@ const UserCourse = () => {
                     <Typography variant="h5" sx={{ mt: 1, textAlign: "center", color: "primary.main" }}>{courseProgress.quizzes}/{courseProgress.maxQuizzes} ({(courseProgress.quizzes / courseProgress.maxQuizzes * 100).toFixed(1)}%)</Typography>
                   </Card>
                 </Grid>
-                <Grid item xs="4">
-                  <Card sx={{ py: 4, px: 5, mt: 2 }}>
+                <Grid item xs="12" sm="4">
+                  <Card sx={{ py: { xs: 2, sm: 4 }, px: 5, mt: { xs: 0, sm: 2 } }}>
                     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
                       <WorkIcon />
                       <Typography variant='h6' sx={{ ml: 1 }}>Homework Submitted</Typography>
