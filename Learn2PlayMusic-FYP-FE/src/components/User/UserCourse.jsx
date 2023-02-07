@@ -8,6 +8,7 @@ import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import QuizIcon from '@mui/icons-material/Quiz';
 import WorkIcon from '@mui/icons-material/Work';
 import DownloadIcon from '@mui/icons-material/Download';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import courseImg from '../../assets/course.png'
 
 const UserCourse = () => {
@@ -105,10 +106,12 @@ const UserCourse = () => {
     {
       title: "Do Pianists have longer fingers?",
       postedDate: "31 Jan 2023",
+      comments: 4
     },
     {
       title: "How are you coping with your piano lessons so far?",
       postedDate: "31 Jan 2023",
+      comments: 8
     }
   ]
 
@@ -174,9 +177,10 @@ const UserCourse = () => {
 
   return (
     <Container maxWidth="xl" sx={{ width: 0.9 }}>
-      <Box sx={{ mt: 3, display: "flex", "&:hover": { cursor: "pointer", color: "primary.main" } }} onClick={back}>
+      {/* might probably change to breadcrumb */}
+      <Box sx={{ mt: 3, display: "flex", "&:hover": { cursor: "pointer", color: "primary.main" }} } onClick={back}>
         <ArrowBackIosIcon />
-        <Typography variant='subtitle1' sx={{ pl: 1, pr: 1 }}>Back to Home</Typography>
+        <Typography variant='subtitle1' sx={{ pl: 1, pr: 1 }} >Back to Home</Typography>
         <HomeIcon />
       </Box>
 
@@ -317,8 +321,16 @@ const UserCourse = () => {
             <Box sx={{ display: discussionForumTab }}>
               {courseForums.map((forum) => (
                 <Card sx={{ py: 3, px: 5, mt: 2 }}>
-                  <Typography variant='h6' sx={{ color: "primary.main" }}>{forum.title}</Typography>
-                  <Typography variant='subsubtitle'>Posted {forum.postedDate}</Typography>
+                  <Box sx={{ display: "flex" }}>
+                    <Box>
+                      <Typography variant='h6' sx={{ color: "primary.main" }}>{forum.title}</Typography>
+                      <Typography variant='subsubtitle'>Posted {forum.postedDate}</Typography>
+                    </Box>
+                    <Box sx={{ display: "flex", alignItems: "center", ml: "auto", color: "#707070" }}>
+                      <Typography variant="body2">{forum.comments} comments</Typography>
+                      <ChatBubbleIcon sx={{ ml:1 }} fontSize="xs"/>
+                    </Box>
+                  </Box>
                 </Card>
               ))}
             </Box>

@@ -76,7 +76,7 @@ const typography = {
   subsubtitle: {
     lineHeight: 1.5,
     fontSize: pxToRem(12),
-    color: "#BBBBBB"
+    color: "#707070"
   },
   body1: {
     lineHeight: 1.5,

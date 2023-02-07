@@ -1,7 +1,7 @@
 import { Typography, Link } from "@mui/material";
 
 const Unauthorized = ({userRole}) => {
-  let redirectLink = "/"
+  let redirectLink = ""
 
   console.log(userRole)
   if (userRole === "Admin") {

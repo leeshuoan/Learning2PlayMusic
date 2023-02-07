@@ -25,15 +25,11 @@ export default function ForgotPassword({ handleSetUserInfo }) {
     }
 
     if (nextStage) {
-      console.log("test")
-      console.log(username)
-      console.log(data.get("code"))
-      console.log(data.get("password"))
       Auth.forgotPasswordSubmit(username, data.get("code"), data.get("password"))
         .then((data) => {
           console.log(data)
           toast.success("Password has been successfully changed");
-          navigate("/signin")
+          navigate("/")
         })
         .catch(err => {
           console.log(err)
@@ -110,10 +106,10 @@ export default function ForgotPassword({ handleSetUserInfo }) {
               required
               fullWidth
               id="password"
-              label="New Password"
               name="password"
+              label="New Password"
+              type="password"
               autoComplete="new-password"
-              autoFocus
               sx={{ display: nextStage ? "block" : "none" }}
             />
             <Grid container sx={{ pl: 1, mt: 1, mb: 2 }}>
