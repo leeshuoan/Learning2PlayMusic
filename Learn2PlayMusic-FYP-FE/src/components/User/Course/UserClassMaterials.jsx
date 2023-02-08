@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Breadcrumbs } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -15,7 +15,7 @@ const UserClassMaterials = () => {
 
   const courseMaterials = [
     {
-      Id: 1,
+      id: 1,
       title: "Lesson 2",
       materials: [
         {
@@ -52,8 +52,14 @@ const UserClassMaterials = () => {
     },
   ]
 
+  useEffect(() => {
+    console.log("selectedTab:" + selectedTab)
+    console.log("selectedMaterial" + selectedMaterial)
+  })
+
   const navigate = useNavigate()
-  const [selectedTab, setSelectedTab] = useState()
+  const [selectedTab, setSelectedTab] = useState(1)
+  const [selectedMaterial, setSelectedMaterial] = useState(1)
 
   return (
     <Container maxWidth="xl" sx={{ width: 0.9 }}>
@@ -101,9 +107,9 @@ const UserClassMaterials = () => {
       <Grid container spacing={2} sx={{ pt: 2 }}>
         <Grid item xs={12} md={3}>
           <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}>
-            {courseMaterials.map((material) => (
-              <MenuItem sx={{ mb: 1, color: selectedTab == material.Id ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => setSelectedTab(material.Id)}>
-                <Typography variant='subtitle1'>{material.title}</Typography>
+            {courseMaterials.map((courseMaterial) => (
+              <MenuItem sx={{ mb: 1, color: selectedTab == courseMaterial.id ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => setSelectedTab(courseMaterial.id)}>
+                <Typography variant='subtitle1'>{courseMaterial.title}</Typography>
               </MenuItem>
             ))}
           </Card>
@@ -117,18 +123,14 @@ const UserClassMaterials = () => {
               >
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <Typography variant='h5' sx={{ color: "primary.main" }}>
-                    {selectedTab == "Class Materials" ? "Class Materials" :
-                      selectedTab == "Quizzes" ? "Quizzes" :
-                        selectedTab == "Homework" ? "Homework" :
-                          selectedTab == "Discussion Forum" ? "Discussion Forum" :
-                            selectedTab == "My Progress Report" ? "My Progress Report" : "Announcements"}
+                    {selectedTab}
                   </Typography>
                 </Box>
               </AccordionSummary>
               <AccordionDetails>
-                {courseMaterials.map((material) => (
-                  <MenuItem sx={{ mb: 0.5, color: selectedTab == material.Id ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => setSelectedTab(material.Id)}>
-                    <Typography variant='subtitle1'>{material.title}</Typography>
+                {courseMaterials.map((courseMaterial) => (
+                  <MenuItem sx={{ mb: 0.5, color: selectedTab == courseMaterial.id ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => setSelectedTab(courseMaterial.id)}>
+                    <Typography variant='subtitle1'>{courseMaterial.title}</Typography>
                   </MenuItem>
                 ))}
               </AccordionDetails>
@@ -136,6 +138,17 @@ const UserClassMaterials = () => {
           </Card>
         </Grid>
 
+        <Grid item xs={12} md={9}>
+          {courseMaterials.map((courseMaterial) => (
+            <Box sx={{ display: courseMaterial.id == selectedTab  ? "block" : "none" }}>
+              {courseMaterial.materials.map((material) => (
+                <Card sx={{ py: 3, px: 5, mt: 2 }} >
+                  <Typography variant='h6' >{courseMaterial.title} {material.materialTitle}</Typography>
+                </Card>
+              ))}
+            </Box>
+          ))}
+        </Grid>
 
       </Grid>
     </Container>

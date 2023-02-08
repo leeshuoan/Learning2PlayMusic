@@ -253,8 +253,8 @@ const UserCourse = () => {
                           <Box>
                             <Typography variant='subtitle1'>{item.materialTitle}</Typography>
                             <Typography variant='subsubtitle' sx={{ display: "flex", alignItems: "center" }}>
-                              <InsertLinkIcon sx={{ display: item.materialType == "Link" ? "block": "none", mr: 0.5 }} />
-                              <ArticleIcon sx={{ display: item.materialType == "PDF" ? "block": "none", mr: 0.5 }} />
+                              <InsertLinkIcon fontSize="small" sx={{ display: item.materialType == "Link" ? "block": "none", mr: 0.5 }} />
+                              <ArticleIcon fontSize="small" sx={{ display: item.materialType == "PDF" ? "block": "none", mr: 0.5 }} />
                               {item.materialType == "PDF" ? "PDF Document" : item.materialType == "Link" ? "External Link" : ""}
                             </Typography>
                           </Box>
