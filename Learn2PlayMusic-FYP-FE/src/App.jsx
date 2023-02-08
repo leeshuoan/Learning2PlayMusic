@@ -94,7 +94,7 @@ function App() {
             <Route path="announcements" element={<Announcements />} />
             <Route path="course/:courseid">
               <Route index element={<UserCourse />} />
-              <Route path="classmaterials/:materialid" element={<UserClassMaterials />} />
+              <Route path="materials/:categoryId/:materialId" element={<UserClassMaterials />} />
             </Route>
           </Route>
           <Route path="resetpassword" element={<ForgotPassword />}></Route>

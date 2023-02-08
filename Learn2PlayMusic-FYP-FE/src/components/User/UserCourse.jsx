@@ -15,6 +15,7 @@ import courseImg from '../../assets/course.png'
 
 const UserCourse = () => {
   const course = {
+    id: 1,
     title: "Grade 1 Piano",
     date: "21 Mar 2023",
     teacher: "Miss Felicia Ng"
@@ -156,7 +157,7 @@ const UserCourse = () => {
           <HomeIcon sx={{ mr: 0.5 }} />
           Home
         </Link>
-        <Typography color="text.primary">Course</Typography>
+        <Typography color="text.primary">{course.title}</Typography>
       </Breadcrumbs>
 
       <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "flex" } }}>
@@ -248,18 +249,18 @@ const UserCourse = () => {
                       <Typography variant='h5'>{courseMaterial.title}</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                      {courseMaterial.materials.map((item) => (
+                      {courseMaterial.materials.map((material) => (
                         <Card variant='outlined' sx={{ boxShadow: "none", display: "flex", mb: 2, p: 2 }}>
                           <Box>
-                            <Typography variant='subtitle1'>{item.materialTitle}</Typography>
+                            <Typography variant='subtitle1'>{material.materialTitle}</Typography>
                             <Typography variant='subsubtitle' sx={{ display: "flex", alignItems: "center" }}>
-                              <InsertLinkIcon fontSize="small" sx={{ display: item.materialType == "Link" ? "block": "none", mr: 0.5 }} />
-                              <ArticleIcon fontSize="small" sx={{ display: item.materialType == "PDF" ? "block": "none", mr: 0.5 }} />
-                              {item.materialType == "PDF" ? "PDF Document" : item.materialType == "Link" ? "External Link" : ""}
+                              <InsertLinkIcon fontSize="small" sx={{ display: material.materialType == "Link" ? "block": "none", mr: 0.5 }} />
+                              <ArticleIcon fontSize="small" sx={{ display: material.materialType == "PDF" ? "block": "none", mr: 0.5 }} />
+                              {material.materialType == "PDF" ? "PDF Document" : material.materialType == "Link" ? "External Link" : ""}
                             </Typography>
                           </Box>
                           <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
-                            <Button variant="contained">View</Button>
+                            <Button variant="contained" onClick={() => {navigate("materials/" + courseMaterial.id + "/" + material.materialId)}}>View</Button>
                           </Box>
                         </Card>
                       ))}

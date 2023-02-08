@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
 import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Breadcrumbs } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import courseImg from '../../../assets/course.png'
 
 const UserClassMaterials = () => {
   const course = {
+    id: 1,
     title: "Grade 1 Piano",
     date: "21 Mar 2023",
     teacher: "Miss Felicia Ng"
@@ -52,14 +54,22 @@ const UserClassMaterials = () => {
     },
   ]
 
-  useEffect(() => {
-    console.log("selectedTab:" + selectedTab)
-    console.log("selectedMaterial" + selectedMaterial)
-  })
-
   const navigate = useNavigate()
-  const [selectedTab, setSelectedTab] = useState(1)
-  const [selectedMaterial, setSelectedMaterial] = useState(1)
+  const { categoryId } = useParams()
+  const { materialId } = useParams()
+  const [selectedTab, setSelectedTab] = useState(categoryId)
+  const [selectedMaterial, setSelectedMaterial] = useState(materialId)
+
+  const changeTab = (id) => {
+    setSelectedTab(id)
+    setSelectedMaterial(1)
+    navigate(`/home/course/${course.id}/materials/${id}/1`)
+  }
+
+  const changeMaterial = (id) => {
+    setSelectedMaterial(id)
+    navigate(`/home/course/${course.id}/materials/${selectedTab}/${id}`)
+  }
 
   return (
     <Container maxWidth="xl" sx={{ width: 0.9 }}>
@@ -69,7 +79,7 @@ const UserClassMaterials = () => {
           Home
         </Link>
         <Link underline="hover" color="inherit" onClick={() => { navigate('/home/course/1') }}>
-          Course
+          {course.title}
         </Link>
         <Typography color="text.primary">Class Materials</Typography>
       </Breadcrumbs>
@@ -108,7 +118,7 @@ const UserClassMaterials = () => {
         <Grid item xs={12} md={3}>
           <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}>
             {courseMaterials.map((courseMaterial) => (
-              <MenuItem sx={{ mb: 1, color: selectedTab == courseMaterial.id ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => setSelectedTab(courseMaterial.id)}>
+              <MenuItem sx={{ mb: 1, color: selectedTab == courseMaterial.id ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => changeTab(courseMaterial.id)}>
                 <Typography variant='subtitle1'>{courseMaterial.title}</Typography>
               </MenuItem>
             ))}
@@ -129,7 +139,7 @@ const UserClassMaterials = () => {
               </AccordionSummary>
               <AccordionDetails>
                 {courseMaterials.map((courseMaterial) => (
-                  <MenuItem sx={{ mb: 0.5, color: selectedTab == courseMaterial.id ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => setSelectedTab(courseMaterial.id)}>
+                  <MenuItem sx={{ mb: 0.5, color: selectedTab == courseMaterial.id ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => changeTab(courseMaterial.id)}>
                     <Typography variant='subtitle1'>{courseMaterial.title}</Typography>
                   </MenuItem>
                 ))}
@@ -140,10 +150,34 @@ const UserClassMaterials = () => {
 
         <Grid item xs={12} md={9}>
           {courseMaterials.map((courseMaterial) => (
-            <Box sx={{ display: courseMaterial.id == selectedTab  ? "block" : "none" }}>
+            <Box sx={{ display: courseMaterial.id == categoryId ? "block" : "none" }}>
               {courseMaterial.materials.map((material) => (
-                <Card sx={{ py: 3, px: 5, mt: 2 }} >
-                  <Typography variant='h6' >{courseMaterial.title} {material.materialTitle}</Typography>
+                <Card sx={{ py: 3, px: 5, mt: 2, display: material.materialId == selectedMaterial ? "block" : "none" }}>
+                  <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <Typography variant='subsubtitle'>{selectedMaterial}/{courseMaterial.materials.length}</Typography>
+                  </Box>
+                  <Grid container>
+                    <Grid item xs={4} sx={{ display: "flex", justifyContent: "flex-start", pl: 3 }}>
+                      <Button variant="contained" size="small" sx={{ display: selectedMaterial == 1 ? "none" : "block" }} onClick={() => changeMaterial(selectedMaterial - 1)}>PREVIOUS</Button>
+                      <Button variant="contained" size="small" sx={{ display: selectedMaterial == 1 ? "block" : "none" }} disabled>PREVIOUS</Button>
+                    </Grid>
+                    <Grid item xs={4} sx={{ textAlign: "center" }}>
+                      <Typography variant='h6'>{material.materialTitle}</Typography>
+                    </Grid>
+                    <Grid item xs={4} sx={{ display: "flex", justifyContent: "flex-end", pr: 3 }}>
+                      <Button variant="contained" size="small" sx={{ display: selectedMaterial == courseMaterial.materials.length ? "none" : "block" }} onClick={() => changeMaterial(selectedMaterial + 1)}>NEXT</Button>
+                      <Button variant="contained" size="small" sx={{ display: selectedMaterial == courseMaterial.materials.length ? "block" : "none" }} disabled>NEXT</Button>
+                    </Grid>
+                  </Grid>
+                  <Card variant='outlined' sx={{ py: material.materialType == "Link" ? 2 : 1, px: 2, mt: 2, boxShadow: "none"  }}>
+                    <embed src=
+                      "https://media.geeksforgeeks.org/wp-content/cdn-uploads/20210101201653/PDF.pdf"
+                      width="100%"
+                      height="700"
+                      type="application/pdf"
+                      style={{ display: material.materialType == "PDF" ? "block" : "none" }} />
+                    <Link style={{ display: material.materialType == "Link" ? "flex" : "none" }} href={material.materialUrl} target="_blank"><InsertLinkIcon sx={{mr: 0.5}}/>{material.materialTitle}</Link>
+                  </Card>
                 </Card>
               ))}
             </Box>
