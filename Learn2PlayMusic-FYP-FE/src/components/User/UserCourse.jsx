@@ -9,7 +9,8 @@ import QuizIcon from '@mui/icons-material/Quiz';
 import WorkIcon from '@mui/icons-material/Work';
 import DownloadIcon from '@mui/icons-material/Download';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import ListIcon from '@mui/icons-material/List';
+import ArticleIcon from '@mui/icons-material/Article';
+import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import courseImg from '../../assets/course.png'
 
 const UserCourse = () => {
@@ -34,27 +35,37 @@ const UserCourse = () => {
 
   const courseMaterials = [
     {
+      id: 1,
       title: "Lesson 2",
       materials: [
         {
+          materialId: 1,
           materialTitle: "Exercise 2",
+          materialType: "PDF",
           materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
         {
+          materialId: 2,
           materialTitle: "Exercise 1",
+          materialType: "Link",
           materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
       ]
     },
     {
+      id: 2,
       title: "Lesson 1",
       materials: [
         {
+          materialId: 1,
           materialTitle: "Exercise 2",
+          materialType: "PDF",
           materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
         {
+          materialId: 2,
           materialTitle: "Exercise 1",
+          materialType: "Link",
           materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
       ]
@@ -135,51 +146,13 @@ const UserCourse = () => {
 
   const navigate = useNavigate()
   const [selectedTab, setSelectedTab] = useState("Announcements")
-  const [announcementTab, setAnnouncementTab] = useState("block")
-  const [classMaterialTab, setClassMaterialTab] = useState("none")
-  const [quizTab, setQuizTab] = useState("none")
-  const [homeworkTab, setHomeworkTab] = useState("none")
-  const [discussionForumTab, setDiscussionForumTab] = useState("none")
-  const [progressReportTab, setProgressReportTab] = useState("none")
 
   const menuOptions = ["Announcements", "Class Materials", "Quizzes", "Homework", "Discussion Forum", "My Progress Report"]
-
-  const closeTabs = () => {
-    setAnnouncementTab("none")
-    setClassMaterialTab("none")
-    setQuizTab("none")
-    setHomeworkTab("none")
-    setDiscussionForumTab("none")
-    setProgressReportTab("none")
-  }
-
-  const selectTab = (tab) => {
-    closeTabs()
-    setSelectedTab(tab)
-    if (tab === "Announcements") {
-      setAnnouncementTab("block")
-    } else if (tab === "Class Materials") {
-      setClassMaterialTab("block")
-    } else if (tab === "Quizzes") {
-      setQuizTab("block")
-    } else if (tab === "Homework") {
-      setHomeworkTab("block")
-    } else if (tab === "Discussion Forum") {
-      setDiscussionForumTab("block")
-    } else if (tab === "My Progress Report") {
-      setProgressReportTab("block")
-    }
-  }
-
-  const back = () => {
-    navigate('/home')
-    return;
-  }
 
   return (
     <Container maxWidth="xl" sx={{ width: 0.9 }}>
       <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
-        <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={back}>
+        <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={() => {  navigate('/home') }}>
           <HomeIcon sx={{ mr: 0.5 }} />
           Home
         </Link>
@@ -220,7 +193,7 @@ const UserCourse = () => {
         <Grid item xs={12} md={3}>
           <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}>
             {menuOptions.map((option) => (
-              <MenuItem sx={{ mb: 1, color: selectedTab == option ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => selectTab(option)}>
+              <MenuItem sx={{ mb: 1, color: selectedTab == option ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => setSelectedTab(option)}>
                 <Typography variant='subtitle1'>{option}</Typography>
               </MenuItem>
             ))}
@@ -235,17 +208,13 @@ const UserCourse = () => {
               >
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <Typography variant='h5' sx={{ color: "primary.main" }}>
-                    {selectedTab == "Class Materials" ? "Class Materials" :
-                      selectedTab == "Quizzes" ? "Quizzes" :
-                        selectedTab == "Homework" ? "Homework" :
-                          selectedTab == "Discussion Forum" ? "Discussion Forum" :
-                            selectedTab == "My Progress Report" ? "My Progress Report" : "Announcements"}
+                    {selectedTab}
                   </Typography>
                 </Box>
               </AccordionSummary>
               <AccordionDetails>
                 {menuOptions.map((option) => (
-                  <MenuItem sx={{ mb: 0.5, color: selectedTab == option ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => selectTab(option)}>
+                  <MenuItem sx={{ mb: 0.5, color: selectedTab == option ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => setSelectedTab(option)}>
                     <Typography variant='subtitle1'>{option}</Typography>
                   </MenuItem>
                 ))}
@@ -256,7 +225,7 @@ const UserCourse = () => {
 
         <Grid item xs={12} md={9}>
           <Box>
-            <Card sx={{ py: 3, px: 5, mt: 2, display: announcementTab }}>
+            <Card sx={{ py: 3, px: 5, mt: 2, display: selectedTab=="Announcements" ? "block": "none" }}>
               <Typography variant='h5'>Class Announcements</Typography>
               {courseAnnouncements.map((announcement) => (
                 <Card variant='outlined' sx={{ boxShadow: "none", mt: 2, p: 2 }}>
@@ -267,8 +236,8 @@ const UserCourse = () => {
               ))}
             </Card>
 
-            <Box sx={{ display: classMaterialTab }}>
-              {courseMaterials.map((material) => (
+            <Box sx={{ display: selectedTab=="Class Materials" ? "block": "none" }}>
+              {courseMaterials.map((courseMaterial) => (
                 <Card sx={{ py: 1, px: 3, mt: 2 }}>
                   <Accordion>
                     <AccordionSummary
@@ -276,14 +245,18 @@ const UserCourse = () => {
                       aria-controls="panel1a-content"
                       id="panel1a-header"
                     >
-                      <Typography variant='h5'>{material.title}</Typography>
+                      <Typography variant='h5'>{courseMaterial.title}</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                      {material.materials.map((item) => (
+                      {courseMaterial.materials.map((item) => (
                         <Card variant='outlined' sx={{ boxShadow: "none", display: "flex", mb: 2, p: 2 }}>
                           <Box>
-                            <Typography variant='subtitle1' sx={{ pb: 1 }}>{item.materialTitle}</Typography>
-                            <Link href={item.materialUrl} target="_blank">Download PDF</Link>
+                            <Typography variant='subtitle1'>{item.materialTitle}</Typography>
+                            <Typography variant='subsubtitle' sx={{ display: "flex", alignItems: "center" }}>
+                              <InsertLinkIcon sx={{ display: item.materialType == "Link" ? "block": "none", mr: 0.5 }} />
+                              <ArticleIcon sx={{ display: item.materialType == "PDF" ? "block": "none", mr: 0.5 }} />
+                              {item.materialType == "PDF" ? "PDF Document" : item.materialType == "Link" ? "External Link" : ""}
+                            </Typography>
                           </Box>
                           <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
                             <Button variant="contained">View</Button>
@@ -296,7 +269,7 @@ const UserCourse = () => {
               ))}
             </Box>
 
-            <Box sx={{ display: quizTab }}>
+            <Box sx={{ display: selectedTab=="Quizzes" ? "block": "none" }}>
               <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
                 <Grid item xs="6">
                   <Typography variant='subtitle2'>QUIZ TITLE</Typography>
@@ -327,7 +300,7 @@ const UserCourse = () => {
               ))}
             </Box>
 
-            <Box sx={{ display: homeworkTab }}>
+            <Box sx={{ display: selectedTab=="Homework" ? "block": "none" }}>
               <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
                 <Grid item xs="4">
                   <Typography variant='subtitle2'>HOMEWORK TITLE</Typography>
@@ -366,10 +339,10 @@ const UserCourse = () => {
                 ))}
             </Box>
 
-            <Box sx={{ display: discussionForumTab }}>
+            <Box sx={{ display: selectedTab=="Discussion Forum" ? "block": "none" }}>
               {courseForums.map((forum) => (
                 <Card sx={{ py: 3, px: 5, mt: 2 }}>
-                  <Box sx={{ display: "flex" }}>
+                  <Box sx={{ display: {sm: "flex"} }}>
                     <Box>
                       <Typography variant='h6' sx={{ color: "primary.main" }}>{forum.title}</Typography>
                       <Typography variant='subsubtitle'>Posted {forum.postedDate}</Typography>
@@ -383,7 +356,7 @@ const UserCourse = () => {
               ))}
             </Box>
 
-            <Box sx={{ display: progressReportTab }}>
+            <Box sx={{ display: selectedTab=="My Progress Report" ? "block": "none" }}>
               <Grid container spacing={2}>
                 <Grid item xs="12" sm="4">
                   <Card sx={{ py: { xs: 2, sm: 4 }, px: 5, mt: { xs: 0, sm: 2 } }}>
