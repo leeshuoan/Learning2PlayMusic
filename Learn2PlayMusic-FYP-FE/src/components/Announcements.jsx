@@ -32,7 +32,7 @@ const Announcements = () => {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ width: 0.9 }}>
+    <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
         <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={back}>
           <HomeIcon sx={{ mr: 0.5 }} />

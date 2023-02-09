@@ -32,7 +32,7 @@ function DefaultAppBar({ role, handleResetRoles }) {
             : role === "user" ? <UserAppBar handleResetRoles={handleResetRoles} />
               :
               <AppBar position="static" sx={{ bgcolor: theme.palette.background.paper }}>
-                <Container maxWidth="xl" sx={{ width: 0.9 }}>
+                <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
                   <Toolbar disableGutters style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                       <IconButton

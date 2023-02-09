@@ -32,13 +32,9 @@ exports.handler = async function (event, context) {
 
     try {
         let result = await ddb.query(params).promise();
-        console.log(result)
         if (result.Items.length > 0) {
-            console.log(result.Items)
             const userRole = result.Items[0]["UserRole"]["S"];
             const name = result.Items[0]["UserAlias"]["S"];
-            console.log("userRole = " + userRole);
-            console.log("name = " + name)
             event.response.claimsOverrideDetails.claimsToAddOrOverride.userRole = userRole;
             event.response.claimsOverrideDetails.claimsToAddOrOverride.name = name;
         }

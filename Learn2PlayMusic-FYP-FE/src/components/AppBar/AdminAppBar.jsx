@@ -46,7 +46,7 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
     <>
       {
         <AppBar position="static" sx={{ bgcolor: theme.palette.background.paper }}>
-          <Container maxWidth="xl" sx={{ width: 0.9 }}>
+          <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
             <Toolbar disableGutters style={{ display: 'flex', justifyContent: 'space-between' }}>
 
               {/* MOBILE NAV */}

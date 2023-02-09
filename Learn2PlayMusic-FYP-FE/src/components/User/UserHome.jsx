@@ -64,8 +64,7 @@ const UserHome = ({ userInfo }) => {
 
   return (
     <>
-      <Container maxWidth="xl" sx={{ width: 0.9 }}>
-        {/* <img src={banner} width="100%"></img> */}
+      <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
         <Typography variant='h4' sx={{ mt: 3, textAlign: "center" }}>Welcome Back, {userInfo.name}</Typography>
 
         <Card sx={{ pt: 3, pb: 1, px: 4, mt: 2 }}>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Breadcrumbs } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
@@ -37,17 +37,17 @@ const UserCourse = () => {
   const courseMaterials = [
     {
       id: 1,
-      title: "Lesson 2",
+      title: "Lesson 1",
       materials: [
         {
           materialId: 1,
-          materialTitle: "Exercise 2",
+          materialTitle: "Exercise 1",
           materialType: "PDF",
           materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
         {
           materialId: 2,
-          materialTitle: "Exercise 1",
+          materialTitle: "Exercise 2",
           materialType: "Link",
           materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
@@ -55,17 +55,17 @@ const UserCourse = () => {
     },
     {
       id: 2,
-      title: "Lesson 1",
+      title: "Lesson 2",
       materials: [
         {
           materialId: 1,
-          materialTitle: "Exercise 2",
+          materialTitle: "Exercise 1",
           materialType: "PDF",
           materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
         {
           materialId: 2,
-          materialTitle: "Exercise 1",
+          materialTitle: "Exercise 2",
           materialType: "Link",
           materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
@@ -146,14 +146,30 @@ const UserCourse = () => {
   ]
 
   const navigate = useNavigate()
-  const [selectedTab, setSelectedTab] = useState("Announcements")
-
+  const { category } = useParams()
   const menuOptions = ["Announcements", "Class Materials", "Quizzes", "Homework", "Discussion Forum", "My Progress Report"]
+  const routeMenuMapping = {
+    "announcement": "Announcements",
+    "material": "Class Materials",
+    "quiz": "Quizzes",
+    "homework": "Homework",
+    "forum": "Discussion Forum",
+    "report": "My Progress Report"
+  }
+
+  const menuNavigate = (option) => {
+    if (option == "Announcements") navigate(`/home/course/${course.id}/announcement`)
+    if (option == "Class Materials") navigate(`/home/course/${course.id}/material`)
+    if (option == "Quizzes") navigate(`/home/course/${course.id}/quiz`)
+    if (option == "Homework") navigate(`/home/course/${course.id}/homework`)
+    if (option == "Discussion Forum") navigate(`/home/course/${course.id}/forum`)
+    if (option == "My Progress Report") navigate(`/home/course/${course.id}/report`)
+  }
 
   return (
-    <Container maxWidth="xl" sx={{ width: 0.9 }}>
+    <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
-        <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={() => {  navigate('/home') }}>
+        <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={() => { navigate('/home') }}>
           <HomeIcon sx={{ mr: 0.5 }} />
           Home
         </Link>
@@ -194,7 +210,8 @@ const UserCourse = () => {
         <Grid item xs={12} md={3}>
           <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}>
             {menuOptions.map((option) => (
-              <MenuItem sx={{ mb: 1, color: selectedTab == option ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => setSelectedTab(option)}>
+              <MenuItem sx={{ mb: 1, color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "", "&:hover": { color: "primary.main" } }}
+                onClick={() => menuNavigate(option)}>
                 <Typography variant='subtitle1'>{option}</Typography>
               </MenuItem>
             ))}
@@ -209,13 +226,14 @@ const UserCourse = () => {
               >
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <Typography variant='h5' sx={{ color: "primary.main" }}>
-                    {selectedTab}
+                    {category === undefined ? "Announcements" : routeMenuMapping[category]}
                   </Typography>
                 </Box>
               </AccordionSummary>
               <AccordionDetails>
                 {menuOptions.map((option) => (
-                  <MenuItem sx={{ mb: 0.5, color: selectedTab == option ? "primary.main" : "", "&:hover": { color: "primary.main" } }} onClick={() => setSelectedTab(option)}>
+                  <MenuItem sx={{ mb: 0.5, color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "", "&:hover": { color: "primary.main" } }}
+                    onClick={() => menuNavigate(option)}>
                     <Typography variant='subtitle1'>{option}</Typography>
                   </MenuItem>
                 ))}
@@ -226,7 +244,7 @@ const UserCourse = () => {
 
         <Grid item xs={12} md={9}>
           <Box>
-            <Card sx={{ py: 3, px: 5, mt: 2, display: selectedTab=="Announcements" ? "block": "none" }}>
+            <Card sx={{ py: 3, px: 5, mt: 2, display: category == "announcement" ? "block" : category === undefined ? "block" : "none" }}>
               <Typography variant='h5'>Class Announcements</Typography>
               {courseAnnouncements.map((announcement) => (
                 <Card variant='outlined' sx={{ boxShadow: "none", mt: 2, p: 2 }}>
@@ -237,7 +255,7 @@ const UserCourse = () => {
               ))}
             </Card>
 
-            <Box sx={{ display: selectedTab=="Class Materials" ? "block": "none" }}>
+            <Box sx={{ display: category == "material" ? "block" : "none" }}>
               {courseMaterials.map((courseMaterial) => (
                 <Card sx={{ py: 1, px: 3, mt: 2 }}>
                   <Accordion>
@@ -254,13 +272,13 @@ const UserCourse = () => {
                           <Box>
                             <Typography variant='subtitle1'>{material.materialTitle}</Typography>
                             <Typography variant='subsubtitle' sx={{ display: "flex", alignItems: "center" }}>
-                              <InsertLinkIcon fontSize="small" sx={{ display: material.materialType == "Link" ? "block": "none", mr: 0.5 }} />
-                              <ArticleIcon fontSize="small" sx={{ display: material.materialType == "PDF" ? "block": "none", mr: 0.5 }} />
+                              <InsertLinkIcon fontSize="small" sx={{ display: material.materialType == "Link" ? "block" : "none", mr: 0.5 }} />
+                              <ArticleIcon fontSize="small" sx={{ display: material.materialType == "PDF" ? "block" : "none", mr: 0.5 }} />
                               {material.materialType == "PDF" ? "PDF Document" : material.materialType == "Link" ? "External Link" : ""}
                             </Typography>
                           </Box>
                           <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
-                            <Button variant="contained" onClick={() => {navigate("materials/" + courseMaterial.id + "/" + material.materialId)}}>View</Button>
+                            <Button variant="contained" onClick={() => { navigate(courseMaterial.id + "/" + material.materialId) }}>View</Button>
                           </Box>
                         </Card>
                       ))}
@@ -270,7 +288,7 @@ const UserCourse = () => {
               ))}
             </Box>
 
-            <Box sx={{ display: selectedTab=="Quizzes" ? "block": "none" }}>
+            <Box sx={{ display: category == "quiz" ? "block" : "none" }}>
               <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
                 <Grid item xs="6">
                   <Typography variant='subtitle2'>QUIZ TITLE</Typography>
@@ -301,7 +319,7 @@ const UserCourse = () => {
               ))}
             </Box>
 
-            <Box sx={{ display: selectedTab=="Homework" ? "block": "none" }}>
+            <Box sx={{ display: category == "homework" ? "block" : "none" }}>
               <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
                 <Grid item xs="4">
                   <Typography variant='subtitle2'>HOMEWORK TITLE</Typography>
@@ -340,10 +358,10 @@ const UserCourse = () => {
                 ))}
             </Box>
 
-            <Box sx={{ display: selectedTab=="Discussion Forum" ? "block": "none" }}>
+            <Box sx={{ display: category == "forum" ? "block" : "none" }}>
               {courseForums.map((forum) => (
                 <Card sx={{ py: 3, px: 5, mt: 2 }}>
-                  <Box sx={{ display: {sm: "flex"} }}>
+                  <Box sx={{ display: { sm: "flex" } }}>
                     <Box>
                       <Typography variant='h6' sx={{ color: "primary.main" }}>{forum.title}</Typography>
                       <Typography variant='subsubtitle'>Posted {forum.postedDate}</Typography>
@@ -357,7 +375,7 @@ const UserCourse = () => {
               ))}
             </Box>
 
-            <Box sx={{ display: selectedTab=="My Progress Report" ? "block": "none" }}>
+            <Box sx={{ display: category == "report" ? "block" : "none" }}>
               <Grid container spacing={2}>
                 <Grid item xs="12" sm="4">
                   <Card sx={{ py: { xs: 2, sm: 4 }, px: 5, mt: { xs: 0, sm: 2 } }}>

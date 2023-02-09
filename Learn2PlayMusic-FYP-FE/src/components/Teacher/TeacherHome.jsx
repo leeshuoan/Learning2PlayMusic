@@ -58,7 +58,7 @@ const TeacherHome = ({ userInfo }) => {
 
   return (
     <>
-      <Container maxWidth="xl" sx={{ width: 0.9 }}>
+      <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
         {/* <img src={banner} width="100%"></img> */}
         <Typography variant='h4' sx={{ mt: 3, textAlign: "center" }}>Welcome Back, {userInfo.name}</Typography>
 

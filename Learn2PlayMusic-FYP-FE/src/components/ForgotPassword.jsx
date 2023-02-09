@@ -63,6 +63,7 @@ export default function ForgotPassword({ handleSetUserInfo }) {
           bgcolor: "background.paper",
           borderRadius: 2,
           boxShadow: theme.shadows[10],
+          width: { xs: 1, sm: 0.9 }
         }}>
         <CssBaseline />
 

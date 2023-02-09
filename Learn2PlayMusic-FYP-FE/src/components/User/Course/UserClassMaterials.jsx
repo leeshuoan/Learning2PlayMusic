@@ -18,17 +18,17 @@ const UserClassMaterials = () => {
   const courseMaterials = [
     {
       id: 1,
-      title: "Lesson 2",
+      title: "Lesson 1",
       materials: [
         {
           materialId: 1,
-          materialTitle: "Exercise 2",
+          materialTitle: "Exercise 1",
           materialType: "PDF",
           materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
         {
           materialId: 2,
-          materialTitle: "Exercise 1",
+          materialTitle: "Exercise 2",
           materialType: "Link",
           materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
@@ -36,17 +36,17 @@ const UserClassMaterials = () => {
     },
     {
       id: 2,
-      title: "Lesson 1",
+      title: "Lesson 2",
       materials: [
         {
           materialId: 1,
-          materialTitle: "Exercise 2",
+          materialTitle: "Exercise 1",
           materialType: "PDF",
           materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
         {
           materialId: 2,
-          materialTitle: "Exercise 1",
+          materialTitle: "Exercise 2",
           materialType: "Link",
           materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         },
@@ -63,16 +63,16 @@ const UserClassMaterials = () => {
   const changeTab = (id) => {
     setSelectedTab(id)
     setSelectedMaterial(1)
-    navigate(`/home/course/${course.id}/materials/${id}/1`)
+    navigate(`/home/course/${course.id}/material/${id}/1`)
   }
 
   const changeMaterial = (id) => {
     setSelectedMaterial(id)
-    navigate(`/home/course/${course.id}/materials/${selectedTab}/${id}`)
+    navigate(`/home/course/${course.id}/material/${selectedTab}/${id}`)
   }
 
   return (
-    <Container maxWidth="xl" sx={{ width: 0.9 }}>
+    <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
         <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={() => { navigate('/home') }}>
           <HomeIcon sx={{ mr: 0.5 }} />
