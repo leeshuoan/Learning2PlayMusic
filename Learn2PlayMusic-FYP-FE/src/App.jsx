@@ -14,10 +14,12 @@ import TeacherHome from "./components/Teacher/TeacherHome";
 import UserHome from "./components/User/UserHome";
 import UserCourse from "./components/User/UserCourse";
 import ChatBase from "./components/Chat/ChatBase";
+import Announcements from "./components/Announcements";
 // Amplify setup
 import aws_exports from "./aws-exports";
 import { Amplify } from "aws-amplify";
 import { Auth } from "aws-amplify";
+import UserClassMaterials from "./components/User/Course/UserClassMaterials";
 Amplify.configure(aws_exports);
 
 function App() {
@@ -89,10 +91,14 @@ function App() {
             path="home"
             element={<PrivateRoutes userType="User"></PrivateRoutes>}>
             <Route index element={<UserHome userInfo={userInfo} />} />
-            <Route path="course/:courseid" element={<UserCourse />} />
+            <Route path="announcements" element={<Announcements />} />
+            <Route path="course/:courseid">
+              <Route index element={<UserCourse />} />
+              <Route path="materials/:categoryId/:materialId" element={<UserClassMaterials />} />
+            </Route>
           </Route>
-          <Route  path="resetpassword" element={<ForgotPassword />}></Route>
-          <Route path='*' element={<NotFound userRole={userInfo.role}/>}/>
+          <Route path="resetpassword" element={<ForgotPassword />}></Route>
+          <Route path='*' element={<NotFound userRole={userInfo.role} />} />
         </Routes>
       </ThemeProvider>
     </div>

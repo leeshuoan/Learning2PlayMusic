@@ -97,7 +97,7 @@ const UserHome = ({ userInfo }) => {
                 </Card>
               ))}
               <Box sx={{ textAlign: "center" }}>
-                <Link >View All Announcements</Link>
+                <Link onClick={() => {navigate("announcements")}}>View All Announcements</Link>
               </Box>
             </Card>
           </Grid>

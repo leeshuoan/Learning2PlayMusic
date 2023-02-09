@@ -4,7 +4,6 @@ import {
   Box,
   Toolbar,
   IconButton,
-  Typography,
   Menu,
   Container,
   MenuItem,
@@ -104,11 +103,6 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                     display: { xs: 'block', md: 'none' },
                   }}
                 >
-                  {/* {pages.map((page) => (
-                    <MenuItem key={page} onClick={() => handleRoute(page)}>
-                      <Typography textAlign="center">{page}</Typography>
-                    </MenuItem>
-                  ))} */}
                   <MenuItem>NOTHING HERE YET</MenuItem>
                 </Menu>
               </Box>
@@ -116,18 +110,6 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
               <IconButton disableRipple onClick={() => {navigate("/home")}}>
               <img src="/l2pm_logo.png" width="150px" />
               </IconButton>
-
-              {/* DESKTOP NAV */}
-              {/* <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                {pages.map((page) => (
-                  <MenuItem
-                    sx={{ bgcolor: "background.paper" }}
-                    key={page}
-                    onClick={() => handleRoute(page)}>
-                    <Typography textAlign="center">{page}</Typography>
-                  </MenuItem>
-                ))}
-              </Box> */}
 
               {/* USER MENU */}
               <Box>
@@ -181,10 +163,10 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                       filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
                       mt: 1.5,
                       "& .MuiAvatar-root": {
-                        width: 32,
-                        height: 32,
+                        width: 25,
+                        height: 25,
                         ml: -0.5,
-                        mr: 1,
+                        mr: 2,
                       },
                       "&:before": {
                         content: '""',
@@ -203,23 +185,7 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
                   <MenuItem onClick={handleClose}>
-                    <Avatar /> Profile
-                  </MenuItem>
-                  <MenuItem onClick={handleClose}>
-                    <Avatar /> My account
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem onClick={handleClose}>
-                    <ListItemIcon>
-                      <PersonAdd fontSize="small" />
-                    </ListItemIcon>
-                    Add another account
-                  </MenuItem>
-                  <MenuItem onClick={handleClose}>
-                    <ListItemIcon>
-                      <Settings fontSize="small" />
-                    </ListItemIcon>
-                    Settings
+                    <Avatar />My Profile
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
