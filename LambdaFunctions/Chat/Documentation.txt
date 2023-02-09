@@ -1,0 +1,18 @@
+// DynamoDB
+# assuming store conversations in user info table!
+Table <Message>:
+partition key = conversationId <string>
+sort key = timestamp <string>
+attr = author <string>
+attr = messageBody <string> 
+
+
+conversationId = teacher (always in front) + student
+eg. 
+student = abc
+teacher =  123
+convId = abc+123
+
+//IAM
+add in policy to LambdaDynamoDBRole role to allow getItem to "Chat" ARN
+
