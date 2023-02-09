@@ -158,14 +158,14 @@ const UserClassMaterials = () => {
                   </Box>
                   <Grid container>
                     <Grid item xs={4} sx={{ display: "flex", justifyContent: "flex-start", pl: 3 }}>
-                      <Button variant="contained" size="small" sx={{ display: selectedMaterial == 1 ? "none" : "block" }} onClick={() => changeMaterial(selectedMaterial - 1)}>PREVIOUS</Button>
+                      <Button variant="contained" size="small" sx={{ display: selectedMaterial == 1 ? "none" : "block" }} onClick={() => changeMaterial(parseInt(selectedMaterial) - 1)}>PREVIOUS</Button>
                       <Button variant="contained" size="small" sx={{ display: selectedMaterial == 1 ? "block" : "none" }} disabled>PREVIOUS</Button>
                     </Grid>
                     <Grid item xs={4} sx={{ textAlign: "center" }}>
                       <Typography variant='h6'>{material.materialTitle}</Typography>
                     </Grid>
                     <Grid item xs={4} sx={{ display: "flex", justifyContent: "flex-end", pr: 3 }}>
-                      <Button variant="contained" size="small" sx={{ display: selectedMaterial == courseMaterial.materials.length ? "none" : "block" }} onClick={() => changeMaterial(selectedMaterial + 1)}>NEXT</Button>
+                      <Button variant="contained" size="small" sx={{ display: selectedMaterial == courseMaterial.materials.length ? "none" : "block" }} onClick={() => changeMaterial(parseInt(selectedMaterial) + 1)}>NEXT</Button>
                       <Button variant="contained" size="small" sx={{ display: selectedMaterial == courseMaterial.materials.length ? "block" : "none" }} disabled>NEXT</Button>
                     </Grid>
                   </Grid>
