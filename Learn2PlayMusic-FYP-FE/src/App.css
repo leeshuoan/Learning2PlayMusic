@@ -13,7 +13,7 @@ body {
 }
 
 .chat {
-  width: 85%;
+  width: 80%;
   background-color: white;
   padding: 16px;
 }
@@ -38,7 +38,7 @@ body {
 
 .sideBar {
   height: 100%;
-  width: 15%;
+  width: 20%;
   background-color: lightgray;
   padding: 16px;
   overflow: auto;

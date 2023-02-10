@@ -3,7 +3,9 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
-import Typography from "@mui/material/Typography";
+import InputBase from "@mui/material/InputBase";
+import IconButton from "@mui/material/IconButton";
+import SendIcon from "@mui/icons-material/Send";
 import "../../App.css";
 
 const ChatBase = () => {
@@ -65,9 +67,33 @@ const ChatBase = () => {
       </div>
 
       <div className="chat">
-        <Typography variant="h5" gutterBottom>
-          Select any teacher on the left to ask them questions that you might have!
-        </Typography>
+        {/* TOOD: add a typography so that at the top there will be the user name ? */}
+        <div className="chatList">
+          <List>
+            {chats.map((chat) => (
+              <React.Fragment key={chat.id}>
+                <ListItem>
+                  <ListItemText
+                    primary={chat.name}
+                    secondary={chat.timeStamp}
+                  />
+                </ListItem>
+                <ListItem>
+                  <ListItemText primary={chat.message} />
+                </ListItem>
+
+                <Divider />
+              </React.Fragment>
+            ))}
+          </List>
+        </div>
+        <div className="inputContainer">
+          <InputBase className="inputBase" placeholder="Type your message" />
+          <IconButton aria-label="send">
+            {/* TODO: handle send message action in the icon */}
+            <SendIcon />
+          </IconButton>
+        </div>
       </div>
     </div>
   );

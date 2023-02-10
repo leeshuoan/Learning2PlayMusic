@@ -1,8 +1,13 @@
 import boto3
 import json
 
-print('Loading function')
-
+""" this function will get read all the messages of a conversation with the conversation id being 
+teacherId (always in front) + studentId
+eg. 
+student = abc
+teacher =  123
+conversationId = abc+123
+"""
 def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('Chat')
@@ -30,7 +35,6 @@ def lambda_handler(event, context):
         'body': res
     }
 
-print('Function done')
 
 """
 sample response

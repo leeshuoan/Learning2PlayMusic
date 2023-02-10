@@ -1,5 +1,12 @@
 import boto3
 import datetime
+""" this function will get send a the message from the text box of a chat UI with the conversation id being 
+teacherId (always in front) + studentId
+eg. 
+student = abc
+teacher =  123
+convId = abc+123
+"""
 
 def lambda_handler(event, context):
     try:
