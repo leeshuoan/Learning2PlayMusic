@@ -11,6 +11,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import ArticleIcon from '@mui/icons-material/Article';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
+import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import courseImg from '../../assets/course.png'
 
 const UserCourse = () => {
@@ -289,30 +290,25 @@ const UserCourse = () => {
             </Box>
 
             <Box sx={{ display: category == "quiz" ? "block" : "none" }}>
-              <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
-                <Grid item xs="6">
-                  <Typography variant='subtitle2'>QUIZ TITLE</Typography>
-                </Grid>
-                <Grid item xs="3">
-                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SCORE</Typography>
-                </Grid>
-                <Grid item xs="3">
-                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>ATTEMPTS</Typography>
-                </Grid>
-              </Grid>
               {courseQuizzes.map((quiz) => (
                 <Card sx={{ py: 3, px: 4, mt: 2 }}>
-                  <Grid container spacing={2} >
+                  <Typography variant='h6' sx={{ mb: 2 }}>{quiz.title}</Typography>
+                  <Grid container spacing={2} sx={{ alignItems: "center" }}>
                     <Grid item xs="12" sm="6">
-                      <Typography variant='body1' sx={{ color: "primary.main" }}>{quiz.title}</Typography>
+                      <Button variant="contained" onClick={() => { navigate() }}>
+                        <PlayCircleFilledIcon sx={{ mr: 1 }}/>
+                        Start Quiz
+                      </Button>
                     </Grid>
                     <Grid item xs="12" sm="3">
+                      <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: "primary.main" }}>Score</Typography>
                       <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{quiz.score}</Typography>
-                      <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Score: {quiz.score}</Typography>
+                      <Typography variant='body1' sx={{ display: { xs: "flex", sm: "none" } }}><Typography sx={{ color: "primary.main", mr: 0.5 }}>Score:</Typography>{quiz.score}</Typography>
                     </Grid>
                     <Grid item xs="12" sm="3">
+                      <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block" }, color: "primary.main" }}>Attempts</Typography>
                       <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block" } }}>{quiz.attempts}/{quiz.maxAttempts}</Typography>
-                      <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "block", sm: "none" } }}>Attempts: {quiz.attempts}/{quiz.maxAttempts}</Typography>
+                      <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "flex", sm: "none" } }}><Typography sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</Typography>{quiz.attempts}/{quiz.maxAttempts}</Typography>
                     </Grid>
                   </Grid>
                 </Card>

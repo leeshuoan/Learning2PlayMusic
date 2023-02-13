@@ -78,7 +78,7 @@ const UserClassMaterials = () => {
           <HomeIcon sx={{ mr: 0.5 }} />
           Home
         </Link>
-        <Link underline="hover" color="inherit" onClick={() => { navigate('/home/course/1') }}>
+        <Link underline="hover" color="inherit" onClick={() => { navigate('/home/course/1/material') }}>
           {course.title}
         </Link>
         <Typography color="text.primary">Class Materials</Typography>
