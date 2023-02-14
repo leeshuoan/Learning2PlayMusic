@@ -1,6 +1,9 @@
+import boto3
+
 from aws_cdk import (
     aws_lambda as _lambda,
     aws_apigateway as apigw,
+    aws_iam,
     Stack
 )
 
@@ -12,6 +15,11 @@ class ServerlessStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # The code that defines your stack goes here
+        
+        # Get existing iam role (lambda-general-role)
+        iam = boto3.client("iam")
+        role = iam.get_role(RoleName="lambda-general-role")
+        role_arn = role["Role"]["Arn"]
 
         # Create an AWS Lambda function
         get_course_quizzes = _lambda.Function(
@@ -19,7 +27,8 @@ class ServerlessStack(Stack):
             "getCourseQuizzes", # name of your lambda function
             runtime=_lambda.Runtime.PYTHON_3_9,
             handler="get_course_quizzes.lambda_handler", # change based on your python file name
-            code=_lambda.Code.from_asset("./lambda_functions/")
+            code=_lambda.Code.from_asset("./lambda_functions/"),
+            role=aws_iam.Role.from_role_arn(self, "lambda_general_role", role_arn)
         )
         
         # Create a new Amazon API Gateway REST API
