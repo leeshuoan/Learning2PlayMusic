@@ -7,11 +7,11 @@ import decimal
 import boto3
 import aws_cdk as cdk
 
-from serverless.serverless_stack import ServerlessStack
+from serverless.course_stack import CourseStack
 
 
 app = cdk.App()
-ServerlessStack(app, "ServerlessStack",
+CourseStack(app, "ServerlessStack",
     # If you don't specify 'env', this stack will be environment-agnostic.
     # Account/Region-dependent features and context lookups will not work,
     # but a single synthesized template can be deployed anywhere.
