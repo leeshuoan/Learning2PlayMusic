@@ -19,7 +19,7 @@ class ServerlessStack(Stack):
             "getCourseQuizzes", # name of your lambda function
             runtime=_lambda.Runtime.PYTHON_3_9,
             handler="get_course_quizzes.lambda_handler", # change based on your python file name
-            code=_lambda.Code.from_asset("serverless/lambda_functions/")
+            code=_lambda.Code.from_asset("./lambda_functions/")
         )
         
         # Create a new Amazon API Gateway REST API
