@@ -1,26 +1,27 @@
-import React, { useState, useEffect } from "react";
+import * as React from "react";
+
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
+import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import "../../App.css";
+import InputBase from "@mui/material/InputBase";
+import Button from "@mui/material/Button";
 
+const drawerWidth = 240;
 
-const ChatBase = ({ userInfo }) => {
-  console.log("userInfo");
-  // get userInfo from parent component
-  console.log(userInfo);
-  const [open, setOpen] = useState(false);
+function ChatBase(props) {
+  const { window } = props;
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const handleOpen = () => {
-    setOpen(true);
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
   };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-  // TODO: remove static data and fetch from dynamodb
   const contacts = [
     {
       id: 1,
@@ -31,65 +32,100 @@ const ChatBase = ({ userInfo }) => {
       name: "Jane Doe",
     },
   ];
-  const [teachers, setTeachers] = useState([]);
-  useEffect(() => {
-    async function fetchData() {
-      const response = await fetch(
-        "https://qniowqs0mf.execute-api.ap-southeast-1.amazonaws.com/test/chat/get_teachers?user_name=" +
-          user_id
-      );
-      const data = await response.json();
-      setTeachers(data.body);
-      console.log(data);
-    }
-    fetchData();
-  }, []);
-
-  // TODO: remove static data and fetch from dynamodb
-  const chats = [
-    {
-      id: 1,
-      name: "John Doe",
-      message: "Hey, how are you?",
-      timeStamp: "2021-08-01 12:00:00",
-    },
-    {
-      id: 2,
-      name: "Jane Doe",
-      message: "I am doing good, thanks!",
-      timeStamp: "2021-08-01 12:01:00",
-    },
-    {
-      id: 3,
-      name: "John Doe",
-      message: "That is great to hear!",
-      timeStamp: "2021-08-01 12:03:00",
-    },
-  ];
 
   return (
-    <div className="chatRoot">
-      {/*   display teachers */}
-      <div className="sideBar">
-        <List>
-          {teachers.map((contact) => (
-            <React.Fragment key={contact.UserName}>
-              <ListItem>
-                <ListItemText primary={contact} />
-              </ListItem>
-              <Divider />
-            </React.Fragment>
-          ))}
-        </List>
-      </div>
-      <div className="chat">
-        <Typography variant="h5" gutterBottom>
-          Select any teacher on the left to ask them questions that you might
-          have!
+    <Box sx={{ display: "flex" }}>
+      {/* top row to show "chat" and create new chat button */}
+      {/* <AppBar position="static" color="primary" sx={{ height: 1/5 }}>
+        <Toolbar>
+          <Typography  component="div" align="center" sx={{ flexGrow: 1}}>
+            Chat
+          </Typography>
+        </Toolbar>
+      </AppBar> */}
+
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerWidth,
+          flexShrink: 1,
+          [`& .MuiDrawer-paper`]: {
+            width: drawerWidth,
+            boxSizing: "border-box",
+            zIndex: -1,
+          },
+        }}>
+        <Toolbar />
+        <Box sx={{ overflow: "auto" }}>
+          <List>
+            {contacts.map((contact) => (
+              <div>
+                <ListItem key={contact.id} disablePadding>
+                  <ListItemButton>
+                    <ListItemText primary={contact.name} />
+                  </ListItemButton>
+                </ListItem>
+                <Divider />
+              </div>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+        }}>
+        <Toolbar />
+        {/*  todo: render from db */}
+        <Typography paragraph>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
+          dolor purus non enim praesent elementum facilisis leo vel. Risus at
+          ultrices mi tempus imperdiet. Semper risus in hendrerit gravida rutrum
+          quisque non tellus. Convallis convallis tellus id interdum velit
+          laoreet id donec ultrices. Odio morbi quis commodo odio aenean sed
+          adipiscing. Amet nisl suscipit adipiscing bibendum est ultricies
+          integer quis. Cursus euismod quis viverra nibh cras. Metus vulputate
+          eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo
+          quis imperdiet massa tincidunt. Cras tincidunt lobortis feugiat
+          vivamus at augue. At augue eget arcu dictum varius duis at consectetur
+          lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa sapien
+          faucibus et molestie ac.
         </Typography>
-      </div>
-    </div>
+        <Divider />
+
+        <Typography paragraph>
+          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est
+          ullamcorper eget nulla facilisi etiam dignissim diam. Pulvinar
+          elementum integer enim neque volutpat ac tincidunt. Ornare suspendisse
+          sed nisi lacus sed viverra tellus. Purus sit amet volutpat consequat
+          mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis
+          risus sed vulputate odio. Morbi tincidunt ornare massa eget egestas
+          purus viverra accumsan in. In hendrerit gravida rutrum quisque non
+          tellus orci ac. Pellentesque nec nam aliquam sem et tortor. Habitant
+          morbi tristique senectus et. Adipiscing elit duis tristique
+          sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
+          eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
+          posuere sollicitudin aliquam ultrices sagittis orci a.
+        </Typography>
+
+        <InputBase
+          sx={{ width: "90%" }}
+          className="inputBase"
+          placeholder="Type your message"
+        />
+        <IconButton aria-label="send">
+          {/* TODO: handle send message action in the icon */}
+          <Button variant="contained" size="large">
+            Send
+          </Button>
+        </IconButton>
+      </Box>
+    </Box>
   );
-};
+}
 
 export default ChatBase;
