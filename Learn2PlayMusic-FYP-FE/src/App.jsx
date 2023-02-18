@@ -27,7 +27,7 @@ function App() {
 
   const handleResetUserInfo = () => {
     setUserInfo({
-      role: "home",
+      role: "home", 
     });
   };
 
