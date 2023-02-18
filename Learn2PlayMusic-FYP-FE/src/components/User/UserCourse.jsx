@@ -306,7 +306,7 @@ const UserCourse = () => {
                       <Typography variant='body1' sx={{ display: { xs: "flex", sm: "none" } }}><Typography sx={{ color: "primary.main", mr: 0.5 }}>Score:</Typography>{quiz.score}</Typography>
                     </Grid>
                     <Grid item xs="12" sm="3">
-                      <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block" }, color: "primary.main" }}>Attempts</Typography>
+                      <Typography variant='body1' sx={{ textAlign: "center", color: 'primary.main', display: { xs: "none", sm: "block" } }}>Attempts</Typography>
                       <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block" } }}>{quiz.attempts}/{quiz.maxAttempts}</Typography>
                       <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "flex", sm: "none" } }}><Typography sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</Typography>{quiz.attempts}/{quiz.maxAttempts}</Typography>
                     </Grid>
