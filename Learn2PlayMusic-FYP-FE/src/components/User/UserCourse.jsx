@@ -115,19 +115,6 @@ const UserCourse = () => {
     }
   ]
 
-  const courseForums = [
-    {
-      title: "Do Pianists have longer fingers?",
-      postedDate: "31 Jan 2023",
-      comments: 4
-    },
-    {
-      title: "How are you coping with your piano lessons so far?",
-      postedDate: "31 Jan 2023",
-      comments: 8
-    }
-  ]
-
   const courseProgress = {
     "attendance": 3,
     "maxAttendance": 3,
@@ -147,13 +134,12 @@ const UserCourse = () => {
 
   const navigate = useNavigate()
   const { category } = useParams()
-  const menuOptions = ["Announcements", "Class Materials", "Quizzes", "Homework", "Discussion Forum", "My Progress Report"]
+  const menuOptions = ["Announcements", "Class Materials", "Quizzes", "Homework", "My Progress Report"]
   const routeMenuMapping = {
     "announcement": "Announcements",
     "material": "Class Materials",
     "quiz": "Quizzes",
     "homework": "Homework",
-    "forum": "Discussion Forum",
     "report": "My Progress Report"
   }
 
@@ -162,7 +148,6 @@ const UserCourse = () => {
     if (option == "Class Materials") navigate(`/home/course/${course.id}/material`)
     if (option == "Quizzes") navigate(`/home/course/${course.id}/quiz`)
     if (option == "Homework") navigate(`/home/course/${course.id}/homework`)
-    if (option == "Discussion Forum") navigate(`/home/course/${course.id}/forum`)
     if (option == "My Progress Report") navigate(`/home/course/${course.id}/report`)
   }
 
@@ -180,12 +165,12 @@ const UserCourse = () => {
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box sx={{ ml: 2, mb: 1 }}>
             <Typography variant='h5' sx={{ color: "primary.main" }}>{course.title}</Typography>
-            <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.date}</Typography>
+            <Typography variant='subtitle2'>Date: {course.date}</Typography>
           </Box>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
           <Box sx={{ ml: 2, mb: 1 }}>
-            <Typography variant='subtitle1' sx={{ mb: 0.5 }}>{course.teacher}</Typography>
+            <Typography variant='subtitle1'>{course.teacher}</Typography>
             <Typography variant='body2' sx={{ textAlign: "right" }}>Teacher</Typography>
           </Box>
         </Box>
@@ -349,23 +334,6 @@ const UserCourse = () => {
                     </Grid>
                   </Card>
                 ))}
-            </Box>
-
-            <Box sx={{ display: category == "forum" ? "block" : "none" }}>
-              {courseForums.map((forum) => (
-                <Card sx={{ py: 3, px: 5, mt: 2 }}>
-                  <Box sx={{ display: { sm: "flex" } }}>
-                    <Box>
-                      <Typography variant='h6' sx={{ color: "primary.main" }}>{forum.title}</Typography>
-                      <Typography variant='subsubtitle'>Posted {forum.postedDate}</Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", alignItems: "center", ml: "auto", color: "#707070" }}>
-                      <Typography variant="body2">{forum.comments} comments</Typography>
-                      <ChatBubbleIcon sx={{ ml: 1 }} fontSize="xs" />
-                    </Box>
-                  </Box>
-                </Card>
-              ))}
             </Box>
 
             <Box sx={{ display: category == "report" ? "block" : "none" }}>
