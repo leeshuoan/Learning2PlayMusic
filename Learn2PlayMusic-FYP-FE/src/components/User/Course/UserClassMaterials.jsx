@@ -5,7 +5,6 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
-import courseImg from '../../../assets/course.png'
 
 const UserClassMaterials = () => {
   const course = {
@@ -85,7 +84,6 @@ const UserClassMaterials = () => {
       </Breadcrumbs>
 
       <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "flex" } }}>
-        <img src={courseImg} style={{ maxWidth: 110, borderRadius: 10 }}></img>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box sx={{ ml: 2, mb: 1 }}>
             <Typography variant='h5' sx={{ color: "primary.main" }}>{course.title}</Typography>
@@ -101,7 +99,6 @@ const UserClassMaterials = () => {
       </Card>
 
       <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "flex", sm: "none" } }}>
-        <img src={courseImg} style={{ maxWidth: 110, borderRadius: 10 }}></img>
         <Box sx={{ display: "", alignItems: "center" }}>
           <Box sx={{ ml: 2, mb: 1 }}>
             <Typography variant='h5' sx={{ color: "primary.main" }}>{course.title}</Typography>

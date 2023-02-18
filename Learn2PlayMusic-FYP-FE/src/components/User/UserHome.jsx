@@ -1,7 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Typography, Container, Grid, Card, Box, Link, Button } from '@mui/material'
-import courseImg from '../../assets/course.png'
 
 const UserHome = ({ userInfo }) => {
   const announcements = [
@@ -73,8 +72,6 @@ const UserHome = ({ userInfo }) => {
             {myCourses.map((myCourse, index) => (
               <Grid item xs={12} sm={6} md={3}>
                 <Card variant='outlined' sx={{ boxShadow: "none", border: "none", my: 1, p: 2 }} key={index}>
-                  <img src={courseImg} style={{ borderRadius: 5 }}></img>
-                  {/* < img src={courseImgUrl}></img> */}
                   <Typography variant='subtitle2' sx={{ pt: 1, color: "primary.main" }}>{myCourse.title}</Typography>
                   <Typography variant='body2'>Ends {myCourse.date}</Typography>
                   <Button variant='contained' sx={{ width: "100%", mt: 1 }} onClick={() => { navigate("course/" + myCourse.id) }}>View Course</Button>

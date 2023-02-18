@@ -12,7 +12,6 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import ArticleIcon from '@mui/icons-material/Article';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
-import courseImg from '../../assets/course.png'
 
 const UserCourse = () => {
   const course = {
@@ -178,7 +177,6 @@ const UserCourse = () => {
       </Breadcrumbs>
 
       <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "flex" } }}>
-        <img src={courseImg} style={{ maxWidth: 110, borderRadius: 10 }}></img>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box sx={{ ml: 2, mb: 1 }}>
             <Typography variant='h5' sx={{ color: "primary.main" }}>{course.title}</Typography>
@@ -194,7 +192,6 @@ const UserCourse = () => {
       </Card>
 
       <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "flex", sm: "none" } }}>
-        <img src={courseImg} style={{ maxWidth: 110, borderRadius: 10 }}></img>
         <Box sx={{ display: "", alignItems: "center" }}>
           <Box sx={{ ml: 2, mb: 1 }}>
             <Typography variant='h5' sx={{ color: "primary.main" }}>{course.title}</Typography>

@@ -1,6 +1,5 @@
 import { Typography, Container, Grid, Card, Box, Link } from '@mui/material'
 import banner from '../../assets/banner.jpg'
-import course from '../../assets/course.png'
 import React from 'react'
 
 const TeacherHome = ({ userInfo }) => {
@@ -69,7 +68,6 @@ const TeacherHome = ({ userInfo }) => {
                   <Grid item xs={12} sm={6} md={3}>
                     <Card variant='outlined' sx={{ boxShadow: "none", my: 1, p: 2 }} key={index}>
                       <img src={course}></img>
-                      {/* <img src={courseImgUrl}></img> */}
                       <Typography variant='subtitle2' sx={{ pt: 1, color: "primary.main" }}>{myCourse.title}</Typography>
                       <Typography variant='body2'>{myCourse.date}</Typography>
                     </Card>
