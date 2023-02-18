@@ -40,22 +40,22 @@ const UserHome = ({ userInfo }) => {
     {
       id: 1,
       title: "Grade 1 Piano",
-      date: "21 Mar 2023",
+      date: "Wednesday 7pm",
     },
     {
       id: 2,
       title: "Grade 1 Piano",
-      date: "21 Mar 2023",
+      date: "Wednesday 7pm",
     },
     {
       id: 3,
       title: "Grade 1 Piano",
-      date: "21 Mar 2023",
+      date: "Wednesday 7pm",
     },
     {
       id: 4,
       title: "Grade 1 Piano",
-      date: "21 Mar 2023",
+      date: "Wednesday 7pm",
     },
   ]
 
@@ -73,7 +73,7 @@ const UserHome = ({ userInfo }) => {
               <Grid item xs={12} sm={6} md={3}>
                 <Card variant='outlined' sx={{ boxShadow: "none", border: "none", my: 1, p: 2 }} key={index}>
                   <Typography variant='subtitle2' sx={{ pt: 1, color: "primary.main" }}>{myCourse.title}</Typography>
-                  <Typography variant='body2'>Ends {myCourse.date}</Typography>
+                  <Typography variant='body2'>{myCourse.date}</Typography>
                   <Button variant='contained' sx={{ width: "100%", mt: 1 }} onClick={() => { navigate("course/" + myCourse.id) }}>View Course</Button>
                 </Card>
               </Grid>

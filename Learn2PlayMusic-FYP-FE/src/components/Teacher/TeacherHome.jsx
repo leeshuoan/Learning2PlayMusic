@@ -39,19 +39,19 @@ const TeacherHome = ({ userInfo }) => {
   const myCourses = [
     {
       title: "Grade 1 Piano",
-      date: "Ends 21 Mar 2023",
+      date: "Wednesday 7pm",
     },
     {
       title: "Grade 1 Piano",
-      date: "Ends 21 Mar 2023",
+      date: "Wednesday 7pm",
     },
     {
       title: "Grade 1 Piano",
-      date: "Ends 21 Mar 2023",
+      date: "Wednesday 7pm",
     },
     {
       title: "Grade 1 Piano",
-      date: "Ends 21 Mar 2023",
+      date: "Wednesday 7pm",
     },
   ]
 
