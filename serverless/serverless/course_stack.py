@@ -60,6 +60,16 @@ class CourseStack(Stack):
             role=LAMBDA_ROLE
         )
 
+        get_course = _lambda.Function(
+            self,
+            "getCourse",
+            runtime=_lambda.Runtime.PYTHON_3_9,
+            handler="get_course.lambda_handler",
+            code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
+            role=LAMBDA_ROLE
+        )
+
+
         # Create a new Amazon API Gateway REST API
         course2_api = apigw.RestApi(self, "course2",
                                     description="Course CRUD API from CDK")
@@ -76,6 +86,9 @@ class CourseStack(Stack):
             "questions")
 
         # Create methods in the required resources
+        course_resource.add_method(
+            "GET", apigw.LambdaIntegration(get_course))
+
         course_quizzes_resource.add_method(
             "GET", apigw.LambdaIntegration(get_course_quizzes))
 
