@@ -38,7 +38,7 @@ function App() {
   useEffect(() => {
     Auth.currentAuthenticatedUser()
       .then((user) => {
-        console.log(user)
+        console.log(user);
         user.getSession((err, session) => {
           if (err) {
             console.log(err);
@@ -85,7 +85,7 @@ function App() {
             path="teacher"
             element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
             <Route index element={<TeacherHome userInfo={userInfo} />} />
-            <Route path="chat" element={<ChatBase />} />
+            <Route path="chat" element={<ChatBase userInfo={userInfo} />} />
           </Route>
           <Route
             path="home"
@@ -95,11 +95,14 @@ function App() {
             <Route path="course/:courseid">
               <Route index element={<UserCourse />} />
               <Route path=":category" element={<UserCourse />} />
-              <Route path="material/:categoryId/:materialId" element={<UserClassMaterials />} />
+              <Route
+                path="material/:categoryId/:materialId"
+                element={<UserClassMaterials />}
+              />
             </Route>
           </Route>
           <Route path="resetpassword" element={<ForgotPassword />}></Route>
-          <Route path='*' element={<NotFound userRole={userInfo.role} />} />
+          <Route path="*" element={<NotFound userRole={userInfo.role} />} />
         </Routes>
       </ThemeProvider>
     </div>
