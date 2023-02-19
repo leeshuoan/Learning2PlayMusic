@@ -22,6 +22,7 @@ class CourseStack(Stack):
         COURSE_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course/"
         COURSE_HOMEWORK_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course_homework/"
         COURSE_QUIZ_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course_quiz/"
+        COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER = COURSE_FUNCTIONS_FOLDER + "course_announcements/"
 
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
@@ -63,6 +64,17 @@ class CourseStack(Stack):
             role=LAMBDA_ROLE
         )
 
+        #getCourseAnnouncement AWS Lambda Function
+        get_course_announcements = _lambda.Function(
+            self,
+            "getCourseAnnouncements",  # name of your lambda function
+            runtime=_lambda.Runtime.PYTHON_3_9,
+            # change based on your python file name
+            handler="get_course_announcements.lambda_handler",
+            code=_lambda.Code.from_asset(COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER),
+            role=LAMBDA_ROLE
+        )
+
         # Create getCourse AWS Lambda function
         # /course
         get_course = _lambda.Function( self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="get_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
@@ -78,6 +90,8 @@ class CourseStack(Stack):
         # Create sub-resources under the parent resource
         course_quizzes_resource = course_resource.add_resource("quizzes")
         course_homework_resource = course_resource.add_resource("homework")
+        course_announcements_resource = course_resource.add_resource("announcements")
+
 
         # Create sub-sub-resources under the parent resource
         course_quiz_questions_resource = course_quizzes_resource.add_resource("questions")
@@ -87,6 +101,7 @@ class CourseStack(Stack):
         course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={'method.request.querystring.courseId': False})
         course_resource.add_method("PUT", apigw.LambdaIntegration(put_course), request_parameters={'method.request.querystring.courseId': True})
         course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course), request_parameters={'method.request.querystring.courseId': True})
+
 
         # /course/quiz
         course_quizzes_resource.add_method(
@@ -99,6 +114,11 @@ class CourseStack(Stack):
         # /course/homework
         course_homework_resource.add_method(
             "GET", apigw.LambdaIntegration(get_course_homework))
+        
+        # /course/announcement
+        course_announcements_resource.add_method(
+            "GET", apigw.LambdaIntegration(get_course_announcements), request_parameters={'method.request.querystring.courseId': True,
+                                                                                          'method.request.querystring.announcementId': False})
 
         # Enable CORS for each resource/sub-resource etc.
         course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
