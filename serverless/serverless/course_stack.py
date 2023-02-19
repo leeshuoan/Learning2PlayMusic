@@ -88,17 +88,20 @@ class CourseStack(Stack):
         course_resource.add_method("PUT", apigw.LambdaIntegration(put_course), request_parameters={'method.request.querystring.courseId': True})
         course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course), request_parameters={'method.request.querystring.courseId': True})
 
+        # /course/quiz
         course_quizzes_resource.add_method(
             "GET", apigw.LambdaIntegration(get_course_quizzes))
 
+        # /course/quiz/question
         course_quiz_questions_resource.add_method(
             "GET", apigw.LambdaIntegration(get_course_quiz_questions))
 
+        # /course/homework
         course_homework_resource.add_method(
             "GET", apigw.LambdaIntegration(get_course_homework))
 
         # Enable CORS for each resource/sub-resource etc.
-        course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "POST"], status_code=200)
-        course_quizzes_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "POST"], status_code=200)
-        course_homework_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "POST"], status_code=200)
-        course_quiz_questions_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "POST"], status_code=200)
+        course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+        course_quizzes_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+        course_homework_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+        course_quiz_questions_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
