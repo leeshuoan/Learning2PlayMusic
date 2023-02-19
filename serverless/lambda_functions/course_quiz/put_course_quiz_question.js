@@ -34,7 +34,7 @@ async function lambda_handler(event, context) {
         const params = {
             TableName: "LMS",
             Item: {
-                "PK": `Course#"${courseId}`,
+                "PK": `Course#${courseId}`,
                 "SK": `Quiz#${quizId}QuestionId#${questionId}`,
                 "QuestionOptionType": questionOptionType,
                 "Question": question,

@@ -10,10 +10,19 @@ from aws_cdk import (
 from constructs import Construct
 
 
-class CourseStack(Stack):
+class AnnouncementStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+
+        # Import the API Gateway resource from the first stack
+        course_stack = Stack.of(self, "CourseStack")
+        main_api = apigw.RestApi.from_rest_api_id(
+            self, 'main',
+            course_stack.get_att('Outputs.mainApiId').to_string(),
+        )
+
 
         # Define Constants Here
         FUNCTIONS_FOLDER = "./lambda_functions/"
@@ -38,7 +47,7 @@ class CourseStack(Stack):
         )
 
          # Create a new Amazon API Gateway REST API
-        main_api = apigw.RestApi(self, "main", description="All LMS APIs")
+        main_api = apigw.RestApi.from_rest_api_id(self, "main", description="All LMS APIs")
 
         # Create resources for the API
         generalannouncement_resource = main_api.root.add_resource("course")
