@@ -27,7 +27,7 @@ def lambda_handler(event, context):
               "Access-Control-Allow-Origin": "*",
               "Access-Control-Allow-Methods": "DELETE,GET,PUT"
           },
-          "body": "Successfully inserted item!"
+          "body": {"message": "Successfully inserted item"}
       }
 
 

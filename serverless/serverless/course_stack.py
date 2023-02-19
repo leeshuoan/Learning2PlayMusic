@@ -104,7 +104,6 @@ class CourseStack(Stack):
             'method.request.querystring.courseEndDate': True,
             'method.request.querystring.courseName': True,
             'method.request.querystring.courseTimeSlot': True,
-
             })
 
 
