@@ -22,7 +22,7 @@ class CourseStack(Stack):
         COURSE_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course/"
         COURSE_HOMEWORK_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course_homework/"
         COURSE_QUIZ_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course_quiz/"
-        COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER = COURSE_FUNCTIONS_FOLDER + "course_announcements/"
+        COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER = COURSE_FUNCTIONS_FOLDER + "course_announcement/"
 
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
@@ -64,7 +64,7 @@ class CourseStack(Stack):
             role=LAMBDA_ROLE
         )
 
-        #getCourseAnnouncement AWS Lambda Function
+        #getCourseAnnouncements AWS Lambda Function
         get_course_announcements = _lambda.Function(
             self,
             "getCourseAnnouncements",  # name of your lambda function
