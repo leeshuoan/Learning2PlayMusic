@@ -60,7 +60,7 @@ class CourseStack(Stack):
             runtime=_lambda.Runtime.NODEJS_16_X,
             # change based on your python file name
             handler="put_course_quiz_question.lambda_handler",
-            code=_lambda.Code.from_asset(COURSE_HOMEWORK_FUNCTIONS_FOLDER),
+            code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE
         )
 
@@ -71,7 +71,7 @@ class CourseStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_9,
             # change based on your python file name
             handler="get_course_homework.lambda_handler",
-            code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER),
+            code=_lambda.Code.from_asset(COURSE_HOMEWORK_FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE
         )
 
