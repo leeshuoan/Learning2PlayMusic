@@ -55,12 +55,12 @@ class CourseStack(Stack):
         )
 
         # Create putCourseQuizQuestion AWS Lambda function
-        put_course_quiz_question = _lambda.Function(
+        post_course_quiz_question = _lambda.Function(
             self,
             "putCourseQuizQuestion",  # name of your lambda function
             runtime=_lambda.Runtime.NODEJS_16_X,
             # change based on your python file name
-            handler="put_course_quiz_question.lambda_handler",
+            handler="post_course_quiz_question.lambda_handler",
             code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE
         )
@@ -149,7 +149,7 @@ class CourseStack(Stack):
         course_quiz_questions_resource.add_method(
             "GET", apigw.LambdaIntegration(get_course_quiz_questions))
         course_quiz_questions_resource.add_method(
-            "POST", apigw.LambdaIntegration(put_course_quiz_question))
+            "POST", apigw.LambdaIntegration(post_course_quiz_question))
 
         # /course/homework
         course_homework_resource.add_method(
@@ -181,4 +181,9 @@ class CourseStack(Stack):
             self, 'MyApiIdOutput',
             value=main_api.rest_api_id,
             export_name='mainApiId',
+        )
+        CfnOutput(
+            self, 'MyApiRootResourceIdOutput',
+            value=main_api.root.resource_id,
+            export_name='mainApiRootResourceIdOutput',
         )

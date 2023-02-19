@@ -4,7 +4,8 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_apigateway as apigw,
     aws_iam,
-    Stack
+    Stack,
+    Fn
 )
 
 from constructs import Construct
@@ -14,15 +15,6 @@ class AnnouncementStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-
-
-        # Import the API Gateway resource from the first stack
-        course_stack = Stack.of(self, "CourseStack")
-        main_api = apigw.RestApi.from_rest_api_id(
-            self, 'main',
-            course_stack.get_att('Outputs.mainApiId').to_string(),
-        )
-
 
         # Define Constants Here
         FUNCTIONS_FOLDER = "./lambda_functions/"
@@ -45,18 +37,23 @@ class AnnouncementStack(Stack):
             code=_lambda.Code.from_asset(GENERALANNOUNCEMENT_FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE
         )
+        # define the attributes of the existing REST API
+        rest_api_id = Fn.import_value("mainApiId")
+        root_resource_id = Fn.import_value("mainApiRootResourceIdOutput")
 
-         # Create a new Amazon API Gateway REST API
-        main_api = apigw.RestApi.from_rest_api_id(self, "main", description="All LMS APIs")
+        # Retrieve the Amazon API Gateway REST API
+        main_api = apigw.RestApi.from_rest_api_attributes(
+            self, "main", rest_api_id=rest_api_id, root_resource_id=root_resource_id)
 
         # Create resources for the API
-        generalannouncement_resource = main_api.root.add_resource("course")
+        generalannouncement_resource = main_api.root.add_resource(
+            "generalannouncement")
 
         # /generalannouncements
         generalannouncement_resource.add_method("PUT", apigw.LambdaIntegration(get_generalannouncements), request_parameters={
             'method.request.querystring.dateId': False
-            })
-        
+        })
+
         # Enable CORS for each resource/sub-resource etc.
-        generalannouncement_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
-        
+        generalannouncement_resource.add_cors_preflight(
+            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
