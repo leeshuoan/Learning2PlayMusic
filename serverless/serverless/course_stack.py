@@ -75,7 +75,7 @@ class CourseStack(Stack):
             role=LAMBDA_ROLE
         )
 
-        #getCourseAnnouncements AWS Lambda Function
+        #/course/announcements
         get_course_announcements = _lambda.Function(
             self,
             "getCourseAnnouncements",  # name of your lambda function
@@ -85,6 +85,20 @@ class CourseStack(Stack):
             code=_lambda.Code.from_asset(COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE
         )
+        post_course_announcements = _lambda.Function( 
+            self, 
+            "postCourseAnnouncements", 
+            runtime=_lambda.Runtime.PYTHON_3_9, 
+            handler="post_course_announcements.lambda_handler", 
+            code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), 
+            role=LAMBDA_ROLE )
+        delete_course_announcements = _lambda.Function( 
+            self, 
+            "deleteCourseAnnouncements", 
+            runtime=_lambda.Runtime.PYTHON_3_9, 
+            handler="delete_course_announcements.lambda_handler", 
+            code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), 
+            role=LAMBDA_ROLE )
 
         # Create AWS Lambda functionS
         # /course
@@ -134,9 +148,15 @@ class CourseStack(Stack):
             "GET", apigw.LambdaIntegration(get_course_homework))
         
         # /course/announcement
-        course_announcements_resource.add_method(
-            "GET", apigw.LambdaIntegration(get_course_announcements), request_parameters={'method.request.querystring.courseId': True,
-                                                                                          'method.request.querystring.announcementId': False})
+        course_announcements_resource.add_method("GET", apigw.LambdaIntegration(get_course_announcements), request_parameters={
+            'method.request.querystring.courseId': True,
+            'method.request.querystring.announcementId': False})
+        course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_announcements), request_parameters={
+            'method.request.querystring.courseId': True,
+            'method.request.querystring.announcementId': False})
+        course_resource.add_method("POST", apigw.LambdaIntegration(post_course_announcements), request_parameters={
+            'method.request.querystring.courseEndDate': True,
+            'method.request.querystring.announcementId': False})
 
         # Enable CORS for each resource/sub-resource etc.
         course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
