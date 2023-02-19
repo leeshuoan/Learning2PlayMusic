@@ -1,17 +1,19 @@
 import sys
 import boto3
 import json
+import uuid
 
 def lambda_handler(event, context):
     
     try:
       dynamodb = boto3.resource("dynamodb")
       table = dynamodb.Table("LMS")
+      short_uuid = str(uuid.uuid4().hex)[:8]
 
       response = table.put_item(
           Item= {
               "PK": "Course",
-              "SK": f"Course#{event['queryStringParameters']['courseId']}",
+              "SK": f"Course#{short_uuid}",
               "CourseEndDate": f"{event['queryStringParameters']['courseEndDate']}",
               "CourseName": f"{event['queryStringParameters']['courseName']}",
               "CourseTimeSlot": f"{event['queryStringParameters']['courseTimeSlot']}"

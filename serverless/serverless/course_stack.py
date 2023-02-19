@@ -63,19 +63,14 @@ class CourseStack(Stack):
             role=LAMBDA_ROLE
         )
 
-        get_course = _lambda.Function(
-            self,
-            "getCourse",
-            runtime=_lambda.Runtime.PYTHON_3_9,
-            handler="get_course.lambda_handler",
-            code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER),
-            role=LAMBDA_ROLE
-        )
-
+        # Create getCourse AWS Lambda function
+        # /course
+        get_course = _lambda.Function( self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="get_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
+        put_course = _lambda.Function( self, "putCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="put_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
+        delete_course = _lambda.Function( self, "deleteCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="delete_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
 
         # Create a new Amazon API Gateway REST API
-        main_api = apigw.RestApi(self, "main",
-                                    description="All LMS APIs")
+        main_api = apigw.RestApi(self, "main", description="All LMS APIs")
 
         # Create resources for the API
         course_resource = main_api.root.add_resource("course")
@@ -85,13 +80,13 @@ class CourseStack(Stack):
         course_homework_resource = course_resource.add_resource("homework")
 
         # Create sub-sub-resources under the parent resource
-        course_quiz_questions_resource = course_quizzes_resource.add_resource(
-            "questions")
+        course_quiz_questions_resource = course_quizzes_resource.add_resource("questions")
 
         # Create methods in the required resources
-        course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={
-            'method.request.querystring.courseId': True
-        })
+        # /course
+        course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={'method.request.querystring.courseId': False})
+        course_resource.add_method("PUT", apigw.LambdaIntegration(put_course), request_parameters={'method.request.querystring.courseId': True})
+        course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course), request_parameters={'method.request.querystring.courseId': True})
 
         course_quizzes_resource.add_method(
             "GET", apigw.LambdaIntegration(get_course_quizzes))
