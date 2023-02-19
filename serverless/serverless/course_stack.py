@@ -118,8 +118,6 @@ class CourseStack(Stack):
 
         # Create resources for the API
         course_resource = main_api.root.add_resource("course")
-        course_resource = main_api.root.add_resource(
-            "course", default_cors_preflight_options=False)
 
         # Create sub-resources under the parent resource
         course_quizzes_resource = course_resource.add_resource("quiz")
