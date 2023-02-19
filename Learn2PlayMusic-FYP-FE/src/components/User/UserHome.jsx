@@ -36,28 +36,11 @@ const UserHome = ({ userInfo }) => {
     }
   ]
 
-  const myCourses = [
-    {
-      id: 1,
-      title: "Grade 1 Piano",
-      date: "Wednesday 7pm",
-    },
-    {
-      id: 2,
-      title: "Grade 1 Piano",
-      date: "Wednesday 7pm",
-    },
-    {
-      id: 3,
-      title: "Grade 1 Piano",
-      date: "Wednesday 7pm",
-    },
-    {
-      id: 4,
-      title: "Grade 1 Piano",
-      date: "Wednesday 7pm",
-    },
-  ]
+  const myCourse = {
+    id: 1,
+    title: "Grade 1 Piano",
+    date: "Wednesday 7pm",
+  }
 
   const navigate = useNavigate()
 
@@ -91,21 +74,19 @@ const UserHome = ({ userInfo }) => {
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <Typography variant='h4' sx={{ mt: 3, textAlign: "center" }}>Welcome Back, {userInfo.name}</Typography>
+        <Typography variant='h4' sx={{ mt: 3 }}>Welcome Back, {userInfo.name}</Typography>
 
-        <Card sx={{ pt: 3, pb: 1, px: 4, mt: 2 }}>
-          <Typography variant='h6'>My Courses</Typography>
-          <Grid container spacing={1}>
-            {myCourses.map((myCourse, index) => (
-              <Grid item xs={12} sm={6} md={3}>
-                <Card variant='outlined' sx={{ boxShadow: "none", border: "none", my: 1, p: 2 }} key={index}>
-                  <Typography variant='subtitle2' sx={{ pt: 1, color: "primary.main" }}>{myCourse.title}</Typography>
-                  <Typography variant='body2'>{myCourse.date}</Typography>
-                  <Button variant='contained' sx={{ width: "100%", mt: 1 }} onClick={() => { navigate("course/" + myCourse.id) }}>View Course</Button>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+        <Card sx={{ p: 2, px: 5, mt: 2 }} style={{ background: `linear-gradient(45deg, rgba(23,76,106,1) 0%, rgba(35,77,116,0.5) 100%)` }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box>
+              <Typography variant='h4' color="white">{myCourse.title}</Typography>
+              <Typography variant='body2' color="white">Every {myCourse.date}</Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Button variant="contained" sx={{ color: "black", backgroundColor: "white", boxShadow: "none", "&:hover": { backgroundColor: "lightgrey" } }}
+                onClick={() => {navigate(`course/${myCourse.id}`)}}>GO TO COURSE PAGE</Button>
+            </Box>
+          </Box>
         </Card>
 
         <Grid container spacing={2} sx={{ pt: 2 }}>

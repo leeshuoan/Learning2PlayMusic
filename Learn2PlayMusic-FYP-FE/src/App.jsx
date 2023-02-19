@@ -21,6 +21,7 @@ import ChatBase from "./components/Chat/ChatBase";
 import Announcements from "./components/Announcements";
 import UserClassMaterials from "./components/User/Course/UserClassMaterials";
 import UserHomework from "./components/User/Course/UserHomework";
+import UserReport from "./components/User/Course/UserReport";
 
 Amplify.configure(aws_exports);
 
@@ -75,40 +76,31 @@ function App() {
         <ToastContainer />
         <Routes>
           <Route path="/">
-            <Route
-              index
-              element={<SignIn handleSetUserInfo={handleSetUserInfo} />}
-            />
+            <Route index element={<SignIn handleSetUserInfo={handleSetUserInfo} />} />
           </Route>
-          <Route
-            path="admin"
-            element={<PrivateRoutes userType="Admin"></PrivateRoutes>}></Route>
-          <Route
-            path="teacher"
-            element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
+
+          <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}></Route>
+
+          <Route path="teacher" element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
             <Route index element={<TeacherHome userInfo={userInfo} />} />
             <Route path="chat" element={<ChatBase userInfo={userInfo} />} />
           </Route>
-          <Route
-            path="home"
-            element={<PrivateRoutes userType="User"></PrivateRoutes>}>
+
+          <Route path="home" element={<PrivateRoutes userType="User"></PrivateRoutes>}>
             <Route index element={<UserHome userInfo={userInfo} />} />
             <Route path="announcements" element={<Announcements />} />
             <Route path="course/:courseid">
               <Route index element={<UserCourse />} />
               <Route path=":category" element={<UserCourse />} />
-              <Route
-                path="material/:materialId"
-                element={<UserClassMaterials />}
-              />
-              <Route
-                path="homework/:homeworkId"
-                element={<UserHomework />}
-              />
+              <Route path="material/:materialId" element={<UserClassMaterials />} />
+              <Route path="homework/:homeworkId" element={<UserHomework />} />
+              <Route path="report/:reportId" element={<UserReport />} />
             </Route>
           </Route>
+
           <Route path="resetpassword" element={<ForgotPassword />}></Route>
           <Route path="*" element={<NotFound userRole={userInfo.role} />} />
+
         </Routes>
       </ThemeProvider>
     </div>

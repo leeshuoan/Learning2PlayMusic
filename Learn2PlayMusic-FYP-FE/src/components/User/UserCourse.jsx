@@ -5,14 +5,9 @@ import ClassMaterialsTable from './ClassMaterialsTable';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
-import QuizIcon from '@mui/icons-material/Quiz';
-import WorkIcon from '@mui/icons-material/Work';
 import DownloadIcon from '@mui/icons-material/Download';
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import ArticleIcon from '@mui/icons-material/Article';
-import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 const UserCourse = () => {
   const course = {
@@ -32,45 +27,6 @@ const UserCourse = () => {
       title: "Change of lesson date",
       date: "31 Jan 2023",
       content: "Dear parents, the lesson date for 31 Jan 2023 has been changed to 1 Feb 2023. Please take note of this change. Thank you."
-    },
-  ]
-
-  const courseMaterials = [
-    {
-      id: 1,
-      title: "Lesson 1",
-      materials: [
-        {
-          materialId: 1,
-          materialTitle: "Exercise 1",
-          materialType: "PDF",
-          materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-        },
-        {
-          materialId: 2,
-          materialTitle: "Exercise 2",
-          materialType: "Link",
-          materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-        },
-      ]
-    },
-    {
-      id: 2,
-      title: "Lesson 2",
-      materials: [
-        {
-          materialId: 1,
-          materialTitle: "Exercise 1",
-          materialType: "PDF",
-          materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-        },
-        {
-          materialId: 2,
-          materialTitle: "Exercise 2",
-          materialType: "Link",
-          materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-        },
-      ]
     },
   ]
 
@@ -119,20 +75,16 @@ const UserCourse = () => {
     }
   ]
 
-  const courseProgress = {
-    "attendance": 3,
-    "maxAttendance": 3,
-    "quizzes": 2,
-    "maxQuizzes": 3,
-    "homeworkSubmissions": 2,
-    "homework": 3,
-  }
-
   const courseProgressReports = [
     {
+      id: 1,
       title: "Progress Report 1",
-      uploadDate: "31 Jan 2023",
-      reportUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      uploadDate: "31 Jun 2023",
+    },
+    {
+      id: 2,
+      title: "Progress Report 1",
+      uploadDate: "31 Jun 2023",
     }
   ]
 
@@ -294,7 +246,7 @@ const UserCourse = () => {
                   <Card sx={{ py: 3, px: 4, mt: 2 }}>
                     <Grid container spacing={2}>
                       <Grid item xs="12" sm="4">
-                        <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={ () => navigate("" + homework.id) }>{homework.title}</Link></Typography>
+                        <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={() => navigate("" + homework.id)}>{homework.title}</Link></Typography>
                       </Grid>
                       <Grid item xs="12" sm="3">
                         <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.dueDate}</Typography>
@@ -314,49 +266,28 @@ const UserCourse = () => {
             </Box>
 
             <Box sx={{ display: category == "report" ? "block" : "none" }}>
-              <Grid container spacing={2}>
-                <Grid item xs="12" sm="4">
-                  <Card sx={{ py: { xs: 2, sm: 4 }, px: 5, mt: { xs: 0, sm: 2 } }}>
-                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
-                      <EmojiPeopleIcon />
-                      <Typography variant='h6' sx={{ ml: 1 }}>Attendance Rate</Typography>
+              <Card sx={{ py: 3, px: 4, mt: 2 }}>
+                <Typography variant='subtitle1' sx={{ textAlign: "center" }}>Your Points</Typography>
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <EmojiEventsIcon fontSize="large" sx={{ color: '#FFB118' }} />
+                  <Typography variant='h4'>203</Typography>
+                </Box>
+              </Card>
+              <Card sx={{ py: 3, px: 5, mt: 2 }}>
+                <Typography variant='h6' sx={{ textAlign: "center" }}>My Progress Report</Typography>
+                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Typography variant='subtitle1' sx={{ textAlign: "center", ml: 2 }}>TITLE</Typography>
+                  <Typography variant='subtitle1' sx={{ textAlign: "center", mr: 2 }}>DATE AVAILABLE</Typography>
+                </Box>
+                {courseProgressReports.map((report) => (
+                  <Card variant='outlined' sx={{ py: 2, px: 2, mt: 2, boxShadow: "none" }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                      <Typography variant='subtitle1' color="primary.main"><Link onClick={() => navigate("" + report.id)}>{report.title}</Link></Typography>
+                      <Typography variant='subttile1' color="lightgrey">{report.uploadDate}</Typography>
                     </Box>
-                    <Typography variant="h5" sx={{ mt: 1, textAlign: "center", color: "primary.main" }}>{courseProgress.attendance}/{courseProgress.maxAttendance} ({(courseProgress.attendance / courseProgress.maxAttendance * 100).toFixed(1)}%)</Typography>
                   </Card>
-                </Grid>
-                <Grid item xs="12" sm="4">
-                  <Card sx={{ py: { xs: 2, sm: 4 }, px: 5, mt: { xs: 0, sm: 2 } }}>
-                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
-                      <QuizIcon />
-                      <Typography variant='h6' sx={{ ml: 1 }}>Quizzes Completed</Typography>
-                    </Box>
-                    <Typography variant="h5" sx={{ mt: 1, textAlign: "center", color: "primary.main" }}>{courseProgress.quizzes}/{courseProgress.maxQuizzes} ({(courseProgress.quizzes / courseProgress.maxQuizzes * 100).toFixed(1)}%)</Typography>
-                  </Card>
-                </Grid>
-                <Grid item xs="12" sm="4">
-                  <Card sx={{ py: { xs: 2, sm: 4 }, px: 5, mt: { xs: 0, sm: 2 } }}>
-                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
-                      <WorkIcon />
-                      <Typography variant='h6' sx={{ ml: 1 }}>Homework Submitted</Typography>
-                    </Box>
-                    <Typography variant="h5" sx={{ mt: 1, textAlign: "center", color: "primary.main" }}>{courseProgress.homeworkSubmissions}/{courseProgress.homework} ({(courseProgress.homeworkSubmissions / courseProgress.homework * 100).toFixed(1)}%)</Typography>
-                  </Card>
-                </Grid>
-              </Grid>
-              {courseProgressReports.map((report) => (
-                <Card sx={{ py: 3, px: 5, mt: 2, display: "flex" }}>
-                  <Box>
-                    <Typography variant='h6'>{report.title}</Typography>
-                    <Typography variant='subsubtitle'>Uploaded {report.uploadDate}</Typography>
-                  </Box>
-                  <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
-                    <Button variant="contained">
-                      <DownloadIcon sx={{ mr: 1 }} />
-                      Download
-                    </Button>
-                  </Box>
-                </Card>
-              ))}
+                ))}
+              </Card>
             </Box>
 
           </Box>
