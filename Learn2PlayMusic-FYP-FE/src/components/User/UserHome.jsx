@@ -1,4 +1,4 @@
-import React from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Typography, Container, Grid, Card, Box, Link, Button } from '@mui/material'
 
@@ -61,6 +61,33 @@ const UserHome = ({ userInfo }) => {
 
   const navigate = useNavigate()
 
+  const getCourses = fetch(`${import.meta.env.VITE_API_URL}/courses`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+
+  const getGeneralAnnouncements = fetch(`${import.meta.env.VITE_API_URL}/getGeneralAnnouncements`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+
+  useEffect(() => {
+    Promise.all([getCourses, getGeneralAnnouncements]).then(([res1, res2]) => {
+      return Promise.all([res1.json(), res2.json()]).then(
+        ([data1, data2]) => {
+          console.log(data1)
+          console.log(data2)
+        }
+      )
+    }).catch((error) => {
+      console.log(error)
+    })
+  }, [])
+
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
@@ -93,7 +120,7 @@ const UserHome = ({ userInfo }) => {
                 </Card>
               ))}
               <Box sx={{ textAlign: "center" }}>
-                <Link onClick={() => {navigate("announcements")}}>View All Announcements</Link>
+                <Link onClick={() => { navigate("announcements") }}>View All Announcements</Link>
               </Box>
             </Card>
           </Grid>

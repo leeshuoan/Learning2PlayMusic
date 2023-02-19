@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Breadcrumbs } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -134,6 +134,7 @@ const UserCourse = () => {
 
   const navigate = useNavigate()
   const { category } = useParams()
+  const { courseid } = useParams()
   const menuOptions = ["Announcements", "Class Materials", "Quizzes", "Homework", "My Progress Report"]
   const routeMenuMapping = {
     "announcement": "Announcements",
@@ -142,6 +143,20 @@ const UserCourse = () => {
     "homework": "Homework",
     "report": "My Progress Report"
   }
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+      }).catch((error) => {
+        console.log(error)
+      })
+  }, [])
 
   const menuNavigate = (option) => {
     if (option == "Announcements") navigate(`/home/course/${course.id}/announcement`)
@@ -278,7 +293,7 @@ const UserCourse = () => {
                   <Grid container spacing={2} sx={{ alignItems: "center" }}>
                     <Grid item xs="12" sm="6">
                       <Button variant="contained" onClick={() => { navigate() }}>
-                        <PlayCircleFilledIcon sx={{ mr: 1 }}/>
+                        <PlayCircleFilledIcon sx={{ mr: 1 }} />
                         Start Quiz
                       </Button>
                     </Grid>
