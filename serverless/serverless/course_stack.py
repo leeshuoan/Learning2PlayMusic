@@ -103,12 +103,9 @@ class CourseStack(Stack):
 
         # Create AWS Lambda functionS
         # /course
-        get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9,
-                                      handler="get_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        post_course = _lambda.Function(self, "postCourse", runtime=_lambda.Runtime.PYTHON_3_9,
-                                       handler="post_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        delete_course = _lambda.Function(self, "deleteCourse", runtime=_lambda.Runtime.PYTHON_3_9,
-                                         handler="delete_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="get_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        post_course = _lambda.Function(self, "postCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="post_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        delete_course = _lambda.Function(self, "deleteCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="delete_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # Create Amazon API Gateway REST API
         main_api = apigw.RestApi(

@@ -8,10 +8,15 @@ def lambda_handler(event, context):
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
-        courseId = event['queryStringParameters']['courseId']
+        courseId = event['queryStringParameters']
+
+        if courseId is None or courseId == "null":
+            sortKey = "Course#"
+        else:
+            courseId = event['queryStringParameters']['courseId']
+            sortKey = "Course#" + courseId
 
         partitionKey = "Course"
-        sortKey = "Course#" + courseId
 
         response = table.query(
             KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
@@ -28,7 +33,7 @@ def lambda_handler(event, context):
             "headers": {
                 "Access-Control-Allow-Headers": "Content-Type",
                 "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "*"
+                "Access-Control-Allow-Methods": "POST,GET,DELETE"
             },
             "body": json.dumps(items)
         }
