@@ -88,18 +88,9 @@ class CourseStack(Stack):
 
         # Create AWS Lambda functionS
         # /course
-<<<<<<< Updated upstream
-        get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9,
-                                      handler="get_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        put_course = _lambda.Function(self, "putCourse", runtime=_lambda.Runtime.PYTHON_3_9,
-                                      handler="put_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        delete_course = _lambda.Function(self, "deleteCourse", runtime=_lambda.Runtime.PYTHON_3_9,
-                                         handler="delete_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-=======
         get_course = _lambda.Function( self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="get_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
         post_course = _lambda.Function( self, "postCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="post_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
         delete_course = _lambda.Function( self, "deleteCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="delete_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
->>>>>>> Stashed changes
 
         # Create Amazon API Gateway REST API
         main_api = apigw.RestApi(self, "main", description="All LMS APIs")
@@ -148,18 +139,7 @@ class CourseStack(Stack):
                                                                                           'method.request.querystring.announcementId': False})
 
         # Enable CORS for each resource/sub-resource etc.
-<<<<<<< Updated upstream
-        course_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
-        course_quizzes_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
-        course_homework_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
-        course_quiz_questions_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
-=======
         course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
         course_quizzes_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
         course_homework_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
         course_quiz_questions_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
->>>>>>> Stashed changes
