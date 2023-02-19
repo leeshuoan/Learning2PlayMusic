@@ -1,5 +1,6 @@
 import boto3
 import json
+import os
 
 """ this function will get read all the messages of a conversation with the conversation id being 
 teacherId (always in front) + studentId
@@ -10,8 +11,7 @@ conversationId = abc+123
 """
 def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('Chat')
-    
+    table = dynamodb.Table(os.environ["tableName"])     # Chat
     conversationId = event.get('conversationId')
     if not conversationId:
         return {

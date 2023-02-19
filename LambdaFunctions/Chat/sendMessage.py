@@ -1,12 +1,6 @@
 import boto3
 import datetime
-""" this function will get send a the message from the text box of a chat UI with the conversation id being 
-teacherId (always in front) + studentId
-eg. 
-student = abc
-teacher =  123
-convId = abc+123
-"""
+import json
 
 def lambda_handler(event, context):
     try:
@@ -15,6 +9,11 @@ def lambda_handler(event, context):
         conversationId = event.get('conversationId')
         author = event.get('author')
         messageBody = event.get('messageBody')
+        users = conversationId.split("+")
+        if users[0]== author:
+            recipient = users[1]
+        else:
+            recipient = users[0]
         
         # Validate input parameters
         if not conversationId:
@@ -43,7 +42,8 @@ def lambda_handler(event, context):
                 'conversationId': {'S': conversationId},
                 'timestamp': {'S': timestamp},
                 'author': {'S': author},
-                'messageBody': {'S': messageBody}
+                'messageBody': {'S': messageBody},
+                'recipient': {'S': recipient}
             }
         )
         

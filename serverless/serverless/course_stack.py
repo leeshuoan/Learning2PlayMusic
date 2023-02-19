@@ -22,7 +22,7 @@ class CourseStack(Stack):
         COURSE_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course/"
         COURSE_HOMEWORK_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course_homework/"
         COURSE_QUIZ_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course_quiz/"
-        COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER + "course_announcements/"
+        COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER = COURSE_FUNCTIONS_FOLDER + "course_announcement/"
 
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
@@ -75,7 +75,7 @@ class CourseStack(Stack):
             role=LAMBDA_ROLE
         )
 
-        #getCourseAnnouncement AWS Lambda Function
+        #/course/announcements
         get_course_announcements = _lambda.Function(
             self,
             "getCourseAnnouncements",  # name of your lambda function
@@ -85,21 +85,32 @@ class CourseStack(Stack):
             code=_lambda.Code.from_asset(COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE
         )
+        post_course_announcements = _lambda.Function( 
+            self, 
+            "postCourseAnnouncements", 
+            runtime=_lambda.Runtime.PYTHON_3_9, 
+            handler="post_course_announcements.lambda_handler", 
+            code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), 
+            role=LAMBDA_ROLE )
+        delete_course_announcements = _lambda.Function( 
+            self, 
+            "deleteCourseAnnouncements", 
+            runtime=_lambda.Runtime.PYTHON_3_9, 
+            handler="delete_course_announcements.lambda_handler", 
+            code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), 
+            role=LAMBDA_ROLE )
 
         # Create AWS Lambda functionS
         # /course
-        get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9,
-                                      handler="get_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        put_course = _lambda.Function(self, "putCourse", runtime=_lambda.Runtime.PYTHON_3_9,
-                                      handler="put_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        delete_course = _lambda.Function(self, "deleteCourse", runtime=_lambda.Runtime.PYTHON_3_9,
-                                         handler="delete_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        get_course = _lambda.Function( self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="get_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
+        post_course = _lambda.Function( self, "postCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="post_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
+        delete_course = _lambda.Function( self, "deleteCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="delete_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
 
         # Create Amazon API Gateway REST API
         main_api = apigw.RestApi(self, "main", description="All LMS APIs")
 
         # Create resources for the API
-        course_resource = main_api.root.add_resource("course")
+        course_resource = main_api.root.add_resource("course", default_cors_preflight_options=False)
 
         # Create sub-resources under the parent resource
         course_quizzes_resource = course_resource.add_resource("quiz")
@@ -115,7 +126,7 @@ class CourseStack(Stack):
         # /course
         course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={'method.request.querystring.courseId': False})
         course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course), request_parameters={'method.request.querystring.courseId': True})
-        course_resource.add_method("PUT", apigw.LambdaIntegration(put_course), request_parameters={
+        course_resource.add_method("POST", apigw.LambdaIntegration(post_course), request_parameters={
             'method.request.querystring.courseEndDate': True,
             'method.request.querystring.courseName': True,
             'method.request.querystring.courseTimeSlot': True,
@@ -137,16 +148,18 @@ class CourseStack(Stack):
             "GET", apigw.LambdaIntegration(get_course_homework))
         
         # /course/announcement
-        course_announcements_resource.add_method(
-            "GET", apigw.LambdaIntegration(get_course_announcements), request_parameters={'method.request.querystring.courseId': True,
-                                                                                          'method.request.querystring.announcementId': False})
+        course_announcements_resource.add_method("GET", apigw.LambdaIntegration(get_course_announcements), request_parameters={
+            'method.request.querystring.courseId': True,
+            'method.request.querystring.announcementId': False})
+        course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_announcements), request_parameters={
+            'method.request.querystring.courseId': True,
+            'method.request.querystring.announcementId': False})
+        course_resource.add_method("POST", apigw.LambdaIntegration(post_course_announcements), request_parameters={
+            'method.request.querystring.courseEndDate': True,
+            'method.request.querystring.announcementId': False})
 
         # Enable CORS for each resource/sub-resource etc.
-        course_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
-        course_quizzes_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
-        course_homework_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
-        course_quiz_questions_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+        course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+        course_quizzes_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+        course_homework_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+        course_quiz_questions_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)

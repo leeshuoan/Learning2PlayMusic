@@ -106,6 +106,8 @@ const palette = {
   success: { ...SUCCESS },
   warning: { ...WARNING },
   error: { ...ERROR },
+  lightgrey: GREY[400],
+  hovergrey: GREY[500],
   grey: GREY,
   gradients: GRADIENTS,
   chart: CHART_COLORS,
