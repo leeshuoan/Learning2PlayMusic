@@ -74,11 +74,11 @@ class CourseStack(Stack):
 
 
         # Create a new Amazon API Gateway REST API
-        course2_api = apigw.RestApi(self, "course2",
-                                    description="Course CRUD API from CDK")
+        main_api = apigw.RestApi(self, "main",
+                                    description="All LMS APIs")
 
         # Create resources for the API
-        course_resource = course2_api.root.add_resource("course")
+        course_resource = main_api.root.add_resource("course")
 
         # Create sub-resources under the parent resource
         course_quizzes_resource = course_resource.add_resource("quizzes")
