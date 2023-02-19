@@ -8,9 +8,6 @@ def lambda_handler(event, context):
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
-        ## For local testing
-        # courseId = event["courseId"]
-
         courseId = event['queryStringParameters']['courseId']
 
         partitionKey = "Course"
@@ -31,7 +28,7 @@ def lambda_handler(event, context):
             "headers": {
                 "Access-Control-Allow-Headers": "Content-Type",
                 "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST,GET,PUT"
+                "Access-Control-Allow-Methods": "DELETE,GET,PUT"
             },
             "body": json.dumps(items)
         }

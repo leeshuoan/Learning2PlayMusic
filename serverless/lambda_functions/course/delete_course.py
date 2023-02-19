@@ -20,7 +20,7 @@ def lambda_handler(event, context):
           "headers": {
               "Access-Control-Allow-Headers": "Content-Type",
               "Access-Control-Allow-Origin": "*",
-              "Access-Control-Allow-Methods": "POST,GET,PUT"
+              "Access-Control-Allow-Methods": "DELETE,GET,PUT"
           },
           "body": "Successfully deleted item!"
       }

@@ -99,8 +99,13 @@ class CourseStack(Stack):
         # Create methods in the required resources
         # /course
         course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={'method.request.querystring.courseId': False})
-        course_resource.add_method("PUT", apigw.LambdaIntegration(put_course), request_parameters={'method.request.querystring.courseId': True})
         course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course), request_parameters={'method.request.querystring.courseId': True})
+        course_resource.add_method("PUT", apigw.LambdaIntegration(put_course), request_parameters={
+            'method.request.querystring.courseEndDate': True,
+            'method.request.querystring.courseName': True,
+            'method.request.querystring.courseTimeSlot': True,
+
+            })
 
 
         # /course/quiz
