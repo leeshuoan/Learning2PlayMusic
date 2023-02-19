@@ -19,6 +19,9 @@ class CourseStack(Stack):
 
         # Define Constants Here
         FUNCTIONS_FOLDER = "./lambda_functions/"
+        COURSE_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course/"
+        COURSE_HOMEWORK_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course_homework/"
+        COURSE_QUIZ_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course_quiz/"
 
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
@@ -34,7 +37,7 @@ class CourseStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_9,
             # change based on your python file name
             handler="get_course_quizzes.lambda_handler",
-            code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
+            code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE
         )
 
@@ -45,7 +48,7 @@ class CourseStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_9,
             # change based on your python file name
             handler="get_course_quiz_questions.lambda_handler",
-            code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
+            code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE
         )
 
@@ -56,7 +59,7 @@ class CourseStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_9,
             # change based on your python file name
             handler="get_course_homework.lambda_handler",
-            code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
+            code=_lambda.Code.from_asset(COURSE_HOMEWORK_FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE
         )
 
@@ -65,7 +68,7 @@ class CourseStack(Stack):
             "getCourse",
             runtime=_lambda.Runtime.PYTHON_3_9,
             handler="get_course.lambda_handler",
-            code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
+            code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE
         )
 
