@@ -5,6 +5,10 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ThemeProvider from "./theme/index";
 import PrivateRoutes from "./components/utils/PrivateRoutes";
+// Amplify setup
+import aws_exports from "./aws-exports";
+import { Amplify } from "aws-amplify";
+import { Auth } from "aws-amplify";
 // App components
 import DefaultAppBar from "./components/AppBar/DefaultAppBar";
 import SignIn from "./components/SignIn";
@@ -15,11 +19,9 @@ import UserHome from "./components/User/UserHome";
 import UserCourse from "./components/User/UserCourse";
 import ChatBase from "./components/Chat/ChatBase";
 import Announcements from "./components/Announcements";
-// Amplify setup
-import aws_exports from "./aws-exports";
-import { Amplify } from "aws-amplify";
-import { Auth } from "aws-amplify";
 import UserClassMaterials from "./components/User/Course/UserClassMaterials";
+import UserHomework from "./components/User/Course/UserHomework";
+
 Amplify.configure(aws_exports);
 
 function App() {
@@ -96,8 +98,12 @@ function App() {
               <Route index element={<UserCourse />} />
               <Route path=":category" element={<UserCourse />} />
               <Route
-                path="material/:categoryId/:materialId"
+                path="material/:materialId"
                 element={<UserClassMaterials />}
+              />
+              <Route
+                path="homework/:homeworkId"
+                element={<UserHomework />}
               />
             </Route>
           </Route>

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Breadcrumbs } from '@mui/material'
+import ClassMaterialsTable from './ClassMaterialsTable';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -17,7 +18,7 @@ const UserCourse = () => {
   const course = {
     id: 1,
     title: "Grade 1 Piano",
-    date: "21 Mar 2023",
+    date: "Wednesday 7pm",
     teacher: "Miss Felicia Ng"
   }
 
@@ -96,19 +97,22 @@ const UserCourse = () => {
 
   const courseHomework = [
     {
+      id: 1,
       title: "Homework 1",
       dueDate: "3 Feb 2023, 23:59PM",
       score: "80%",
       submission: 1,
     },
     {
+      id: 2,
       title: "Homework 2",
       dueDate: "13 Feb 2023, 23:59PM",
       score: "80%",
       submission: 1,
     },
     {
-      title: "Homework 1",
+      id: 3,
+      title: "Homework 3",
       dueDate: "3 Mar 2023, 23:59PM",
       score: "",
       submission: 0,
@@ -176,30 +180,17 @@ const UserCourse = () => {
         <Typography color="text.primary">{course.title}</Typography>
       </Breadcrumbs>
 
-      <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "flex" } }}>
+      <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Box sx={{ ml: 2, mb: 1 }}>
-            <Typography variant='h5' sx={{ color: "primary.main" }}>{course.title}</Typography>
-            <Typography variant='subtitle2'>Date: {course.date}</Typography>
-          </Box>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
-          <Box sx={{ ml: 2, mb: 1 }}>
-            <Typography variant='subtitle1'>{course.teacher}</Typography>
-            <Typography variant='body2' sx={{ textAlign: "right" }}>Teacher</Typography>
-          </Box>
-        </Box>
-      </Card>
-
-      <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "flex", sm: "none" } }}>
-        <Box sx={{ display: "", alignItems: "center" }}>
-          <Box sx={{ ml: 2, mb: 1 }}>
+          <Box>
             <Typography variant='h5' sx={{ color: "primary.main" }}>{course.title}</Typography>
             <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.date}</Typography>
           </Box>
-          <Box sx={{ ml: 2, mt: 1 }}>
-            <Typography variant='subtitle1' >{course.teacher}</Typography>
-            <Typography variant='body2' >Teacher</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+          <Box>
+            <Typography variant='subtitle1' sx={{ mb: 0.5 }}>{course.teacher}</Typography>
+            <Typography variant='body2' sx={{ textAlign: "right" }}>Teacher</Typography>
           </Box>
         </Box>
       </Card>
@@ -254,36 +245,7 @@ const UserCourse = () => {
             </Card>
 
             <Box sx={{ display: category == "material" ? "block" : "none" }}>
-              {courseMaterials.map((courseMaterial) => (
-                <Card sx={{ py: 1, px: 3, mt: 2 }}>
-                  <Accordion>
-                    <AccordionSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      aria-controls="panel1a-content"
-                      id="panel1a-header"
-                    >
-                      <Typography variant='h5'>{courseMaterial.title}</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      {courseMaterial.materials.map((material) => (
-                        <Card variant='outlined' sx={{ boxShadow: "none", display: "flex", mb: 2, p: 2 }}>
-                          <Box>
-                            <Typography variant='subtitle1'>{material.materialTitle}</Typography>
-                            <Typography variant='subsubtitle' sx={{ display: "flex", alignItems: "center" }}>
-                              <InsertLinkIcon fontSize="small" sx={{ display: material.materialType == "Link" ? "block" : "none", mr: 0.5 }} />
-                              <ArticleIcon fontSize="small" sx={{ display: material.materialType == "PDF" ? "block" : "none", mr: 0.5 }} />
-                              {material.materialType == "PDF" ? "PDF Document" : material.materialType == "Link" ? "External Link" : ""}
-                            </Typography>
-                          </Box>
-                          <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
-                            <Button variant="contained" onClick={() => { navigate(courseMaterial.id + "/" + material.materialId) }}>View</Button>
-                          </Box>
-                        </Card>
-                      ))}
-                    </AccordionDetails>
-                  </Accordion>
-                </Card>
-              ))}
+              <ClassMaterialsTable />
             </Box>
 
             <Box sx={{ display: category == "quiz" ? "block" : "none" }}>
@@ -332,7 +294,7 @@ const UserCourse = () => {
                   <Card sx={{ py: 3, px: 4, mt: 2 }}>
                     <Grid container spacing={2}>
                       <Grid item xs="12" sm="4">
-                        <Typography variant='body1' sx={{ color: "primary.main" }}>{homework.title}</Typography>
+                        <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={ () => navigate("" + homework.id) }>{homework.title}</Link></Typography>
                       </Grid>
                       <Grid item xs="12" sm="3">
                         <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.dueDate}</Typography>
@@ -343,8 +305,8 @@ const UserCourse = () => {
                         <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Score: {homework.score}</Typography>
                       </Grid>
                       <Grid item xs="12" sm="2">
-                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.submission} FILE</Typography>
-                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.submission} FILE</Typography>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.submission}/1</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.submission}/1</Typography>
                       </Grid>
                     </Grid>
                   </Card>
