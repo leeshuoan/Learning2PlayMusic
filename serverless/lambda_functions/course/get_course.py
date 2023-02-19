@@ -28,7 +28,7 @@ def lambda_handler(event, context):
             "headers": {
                 "Access-Control-Allow-Headers": "Content-Type",
                 "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "DELETE,GET,PUT"
+                "Access-Control-Allow-Methods": "DELETE,GET,POST"
             },
             "body": json.dumps(items)
         }
