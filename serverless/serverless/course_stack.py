@@ -33,85 +33,34 @@ class CourseStack(Stack):
             self, "lambda-general-role", role_arn)
 
         # Create getCourseQuizzes AWS Lambda function
-        get_course_quizzes = _lambda.Function(
-            self,
-            "getCourseQuizzes",  # name of your lambda function
-            runtime=_lambda.Runtime.PYTHON_3_9,
-            # change based on your python file name
-            handler="get_course_quizzes.lambda_handler",
-            code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER),
-            role=LAMBDA_ROLE
-        )
+        get_course_quizzes = _lambda.Function( self, "getCourseQuizzes", runtime=_lambda.Runtime.PYTHON_3_9, handler="get_course_quizzes.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
 
         # Create getCourseQuizQuestions AWS Lambda function
-        get_course_quiz_questions = _lambda.Function(
-            self,
-            "getCourseQuizQuestions",  # name of your lambda function
-            runtime=_lambda.Runtime.PYTHON_3_9,
-            # change based on your python file name
-            handler="get_course_quiz_questions.lambda_handler",
-            code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER),
-            role=LAMBDA_ROLE
-        )
+        get_course_quiz_questions = _lambda.Function(self, "getCourseQuizQuestions", runtime=_lambda.Runtime.PYTHON_3_9, handler="get_course_quiz_questions.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # Create putCourseQuizQuestion AWS Lambda function
-        post_course_quiz_question = _lambda.Function(
-            self,
-            "putCourseQuizQuestion",  # name of your lambda function
-            runtime=_lambda.Runtime.NODEJS_16_X,
-            # change based on your python file name
-            handler="post_course_quiz_question.lambda_handler",
-            code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER),
-            role=LAMBDA_ROLE
-        )
+        post_course_quiz_question = _lambda.Function(self, "putCourseQuizQuestion", runtime=_lambda.Runtime.NODEJS_16_X, handler="post_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # Create getCourseHomework AWS Lambda function
-        get_course_homework = _lambda.Function(
-            self,
-            "getCourseHomework",  # name of your lambda function
-            runtime=_lambda.Runtime.PYTHON_3_9,
-            # change based on your python file name
-            handler="get_course_homework.lambda_handler",
-            code=_lambda.Code.from_asset(COURSE_HOMEWORK_FUNCTIONS_FOLDER),
-            role=LAMBDA_ROLE
-        )
+        get_course_homework = _lambda.Function(self, "getCourseHomework", runtime=_lambda.Runtime.PYTHON_3_9, handler="get_course_homework.lambda_handler", code=_lambda.Code.from_asset(COURSE_HOMEWORK_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
-        # Create getCourseAnnouncements AWS Lambda function
-        get_course_announcements = _lambda.Function(
-            self,
-            "getCourseAnnouncements",  # name of your lambda function
-            runtime=_lambda.Runtime.PYTHON_3_9,
-            # change based on your python file name
-            handler="get_course_announcements.lambda_handler",
-            code=_lambda.Code.from_asset(COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER),
-            role=LAMBDA_ROLE
-        )
-        post_course_announcements = _lambda.Function(
-            self,
-            "postCourseAnnouncements",
-            runtime=_lambda.Runtime.PYTHON_3_9,
-            handler="post_course_announcements.lambda_handler",
-            code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER),
-            role=LAMBDA_ROLE)
-        delete_course_announcements = _lambda.Function(
-            self,
-            "deleteCourseAnnouncements",
-            runtime=_lambda.Runtime.PYTHON_3_9,
-            handler="delete_course_announcements.lambda_handler",
-            code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER),
-            role=LAMBDA_ROLE)
+        # /course/announcement Functions
+        get_course_announcement = _lambda.Function(self, "getCourseAnnouncement",  runtime=_lambda.Runtime.PYTHON_3_9, handler="get_course_announcement.lambda_handler", code=_lambda.Code.from_asset(COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        post_course_announcement = _lambda.Function(self, "postCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler="post_course_announcement.lambda_handler", code=_lambda.Code.from_asset(COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        delete_course_announcement = _lambda.Function(self, "deleteCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler="delete_course_announcement.lambda_handler", code=_lambda.Code.from_asset(COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
-        # Create AWS Lambda functionS
-        # /course
+        # /course Functions
+        get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="get_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        post_course = _lambda.Function(self, "postCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="post_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        delete_course = _lambda.Function(self, "deleteCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="delete_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+        # /course/lesson Functions
         get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="get_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course = _lambda.Function(self, "postCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="post_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course = _lambda.Function(self, "deleteCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler="delete_course.lambda_handler", code=_lambda.Code.from_asset(COURSE_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # Create Amazon API Gateway REST API
-        main_api = apigw.RestApi(
-            self,
-            "main",
-            description="All LMS APIs")
+        main_api = apigw.RestApi( self, "main", description="All LMS APIs")
 
         # Create resources for the API
         course_resource = main_api.root.add_resource("course")
@@ -119,27 +68,26 @@ class CourseStack(Stack):
         # Create sub-resources under the parent resource
         course_quizzes_resource = course_resource.add_resource("quiz")
         course_homework_resource = course_resource.add_resource("homework")
-        course_announcements_resource = course_resource.add_resource(
-            "announcements")
+        course_announcement_resource = course_resource.add_resource("announcements")
 
         # Create sub-sub-resources under the parent resource
-        course_quiz_questions_resource = course_quizzes_resource.add_resource(
-            "question")
+        course_quiz_questions_resource = course_quizzes_resource.add_resource("question")
 
         # Create methods in the required resources
         # /course
-        course_resource.add_method("GET", apigw.LambdaIntegration(
-            get_course), request_parameters={'method.request.querystring.courseId': False})
-        course_resource.add_method("DELETE", apigw.LambdaIntegration(
-            delete_course), request_parameters={'method.request.querystring.courseId': True})
+        course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={
+            'method.request.querystring.courseId': False})
+        course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course), request_parameters={
+            'method.request.querystring.courseId': True})
 
+        # Define a JSON Schema to accept Request Body in JSON format
         post_course_model = main_api.add_model(
             "ResponseModel",
             content_type="application/json",
             model_name="PostCourseModel",
             schema=apigw.JsonSchema(
-                title="Create a course",
-                description="Create a course using the following properties",
+                title="PostCourseModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
                 type=apigw.JsonSchemaType.OBJECT,
                 properties={
                     "courseEndDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
@@ -149,8 +97,7 @@ class CourseStack(Stack):
                 required=["courseEndDate","courseName", "courseTimeSlot"]))
 
         course_resource.add_method("POST", apigw.LambdaIntegration(post_course), request_models={
-            "application/json": post_course_model
-        })
+            "application/json": post_course_model})
 
         # /course/quiz
         course_quizzes_resource.add_method(
@@ -167,13 +114,13 @@ class CourseStack(Stack):
             "GET", apigw.LambdaIntegration(get_course_homework))
 
         # /course/announcement
-        course_announcements_resource.add_method("GET", apigw.LambdaIntegration(get_course_announcements), request_parameters={
+        course_announcement_resource.add_method("GET", apigw.LambdaIntegration(get_course_announcement), request_parameters={
             'method.request.querystring.courseId': True,
             'method.request.querystring.announcementId': False})
-        course_announcements_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_announcements), request_parameters={
+        course_announcement_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_announcement), request_parameters={
             'method.request.querystring.courseId': True,
             'method.request.querystring.announcementId': False})
-        course_announcements_resource.add_method("POST", apigw.LambdaIntegration(post_course_announcements), request_parameters={
+        course_announcement_resource.add_method("POST", apigw.LambdaIntegration(post_course_announcement), request_parameters={
             'method.request.querystring.courseEndDate': True,
             'method.request.querystring.announcementId': False})
 
