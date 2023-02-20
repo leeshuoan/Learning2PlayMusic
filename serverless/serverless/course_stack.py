@@ -132,10 +132,24 @@ class CourseStack(Stack):
             get_course), request_parameters={'method.request.querystring.courseId': False})
         course_resource.add_method("DELETE", apigw.LambdaIntegration(
             delete_course), request_parameters={'method.request.querystring.courseId': True})
-        course_resource.add_method("POST", apigw.LambdaIntegration(post_course), request_parameters={
-            'method.request.querystring.courseEndDate': True,
-            'method.request.querystring.courseName': True,
-            'method.request.querystring.courseTimeSlot': True,
+
+        post_course_model = main_api.add_model(
+            "ResponseModel",
+            content_type="application/json",
+            model_name="PostCourseModel",
+            schema=apigw.JsonSchema(
+                title="Create a course",
+                description="Create a course using the following properties",
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseEndDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "courseName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "courseTimeSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                },
+                required=["courseEndDate","courseName", "courseTimeSlot"]))
+
+        course_resource.add_method("POST", apigw.LambdaIntegration(post_course), request_models={
+            "application/json": post_course_model
         })
 
         # /course/quiz
