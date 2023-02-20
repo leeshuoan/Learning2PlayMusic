@@ -40,7 +40,6 @@ const UserHomework = () => {
   return (
     <>
       <TransitionModal open={open} handleClose={handleClose}>
-            <Typography variant='subtitle2' sx={{ mt: 3, mb: 0.5 }}>UPLOAD FILE</Typography>
         <Typography variant="h6" sx={{ textAlign: 'center' }}>
           Submit your homework?
         </Typography>
