@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { useTheme, Card, Button, CssBaseline, TextField, Link, Grid, Box, Typography, Container, Backdrop, CircularProgress } from "@mui/material";
 import homebg from '../assets/homebg.png'
 
-export default function SignIn({ handleSetUserInfo }) {
+export default function SignIn({ userInfo, handleSetUserInfo }) {
   const theme = useTheme();
   const navigate = useNavigate()
   const [open, setOpen] = useState(false);
@@ -20,6 +20,14 @@ export default function SignIn({ handleSetUserInfo }) {
     Admin: "/admin",
     Teacher: "/teacher",
     User: "/home",
+  }
+
+  if (userInfo.role == 'Admin') {
+    navigate(routes[userInfo.role])
+  } else if (userInfo.role == 'Teacher') {
+    navigate(routes[userInfo.role])
+  } else if (userInfo.role == 'User') {
+    navigate(routes[userInfo.role])
   }
 
   const handleSubmit = (event) => {

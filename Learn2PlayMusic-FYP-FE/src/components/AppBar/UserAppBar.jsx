@@ -76,39 +76,29 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
               sx={{ display: "flex", justifyContent: "space-between" }}>
               {/* MOBILE NAV */}
               <Box sx={{ display: { xs: "flex", md: "none" } }}>
-                <IconButton
-                  size="large"
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleOpenNavMenu}
-                  color="inherit">
-                  <MenuIcon />
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorElNav}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "left",
-                  }}
-                  open={Boolean(anchorElNav)}
-                  onClose={handleCloseNavMenu}
+                <Avatar
                   sx={{
-                    display: { xs: 'block', md: 'none' },
-                  }}
-                >
-                  <MenuItem>NOTHING HERE YET</MenuItem>
-                </Menu>
+                    display: { xs: "flex", md: "none" },
+                    width: 32,
+                    height: 32,
+                    bgcolor: "grey[100]",
+                  }}>
+                  <NotificationsIcon />
+                </Avatar>
+                <Avatar
+                  sx={{
+                    display: { xs: "flex", md: "none" },
+                    ml: 1,
+                    width: 32,
+                    height: 32,
+                    bgcolor: "grey[100]",
+                  }}>
+                  <ChatIcon onClick={() => handleRoute("Chat")} />
+                </Avatar>
               </Box>
 
-              <IconButton disableRipple onClick={() => {navigate("/home")}}>
-              <img src="/l2pm_logo.png" width="150px" />
+              <IconButton disableRipple onClick={() => { navigate("/home") }}>
+                <img src="/l2pm_logo.png" width="150px" />
               </IconButton>
 
               {/* USER MENU */}
@@ -131,7 +121,7 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                   <Avatar
                     sx={{
                       display: { xs: "none", md: "flex" },
-                      ml: 2,
+                      ml: 1.6,
                       width: 32,
                       height: 32,
                       bgcolor: "grey[100]",

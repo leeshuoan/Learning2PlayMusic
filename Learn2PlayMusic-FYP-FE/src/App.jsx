@@ -77,7 +77,7 @@ function App() {
         <ToastContainer />
         <Routes>
           <Route path="/">
-            <Route index element={<SignIn handleSetUserInfo={handleSetUserInfo} />} />
+            <Route index element={<SignIn userInfo={userInfo} handleSetUserInfo={handleSetUserInfo} />} />
           </Route>
 
           <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}></Route>
