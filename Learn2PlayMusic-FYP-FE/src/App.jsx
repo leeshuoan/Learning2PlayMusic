@@ -22,6 +22,7 @@ import Announcements from "./components/Announcements";
 import UserClassMaterials from "./components/User/Course/UserClassMaterials";
 import UserHomework from "./components/User/Course/UserHomework";
 import UserReport from "./components/User/Course/UserReport";
+import UserQuiz from "./components/User/Course/UserQuiz";
 
 Amplify.configure(aws_exports);
 
@@ -95,6 +96,7 @@ function App() {
               <Route path="material/:materialId" element={<UserClassMaterials />} />
               <Route path="homework/:homeworkId" element={<UserHomework />} />
               <Route path="report/:reportId" element={<UserReport />} />
+              <Route path="quiz/:quizId" element={<UserQuiz />} />
             </Route>
           </Route>
 

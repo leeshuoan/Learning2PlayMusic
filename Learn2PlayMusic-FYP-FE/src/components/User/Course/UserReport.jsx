@@ -3,9 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme, Typography, Container, Card, Box, Grid, Link, Button, Breadcrumbs } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
-import UploadIcon from '@mui/icons-material/Upload';
-import TransitionModal from '../../utils/TransitionModal';
-import celebration from '../../../assets/celebration.png'
 
 const UserReport = () => {
   const course = {

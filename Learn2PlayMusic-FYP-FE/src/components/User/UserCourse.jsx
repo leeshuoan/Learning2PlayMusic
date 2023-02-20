@@ -32,18 +32,21 @@ const UserCourse = () => {
 
   const courseQuizzes = [
     {
+      id: 1,
       title: "Quiz 1",
       score: "80%",
       attempts: 1,
       maxAttempts: 1
     },
     {
+      id: 2,
       title: "Quiz 2",
       score: "93%",
       attempts: 1,
       maxAttempts: 1
     },
     {
+      id: 3,
       title: "Quiz 3",
       score: "",
       attempts: 0,
@@ -206,7 +209,7 @@ const UserCourse = () => {
                   <Typography variant='h6' sx={{ mb: 2 }}>{quiz.title}</Typography>
                   <Grid container spacing={2} sx={{ alignItems: "center" }}>
                     <Grid item xs="12" sm="6">
-                      <Button variant="contained" onClick={() => { navigate() }}>
+                      <Button variant="contained" onClick={() => { navigate(`${quiz.id}`) }}>
                         <PlayCircleFilledIcon sx={{ mr: 1 }} />
                         Start Quiz
                       </Button>

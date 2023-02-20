@@ -26,16 +26,21 @@ const UserHomework = () => {
   const navigate = useNavigate()
   const { homeworkId } = useParams()
   const [open, setOpen] = useState(false);
+  const [file, setFile] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const handleClose = () => setOpen(false);
   const submit = () => {
     setSubmitted(true)
     setOpen(false)
   }
+  const fileUploaded = (e) => {
+    setFile(e.target.files[0].name)
+  }
 
   return (
     <>
       <TransitionModal open={open} handleClose={handleClose}>
+            <Typography variant='subtitle2' sx={{ mt: 3, mb: 0.5 }}>UPLOAD FILE</Typography>
         <Typography variant="h6" sx={{ textAlign: 'center' }}>
           Submit your homework?
         </Typography>
@@ -87,9 +92,14 @@ const UserHomework = () => {
               </Box>
             </Box>
             <Typography variant='subtitle2' sx={{ mt: 3, mb: 0.5 }}>UPLOAD FILE</Typography>
-            <Button variant="contained" sx={{ mb: 2, backgroundColor: "lightgrey", color: 'black', boxShadow: "none", ":hover": { backgroundColor: "hovergrey" } }}>ADD A FILE</Button>
+            <Button variant="contained" sx={{ mb: 1, backgroundColor: "lightgrey", color: 'black', boxShadow: "none", ":hover": { backgroundColor: "hovergrey" } }} component="label">
+              ADD A FILE
+              <input hidden accept="*" multiple type="file" onChange={fileUploaded} />
+            </Button>
+            <Typography variant='body2'>{file}</Typography>
+
             <br />
-            <TextField label="Add Text" variant="outlined" rows={7} multiline fullWidth sx={{ mt: 2 }} />
+            <TextField label="Add Text" variant="outlined" rows={7} multiline fullWidth sx={{ mt: 4 }} />
             <Button variant="contained" sx={{ mt: 2 }} onClick={() => setOpen(true)}><UploadIcon />SUBMIT</Button>
           </Card>
         </Box>
@@ -101,7 +111,7 @@ const UserHomework = () => {
               <img src={celebration}></img>
             </Box>
             <Typography variant='h5' sx={{ textAlign: "center" }}>Submission Successful!</Typography>
-            <Box sx={{ mt:2, display: "flex", justifyContent: "center" }}>
+            <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
               <Button variant="contained" onClick={() => navigate('/home/course/1/homework')}>Back to Homework</Button>
             </Box>
           </Card>

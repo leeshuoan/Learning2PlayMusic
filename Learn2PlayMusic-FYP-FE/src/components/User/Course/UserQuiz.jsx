@@ -5,7 +5,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
 
-const UserClassMaterials = () => {
+const UserQuiz = () => {
   const course = {
     id: 1,
     title: "Grade 1 Piano",
@@ -13,16 +13,13 @@ const UserClassMaterials = () => {
     teacher: "Miss Felicia Ng"
   }
 
-  const material = {
-    materialId: 1,
-    materialTitle: "Exercise 1",
-    materialType: "PDF",
-    materialDate: "1 Feb 2023, 23:59PM",
-    materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+  const quiz = {
+    quizId: 1,
+    
   }
 
   const navigate = useNavigate()
-  const { materialId } = useParams()
+  const { quizId } = useParams()
 
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
@@ -31,10 +28,10 @@ const UserClassMaterials = () => {
           <HomeIcon sx={{ mr: 0.5 }} />
           Home
         </Link>
-        <Link underline="hover" color="inherit" onClick={() => { navigate('/home/course/1/material') }}>
+        <Link underline="hover" color="inherit" onClick={() => { navigate('/home/course/1/quiz') }}>
           {course.title}
         </Link>
-        <Typography color="text.primary">Class Materials</Typography>
+        <Typography color="text.primary">Quiz</Typography>
       </Breadcrumbs>
 
       <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
@@ -54,18 +51,6 @@ const UserClassMaterials = () => {
 
         <Box>
             <Card sx={{ py: 3, px: 5, mt: 2 }}>
-              <Typography variant='h6' sx={{ mb:1 }}>{material.materialTitle}</Typography>
-              <Typography variant='body1'>LESSON DATE</Typography>
-              <Typography variant='body2'>{material.materialDate}</Typography>
-              <Card variant='outlined' sx={{ py: material.materialType == "Link" ? 2 : 1, px: 2, mt: 2, boxShadow: "none" }}>
-                <embed src=
-                  "https://media.geeksforgeeks.org/wp-content/cdn-uploads/20210101201653/PDF.pdf"
-                  width="100%"
-                  height="700"
-                  type="application/pdf"
-                  style={{ display: material.materialType == "PDF" ? "block" : "none" }} />
-                <Link style={{ display: material.materialType == "Link" ? "flex" : "none" }} href={material.materialUrl} target="_blank"><InsertLinkIcon sx={{ mr: 0.5 }} />{material.materialTitle}</Link>
-              </Card>
             </Card>
         </Box>
 
@@ -73,4 +58,4 @@ const UserClassMaterials = () => {
   )
 }
 
-export default UserClassMaterials
+export default UserQuiz
