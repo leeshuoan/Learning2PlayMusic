@@ -9,12 +9,6 @@ def lambda_handler(event, context):
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
         short_uuid = str(uuid.uuid4().hex)[:8]
-        print(event)
-        print(event['body'])
-        print("json loads")
-        print(json.loads(event['body'])['courseTimeSlot'])
-        print("json loads type")
-        print(json.loads(event['body'])['courseTimeSlot'])
 
 
         response = table.put_item(
