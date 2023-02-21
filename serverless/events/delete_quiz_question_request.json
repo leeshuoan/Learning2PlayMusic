@@ -1,0 +1,12 @@
+{
+  "httpMethod": "DELETE",
+  "queryStringParameters": {
+    "foo": "bar"
+  },
+  "body": {
+    "courseId": "1",
+    "quizId": "1",
+    "questionId": "cf6cfc54"
+  },
+  "path": "/course/quiz/question"
+}
