@@ -35,15 +35,15 @@ class CourseStack(Stack):
 
         # Create getCourseHomework AWS Lambda function
         get_course_homework = _lambda.Function(self, "getCourseHomework", runtime=_lambda.Runtime.PYTHON_3_9,
-                                               handler="get_course_homework.lambda_handler", code=_lambda.Code.from_asset(COURSE_HOMEWORK_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+                                               handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.get_course_homework.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /course/announcement Functions
         get_course_announcement = _lambda.Function(self, "getCourseAnnouncement",  runtime=_lambda.Runtime.PYTHON_3_9,
-                                                   handler="get_course_announcement.lambda_handler", code=_lambda.Code.from_asset(COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+                                                   handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.get_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course_announcement = _lambda.Function(self, "postCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                    handler="post_course_announcement.lambda_handler", code=_lambda.Code.from_asset(COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+                                                    handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.post_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course_announcement = _lambda.Function(self, "deleteCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                      handler="delete_course_announcement.lambda_handler", code=_lambda.Code.from_asset(COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+                                                      handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /course Functions
         get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.get_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -58,15 +58,15 @@ class CourseStack(Stack):
         
         # /course/quiz/
         get_course_quiz = _lambda.Function(self, "getCourseQuiz", runtime=_lambda.Runtime.PYTHON_3_9,
-                                              handler="get_course_quiz.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+                                              handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /course/quiz/question Functions
         get_course_quiz_question = _lambda.Function(self, "getCourseQuizQuestion", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                     handler="get_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+                                                     handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course_quiz_question = _lambda.Function(self, "postCourseQuizQuestion", runtime=_lambda.Runtime.NODEJS_16_X,
-                                                     handler="post_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+                                                     handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.post_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course_quiz_question = _lambda.Function(self, "deleteCourseQuizQuestion", runtime=_lambda.Runtime.NODEJS_16_X,
-                                                       handler="delete_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+                                                       handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.delete_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # Create Amazon API Gateway REST API
         main_api = apigw.RestApi(self, "main", description="All LMS APIs")
