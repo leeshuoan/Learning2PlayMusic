@@ -49,7 +49,8 @@ const PrivateRoutes = ({ userType }) => {
       {loading ? null
         : (isAuth && (userInfo.role == "Teacher")) ? <Outlet context={{ userInfo }} />
           : (isAuth && (userInfo.role == "User")) ? <Outlet context={{ userInfo }} />
-            : <Unauthorized userRole={userInfo.role} />}
+            : (isAuth && (userInfo.role == "Admin")) ? <Outlet context={{ userInfo }} />
+              : <Unauthorized userRole={userInfo.role} />}
     </>
   )
 }

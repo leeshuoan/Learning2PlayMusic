@@ -23,6 +23,7 @@ import UserClassMaterials from "./components/User/Course/UserClassMaterials";
 import UserHomework from "./components/User/Course/UserHomework";
 import UserReport from "./components/User/Course/UserReport";
 import UserQuiz from "./components/User/Course/UserQuiz";
+import AdminHome from "./components/Admin/AdminHome";
 
 Amplify.configure(aws_exports);
 
@@ -80,7 +81,9 @@ function App() {
             <Route index element={<SignIn userInfo={userInfo} handleSetUserInfo={handleSetUserInfo} />} />
           </Route>
 
-          <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}></Route>
+          <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}>
+            <Route index element={<AdminHome userInfo={userInfo} />} />
+          </Route>
 
           <Route path="teacher" element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
             <Route index element={<TeacherHome userInfo={userInfo} />} />

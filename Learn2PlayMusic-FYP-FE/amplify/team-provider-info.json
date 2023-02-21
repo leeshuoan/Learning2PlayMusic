@@ -13,7 +13,17 @@
     },
     "categories": {
       "auth": {
-        "learn2playmusicfypfe994dc030994dc030": {}
+        "learn2playmusicfypfe994dc030994dc030": {},
+        "userPoolGroups": {}
+      },
+      "function": {
+        "AdminQueriesa642bb27": {
+          "deploymentBucketName": "amplify-learn2playmusicfypfe-dev-122302-deployment",
+          "s3Key": "amplify-builds/AdminQueriesa642bb27-4a716a6c5268716a4866-build.zip"
+        }
+      },
+      "api": {
+        "AdminQueries": {}
       }
     }
   }
