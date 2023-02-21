@@ -27,15 +27,7 @@ def lambda_handler(event, context):
 
         items = response["Items"]
 
-        return {
-            "statusCode": 200,
-            "headers": {
-                "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST,GET,DELETE"
-            },
-            "body": json.dumps(items)
-        }
+        return response_200_GET(items)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

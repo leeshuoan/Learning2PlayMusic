@@ -1,5 +1,6 @@
 import json
 
+# For POST, DELETE functions
 def response_200(success_msg):
     return {
         "statusCode": 200,
@@ -9,6 +10,18 @@ def response_200(success_msg):
             "Access-Control-Allow-Methods": "POST,GET,DELETE"
         },
         "body": json.dumps({"message": f"[SUCCESS] {success_msg}"})
+    }
+
+# For most GET functions
+def response_200_GET(items):
+    return {
+        "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST,GET,DELETE"
+        },
+        "body": json.dumps(items)
     }
 
 def response_400(error_msg):

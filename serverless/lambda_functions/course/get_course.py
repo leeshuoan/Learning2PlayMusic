@@ -2,6 +2,8 @@ import sys
 import boto3
 import json
 
+from global_functions.responses import *
+
 def lambda_handler(event, context):
 
     try:
@@ -16,27 +18,17 @@ def lambda_handler(event, context):
             courseId = event['queryStringParameters']['courseId']
             sortKey = "Course#" + courseId
 
-        partitionKey = "Course"
-
         response = table.query(
             KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
             ExpressionAttributeValues={
-                ":PK": partitionKey,
+                ":PK": "Course",
                 ":SK": sortKey
             }
             )
 
         items = response["Items"]
 
-        return {
-            "statusCode": 200,
-            "headers": {
-                "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST,GET,DELETE"
-            },
-            "body": json.dumps(items)
-        }
+        return response_200_GET(items)
 
 
     except Exception as e:
@@ -48,7 +40,4 @@ def lambda_handler(event, context):
         print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
-        return {
-            "statusCode": 500,
-            "body": str(e),
-            }
+        return response_500(e)
