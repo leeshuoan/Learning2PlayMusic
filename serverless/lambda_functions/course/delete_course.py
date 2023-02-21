@@ -2,11 +2,20 @@ import sys
 import boto3
 import json
 
+from global_functions.responses import *
+from global_functions.exists_in_db import *
+
 def lambda_handler(event, context):
 
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
+
+        # VALIDATION
+        # check if <courseId> exists in database
+        courseId = event['queryStringParameters']['courseId']
+        if not course_id_exists(courseId):
+            return response_400("courseId does not exist in database")
 
         response = table.delete_item(
             Key= {
@@ -15,15 +24,7 @@ def lambda_handler(event, context):
             }
             )
 
-        return {
-            "statusCode": 200,
-            "headers": {
-                "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST,GET,DELETE"
-            },
-            "body": json.dumps({"message": "Successfully deleted item"})
-        }
+        return response_200("successfully deleted item")
 
 
     except Exception as e:
@@ -35,8 +36,5 @@ def lambda_handler(event, context):
         print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
-        return {
-          "statusCode": 500,
-          "body": str(e),
 
-        }
+        return response_500(e)

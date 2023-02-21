@@ -11,6 +11,7 @@ def lambda_handler(event, context):
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
+        # VALIDATION
         # check if <courseId> exists in database
         courseId = event['queryStringParameters']['courseId']
         if not course_id_exists(courseId):

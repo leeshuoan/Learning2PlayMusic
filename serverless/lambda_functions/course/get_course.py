@@ -12,6 +12,7 @@ def lambda_handler(event, context):
 
         courseId = event['queryStringParameters']
 
+        # VALIDATION
         if courseId is None or courseId == "null":
             sortKey = "Course#"
         else:
@@ -40,4 +41,5 @@ def lambda_handler(event, context):
         print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
+
         return response_500(e)

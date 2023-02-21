@@ -12,6 +12,7 @@ def lambda_handler(event, context):
 
         courseId = event['queryStringParameters']['courseId']
 
+        # VALIDATION
         if 'materialId' not in event['queryStringParameters']:
             sortKey = "Material#"
         else:
