@@ -11,20 +11,36 @@ class Encoder(json.JSONEncoder):
 
 def lambda_handler(event, context):
 
-    courseId = event["queryStringParameters"]["courseId"]
+    queryStringParameters: dict = event["queryStringParameters"]
     res = {}
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
-    	
-        response = table.query(
-    	    KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
-    	    ExpressionAttributeValues={
-    	        ":PK": f"Course#{courseId}",
-    	        ":SK": "Quiz#"
-    	    },
-    	    FilterExpression='attribute_not_exists(QuestionOptionType)'
-    	    )
+        
+        courseId = queryStringParameters["courseId"]
+        studentId = queryStringParameters["studentId"]
+
+        # if specific quizId is specified
+        if "quizId" in queryStringParameters.keys():
+            quizId = queryStringParameters["quizId"]
+            response = table.query(
+                KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+                ExpressionAttributeValues={
+                    ":PK": f"Course#{courseId}",
+                    ":SK": f"Student#{studentId}Quiz#{quizId}"
+                }
+                )
+        else:
+            response = table.query(
+                KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+                ExpressionAttributeValues={
+                    ":PK": f"Course#{courseId}",
+                    ":SK": f"Student#{studentId}Quiz#"
+                },
+                FilterExpression='attribute_not_exists(QuestionOptionType)'
+                )
+
+
 
         items = response["Items"]
 

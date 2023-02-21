@@ -1,0 +1,8 @@
+{
+    "httpMethod": "POST",
+    "queryStringParameters": {
+      "courseId": "1",
+      "studentId": "1",
+      "quizId": "1"
+    }
+  }

@@ -63,8 +63,8 @@ class CourseStack(Stack):
                                                   handler="course_material.delete_course_material.lambda_handler", code=_lambda.Code.from_asset(COURSE_MATERIAL_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # Create getCourseQuizzes AWS Lambda function
-        get_course_quizzes = _lambda.Function(self, "getCourseQuizzes", runtime=_lambda.Runtime.PYTHON_3_9,
-                                              handler="get_course_quizzes.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        get_course_quiz = _lambda.Function(self, "getCourseQuiz", runtime=_lambda.Runtime.PYTHON_3_9,
+                                              handler="get_course_quiz.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /course/quiz/question Functions
         get_course_quiz_question = _lambda.Function(self, "getCourseQuizQuestion", runtime=_lambda.Runtime.PYTHON_3_9,
@@ -149,7 +149,7 @@ class CourseStack(Stack):
 
         # /course/quiz
         course_quizzes_resource.add_method(
-            "GET", apigw.LambdaIntegration(get_course_quizzes))
+            "GET", apigw.LambdaIntegration(get_course_quiz))
 
         # /course/quiz/question
         post_course_material_model = main_api.add_model(
