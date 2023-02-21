@@ -60,7 +60,7 @@ class CourseStack(Stack):
         post_course_material = _lambda.Function(self, "post_course_material", runtime=_lambda.Runtime.PYTHON_3_9,
                                                 handler="course_material.post_course_material.lambda_handler", code=_lambda.Code.from_asset(COURSE_MATERIAL_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course_material = _lambda.Function(self, "delete_course_material", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                  handler="course_material.delete_course_material.lambda_handler", code=_lambda.Code.from_asset(COURSE_MATERIAL_FUNCTIONS_FOLDERcd), role=LAMBDA_ROLE)
+                                                  handler="course_material.delete_course_material.lambda_handler", code=_lambda.Code.from_asset(COURSE_MATERIAL_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # Create getCourseQuizzes AWS Lambda function
         get_course_quizzes = _lambda.Function(self, "getCourseQuizzes", runtime=_lambda.Runtime.PYTHON_3_9,
