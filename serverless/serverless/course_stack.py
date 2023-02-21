@@ -67,8 +67,8 @@ class CourseStack(Stack):
                                               handler="get_course_quizzes.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /course/quiz/question Functions
-        get_course_quiz_questions = _lambda.Function(self, "getCourseQuizQuestions", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                     handler="get_course_quiz_questions.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        get_course_quiz_question = _lambda.Function(self, "getCourseQuizQuestion", runtime=_lambda.Runtime.PYTHON_3_9,
+                                                     handler="get_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course_quiz_question = _lambda.Function(self, "postCourseQuizQuestion", runtime=_lambda.Runtime.NODEJS_16_X,
                                                      handler="post_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(COURSE_QUIZ_FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course_quiz_question = _lambda.Function(self, "deleteCourseQuizQuestion", runtime=_lambda.Runtime.NODEJS_16_X,
@@ -171,7 +171,7 @@ class CourseStack(Stack):
                 required=["courseId", "quizId", "materialType", "Question", "Options","Answer"]))
         
         course_quiz_questions_resource.add_method(
-            "GET", apigw.LambdaIntegration(get_course_quiz_questions))
+            "GET", apigw.LambdaIntegration(get_course_quiz_question))
         course_quiz_questions_resource.add_method(
             "POST", apigw.LambdaIntegration(post_course_quiz_question))
         course_quiz_questions_resource.add_method(

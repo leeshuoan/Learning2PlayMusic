@@ -7,20 +7,32 @@ import json
 
 def lambda_handler(event, context):
 
-    courseId = event["queryStringParameters"]["courseId"]
-    quizId = event["queryStringParameters"]["quizId"]
+    queryStringParameters: dict = event["queryStringParameters"]
 
     res = {}
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
-        response = table.query(
-            KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
-            ExpressionAttributeValues={
-                ":PK": f"Course#{courseId}",
-                ":SK": f"Quiz#{quizId}Question#"
-            })
+        courseId = queryStringParameters["courseId"]
+        quizId = queryStringParameters["quizId"]
+
+        # if specific questionid is specified
+        if "questionid" in queryStringParameters.keys():
+            questionid = queryStringParameters["questionid"]
+            response = table.query(
+                KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+                ExpressionAttributeValues={
+                    ":PK": f"Course#{courseId}",
+                    ":SK": f"Quiz#{quizId}Question#{questionid}"
+                })
+        else:    
+            response = table.query(
+                KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+                ExpressionAttributeValues={
+                    ":PK": f"Course#{courseId}",
+                    ":SK": f"Quiz#{quizId}Question#"
+                })
 
         items = response["Items"]
 
@@ -35,7 +47,6 @@ def lambda_handler(event, context):
         return res
 
     except Exception as e:
-        # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")
         exception_type, exception_object, exception_traceback = sys.exc_info()
         filename = exception_traceback.tb_frame.f_code.co_filename
         line_number = exception_traceback.tb_lineno
