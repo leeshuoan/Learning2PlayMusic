@@ -7,19 +7,31 @@ import json
 
 def lambda_handler(event, context):
 
-    courseId = event["queryStringParameters"]["courseId"]
-
+    queryStringParameters: dict = event["queryStringParameters"]
     res = {}
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
-        response = table.query(
-            KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
-            ExpressionAttributeValues={
-                ":PK": f"Course#{courseId}",
-                ":SK": f"Homework#"
-            })
+        courseId = queryStringParameters["courseId"]
+        studentId = queryStringParameters["studentId"]
+
+        # if specific homeworkId is specified
+        if "homeworkId" in queryStringParameters.keys():
+            homeworkId = queryStringParameters["homeworkId"]
+            response = table.query(
+                KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+                ExpressionAttributeValues={
+                    ":PK": f"Course#{courseId}",
+                    ":SK": f"Student#{studentId}Homework#{homeworkId}"
+                })
+        else:
+            response = table.query(
+                KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+                ExpressionAttributeValues={
+                    ":PK": f"Course#{courseId}",
+                    ":SK": f"Student#{studentId}Homework#"
+                })
 
         items = response["Items"]
 
@@ -27,7 +39,7 @@ def lambda_handler(event, context):
         res["headers"] = {
             "Access-Control-Allow-Headers": "Content-Type",
             "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST,GET,PUT"
+            "Access-Control-Allow-Methods": "POST,GET,DELETE"
         }
         res["body"] = json.dumps(items)
 
