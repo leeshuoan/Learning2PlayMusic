@@ -13,6 +13,7 @@ def lambda_handler(event, context):
         table = dynamodb.Table("LMS")
         short_uuid = str(uuid.uuid4().hex)[:8]
 
+        # VALIDATION
         # checks that courseId passed in is not an empty string
         if json.loads(event['body'])['courseId']=="":
             return response_400("courseId is missing")
@@ -20,7 +21,7 @@ def lambda_handler(event, context):
         # check if <courseId> already exists in database
         courseId = json.loads(event['body'])['courseId']
         if not course_id_exists(courseId):
-            return response_400("courseId does not exists in database")
+            return response_400("courseId does not exist in database")
 
         response = table.put_item(
             Item= {
@@ -37,6 +38,7 @@ def lambda_handler(event, context):
 
         return response_200("successfully inserted item")
 
+    # currently, this is only for functions that sends in request body - to catch 'missing fields' error
     except KeyError:
         print("❗Exception Type Caught - KeyError")
         return response_500("One or more field(s) is missing. Please double check that all fields in the model schema are populated.")

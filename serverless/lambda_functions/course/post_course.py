@@ -3,13 +3,15 @@ import boto3
 import json
 import uuid
 
+from global_functions.responses import *
+from global_functions.exists_in_db import *
+
 def lambda_handler(event, context):
 
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
         short_uuid = str(uuid.uuid4().hex)[:8]
-
 
         response = table.put_item(
             Item= {
@@ -21,16 +23,12 @@ def lambda_handler(event, context):
             }
             )
 
-        return {
-            "statusCode": 200,
-            "headers": {
-                "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST,GET,DELETE"
-            },
-            "body": json.dumps({"message": "Successfully inserted item"})
-        }
+        return response_200("successfully inserted item")
 
+    # currently, this is only for functions that sends in request body - to catch 'missing fields' error
+    except KeyError:
+        print("❗Exception Type Caught - KeyError")
+        return response_500("One or more field(s) is missing. Please double check that all fields in the model schema are populated.")
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")
@@ -41,8 +39,5 @@ def lambda_handler(event, context):
         print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
-        return {
-          "statusCode": 500,
-          "body": str(e),
 
-        }
+        return response_500(e)
