@@ -20,11 +20,11 @@ class CourseStack(Stack):
 
         # Define Constants Here
         FUNCTIONS_FOLDER = "./lambda_functions/"
-        COURSE_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course/"
-        COURSE_MATERIAL_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course/course_material"
-        COURSE_HOMEWORK_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course_homework/"
-        COURSE_QUIZ_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER+"course_quiz/"
-        COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER = FUNCTIONS_FOLDER + "course_announcement/"
+        COURSE_FUNCTIONS_FOLDER = "course"
+        COURSE_MATERIAL_FUNCTIONS_FOLDER = "course/course_material"
+        COURSE_HOMEWORK_FUNCTIONS_FOLDER = "course_homework"
+        COURSE_QUIZ_FUNCTIONS_FOLDER = "course_quiz"
+        COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER = "course_announcement"
 
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
