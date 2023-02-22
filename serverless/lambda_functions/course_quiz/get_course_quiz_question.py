@@ -18,13 +18,13 @@ def lambda_handler(event, context):
         quizId = queryStringParameters["quizId"]
 
         # if specific questionid is specified
-        if "questionid" in queryStringParameters.keys():
-            questionid = queryStringParameters["questionid"]
+        if "questionId" in queryStringParameters.keys():
+            questionId = queryStringParameters["questionId"]
             response = table.query(
                 KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
                 ExpressionAttributeValues={
                     ":PK": f"Course#{courseId}",
-                    ":SK": f"Quiz#{quizId}Question#{questionid}"
+                    ":SK": f"Quiz#{quizId}Question#{questionId}"
                 })
         else:    
             response = table.query(
