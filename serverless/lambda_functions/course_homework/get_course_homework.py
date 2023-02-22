@@ -4,6 +4,8 @@ import json
 
 # Get all homework by courseid
 
+from global_functions.responses import *
+
 
 def lambda_handler(event, context):
 
@@ -54,8 +56,4 @@ def lambda_handler(event, context):
         print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
-        return {
-            "statusCode": 500,
-            "body": str(e),
-
-        }
+        return response_500((str(exception_type) + str(e)))

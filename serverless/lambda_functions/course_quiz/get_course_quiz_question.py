@@ -56,6 +56,6 @@ def lambda_handler(event, context):
         print("❗Error: ", e)
         return {
             "statusCode": 500,
-            "body": str(e),
+            "body": f"{exception_type}: {str(e)}",
 
         }

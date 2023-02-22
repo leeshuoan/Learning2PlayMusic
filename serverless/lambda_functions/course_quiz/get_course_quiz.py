@@ -3,6 +3,8 @@ import boto3
 import json
 import decimal
 
+from global_functions.responses import *
+
 class Encoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, decimal.Decimal): return float(obj)
@@ -65,8 +67,4 @@ def lambda_handler(event, context):
         print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
-        return {
-                    "statusCode": 500,
-                    "body": str(e),
-                    
-                }
+        return response_500((str(exception_type) + str(e)))
