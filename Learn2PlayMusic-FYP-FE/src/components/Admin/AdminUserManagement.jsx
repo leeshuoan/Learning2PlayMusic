@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from 'react'
 import { Box, Button, Typography } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import { Auth, API } from 'aws-amplify';
+import ThemeProvider from "../../theme/index";
 
 const AdminUserManagement = () => {
   const [data, setData] = useState([]);
@@ -33,15 +34,15 @@ const AdminUserManagement = () => {
 
       let date = new Date(userData[idx]['UserCreateDate'])
       let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-      userData[idx]['UserCreateDate'] = formattedDate 
-    } 
+      userData[idx]['UserCreateDate'] = formattedDate
+    }
     setData(userData)
   }
 
   useEffect(() => {
     listUsers()
     console.log(data)
-    return () => {  
+    return () => {
     }
   }, [])
 
@@ -64,7 +65,7 @@ const AdminUserManagement = () => {
         header: "Creation Date",
       },
       {
-        accessorKey: "Attributes.Role", 
+        accessorKey: "Attributes.Role",
         id: "role",
         header: "Role",
       },
@@ -72,22 +73,45 @@ const AdminUserManagement = () => {
         accessorKey: "",
         id: "actions",
         header: "Actions",
+        Cell: ({ cell, row }) => (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+            }}>
+            <Button variant='contained'>
+              Enroll
+            </Button>
+            <Button variant='contained'>
+              Delete
+            </Button>
+          </Box>
+        ),
       },
     ],
-    []  
+    []
   );
 
   return (
     <Box m={2}>
+      <Typography variant="h5" sx={{ m: 1, mt: 4 }}>
+        User Management
+      </Typography>
       <MaterialReactTable
         columns={columns}
         data={data}
         initialState={{ density: "compact" }}
         renderTopToolbarCustomActions={({ table }) => {
           return (
-            <Typography m={1} variant="h6">
-              User Management
-            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+              }}>
+              <Button variant='contained'>Add User</Button>
+            </Box>
           );
         }}></MaterialReactTable>
     </Box>

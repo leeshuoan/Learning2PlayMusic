@@ -5,7 +5,6 @@ import ClassMaterialsTable from './ClassMaterialsTable';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import DownloadIcon from '@mui/icons-material/Download';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
@@ -130,7 +129,7 @@ const UserCourse = () => {
           <HomeIcon sx={{ mr: 0.5 }} />
           Home
         </Link>
-        <Typography color="text.primary">{course.title}</Typography>
+        <Typography color="text.primary">{course.name}</Typography>
       </Breadcrumbs>
 
       <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
