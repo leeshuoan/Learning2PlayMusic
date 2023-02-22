@@ -14,7 +14,7 @@ def lambda_handler(event, context):
         # VALIDATION
         # check if <courseId> exists in database
         courseId = event['queryStringParameters']['courseId']
-        if not course_id_exists(courseId):
+        if not id_exists("Course", "Course", courseId):
             return response_400("courseId does not exist in database")
 
         response = table.delete_item(

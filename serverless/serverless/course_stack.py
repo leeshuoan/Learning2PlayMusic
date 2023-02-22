@@ -21,7 +21,7 @@ class CourseStack(Stack):
         # Define Constants Here
         FUNCTIONS_FOLDER = "./lambda_functions/"
         COURSE_FUNCTIONS_FOLDER = "course"
-        COURSE_MATERIAL_FUNCTIONS_FOLDER = "course/course_material"
+        COURSE_MATERIAL_FUNCTIONS_FOLDER = "course_material"
         COURSE_HOMEWORK_FUNCTIONS_FOLDER = "course_homework"
         COURSE_QUIZ_FUNCTIONS_FOLDER = "course_quiz"
         COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER = "course_announcement"
@@ -49,13 +49,13 @@ class CourseStack(Stack):
         get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.get_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course = _lambda.Function(self, "postCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.post_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course = _lambda.Function(self, "deleteCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.delete_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        
+
 
         # # /course/material Functions
         get_course_material = _lambda.Function(self, "get_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.get_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course_material = _lambda.Function(self, "post_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.post_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course_material = _lambda.Function(self, "delete_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.delete_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        
+
         # /course/quiz/
         get_course_quiz = _lambda.Function(self, "getCourseQuiz", runtime=_lambda.Runtime.PYTHON_3_9,
                                               handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -163,14 +163,14 @@ class CourseStack(Stack):
                     "Answer": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
                 required=["courseId", "quizId", "materialType", "Question", "Options","Answer"]))
-        
+
         course_quiz_question_resource.add_method(
             "GET", apigw.LambdaIntegration(get_course_quiz_question))
         course_quiz_question_resource.add_method(
             "POST", apigw.LambdaIntegration(post_course_quiz_question))
         course_quiz_question_resource.add_method(
             "DELETE", apigw.LambdaIntegration(delete_course_quiz_question))
-        
+
         # /course/homework
         course_homework_resource.add_method(
             "GET", apigw.LambdaIntegration(get_course_homework))
