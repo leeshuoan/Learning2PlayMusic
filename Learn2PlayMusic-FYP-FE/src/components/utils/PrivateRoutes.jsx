@@ -22,13 +22,24 @@ const PrivateRoutes = ({ userType }) => {
           handleResetUserInfo()
         }
 
-        let userRole = session.getIdToken().payload["userRole"];
-        let userInfo = {
-          "name": session.getIdToken().payload["name"],
-          "role": userRole
+        let groups = session.getIdToken().payload["cognito:groups"];
+        let userRole = null
+        if (groups.includes("Admins")) {
+          userRole = "Admin";
+        } else if (groups.includes("Teachers")) {
+          userRole = "Teacher";
+        } else if (groups.includes("Users")) {
+          userRole = "User";
         }
-        setUserInfo(userInfo)
-        setLoading(false)
+
+        if (userRole != null) {
+          let userInfo = {
+            name: session.getIdToken().payload['custom:name'],
+            role: userRole,
+          };
+          setUserInfo(userInfo);
+          setLoading(false)
+        }
 
         if (userRole == userType) {
           setIsAuth(true)

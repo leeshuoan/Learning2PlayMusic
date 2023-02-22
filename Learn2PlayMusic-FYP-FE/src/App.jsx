@@ -49,17 +49,25 @@ function App() {
             console.log(err);
             handleResetUserInfo();
           }
-          let userRole = session.getIdToken().payload["userRole"];
-          const roles = ["Admin", "Teacher", "User"];
-          if (roles.includes(userRole)) {
+
+          let groups = session.getIdToken().payload["cognito:groups"];
+          let userRole = null
+          if (groups.includes("Admins")) {
+            userRole = "Admin";
+          } else if (groups.includes("Teachers")) {
+            userRole = "Teacher";
+          } else if (groups.includes("Users")) {
+            userRole = "User";
+          }
+
+          if (userRole != null) {
             let userInfo = {
-              name: session.getIdToken().payload["name"],
+              name: session.getIdToken().payload['custom:name'],
               role: userRole,
             };
             setUserInfo(userInfo);
-          } else {
-            handleResetUserInfo();
           }
+
         });
       })
       .catch((err) => {

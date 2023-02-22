@@ -6,7 +6,7 @@ import { Auth, API } from 'aws-amplify';
 const AdminUserManagement = () => {
   const [data, setData] = useState([]);
 
-  async function listUsers () {
+  const listUsers = async () => {
     let apiName = 'AdminQueries';
     let path = '/listUsers';
     let myInit = {
@@ -18,36 +18,54 @@ const AdminUserManagement = () => {
       }
     }
     let users = await API.get(apiName, path, myInit);
-    setData(users)
+    let userData = users.Users
+
+    for (let idx in userData) {
+      for (let attributeIdx in userData[idx]['Attributes']) {
+        if (userData[idx]['Attributes'][attributeIdx]['Name'] == 'email') {
+          userData[idx]['Attributes'].Email = userData[idx]['Attributes'][attributeIdx]['Value']
+        } else if (userData[idx]['Attributes'][attributeIdx]['Name'] == 'custom:name') {
+          userData[idx]['Attributes'].Name = userData[idx]['Attributes'][attributeIdx]['Value']
+        } else if (userData[idx]['Attributes'][attributeIdx]['Name'] == 'custom:role') {
+          userData[idx]['Attributes'].Role = userData[idx]['Attributes'][attributeIdx]['Value']
+        }
+      }
+
+      console.log(userData)
+      let date = new Date(userData[idx]['UserCreateDate'])
+      let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+      userData[idx]['UserCreateDate'] = formattedDate 
+    } 
+    setData(userData)
   }
 
   useEffect(() => {
     listUsers()
     console.log(data)
-    return () => {
+    return () => {  
     }
   }, [])
-  
+
 
   const columns = useMemo(
     () => [
       {
-        accessorKey: "",
-        id: "userId",
-        header: "User ID",
+        accessorKey: "Attributes.Email",
+        id: "email",
+        header: "Email",
       },
       {
-        accessorKey: "",
+        accessorKey: "Attributes.Name",
         id: "name",
         header: "Name",
       },
       {
-        accessorKey: "",
+        accessorKey: "UserCreateDate",
         id: "createDate",
         header: "Creation Date",
       },
       {
-        accessorKey: "",
+        accessorKey: "Attributes.Role", 
         id: "role",
         header: "Role",
       },
@@ -57,7 +75,7 @@ const AdminUserManagement = () => {
         header: "Actions",
       },
     ],
-    []
+    []  
   );
 
   return (
