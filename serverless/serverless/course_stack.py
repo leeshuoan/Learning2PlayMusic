@@ -75,14 +75,14 @@ class CourseStack(Stack):
         course_resource = main_api.root.add_resource("course")
 
         # Create sub-resources under the parent resource
-        course_quizzes_resource = course_resource.add_resource("quiz")
+        course_quiz_resource = course_resource.add_resource("quiz")
         course_homework_resource = course_resource.add_resource("homework")
         course_announcement_resource = course_resource.add_resource(
             "announcement")
         course_material_resource = course_resource.add_resource("material")
 
         # Create sub-sub-resources under the parent resource
-        course_quiz_questions_resource = course_quizzes_resource.add_resource(
+        course_quiz_question_resource = course_quiz_resource.add_resource(
             "question")
 
         # Create methods in the required resources
@@ -142,7 +142,7 @@ class CourseStack(Stack):
             "application/json": post_course_material_model})
 
         # /course/quiz
-        course_quizzes_resource.add_method(
+        course_quiz_resource.add_method(
             "GET", apigw.LambdaIntegration(get_course_quiz))
 
         # /course/quiz/question
@@ -164,11 +164,11 @@ class CourseStack(Stack):
                 },
                 required=["courseId", "quizId", "materialType", "Question", "Options","Answer"]))
         
-        course_quiz_questions_resource.add_method(
+        course_quiz_question_resource.add_method(
             "GET", apigw.LambdaIntegration(get_course_quiz_question))
-        course_quiz_questions_resource.add_method(
+        course_quiz_question_resource.add_method(
             "POST", apigw.LambdaIntegration(post_course_quiz_question))
-        course_quiz_questions_resource.add_method(
+        course_quiz_question_resource.add_method(
             "DELETE", apigw.LambdaIntegration(delete_course_quiz_question))
         
         # /course/homework
@@ -189,11 +189,11 @@ class CourseStack(Stack):
         # Enable CORS for each resource/sub-resource etc.
         course_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
-        course_quizzes_resource.add_cors_preflight(
+        course_quiz_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
         course_homework_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
-        course_quiz_questions_resource.add_cors_preflight(
+        course_quiz_question_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
         course_material_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
