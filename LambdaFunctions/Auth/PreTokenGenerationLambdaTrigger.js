@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 
-// Create the DynamoDB service object
-var ddb = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
+// Create the CognitoIdentity service object
+const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 
 // PretokenGeneration Lambda
 exports.handler = async function (event, context) {
@@ -9,35 +9,42 @@ exports.handler = async function (event, context) {
         return event;
     }
 
-    var params = {
-        ExpressionAttributeValues: {
-            ":v1": {
-                S: event.userName
-            }
-        },
-        KeyConditionExpression: "UserName = :v1",
-        ProjectionExpression: "UserRole, UserAlias",
-        TableName: "UserInfoTable"
-    };
-
     event.response = {
         "claimsOverrideDetails": {
             "claimsToAddOrOverride": {
                 "userName": event.userName,
                 "userRole": null,
-                "name": null
             },
         }
     };
 
     try {
-        let result = await ddb.query(params).promise();
-        if (result.Items.length > 0) {
-            const userRole = result.Items[0]["UserRole"]["S"];
-            const name = result.Items[0]["UserAlias"]["S"];
-            event.response.claimsOverrideDetails.claimsToAddOrOverride.userRole = userRole;
-            event.response.claimsOverrideDetails.claimsToAddOrOverride.name = name;
-        }
+        const userPoolId = 'ap-southeast-1_llGKQDogf';
+
+        // Define the params for the adminGetUser method
+        const params = {
+            UserPoolId: userPoolId,
+            Username: event.userName
+        };
+
+        cognitoIdentityServiceProvider.adminGetUser(params).promise()
+            .then(data => {
+                // Perform actions on the resulting data
+                const customAttributes = data.UserAttributes.filter(attr => attr.Name.startsWith('custom:'));
+
+                // Print the user's custom attributes
+                customAttributes.forEach(attr => {
+                    console.log(attr.Name.substring(7), attr.Value);
+                    if (attr.Name.substring(7) == 'role') {
+                        console.log(attr.Value)
+                        event.response.claimsOverrideDetails.claimsToAddOrOverride.userRole = attr.Value;
+                    }
+                });
+            })
+            .catch(error => {
+                // Handle any errors
+                console.log(error);
+            });
     }
     catch (error) {
         console.log(error);

@@ -47,13 +47,24 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
           if (err) {
             console.log(err);
           }
-          let userRole = session.getIdToken().payload["userRole"];
-          console.log(userRole)
-          let userInfo = {
-            "name": session.getIdToken().payload["name"],
-            "role": userRole
+
+          let groups = session.getIdToken().payload["cognito:groups"];
+          let userRole = null
+          if (groups.includes("Admins")) {
+            userRole = "Admin";
+          } else if (groups.includes("Teachers")) {
+            userRole = "Teacher";
+          } else if (groups.includes("Users")) {
+            userRole = "User";
           }
-          handleSetUserInfo(userInfo);
+
+          if (userRole != null) {
+            let userInfo = {
+              name: session.getIdToken().payload["name"],
+              role: userRole,
+            };
+            handleSetUserInfo(userInfo);
+          }
 
           if (Object.keys(routes).includes(userRole)) {
             navigate(routes[userRole]);
