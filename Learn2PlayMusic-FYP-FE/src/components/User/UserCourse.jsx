@@ -1,21 +1,16 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Breadcrumbs } from '@mui/material'
 import ClassMaterialsTable from './ClassMaterialsTable';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import DownloadIcon from '@mui/icons-material/Download';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 const UserCourse = () => {
-  const course = {
-    id: 1,
-    title: "Grade 1 Piano",
-    date: "Wednesday 7pm",
-    teacher: "Miss Felicia Ng"
-  }
+  const [course, setCourse] = useState({})
+  const [courseHomework, setCourseHomework] = useState([])
 
   const courseAnnouncements = [
     {
@@ -54,30 +49,6 @@ const UserCourse = () => {
     },
   ]
 
-  const courseHomework = [
-    {
-      id: 1,
-      title: "Homework 1",
-      dueDate: "3 Feb 2023, 23:59PM",
-      score: "80%",
-      submission: 1,
-    },
-    {
-      id: 2,
-      title: "Homework 2",
-      dueDate: "13 Feb 2023, 23:59PM",
-      score: "80%",
-      submission: 1,
-    },
-    {
-      id: 3,
-      title: "Homework 3",
-      dueDate: "3 Mar 2023, 23:59PM",
-      score: "",
-      submission: 0,
-    }
-  ]
-
   const courseProgressReports = [
     {
       id: 1,
@@ -111,7 +82,33 @@ const UserCourse = () => {
       },
     }).then((response) => response.json())
       .then((data) => {
+        let courseData = {
+          id: data[0].SK.split("#")[1],
+          name: data[0].CourseName,
+          timeslot: data[0].CourseTimeSlot,
+        }
+        setCourse(courseData)
+      }).catch((error) => {
+        console.log(error)
+      })
+
+    fetch(`${import.meta.env.VITE_API_URL}/course/homework?courseId=${courseid}&studentId=1`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => response.json())
+      .then((data) => {
         console.log(data)
+        for (let idx in data) {
+          data[idx].id = data[idx].SK.split("Homework#")[1].substr(0,1)
+
+          let date = new Date(data[idx]['HomeworkDueDate'])
+          let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+          data[idx]['HomeworkDueDate'] = formattedDate 
+        }
+        console.log(data)
+        setCourseHomework(data)
       }).catch((error) => {
         console.log(error)
       })
@@ -132,19 +129,19 @@ const UserCourse = () => {
           <HomeIcon sx={{ mr: 0.5 }} />
           Home
         </Link>
-        <Typography color="text.primary">{course.title}</Typography>
+        <Typography color="text.primary">{course.name}</Typography>
       </Breadcrumbs>
 
       <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box>
-            <Typography variant='h5' sx={{ color: "primary.main" }}>{course.title}</Typography>
-            <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.date}</Typography>
+            <Typography variant='h5' sx={{ color: "primary.main" }}>{course.name}</Typography>
+            <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.timeslot}</Typography>
           </Box>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
           <Box>
-            <Typography variant='subtitle1' sx={{ mb: 0.5 }}>{course.teacher}</Typography>
+            <Typography variant='subtitle1' sx={{ mb: 0.5 }}>Miss Felicia Ng</Typography>
             <Typography variant='body2' sx={{ textAlign: "right" }}>Teacher</Typography>
           </Box>
         </Box>
@@ -241,7 +238,7 @@ const UserCourse = () => {
                   <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SCORE</Typography>
                 </Grid>
                 <Grid item xs="2">
-                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SUBMISSION</Typography>
+                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SUBMISSIONS</Typography>
                 </Grid>
               </Grid>
               {
@@ -249,19 +246,19 @@ const UserCourse = () => {
                   <Card sx={{ py: 3, px: 4, mt: 2 }}>
                     <Grid container spacing={2}>
                       <Grid item xs="12" sm="4">
-                        <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={() => navigate("" + homework.id)}>{homework.title}</Link></Typography>
+                        <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkTitle}</Link></Typography>
                       </Grid>
                       <Grid item xs="12" sm="3">
-                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.dueDate}</Typography>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.HomeworkDueDate}</Typography>
                         <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Due Date: {homework.dueDate}</Typography>
                       </Grid>
                       <Grid item xs="12" sm="3">
-                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.score}</Typography>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.HomeworkScore}</Typography>
                         <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Score: {homework.score}</Typography>
                       </Grid>
                       <Grid item xs="12" sm="2">
-                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.submission}/1</Typography>
-                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.submission}/1</Typography>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.HomeworkSubmissions}</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.HomeworkSubmissions}</Typography>
                       </Grid>
                     </Grid>
                   </Card>
