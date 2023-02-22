@@ -31,7 +31,6 @@ const AdminUserManagement = () => {
         }
       }
 
-      console.log(userData)
       let date = new Date(userData[idx]['UserCreateDate'])
       let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
       userData[idx]['UserCreateDate'] = formattedDate 
