@@ -7,11 +7,8 @@ import uuid
 # Add a new course announcement under a course
 def lambda_handler(event, context):
   
-    courseId = event["queryStringParameters"]["courseId"]
-    announcementId = str(uuid.uuid4().hex)[:8]
+    dateId = str(uuid.uuid4().hex)[:8]
     content = event["queryStringParameters"]["content"]
-    date = event["queryStringParameters"]["date"]
-
     res = {}
     try:
         dynamodb = boto3.resource("dynamodb")
@@ -19,10 +16,9 @@ def lambda_handler(event, context):
 
         table.put_item(
             Item={
-                "PK": f"Course#{courseId}",
-                "SK": f"Announcement#{announcementId}",
+                "PK": f"GeneralAnnouncement#",
+                "SK": f"Date#{dateId}",
                 "Content": content,
-                "Date": date
             })
 
         res["statusCode"] = 200
