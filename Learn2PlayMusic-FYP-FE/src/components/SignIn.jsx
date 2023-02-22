@@ -75,6 +75,7 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
       })
       .catch(err => {
         toast.error(err.message);
+        handleClose();
       });
   }
 

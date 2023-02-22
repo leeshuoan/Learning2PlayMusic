@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Breadcrumbs } from '@mui/material'
-import ClassMaterialsTable from './ClassMaterialsTable';
+import MaterialReactTable from "material-react-table";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -11,6 +11,7 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 const UserCourse = () => {
   const [course, setCourse] = useState({})
   const [courseHomework, setCourseHomework] = useState([])
+  const [courseMaterial, setCourseMaterial] = useState([])
 
   const courseAnnouncements = [
     {
@@ -74,6 +75,41 @@ const UserCourse = () => {
     "report": "My Progress Report"
   }
 
+  const getHomeworkAPI = fetch(`${import.meta.env.VITE_API_URL}/course/homework?courseId=${courseid}&studentId=1`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
+  const getMaterialAPI = fetch(`${import.meta.env.VITE_API_URL}/course/material?courseId=${courseid}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "MaterialTitle",
+        id: "title",
+        header: "Title",
+      },
+      {
+        accessorKey: "MaterialType",
+        id: "type",
+        header: "Type",
+      },
+      {
+        accessorKey: "MaterialLessonDate",
+        id: "lessonDate",
+        header: "Lesson Date",
+      },
+    ],
+    []
+  );
+
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
       method: 'GET',
@@ -92,26 +128,29 @@ const UserCourse = () => {
         console.log(error)
       })
 
-    fetch(`${import.meta.env.VITE_API_URL}/course/homework?courseId=${courseid}&studentId=1`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((response) => response.json())
-      .then((data) => {
-        console.log(data)
-        for (let idx in data) {
-          data[idx].id = data[idx].SK.split("Homework#")[1].substr(0,1)
-
-          let date = new Date(data[idx]['HomeworkDueDate'])
+    Promise.all([getHomeworkAPI, getMaterialAPI]).then(([res1, res2]) => {
+      return Promise.all([res1.json(), res2.json()]).then(([data1, data2]) => {
+        console.log(data1)
+        console.log(data2)
+        for (let idx in data1) {
+          data1[idx].id = data1[idx].SK.split("Homework#")[1].substr(0, 1)
+          let date = new Date(data1[idx]['HomeworkDueDate'])
           let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-          data[idx]['HomeworkDueDate'] = formattedDate 
+          data1[idx]['HomeworkDueDate'] = formattedDate
         }
-        console.log(data)
-        setCourseHomework(data)
-      }).catch((error) => {
-        console.log(error)
+        setCourseHomework(data1)
+
+        for (let idx in data2) {
+          data2[idx].id = data2[idx].SK.split("Material#")[1].substr(0, 1)
+          let date = new Date(data2[idx]['MaterialLessonDate'])
+          let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+          data2[idx]['MaterialLessonDate'] = formattedDate
+        }
+        setCourseMaterial(data2)
       })
+    }).catch((error) => {
+      console.log(error)
+    })
   }, [])
 
   const menuNavigate = (option) => {
@@ -197,7 +236,19 @@ const UserCourse = () => {
             </Card>
 
             <Box sx={{ display: category == "material" ? "block" : "none" }}>
-              <ClassMaterialsTable />
+              <Box m={2}>
+                <MaterialReactTable
+                  columns={columns}
+                  data={courseMaterial}
+                  initialState={{ density: "compact" }}
+                  renderTopToolbarCustomActions={({ table }) => {
+                    return (
+                      <Typography m={1} variant="h6">
+                        Class Materials
+                      </Typography>
+                    );
+                  }}></MaterialReactTable>
+              </Box>
             </Box>
 
             <Box sx={{ display: category == "quiz" ? "block" : "none" }}>
@@ -292,8 +343,8 @@ const UserCourse = () => {
 
           </Box>
         </Grid>
-
       </Grid>
+
     </Container>
   )
 }
