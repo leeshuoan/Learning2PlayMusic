@@ -142,11 +142,14 @@ class CourseStack(Stack):
             "application/json": post_course_material_model})
 
         # /course/quiz
-        course_quiz_resource.add_method(
-            "GET", apigw.LambdaIntegration(get_course_quiz))
+        course_quiz_resource.add_method("GET", apigw.LambdaIntegration(get_course_quiz), request_parameters={
+          'method.request.querystring.courseId': True,
+          'method.request.querystring.studentId': True,
+          'method.request.querystring.quizId': False,
+        })
 
         # /course/quiz/question
-        post_course_material_model = main_api.add_model(
+        post_course_quiz_question_model = main_api.add_model(
             "PostCourseQuizQuestionModel",
             content_type="application/json",
             model_name="PostCourseQuizQuestionModel",
@@ -164,16 +167,39 @@ class CourseStack(Stack):
                 },
                 required=["courseId", "quizId", "materialType", "Question", "Options","Answer"]))
 
-        course_quiz_question_resource.add_method(
-            "GET", apigw.LambdaIntegration(get_course_quiz_question))
-        course_quiz_question_resource.add_method(
-            "POST", apigw.LambdaIntegration(post_course_quiz_question))
-        course_quiz_question_resource.add_method(
-            "DELETE", apigw.LambdaIntegration(delete_course_quiz_question))
+        delete_course_quiz_question_model = main_api.add_model(
+            "DeleteCourseQuizQuestionModel",
+            content_type="application/json",
+            model_name="DeleteCourseQuizQuestionModel",
+            schema=apigw.JsonSchema(
+                title="DeleteCourseQuizQuestionModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "questionId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                },
+                required=["courseId", "quizId", "questionId"]))
+
+        course_quiz_question_resource.add_method("GET", apigw.LambdaIntegration(get_course_quiz_question), request_parameters={
+          'method.request.querystring.courseId': True,
+          'method.request.querystring.quizId': True,
+          'method.request.querystring.questionId': False,
+        })
+        course_quiz_question_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_quiz_question), request_parameters={
+          "application/json": delete_course_quiz_question_model
+        })
+        course_quiz_question_resource.add_method("POST", apigw.LambdaIntegration(post_course_quiz_question), request_models={
+          "application/json": post_course_quiz_question_model
+        })
 
         # /course/homework
-        course_homework_resource.add_method(
-            "GET", apigw.LambdaIntegration(get_course_homework))
+        course_homework_resource.add_method("GET", apigw.LambdaIntegration(get_course_homework), request_parameters={
+          'method.request.querystring.courseId': True,
+          'method.request.querystring.studentId': True,
+          'method.request.querystring.homeworkId': True,
+        })
 
         # /course/announcement
         course_announcement_resource.add_method("GET", apigw.LambdaIntegration(get_course_announcement), request_parameters={
