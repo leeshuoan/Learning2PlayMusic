@@ -5,16 +5,22 @@ const { response_200, response_400, response_500 } = require("./responses");
 const dynamodb = new DynamoDB.DocumentClient();
 
 function checkForNull(...args) {
+  const arguments = [
+    "courseId",
+    "quizId",
+    "questionId",
+  ];
+
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === null) {
-      throw new Error(`Argument ${i + 1} cannot be null`);
+    if (args[i] === undefined || args[i] === "") {
+      throw new Error(`Argument ${arguments[i]} cannot be empty`);
     }
   }
 }
 
-function lambda_handler(event, context) {
+async function lambda_handler(event, context) {
   try {
-    const requestBody = event.body;
+    const requestBody = JSON.parse(event.body);
     const courseId = requestBody.courseId;
     const quizId = requestBody.quizId;
     const questionId = requestBody.questionId;
@@ -28,15 +34,16 @@ function lambda_handler(event, context) {
         SK: `Quiz#${quizId}Question#${questionId}`,
       },
     };
-    dynamodb.delete(params, (err, data) => {
-        if (err) {
-          return response_400(err);
-        } else {
-          return response_200("Successfully deleted item!");
-        }
-      })
 
-    return response_200("Successfully deleted item!");
+    const result = await dynamodb.get(params).promise();
+    if (!result.Item) {
+      return response_400(`Item with courseId:${courseId} quizId:${quizId} questionId:${questionId} not found`);
+    }
+
+    await dynamodb.delete(params).promise();
+
+    return response_200(`Successfully deleted item with courseId:${courseId} quizId:${quizId} questionId:${questionId}!`);
+    
   } catch (e) {
     return response_400(e);
   }
