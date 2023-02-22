@@ -26,21 +26,14 @@ def lambda_handler(event, context):
 
         # check if <studentId><courseId> combination exists in database
         # db won't throw error if try to reinsert same primary key, this is more to inform that student is already registered with the course
-        response = table.query(
-            KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
-            ExpressionAttributeValues={
-                ":PK": f"Student#{studentId}",
-                ":SK": f"Course#{courseId}"
-            })
-
-        if response['Count'] != 0:
+        if combination_id_exists("Course", courseId, "Student", studentId):
             return response_202("This student has been registered with the course")
 
         else:
             response = table.put_item(
                 Item={
-                    "PK": f"Student#{event['queryStringParameters']['studentId']}",
-                    "SK": f"Course#{event['queryStringParameters']['courseId']}"
+                    "PK": f"Student#{studentId}",
+                    "SK": f"Course#{courseId}"
                 }
             )
 

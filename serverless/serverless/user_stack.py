@@ -17,7 +17,8 @@ class UserStack(Stack):
 
         FUNCTIONS_FOLDER = "./lambda_functions/"
         USER_FUNCTIONS_FOLDER = "user."
-        USER_STUDENT_FUNCTIONS_FOLDER = USER_FUNCTIONS_FOLDER + "student"
+        USER_STUDENT_FUNCTIONS_FOLDER = USER_FUNCTIONS_FOLDER + "student."
+        USER_STUDENT_COURSE_FUNCTIONS_FOLDER = USER_STUDENT_FUNCTIONS_FOLDER + "course"
 
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
@@ -27,9 +28,9 @@ class UserStack(Stack):
           self, "lambda-general-role",role_arn)
 
         # /user/student/courses Functions
-        get_student_course = _lambda.Function(self, "getStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.get_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        post_student_course = _lambda.Function(self, "postStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.post_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        delete_student_course = _lambda.Function(self, "deleteStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.delete_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        get_student_course = _lambda.Function(self, "getStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.get_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        post_student_course = _lambda.Function(self, "postStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.post_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        delete_student_course = _lambda.Function(self, "deleteStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.delete_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # define the attributes of the existing REST API
         rest_api_id = Fn.import_value("mainApiId")

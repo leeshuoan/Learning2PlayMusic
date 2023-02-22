@@ -26,20 +26,14 @@ def lambda_handler(event, context):
         # check if <studentId><courseId> combination exists in database
         # db won't throw error if try to delete a primary key combination that does not exist,
         # this is more to inform that student was not registered with the course.
-        response = table.query(
-            Key={
-                "PK": f"Student#{studentId}",
-                "SK": f"Course#{courseId}"
-            })
-
-        if response['Count'] != 0:
-            return response_202("This student is not registered with the course.")
+        if not combination_id_exists("Student", studentId, "Course", courseId):
+            return response_202("This student has not been registered with the course")
 
         else:
             response = table.delete_item(
                 Key={
-                    "PK": f"Student#{event['queryStringParameters']['studentId']}",
-                    "SK": f"Course#{event['queryStringParameters']['courseId']}"
+                    "PK": f"Student#{studentId}",
+                    "SK": f"Course#{courseId}"
                 }
             )
 
