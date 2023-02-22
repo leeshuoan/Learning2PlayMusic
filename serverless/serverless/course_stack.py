@@ -187,7 +187,7 @@ class CourseStack(Stack):
           'method.request.querystring.quizId': True,
           'method.request.querystring.questionId': False,
         })
-        course_quiz_question_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_quiz_question), request_parameters={
+        course_quiz_question_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_quiz_question), request_models={
           "application/json": delete_course_quiz_question_model
         })
         course_quiz_question_resource.add_method("POST", apigw.LambdaIntegration(post_course_quiz_question), request_models={
@@ -198,7 +198,7 @@ class CourseStack(Stack):
         course_homework_resource.add_method("GET", apigw.LambdaIntegration(get_course_homework), request_parameters={
           'method.request.querystring.courseId': True,
           'method.request.querystring.studentId': True,
-          'method.request.querystring.homeworkId': True,
+          'method.request.querystring.homeworkId': False
         })
 
         # /course/announcement
