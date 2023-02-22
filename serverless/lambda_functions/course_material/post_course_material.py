@@ -18,9 +18,9 @@ def lambda_handler(event, context):
         if json.loads(event['body'])['courseId']=="":
             return response_400("courseId is missing")
 
-        # check if <courseId> already exists in database
+        # check if <courseId> exists in database
         courseId = json.loads(event['body'])['courseId']
-        if not course_id_exists(courseId):
+        if not id_exists("Course", "Course", courseId):
             return response_400("courseId does not exist in database")
 
         response = table.put_item(
