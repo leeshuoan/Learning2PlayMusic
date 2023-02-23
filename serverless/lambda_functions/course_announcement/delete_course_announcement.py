@@ -8,18 +8,17 @@ from global_functions.exists_in_db import *
 # Delete a course announcement under a course
 def lambda_handler(event, context):
 
-    res = {}
     try:
         # VALIDATION
         # check if <courseId> exists in database
         courseId = event['queryStringParameters']['courseId']
-        if not course_id_exists(courseId):
+        announcementId = event['queryStringParameters']['announcementId']
+        if not id_exists(f"Course#{courseId}","Announcement", announcementId):
             return response_400("courseId does not exist in database")
 
         # check if <announcementId> exists in database
-        announcementId = event['queryStringParameters']['announcementId']
-        if not course_item_id_exists(courseId, "Announcement", announcementId):
-            return response_400("materialId does not exist in database")
+        if not combination_id_exists("Course",courseId, "Announcement", announcementId):
+            return response_400("announcementId does not exist in database")
     
         courseId = event["queryStringParameters"]["courseId"]
         announcementId = event["queryStringParameters"]["announcementId"]

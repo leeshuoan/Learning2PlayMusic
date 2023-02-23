@@ -15,7 +15,7 @@ def lambda_handler(event, context):
 
         # check if <dateId> exists in database
         dateId = event['queryStringParameters']['dateId']
-        if not date_id_exists(dateId):
+        if not id_exists("GeneralAnnouncements","Date",dateId):
             return response_400("dateId does not exist in database")
 
         response = table.delete_item(

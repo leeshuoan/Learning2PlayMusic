@@ -15,7 +15,7 @@ def lambda_handler(event, context):
 
         # VALIDATION
         # check if <dateID> already exists in database
-        if not date_id_exists(dateId):
+        if not id_exists("GeneralAnnouncements", "Date", dateId):
             return response_400("dateId does not exist in database")
 
         response = table.put_item(

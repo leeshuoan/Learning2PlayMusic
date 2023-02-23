@@ -3,6 +3,7 @@ import boto3
 import json
 
 from global_functions.responses import *
+from global_functions.exists_in_db import *
 
 # Get all course announcements under a course
 def lambda_handler(event, context):
@@ -13,7 +14,10 @@ def lambda_handler(event, context):
     else:
         announcementId = event["queryStringParameters"]["announcementId"]        
         sortkey = "Announcement#" + announcementId
-    res = {}
+    # VALIDATION
+    # check if <courseId> exists in database
+    if not id_exists(f"Course#{courseId}", "Announcement", announcementId):
+        return response_400("courseId does not exist in database")
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")

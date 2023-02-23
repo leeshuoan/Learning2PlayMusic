@@ -11,7 +11,6 @@ def lambda_handler(event, context):
     
     announcementId = str(uuid.uuid4().hex)[:8]
 
-    res = {}
     try:
 
         # VALIDATION
@@ -21,7 +20,7 @@ def lambda_handler(event, context):
 
         # check if <courseId> already exists in database
         courseId = json.loads(event['body'])['courseId']
-        if not course_id_exists(courseId):
+        if not combination_id_exists("Course",courseId,"Announcement",announcementId):
             return response_400("courseId does not exist in database")
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
