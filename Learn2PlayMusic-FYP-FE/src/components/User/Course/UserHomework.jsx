@@ -25,8 +25,8 @@ const UserHomework = () => {
   const theme = useTheme();
   const navigate = useNavigate()
   const { homeworkId } = useParams()
-  const [open, setOpen] = useState(false);
   const [file, setFile] = useState(null);
+  const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const handleClose = () => setOpen(false);
   const submit = () => {
