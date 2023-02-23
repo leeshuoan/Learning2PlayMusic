@@ -41,3 +41,20 @@ def combination_id_exists(pk_name, pk_id, sk_name, sk_id):
         return True
 
     return False
+
+# checks if a dateId exists in database
+def date_id_exists(dateId):
+    dynamodb = boto3.resource("dynamodb")
+    table = dynamodb.Table("LMS")
+
+    response = table.query(
+        KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
+        ExpressionAttributeValues={
+            ":PK": "GeneralAnnouncements",
+            ":SK": f"Date#{dateId}"
+        })
+
+    if response['Count'] != 0:
+        return True  # dateId already exists
+
+    return False
