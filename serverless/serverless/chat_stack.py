@@ -5,6 +5,7 @@ from aws_cdk import (
     aws_dynamodb as dynamodb,
     core,
 )
+
 """
 todo: to be completed!
 """

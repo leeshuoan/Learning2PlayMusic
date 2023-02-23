@@ -41,8 +41,8 @@ const Chat = ({ user, recipient }) => {
         connectionIdRef.current = connectionResponse.connectionId;
         setConnection(
           new WebSocket(
-            `wss://EXAMPLE.execute-api.us-west-2.amazonaws.com/production?connectionId=${connectionIdRef.current}`
-          )
+            `wss://ez2u245ohb.execute-api.ap-southeast-1.amazonaws.com/test?connectionId=${connectionIdRef.current}`
+              )
         );
       } catch (error) {
         console.log(error);

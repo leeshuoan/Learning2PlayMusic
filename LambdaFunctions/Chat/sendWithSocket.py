@@ -1,6 +1,8 @@
 import json
 import boto3
 import datetime
+from boto3.dynamodb.conditions import Key, Attr
+
 dynamodb = boto3.client('dynamodb')
 apigatewaymanagementapi = boto3.client('apigatewaymanagementapi')
 
@@ -48,11 +50,7 @@ def lambda_handler(event, context):
         # Get all active connections for the recipient
         connections_response = dynamodb.query(
             TableName='connectionMappings',
-            IndexName='recipient-index',
-            KeyConditionExpression='recipient = :recipient',
-            ExpressionAttributeValues={
-                ':recipient': {'S': recipient}
-            }
+            KeyConditionExpression=Key('userId').eq(author),
         )
         connections = connections_response['Items']
         
