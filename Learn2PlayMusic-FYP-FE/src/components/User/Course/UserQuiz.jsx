@@ -37,13 +37,13 @@ const UserQuiz = () => {
       <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box>
-            <Typography variant='h5' sx={{ color: "primary.main" }}>{course.title}</Typography>
-            <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.date}</Typography>
+            <Typography variant='h5' sx={{ color: "primary.main" }}>{course.name}</Typography>
+            <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.timeslot}</Typography>
           </Box>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
           <Box>
-            <Typography variant='subtitle1' sx={{ mb: 0.5 }}>{course.teacher}</Typography>
+            <Typography variant='subtitle1' sx={{ mb: 0.5 }}>Miss Felicia Ng</Typography>
             <Typography variant='body2' sx={{ textAlign: "right" }}>Teacher</Typography>
           </Box>
         </Box>
@@ -51,6 +51,7 @@ const UserQuiz = () => {
 
         <Box>
             <Card sx={{ py: 3, px: 5, mt: 2 }}>
+            <Typography variant='h6' sx={{ mb: 1 }}>Quiz</Typography>
             </Card>
         </Box>
 
