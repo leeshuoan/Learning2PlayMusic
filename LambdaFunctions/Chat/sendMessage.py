@@ -1,59 +1,37 @@
 import boto3
-import datetime
 import json
+import os
 
+""" this function will get read all the messages of a conversation with the conversation id being 
+teacherId (always in front) + studentId
+eg. 
+student = abc
+teacher =  123
+conversationId = abc+123
+"""
 def lambda_handler(event, context):
-    try:
-        dynamodb = boto3.client('dynamodb')
-        
-        conversationId = event.get('conversationId')
-        author = event.get('author')
-        messageBody = event.get('messageBody')
-        users = conversationId.split("+")
-        if users[0]== author:
-            recipient = users[1]
-        else:
-            recipient = users[0]
-        
-        # Validate input parameters
-        if not conversationId:
-            return {
-                'statusCode': 400,
-                'body': "Bad request, conversationId is required"
-            }
-        if not author:
-            return {
-                'statusCode': 400,
-                'body': "Bad request, author is required"
-            }
-        if not messageBody:
-            return {
-                'statusCode': 400,
-                'body': "Bad request, messageBody is required"
-            }
-        
-        # Generate unique timestamp
-        timestamp = str(datetime.datetime.now().isoformat())
-        
-        # Insert the new message into DynamoDB
-        response = dynamodb.put_item(
-            TableName='Chat',
-            Item={
-                'conversationId': {'S': conversationId},
-                'timestamp': {'S': timestamp},
-                'author': {'S': author},
-                'messageBody': {'S': messageBody},
-                'recipient': {'S': recipient}
-            }
-        )
-        
-        # Return success response
+    dynamodb = boto3.resource('dynamodb')
+    table_name = os.environ.get('tableName', 'Chat')
+    table = dynamodb.Table(table_name)
+    conversationId = event.get('conversationId')
+    if not conversationId:
         return {
-            'statusCode': 200,
-            'body': "Message sent successfully"
+            'statusCode': 400,
+            'body': "Bad request, check your input"
         }
+    
+    try:
+        response = table.scan(
+            FilterExpression=boto3.dynamodb.conditions.Attr("conversationId").eq(conversationId)
+        )        
+        res = response['Items']
     except Exception as e:
         return {
             'statusCode': 500,
-            'body': "Error sending message: " + str(e)
+            'body': "AWS resource error, contact admin"
         }
+    
+    return {
+        'statusCode': 200,
+        'body': res
+    }

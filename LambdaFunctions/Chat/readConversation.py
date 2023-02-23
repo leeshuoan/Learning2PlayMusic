@@ -11,7 +11,8 @@ conversationId = abc+123
 """
 def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table(os.environ["tableName"])     # Chat
+    table_name = os.environ.get('tableName', 'Chat')
+    table = dynamodb.Table(table_name)
     conversationId = event.get('conversationId')
     if not conversationId:
         return {
