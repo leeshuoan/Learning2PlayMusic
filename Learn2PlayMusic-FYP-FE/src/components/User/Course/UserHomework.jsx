@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme, Typography, Container, Card, Box, TextField, Link, Button, Breadcrumbs } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -8,13 +8,6 @@ import TransitionModal from '../../utils/TransitionModal';
 import celebration from '../../../assets/celebration.png'
 
 const UserHomework = () => {
-  const course = {
-    id: 1,
-    title: "Grade 1 Piano",
-    date: "21 Mar 2023",
-    teacher: "Miss Felicia Ng"
-  }
-
   const homework = {
     id: 1,
     title: "Homework 1",
@@ -24,11 +17,14 @@ const UserHomework = () => {
 
   const theme = useTheme();
   const navigate = useNavigate()
+  const { courseid } = useParams()
   const { homeworkId } = useParams()
-  const [open, setOpen] = useState(false);
   const [file, setFile] = useState(null);
+  const [course, setCourse] = useState({})
+  const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const handleClose = () => setOpen(false);
+
   const submit = () => {
     setSubmitted(true)
     setOpen(false)
@@ -36,6 +32,27 @@ const UserHomework = () => {
   const fileUploaded = (e) => {
     setFile(e.target.files[0].name)
   }
+
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => response.json())
+      .then((data) => {
+        let courseData = {
+          id: data[0].SK.split("#")[1],
+          name: data[0].CourseName,
+          timeslot: data[0].CourseSlot,
+        }
+        setCourse(courseData)
+      }).catch((error) => {
+        console.log(error)
+        setOpen(false)
+      })
+  }, [])
 
   return (
     <>
@@ -55,8 +72,8 @@ const UserHomework = () => {
             <HomeIcon sx={{ mr: 0.5 }} />
             Home
           </Link>
-          <Link underline="hover" color="inherit" onClick={() => { navigate('/home/course/1/homework') }}>
-            {course.title}
+          <Link underline="hover" color="inherit" onClick={() => { navigate(`/home/course/${courseid}/homework`) }}>
+            {course.name}
           </Link>
           <Typography color="text.primary">Homework</Typography>
         </Breadcrumbs>
@@ -64,13 +81,13 @@ const UserHomework = () => {
         <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
-              <Typography variant='h5' sx={{ color: "primary.main" }}>{course.title}</Typography>
-              <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.date}</Typography>
+              <Typography variant='h5' sx={{ color: "primary.main" }}>{course.name}</Typography>
+              <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.timeslot}</Typography>
             </Box>
           </Box>
           <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
             <Box>
-              <Typography variant='subtitle1' sx={{ mb: 0.5 }}>{course.teacher}</Typography>
+              <Typography variant='subtitle1' sx={{ mb: 0.5 }}>Miss Felicia Ng</Typography>
               <Typography variant='body2' sx={{ textAlign: "right" }}>Teacher</Typography>
             </Box>
           </Box>
