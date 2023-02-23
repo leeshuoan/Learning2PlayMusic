@@ -14,16 +14,20 @@ def lambda_handler(event, context):
         courseId = event['queryStringParameters']['courseId']
 
         # VALIDATION
+        # check if <courseId> exists in database
+        if not id_exists("Course", "Course", courseId):
+            return response_400("courseId does not exist in database")
+
+
         if 'materialId' not in event['queryStringParameters']:
             sortKey = "Material#"
         else:
             materialId = event['queryStringParameters']['materialId']
             sortKey = "Material#" + materialId
 
-        # VALIDATION
-        # check if <courseId> exists in database
-        if not id_exists("Course", "Course", courseId):
-            return response_400("courseId does not exist in database")
+            # check if <courseId><materialId> exists in database
+            if not combination_id_exists("Course", courseId, "Material", materialId):
+                return response_400("materialId does not exist in database")
 
         response = table.query(
             KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
