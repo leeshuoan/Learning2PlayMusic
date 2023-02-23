@@ -99,11 +99,10 @@ class CourseStack(Stack):
                 schema=apigw.JsonSchemaVersion.DRAFT4,
                 type=apigw.JsonSchemaType.OBJECT,
                 properties={
-                    "courseEndDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "courseName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "courseTimeSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    "courseSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
-                required=["courseEndDate", "courseName", "courseTimeSlot"]))
+                required=[ "courseName", "courseSlot"]))
 
         course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={
             'method.request.querystring.courseId': False})
@@ -161,11 +160,11 @@ class CourseStack(Stack):
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "questionOptionType": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "Question": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "Options": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY),
-                    "Answer": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "question": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "options": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY),
+                    "answer": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
-                required=["courseId", "quizId", "materialType", "Question", "Options","Answer"]))
+                required=["courseId", "quizId", "materialType", "question", "options","answer"]))
 
         delete_course_quiz_question_model = main_api.add_model(
             "DeleteCourseQuizQuestionModel",

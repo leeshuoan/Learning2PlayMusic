@@ -3,6 +3,7 @@ import boto3
 import json
 
 from global_functions.responses import *
+from global_functions.exists_in_db import *
 
 def lambda_handler(event, context):
 
@@ -18,6 +19,11 @@ def lambda_handler(event, context):
         else:
             materialId = event['queryStringParameters']['materialId']
             sortKey = "Material#" + materialId
+
+        # VALIDATION
+        # check if <courseId> exists in database
+        if not id_exists("Course", "Course", courseId):
+            return response_400("courseId does not exist in database")
 
         response = table.query(
             KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",

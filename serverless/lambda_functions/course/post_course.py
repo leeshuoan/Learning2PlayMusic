@@ -13,13 +13,14 @@ def lambda_handler(event, context):
         table = dynamodb.Table("LMS")
         short_uuid = str(uuid.uuid4().hex)[:8]
 
+        # No validation needed for this function
+
         response = table.put_item(
             Item= {
                 "PK": "Course",
                 "SK": f"Course#{short_uuid}",
-                "CourseEndDate": json.loads(event['body'])['courseEndDate'],
                 "CourseName": json.loads(event['body'])['courseName'],
-                "CourseTimeSlot": json.loads(event['body'])['courseTimeSlot']
+                "CourseSlot": json.loads(event['body'])['courseSlot'],
             }
             )
 
