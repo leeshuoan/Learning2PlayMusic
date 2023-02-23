@@ -5,7 +5,6 @@ import TeacherAppBar from './TeacherAppBar';
 import UserAppBar from './UserAppBar';
 
 function DefaultAppBar({ userInfo, handleResetUserInfo }) {
-  console.log(userInfo)
   return (
     <>
       {

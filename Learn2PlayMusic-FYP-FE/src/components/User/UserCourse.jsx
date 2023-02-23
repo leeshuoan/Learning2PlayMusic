@@ -77,6 +77,13 @@ const UserCourse = (userInfo) => {
     "report": "My Progress Report"
   }
 
+  const getCourse = fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
   const getHomeworkAPI = fetch(`${import.meta.env.VITE_API_URL}/course/homework?courseId=${courseid}&studentId=1`, {
     method: 'GET',
     headers: {
@@ -126,59 +133,46 @@ const UserCourse = (userInfo) => {
   );
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((response) => response.json())
-      .then((data) => {
+    Promise.all([getCourse, getHomeworkAPI, getMaterialAPI, getQuizAPI])
+      .then(async ([res1, res2, res3, res4]) => {
+        const [data1, data2, data3, data4] = await Promise.all([res1.json(), res2.json(), res3.json(), res4.json()]);
+
         let courseData = {
-          id: data[0].SK.split("#")[1],
-          name: data[0].CourseName,
-          timeslot: data[0].CourseSlot,
+          id: data1[0].SK.split("#")[1],
+          name: data1[0].CourseName,
+          timeslot: data1[0].CourseSlot,
+        };
+        setCourse(courseData);
+
+        for (let idx in data2) {
+          data2[idx].id = data2[idx].SK.split("Homework#")[1].substr(0, 1);
+          let date = new Date(data2[idx]['HomeworkDueDate']);
+          let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+          data2[idx]['HomeworkDueDate'] = formattedDate;
         }
-        setCourse(courseData)
+        setCourseHomework(data2);
+
+        for (let idx1 in data3) {
+          data3[idx1].id = data3[idx1].SK.split("Material#")[1].substr(0, 1);
+          let date_1 = new Date(data3[idx1]['MaterialLessonDate']);
+          let formattedDate_1 = `${date_1.toLocaleDateString()} ${date_1.toLocaleTimeString()}`;
+          data3[idx1]['MaterialLessonDate'] = formattedDate_1;
+        }
+        setCourseMaterial(data3);
+
+        for (let idx2 in data4) {
+          data4[idx2].id = data4[idx2].SK.split("Quiz#")[1].substr(0, 1);
+          let date_2 = new Date(data4[idx2]['QuizDueDate']);
+          let formattedDate_2 = `${date_2.toLocaleDateString()} ${date_2.toLocaleTimeString()}`;
+          data4[idx2]['QuizDueDate'] = formattedDate_2;
+        }
+        setCourseQuiz(data4);
+
+        setOpen(false);
       }).catch((error) => {
         console.log(error)
         setOpen(false)
       })
-
-    Promise.all([getHomeworkAPI, getMaterialAPI, getQuizAPI]).then(([res1, res2, res3]) => {
-      return Promise.all([res1.json(), res2.json(), res3.json()]).then(([data1, data2, data3]) => {
-        console.log(data1)
-        console.log(data2)
-        console.log(data3)
-        for (let idx in data1) {
-          data1[idx].id = data1[idx].SK.split("Homework#")[1].substr(0, 1)
-          let date = new Date(data1[idx]['HomeworkDueDate'])
-          let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-          data1[idx]['HomeworkDueDate'] = formattedDate
-        }
-        setCourseHomework(data1)
-
-        for (let idx in data2) {
-          data2[idx].id = data2[idx].SK.split("Material#")[1].substr(0, 1)
-          let date = new Date(data2[idx]['MaterialLessonDate'])
-          let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-          data2[idx]['MaterialLessonDate'] = formattedDate
-        }
-        setCourseMaterial(data2)
-
-        for (let idx in data3) {
-          data3[idx].id = data3[idx].SK.split("Quiz#")[1].substr(0, 1)
-          let date = new Date(data3[idx]['QuizDueDate'])
-          let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-          data3[idx]['QuizDueDate'] = formattedDate
-        }
-        setCourseQuiz(data3)
-
-        setOpen(false)
-      })
-    }).catch((error) => {
-      console.log(error)
-      setOpen(false)
-    })
 
   }, [])
 
