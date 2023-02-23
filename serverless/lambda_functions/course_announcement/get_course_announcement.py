@@ -2,12 +2,17 @@ import sys
 import boto3
 import json
 
+from global_functions.responses import *
+
 # Get all course announcements under a course
 def lambda_handler(event, context):
   
     courseId = event["queryStringParameters"]["courseId"]
-    announcementId = event["queryStringParameters"]["announcementId"]
-
+    if courseId is None or courseId == "null":
+            sortkey = "Announcement#"
+    else:
+        announcementId = event["queryStringParameters"]["announcementId"]        
+        sortkey = "Announcement#" + announcementId
     res = {}
     try:
         dynamodb = boto3.resource("dynamodb")
@@ -17,20 +22,12 @@ def lambda_handler(event, context):
             KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
             ExpressionAttributeValues={
                 ":PK": f"Course#{courseId}",
-                ":SK": f"Announcement#{announcementId}"
+                ":SK": sortkey
             })
 
         items = response["Items"]
 
-        res["statusCode"] = 200
-        res["headers"] = {
-            "Access-Control-Allow-Headers": "Content-Type",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST,GET,PUT"
-        }
-        res["body"] = json.dumps(items)
-
-        return res
+        return response_200_GET(items)
 
 
     except Exception as e:
