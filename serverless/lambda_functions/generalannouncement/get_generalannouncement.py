@@ -3,6 +3,7 @@ import boto3
 import json
 
 from global_functions.responses import *
+from global_functions.exists_in_db import *
 
 # Get all general announcement
 def lambda_handler(event, context):
@@ -13,13 +14,17 @@ def lambda_handler(event, context):
     # Use this if testing locally on 
     # dateId=event["dateId"]
 
-    res = {}
     try:
         # VALIDATION
         if dateId is None or dateId == "null":
             sortKey = "Date#"
         else:
             sortKey = "Date#" + dateId
+
+        # VALIDATION
+        # check if <dateId> exists in database
+        if not id_exists("GeneralAnnouncements", "Date", dateId):
+            return response_400("dateId does not exist in database")
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
