@@ -109,7 +109,7 @@ const UserCourse = (userInfo) => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "",
+        accessorKey: "MaterialTitle",
         id: "title",
         header: "Title",
         Cell: ({ cell, row }) => (

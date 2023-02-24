@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
-import { useTheme, Typography, Container, Card, Box, TextField, Link, Button, Breadcrumbs } from '@mui/material'
+import { useTheme, Typography, Container, Card, Box, TextField, Link, Button, Breadcrumbs, Backdrop, CircularProgress } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import UploadIcon from '@mui/icons-material/Upload';
@@ -22,6 +22,7 @@ const UserHomework = () => {
   const [file, setFile] = useState(null);
   const [course, setCourse] = useState({})
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [submitted, setSubmitted] = useState(false);
   const handleClose = () => setOpen(false);
 
@@ -48,9 +49,10 @@ const UserHomework = () => {
           timeslot: data[0].CourseSlot,
         }
         setCourse(courseData)
+        setIsLoading(false)
       }).catch((error) => {
         console.log(error)
-        setOpen(false)
+        setIsLoading(false)
       })
   }, [])
 
@@ -133,6 +135,13 @@ const UserHomework = () => {
           </Card>
         </Box>
 
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={isLoading}
+          onClick={() => { setOpen(false) }}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Container>
     </>
   )
