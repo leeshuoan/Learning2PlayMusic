@@ -136,7 +136,7 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                       aria-controls={open ? "account-menu" : undefined}
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}>
-                      <Avatar sx={{ width: 32, height: 32 }}>T</Avatar>
+                      <Avatar sx={{ width: 32, height: 32 }}>U</Avatar>
                     </IconButton>
                   </Tooltip>
                 </Box>

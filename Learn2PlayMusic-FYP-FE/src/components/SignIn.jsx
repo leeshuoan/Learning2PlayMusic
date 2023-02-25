@@ -60,7 +60,7 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
 
           if (userRole != null) {
             let userInfo = {
-              name: session.getIdToken().payload["name"],
+              name: session.getIdToken().payload["custom:name"],
               role: userRole,
             };
             handleSetUserInfo(userInfo);
@@ -75,6 +75,7 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
       })
       .catch(err => {
         toast.error(err.message);
+        handleClose();
       });
   }
 

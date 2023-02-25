@@ -1,81 +1,81 @@
-from aws_cdk import (
-    aws_apigatewayv2 as apigw,
-    aws_apigatewayv2_integrations as integrations,
-    aws_lambda as _lambda,
-    aws_dynamodb as dynamodb,
-    core,
-)
-"""
-todo: to be completed!
-"""
+import boto3
+from aws_cdk import core
+from aws_cdk import aws_iam
+from aws_cdk import aws_lambda as _lambda
+from aws_cdk import aws_apigateway as apigateway
+from aws_cdk import CfnOutput
+
 class ChatStack(core.Stack):
-    
     def __init__(self, scope: core.Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
-        # create the WebSocket API
-        web_socket_api = apigw.CfnApi(
-            self,
-            "WebSocketApi",
-            protocol_type="WEBSOCKET",
-            name="ChatSockets",
-            route_selection_expression="$request.body.action",
+        FUNCTIONS_FOLDER = "./lambda_functions/"
+        CHAT_FUNCTIONS_FOLDER = "chat"
+
+        # Get existing iam role (lambda-general-role) ============================================================
+        iam = boto3.client("iam")
+        role = iam.get_role(RoleName="lambda-general-role")
+        role_arn = role["Role"]["Arn"]
+        LAMBDA_ROLE = aws_iam.Role.from_role_arn(
+            self, "lambda-general-role", role_arn)
+
+        # create a Lambda function  ============================================================
+        get_contacts = _lambda.Function(self, "getContacts", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{CHAT_FUNCTIONS_FOLDER}.getContacts.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        getConversations = _lambda.Function(self, "getConversations", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{CHAT_FUNCTIONS_FOLDER}.getConversations.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        readConversation = _lambda.Function(self, "readConversation", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{CHAT_FUNCTIONS_FOLDER}.readConversation.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        sendMessage = _lambda.Function(self, "sendMessage", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{CHAT_FUNCTIONS_FOLDER}.sendMessage.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+        # create an API Gateway REST API ==========================================================================================
+        rest_api = apigateway.RestApi(self, "Chat", description="chat APIs")
+
+        # create a resource and method for /chat/getContacts
+        contacts_resource = rest_api.root.add_resource("chat").add_resource("getContacts")
+        contacts_method = contacts_resource.add_method("GET", apigateway.LambdaIntegration(get_contacts),
+                                                       request_parameters={
+                                                           'method.request.querystring.userId': True
+                                                       })
+        # create a resource and method for /chat/getConversations
+        conversations_resource = rest_api.root.add_resource("chat").add_resource("getConversations")
+        conversations_method = conversations_resource.add_method("GET", apigateway.LambdaIntegration(getConversations),
+                                                                  request_parameters={
+                                                                      'method.request.querystring.userId': True
+                                                                  })
+        # create a resource and method for /chat/readConversation
+        read_resource = rest_api.root.add_resource("chat").add_resource("readConversation")
+        read_method = read_resource.add_method("GET", apigateway.LambdaIntegration(readConversation),
+                                                request_parameters={
+                                                    'method.request.querystring.conversationId': True
+                                                })
+
+        # create a resource and method for /chat/sendMessage
+        send_message_resource = rest_api.root.add_resource("chat").add_resource("sendMessage")
+        send_message_method = send_message_resource.add_method("POST", apigateway.LambdaIntegration(handler))
+
+        # add a request validator to the GET methods
+        for method in [contacts_method, conversations_method, read_method]:
+            method.request_validator = apigateway.RequestValidator(
+                self, "myRequestValidator",
+                validate_request_parameters=True
+            )
+
+        # Enable CORS for each resource/sub-resource etc.
+        contacts_resource.add_cors_preflight(
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+        conversations_method.add_cors_preflight(
+            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+        read_resource.add_cors_preflight(
+            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+        send_message_resource.add_cors_preflight(
+            allow_origins=["*"], allow_methods=["POST"], status_code=200)
+        
+        # Export API gateway to use in other Stacks
+        CfnOutput(
+            self, 'MyApiIdOutput',
+            value=rest_api.rest_api_id,
+            export_name='mainApiId',
         )
-
-        # create the Lambda function that will handle WebSocket connections
-        ws_lambda = _lambda.Function(
-            self,
-            "WebSocketHandler",
-            runtime=_lambda.Runtime.PYTHON_3_9,
-            handler="app.handler",
-            code=_lambda.Code.from_asset("my_lambda_function_folder"),
-        )
-
-        # create the WebSocket integration for the Lambda function
-        ws_integration = integrations.LambdaWebSocketIntegration(handler=ws_lambda)
-
-        # add the default route for the WebSocket API to the Lambda function
-        default_route = apigw.CfnRoute(
-            self,
-            "DefaultRoute",
-            api_id=web_socket_api.ref,
-            route_key="$default",
-            target=f"integrations/{ws_integration.integration_id}",
-        )
-
-        # create a table in DynamoDB to store messages
-        chat_table = dynamodb.Table(
-            self,
-            "ChatTable",
-            partition_key=dynamodb.Attribute(name="conversationId", type=dynamodb.AttributeType.STRING),
-            sort_key=dynamodb.Attribute(name="timestamp", type=dynamodb.AttributeType.STRING),
-        )
-
-        # give permission to the Lambda function to access the DynamoDB table
-        chat_table.grant_read_write_data(ws_lambda)
-
-        # add environment variables to the Lambda function to access the DynamoDB table
-        ws_lambda.add_environment("CHAT_TABLE_NAME", chat_table.table_name)
-
-        # create the deployment for the WebSocket API
-        deployment = apigw.CfnDeployment(
-            self,
-            "Deployment",
-            api_id=web_socket_api.ref,
-        )
-
-        # create the stage for the WebSocket API
-        stage = apigw.CfnStage(
-            self,
-            "Stage",
-            api_id=web_socket_api.ref,
-            deployment_id=deployment.ref,
-            stage_name="prod",
-        )
-
-        # output the WebSocket API URL
-        core.CfnOutput(
-            self,
-            "WebSocketApiUrl",
-            value=f"wss://{web_socket_api.attr_id}.execute-api.{self.region}.amazonaws.com/{stage.stage_name}",
+        CfnOutput(
+            self, 'MyApiRootResourceIdOutput',
+            value=rest_api.root.resource_id,
+            export_name='mainApiRootResourceIdOutput',
         )

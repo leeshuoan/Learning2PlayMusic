@@ -2,14 +2,27 @@ import sys
 import boto3
 import json
 
+from global_functions.responses import *
+from global_functions.exists_in_db import *
+
 # Delete a course announcement under a course
 def lambda_handler(event, context):
-  
-    courseId = event["queryStringParameters"]["courseId"]
-    announcementId = event["queryStringParameters"]["announcementId"]
 
-    res = {}
     try:
+        # VALIDATION
+        # check if <courseId> exists in database
+        courseId = event['queryStringParameters']['courseId']
+        announcementId = event['queryStringParameters']['announcementId']
+        if not id_exists(f"Course#{courseId}","Announcement", announcementId):
+            return response_400("courseId does not exist in database")
+
+        # check if <announcementId> exists in database
+        if not combination_id_exists("Course",courseId, "Announcement", announcementId):
+            return response_400("announcementId does not exist in database")
+    
+        courseId = event["queryStringParameters"]["courseId"]
+        announcementId = event["queryStringParameters"]["announcementId"]
+
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
@@ -19,15 +32,7 @@ def lambda_handler(event, context):
                 "SK": f"Announcement#{announcementId}"
             })
 
-        res["statusCode"] = 200
-        res["headers"] = {
-            "Access-Control-Allow-Headers": "Content-Type",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST,GET,PUT,DELETE"
-        }
-        res["body"] = json.dumps({"message": "Announcement deleted successfully"})
-
-        return res
+        return response_200("successfully deleted item")
 
 
     except Exception as e:

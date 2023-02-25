@@ -1,36 +1,43 @@
 import boto3
 
-# checks if a courseId exists in database
-def course_id_exists(courseId):
+
+# checks if an id exists in database for primary keys following this format:
+# (Course,Course#1) or (User, Student#1) or (GeneralAnnouncements, Date#2023-12-31) etc.
+def id_exists(pk_name, sk_name, sk_id):
     dynamodb = boto3.resource("dynamodb")
     table = dynamodb.Table("LMS")
 
     response = table.query(
         KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
         ExpressionAttributeValues={
-            ":PK": "Course",
-            ":SK": f"Course#{courseId}"
+            ":PK": f"{pk_name}",
+            ":SK": f"{sk_name}#{sk_id}"
         })
 
     if response['Count'] != 0:
-        return True  # courseid already exists
+        # e.g.
+        # if it's (Course, Course#1), then it means this courseId exists in db
+        # if it's (User, Student#1), then it means this studentId exists in db
+        return True
 
     return False
 
-# check if courseId+itemId combination exists in database
-# e.g. Course#1Material#1, Course#123Announcement#2
-def course_item_id_exists(courseId, itemName, itemId):
+# checks if a pk_id+sk_id combination exists in database for primary keys following this format:
+# (Course#1,Material#1) or (Course#123,Announcement#2) etc.
+def combination_id_exists(pk_name, pk_id, sk_name, sk_id):
     dynamodb = boto3.resource("dynamodb")
     table = dynamodb.Table("LMS")
 
     response = table.query(
         KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
         ExpressionAttributeValues={
-            ":PK": f"Course#{courseId}",
-            ":SK": f"{itemName}#{itemId}"
+            ":PK": f"{pk_name}#{pk_id}",
+            ":SK": f"{sk_name}#{sk_id}"
         })
 
     if response['Count'] != 0:
-        return True  # courseId+itemId combination already exists
+        # e.g.
+        # if it's (Course#1, Material#1), then it means this courseId+materialId combination exists in db
+        return True
 
     return False

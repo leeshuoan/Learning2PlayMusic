@@ -12,20 +12,21 @@ def lambda_handler(event, context):
         table = dynamodb.Table("LMS")
 
         # VALIDATION
-        # check if <courseId> exists in database
-        courseId = event['queryStringParameters']['courseId']
-        if not id_exists("Course", "Course", courseId):
-            return response_400("courseId does not exist in database")
+        # check if <studentId> exists in database
+        studentId = event['queryStringParameters']['studentId']
+        if not id_exists("User", "Student", studentId):
+            return response_400("studentId does not exist in database")
 
-        response = table.delete_item(
-            Key= {
-                "PK": "Course",
-                "SK": f"Course#{event['queryStringParameters']['courseId']}"
-            }
-            )
+        response = table.query(
+            KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
+            ExpressionAttributeValues={
+                ":PK": f"Student#{studentId}",
+                ":SK": "Course#"
+            })
 
-        return response_200("successfully deleted item")
+        items = response["Items"]
 
+        return response_200_GET(items)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

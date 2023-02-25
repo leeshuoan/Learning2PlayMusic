@@ -62,6 +62,7 @@ function App() {
 
           if (userRole != null) {
             let userInfo = {
+              id: session.getIdToken().payload.sub,
               name: session.getIdToken().payload['custom:name'],
               role: userRole,
             };
@@ -102,8 +103,8 @@ function App() {
             <Route index element={<UserHome userInfo={userInfo} />} />
             <Route path="announcements" element={<Announcements />} />
             <Route path="course/:courseid">
-              <Route index element={<UserCourse />} />
-              <Route path=":category" element={<UserCourse />} />
+              <Route index element={<UserCourse userInfo={userInfo} />} />
+              <Route path=":category" element={<UserCourse userInfo={userInfo} />} />
               <Route path="material/:materialId" element={<UserClassMaterials />} />
               <Route path="homework/:homeworkId" element={<UserHomework />} />
               <Route path="report/:reportId" element={<UserReport />} />

@@ -1,21 +1,19 @@
-import { useEffect } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
-import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Breadcrumbs } from '@mui/material'
-import ClassMaterialsTable from './ClassMaterialsTable';
+import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Breadcrumbs, Backdrop, CircularProgress } from '@mui/material'
+import MaterialReactTable from "material-react-table";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import DownloadIcon from '@mui/icons-material/Download';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
-const UserCourse = () => {
-  const course = {
-    id: 1,
-    title: "Grade 1 Piano",
-    date: "Wednesday 7pm",
-    teacher: "Miss Felicia Ng"
-  }
+const UserCourse = (userInfo) => {
+  const [open, setOpen] = useState(true)
+  const [course, setCourse] = useState({})
+  const [courseHomework, setCourseHomework] = useState([])
+  const [courseMaterial, setCourseMaterial] = useState([])
+  const [courseQuiz, setCourseQuiz] = useState([])
 
   const courseAnnouncements = [
     {
@@ -54,30 +52,6 @@ const UserCourse = () => {
     },
   ]
 
-  const courseHomework = [
-    {
-      id: 1,
-      title: "Homework 1",
-      dueDate: "3 Feb 2023, 23:59PM",
-      score: "80%",
-      submission: 1,
-    },
-    {
-      id: 2,
-      title: "Homework 2",
-      dueDate: "13 Feb 2023, 23:59PM",
-      score: "80%",
-      submission: 1,
-    },
-    {
-      id: 3,
-      title: "Homework 3",
-      dueDate: "3 Mar 2023, 23:59PM",
-      score: "",
-      submission: 0,
-    }
-  ]
-
   const courseProgressReports = [
     {
       id: 1,
@@ -103,18 +77,103 @@ const UserCourse = () => {
     "report": "My Progress Report"
   }
 
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
+  const getCourse = fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
+  const getHomeworkAPI = fetch(`${import.meta.env.VITE_API_URL}/course/homework?courseId=${courseid}&studentId=1`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
+  const getMaterialAPI = fetch(`${import.meta.env.VITE_API_URL}/course/material?courseId=${courseid}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
+  // const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`, {
+  const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=1`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "MaterialTitle",
+        id: "title",
+        header: "Title",
+        Cell: ({ cell, row }) => (
+          <>
+            <Link>{row.original.MaterialTitle}</Link>
+          </>
+        ),
       },
-    }).then((response) => response.json())
-      .then((data) => {
-        console.log(data)
+      {
+        accessorKey: "MaterialType",
+        id: "type",
+        header: "Type",
+      },
+      {
+        accessorKey: "MaterialLessonDate",
+        id: "lessonDate",
+        header: "Lesson Date",
+      },
+    ],
+    []
+  );
+
+  useEffect(() => {
+    Promise.all([getCourse, getHomeworkAPI, getMaterialAPI, getQuizAPI])
+      .then(async ([res1, res2, res3, res4]) => {
+        const [data1, data2, data3, data4] = await Promise.all([res1.json(), res2.json(), res3.json(), res4.json()]);
+
+        let courseData = {
+          id: data1[0].SK.split("#")[1],
+          name: data1[0].CourseName,
+          timeslot: data1[0].CourseSlot,
+        };
+        setCourse(courseData);
+
+        for (let idx in data2) {
+          data2[idx].id = data2[idx].SK.split("Homework#")[1].substr(0, 1);
+          let date = new Date(data2[idx]['HomeworkDueDate']);
+          let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+          data2[idx]['HomeworkDueDate'] = formattedDate;
+        }
+        setCourseHomework(data2);
+
+        for (let idx1 in data3) {
+          data3[idx1].id = data3[idx1].SK.split("Material#")[1].substr(0, 1);
+          let date_1 = new Date(data3[idx1]['MaterialLessonDate']);
+          let formattedDate_1 = `${date_1.toLocaleDateString()} ${date_1.toLocaleTimeString()}`;
+          data3[idx1]['MaterialLessonDate'] = formattedDate_1;
+        }
+        setCourseMaterial(data3);
+
+        for (let idx2 in data4) {
+          data4[idx2].id = data4[idx2].SK.split("Quiz#")[1].substr(0, 1);
+          let date_2 = new Date(data4[idx2]['QuizDueDate']);
+          let formattedDate_2 = `${date_2.toLocaleDateString()} ${date_2.toLocaleTimeString()}`;
+          data4[idx2]['QuizDueDate'] = formattedDate_2;
+        }
+        setCourseQuiz(data4);
+
+        setOpen(false);
       }).catch((error) => {
         console.log(error)
+        setOpen(false)
       })
+
   }, [])
 
   const menuNavigate = (option) => {
@@ -132,19 +191,19 @@ const UserCourse = () => {
           <HomeIcon sx={{ mr: 0.5 }} />
           Home
         </Link>
-        <Typography color="text.primary">{course.title}</Typography>
+        <Typography color="text.primary">{course.name}</Typography>
       </Breadcrumbs>
 
       <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box>
-            <Typography variant='h5' sx={{ color: "primary.main" }}>{course.title}</Typography>
-            <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.date}</Typography>
+            <Typography variant='h5' sx={{ color: "primary.main" }}>{course.name}</Typography>
+            <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.timeslot}</Typography>
           </Box>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
           <Box>
-            <Typography variant='subtitle1' sx={{ mb: 0.5 }}>{course.teacher}</Typography>
+            <Typography variant='subtitle1' sx={{ mb: 0.5 }}>Miss Felicia Ng</Typography>
             <Typography variant='body2' sx={{ textAlign: "right" }}>Teacher</Typography>
           </Box>
         </Box>
@@ -200,13 +259,25 @@ const UserCourse = () => {
             </Card>
 
             <Box sx={{ display: category == "material" ? "block" : "none" }}>
-              <ClassMaterialsTable />
+              <Box m={2}>
+                <MaterialReactTable
+                  columns={columns}
+                  data={courseMaterial}
+                  initialState={{ density: "compact" }}
+                  renderTopToolbarCustomActions={({ table }) => {
+                    return (
+                      <Typography m={1} variant="h6">
+                        Class Materials
+                      </Typography>
+                    );
+                  }}></MaterialReactTable>
+              </Box>
             </Box>
 
             <Box sx={{ display: category == "quiz" ? "block" : "none" }}>
-              {courseQuizzes.map((quiz) => (
+              {courseQuiz.map((quiz) => (
                 <Card sx={{ py: 3, px: 4, mt: 2 }}>
-                  <Typography variant='h6' sx={{ mb: 2 }}>{quiz.title}</Typography>
+                  <Typography variant='h6' sx={{ mb: 1 }}>{quiz.QuizTitle}</Typography>
                   <Grid container spacing={2} sx={{ alignItems: "center" }}>
                     <Grid item xs="12" sm="6">
                       <Button variant="contained" onClick={() => { navigate(`${quiz.id}`) }}>
@@ -216,13 +287,13 @@ const UserCourse = () => {
                     </Grid>
                     <Grid item xs="12" sm="3">
                       <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: "primary.main" }}>Score</Typography>
-                      <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{quiz.score}</Typography>
-                      <Typography variant='body1' sx={{ display: { xs: "flex", sm: "none" } }}><Typography sx={{ color: "primary.main", mr: 0.5 }}>Score:</Typography>{quiz.score}</Typography>
+                      <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{quiz.QuizScore * 100}%</Typography>
+                      <Typography variant='body1' sx={{ display: { xs: "flex", sm: "none" } }}><Typography sx={{ color: "primary.main", mr: 0.5 }}>Score:</Typography>{quiz.QuizScore * 100}%</Typography>
                     </Grid>
                     <Grid item xs="12" sm="3">
                       <Typography variant='body1' sx={{ textAlign: "center", color: 'primary.main', display: { xs: "none", sm: "block" } }}>Attempts</Typography>
-                      <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block" } }}>{quiz.attempts}/{quiz.maxAttempts}</Typography>
-                      <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "flex", sm: "none" } }}><Typography sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</Typography>{quiz.attempts}/{quiz.maxAttempts}</Typography>
+                      <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block" } }}>{quiz.QuizAttempt}/{quiz.QuizMaxAttempt}</Typography>
+                      <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "flex", sm: "none" } }}><Typography sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</Typography>{quiz.QuizAttempt}/{quiz.QuizMaxAttempt}</Typography>
                     </Grid>
                   </Grid>
                 </Card>
@@ -241,7 +312,7 @@ const UserCourse = () => {
                   <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SCORE</Typography>
                 </Grid>
                 <Grid item xs="2">
-                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SUBMISSION</Typography>
+                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SUBMISSIONS</Typography>
                 </Grid>
               </Grid>
               {
@@ -249,19 +320,19 @@ const UserCourse = () => {
                   <Card sx={{ py: 3, px: 4, mt: 2 }}>
                     <Grid container spacing={2}>
                       <Grid item xs="12" sm="4">
-                        <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={() => navigate("" + homework.id)}>{homework.title}</Link></Typography>
+                        <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkTitle}</Link></Typography>
                       </Grid>
                       <Grid item xs="12" sm="3">
-                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.dueDate}</Typography>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.HomeworkDueDate}</Typography>
                         <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Due Date: {homework.dueDate}</Typography>
                       </Grid>
                       <Grid item xs="12" sm="3">
-                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.score}</Typography>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.HomeworkScore}</Typography>
                         <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Score: {homework.score}</Typography>
                       </Grid>
                       <Grid item xs="12" sm="2">
-                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.submission}/1</Typography>
-                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.submission}/1</Typography>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.HomeworkSubmissions}</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.HomeworkSubmissions}</Typography>
                       </Grid>
                     </Grid>
                   </Card>
@@ -295,8 +366,14 @@ const UserCourse = () => {
 
           </Box>
         </Grid>
-
       </Grid>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+        onClick={() => { setOpen(false) }}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Container>
   )
 }

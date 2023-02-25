@@ -84,7 +84,7 @@ const UserHome = ({ userInfo }) => {
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Button variant="contained" sx={{ color: "black", backgroundColor: "white", boxShadow: "none", "&:hover": { backgroundColor: "lightgrey" } }}
-                onClick={() => {navigate(`course/${myCourse.id}`)}}>GO TO COURSE PAGE</Button>
+                onClick={() => { navigate(`course/${myCourse.id}`) }}>GO TO COURSE PAGE</Button>
             </Box>
           </Box>
         </Card>

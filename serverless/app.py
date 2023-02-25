@@ -9,6 +9,7 @@ import aws_cdk as cdk
 
 from serverless.course_stack import CourseStack
 from serverless.announcement_stack import AnnouncementStack
+from serverless.user_stack import UserStack
 
 
 app = cdk.App()
@@ -33,8 +34,9 @@ CourseStack(app, "CourseStack",
             )
 AnnouncementStack(app, "AnnouncementStack",
                   env=cdk.Environment(account='568463424400',
-                                      region='ap-southeast-1'),
-
-                  )
+                                      region='ap-southeast-1')),
+UserStack(app, "UserStack",
+          env=cdk.Environment(account='568463424400',
+                                      region='ap-southeast-1'))
 
 app.synth()

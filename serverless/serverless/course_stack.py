@@ -21,7 +21,7 @@ class CourseStack(Stack):
         # Define Constants Here
         FUNCTIONS_FOLDER = "./lambda_functions/"
         COURSE_FUNCTIONS_FOLDER = "course"
-        COURSE_MATERIAL_FUNCTIONS_FOLDER = "course/course_material"
+        COURSE_MATERIAL_FUNCTIONS_FOLDER = "course_material"
         COURSE_HOMEWORK_FUNCTIONS_FOLDER = "course_homework"
         COURSE_QUIZ_FUNCTIONS_FOLDER = "course_quiz"
         COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER = "course_announcement"
@@ -49,13 +49,13 @@ class CourseStack(Stack):
         get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.get_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course = _lambda.Function(self, "postCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.post_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course = _lambda.Function(self, "deleteCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.delete_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        
+
 
         # # /course/material Functions
         get_course_material = _lambda.Function(self, "get_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.get_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course_material = _lambda.Function(self, "post_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.post_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course_material = _lambda.Function(self, "delete_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.delete_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        
+
         # /course/quiz/
         get_course_quiz = _lambda.Function(self, "getCourseQuiz", runtime=_lambda.Runtime.PYTHON_3_9,
                                               handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -99,11 +99,10 @@ class CourseStack(Stack):
                 schema=apigw.JsonSchemaVersion.DRAFT4,
                 type=apigw.JsonSchemaType.OBJECT,
                 properties={
-                    "courseEndDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "courseName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "courseTimeSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    "courseSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
-                required=["courseEndDate", "courseName", "courseTimeSlot"]))
+                required=[ "courseName", "courseSlot"]))
 
         course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={
             'method.request.querystring.courseId': False})
@@ -142,11 +141,14 @@ class CourseStack(Stack):
             "application/json": post_course_material_model})
 
         # /course/quiz
-        course_quiz_resource.add_method(
-            "GET", apigw.LambdaIntegration(get_course_quiz))
+        course_quiz_resource.add_method("GET", apigw.LambdaIntegration(get_course_quiz), request_parameters={
+          'method.request.querystring.courseId': True,
+          'method.request.querystring.studentId': True,
+          'method.request.querystring.quizId': False,
+        })
 
         # /course/quiz/question
-        post_course_material_model = main_api.add_model(
+        post_course_quiz_question_model = main_api.add_model(
             "PostCourseQuizQuestionModel",
             content_type="application/json",
             model_name="PostCourseQuizQuestionModel",
@@ -160,20 +162,43 @@ class CourseStack(Stack):
                     "questionOptionType": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "question": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "options": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY),
-                    "aanswer": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "answer": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
                 required=["courseId", "quizId", "materialType", "question", "options","answer"]))
-        
-        course_quiz_question_resource.add_method(
-            "GET", apigw.LambdaIntegration(get_course_quiz_question))
-        course_quiz_question_resource.add_method(
-            "POST", apigw.LambdaIntegration(post_course_quiz_question))
-        course_quiz_question_resource.add_method(
-            "DELETE", apigw.LambdaIntegration(delete_course_quiz_question))
-        
+
+        delete_course_quiz_question_model = main_api.add_model(
+            "DeleteCourseQuizQuestionModel",
+            content_type="application/json",
+            model_name="DeleteCourseQuizQuestionModel",
+            schema=apigw.JsonSchema(
+                title="DeleteCourseQuizQuestionModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "questionId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                },
+                required=["courseId", "quizId", "questionId"]))
+
+        course_quiz_question_resource.add_method("GET", apigw.LambdaIntegration(get_course_quiz_question), request_parameters={
+          'method.request.querystring.courseId': True,
+          'method.request.querystring.quizId': True,
+          'method.request.querystring.questionId': False,
+        })
+        course_quiz_question_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_quiz_question), request_models={
+          "application/json": delete_course_quiz_question_model
+        })
+        course_quiz_question_resource.add_method("POST", apigw.LambdaIntegration(post_course_quiz_question), request_models={
+          "application/json": post_course_quiz_question_model
+        })
+
         # /course/homework
-        course_homework_resource.add_method(
-            "GET", apigw.LambdaIntegration(get_course_homework))
+        course_homework_resource.add_method("GET", apigw.LambdaIntegration(get_course_homework), request_parameters={
+          'method.request.querystring.courseId': True,
+          'method.request.querystring.studentId': True,
+          'method.request.querystring.homeworkId': False
+        })
 
         # /course/announcement
         course_announcement_resource.add_method("GET", apigw.LambdaIntegration(get_course_announcement), request_parameters={
