@@ -8,7 +8,7 @@
             "UserPoolId"
           ],
           "category": "auth",
-          "resourceName": "learn2playmusicfypfe994dc030994dc030"
+          "resourceName": "learn2playmusicfypfe80a00bf480a00bf4"
         },
         {
           "attributes": [
@@ -16,7 +16,7 @@
             "Name"
           ],
           "category": "function",
-          "resourceName": "AdminQueriesa642bb27"
+          "resourceName": "AdminQueries3621d01f"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -24,7 +24,7 @@
     }
   },
   "auth": {
-    "learn2playmusicfypfe994dc030994dc030": {
+    "learn2playmusicfypfe80a00bf480a00bf4": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -59,7 +59,7 @@
             "AppClientID"
           ],
           "category": "auth",
-          "resourceName": "learn2playmusicfypfe994dc030994dc030"
+          "resourceName": "learn2playmusicfypfe80a00bf480a00bf4"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -67,7 +67,7 @@
     }
   },
   "function": {
-    "AdminQueriesa642bb27": {
+    "AdminQueries3621d01f": {
       "build": true,
       "dependsOn": [
         {
@@ -75,7 +75,7 @@
             "UserPoolId"
           ],
           "category": "auth",
-          "resourceName": "learn2playmusicfypfe994dc030994dc030"
+          "resourceName": "learn2playmusicfypfe80a00bf480a00bf4"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -83,19 +83,19 @@
     }
   },
   "parameters": {
-    "AMPLIFY_function_AdminQueriesa642bb27_deploymentBucketName": {
+    "AMPLIFY_function_AdminQueries3621d01f_deploymentBucketName": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "AdminQueriesa642bb27"
+          "resourceName": "AdminQueries3621d01f"
         }
       ]
     },
-    "AMPLIFY_function_AdminQueriesa642bb27_s3Key": {
+    "AMPLIFY_function_AdminQueries3621d01f_s3Key": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "AdminQueriesa642bb27"
+          "resourceName": "AdminQueries3621d01f"
         }
       ]
     }

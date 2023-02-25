@@ -5,9 +5,9 @@
     "env": {
       "Type": "String"
     },
-    "authlearn2playmusicfypfe994dc030994dc030UserPoolId": {
+    "authlearn2playmusicfypfe80a00bf480a00bf4UserPoolId": {
       "Type": "String",
-      "Default": "authlearn2playmusicfypfe994dc030994dc030UserPoolId"
+      "Default": "authlearn2playmusicfypfe80a00bf480a00bf4UserPoolId"
     },
     "deploymentBucketName": {
       "Type": "String"
@@ -38,12 +38,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "AdminQueriesa642bb27",
+            "AdminQueries3621d01f",
             {
               "Fn::Join": [
                 "",
                 [
-                  "AdminQueriesa642bb27",
+                  "AdminQueries3621d01f",
                   "-",
                   {
                     "Ref": "env"
@@ -60,7 +60,7 @@
             },
             "GROUP": "Admins",
             "USERPOOL": {
-              "Ref": "authlearn2playmusicfypfe994dc030994dc030UserPoolId"
+              "Ref": "authlearn2playmusicfypfe80a00bf480a00bf4UserPoolId"
             }
           }
         },
@@ -88,12 +88,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "AdminQueriesa642bb27LambdaRole",
+            "AdminQueries3621d01fLambdaRole",
             {
               "Fn::Join": [
                 "",
                 [
-                  "AdminQueriesa642bb27LambdaRole",
+                  "AdminQueries3621d01fLambdaRole",
                   "-",
                   {
                     "Ref": "env"
@@ -189,7 +189,7 @@
                     },
                     ":userpool/",
                     {
-                      "Ref": "authlearn2playmusicfypfe994dc030994dc030UserPoolId"
+                      "Ref": "authlearn2playmusicfypfe80a00bf480a00bf4UserPoolId"
                     }
                   ]
                 ]

@@ -1,8 +1,8 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "resourceNameTruncated": "learn2994dc030",
-    "userPoolName": "learn2playmusicfypfe994dc030_userpool_994dc030",
+    "resourceNameTruncated": "learn280a00bf4",
+    "userPoolName": "learn2playmusicfypfe80a00bf4_userpool_80a00bf4",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -29,43 +29,25 @@
     "userpoolClientReadAttributes": [
       "email"
     ],
-    "userpoolClientLambdaRole": "learn2994dc030_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "learn280a00bf4_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "994dc030",
-    "resourceName": "learn2playmusicfypfe994dc030994dc030",
+    "sharedId": "80a00bf4",
+    "resourceName": "learn2playmusicfypfe80a00bf480a00bf4",
     "authSelections": "userPoolOnly",
     "useDefault": "manual",
     "usernameAttributes": [
       "email"
     ],
-    "userPoolGroups": false,
-    "adminQueries": false,
+    "userPoolGroups": true,
+    "adminQueries": true,
     "triggers": {},
     "hostedUI": false,
     "userPoolGroupList": [
       "Admins"
     ],
+    "adminQueryGroup": "Admins",
     "serviceName": "Cognito",
     "usernameCaseSensitive": false,
-    "useEnabledMfas": true,
-    "authRoleArn": {
-      "Fn::GetAtt": [
-        "AuthRole",
-        "Arn"
-      ]
-    },
-    "unauthRoleArn": {
-      "Fn::GetAtt": [
-        "UnauthRole",
-        "Arn"
-      ]
-    },
-    "breakCircularDependency": true,
-    "dependsOn": [],
-    "adminQueryGroup": "Admins",
-    "parentStack": {
-      "Ref": "AWS::StackId"
-    },
-    "permissions": []
+    "useEnabledMfas": true
   }
 }
