@@ -158,11 +158,11 @@ class CourseStack(Stack):
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "questionOptionType": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "Question": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "Options": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY),
-                    "Answer": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "question": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "options": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY),
+                    "aanswer": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
-                required=["courseId", "quizId", "materialType", "Question", "Options","Answer"]))
+                required=["courseId", "quizId", "materialType", "question", "options","answer"]))
         
         course_quiz_question_resource.add_method(
             "GET", apigw.LambdaIntegration(get_course_quiz_question))
