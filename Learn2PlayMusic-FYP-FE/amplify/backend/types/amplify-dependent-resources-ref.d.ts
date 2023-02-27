@@ -7,7 +7,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "auth": {
-    "learn2playmusicfypfe994dc030994dc030": {
+    "learn2playmusicfypfe80a00bf480a00bf4": {
       "AppClientID": "string",
       "AppClientIDWeb": "string",
       "UserPoolArn": "string",
@@ -16,7 +16,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "function": {
-    "AdminQueriesa642bb27": {
+    "AdminQueries3621d01f": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
