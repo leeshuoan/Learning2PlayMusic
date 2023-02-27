@@ -1,13 +1,13 @@
 const DynamoDB = require("aws-sdk/clients/dynamodb");
-const S3 = require("aws-sdk/clients/S3");
+const AWS = require("aws-sdk");
 const { v4: uuidv4 } = require("uuid");
 
 const { response_200, response_400, response_500 } = require("./responses");
 
 const dynamodb = new DynamoDB.DocumentClient();
-const s3 = new S3();
+const s3 = new AWS.S3();
 
-const bucketName = process.env.S3_BUCKET_NAME;
+const bucketName = process.env.QUESTION_IMAGE_BUCKET_NAME;
 const uuid = uuidv4();
 
 function checkForNull(...args) {
@@ -33,6 +33,7 @@ async function lambda_handler(event, context) {
 
     let questionId;
     let isUpdate = false;
+
     if (requestBody && "questionId" in requestBody) {
       questionId = requestBody.questionId;
       isUpdate = true;
@@ -41,13 +42,15 @@ async function lambda_handler(event, context) {
     }
 
     let uploadedImage;
+    let s3Params;
     if (requestBody && "questionImage" in requestBody) {
-      const base64Image = requestBody.questionImage;
+      const base64data = requestBody.questionImage;
+      const fileExtension = base64data.split(';')[0].split('/')[1];
+      const base64Image = base64data.replace(/^data:image\/\w+;base64,/, "");
       const imageBuffer = Buffer.from(base64Image, "base64");
-      let s3Key = uuid.slice(0, 8).concat(extension);
-      const s3Params = {
+      s3Params = {
         Bucket: bucketName,
-        Key: s3Key,
+        Key: "" + questionId + "." + fileExtension,
         Body: imageBuffer,
       };
 
@@ -85,8 +88,8 @@ async function lambda_handler(event, context) {
       },
     };
 
-    if (uploadedImage != null || uploadedImage != undefined) {
-      params.Item.questionImage = uploadedImage.Location;
+    if ("questionImage" in requestBody) {
+      params.Item.questionImage = s3Params.Bucket + "/" + s3Params.Key;
     }
     await dynamodb.put(params).promise();
 

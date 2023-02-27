@@ -8,11 +8,7 @@
     "quizId": 1,
     "questionOptionType": "MCQ",
     "question": "Test question from Lambda/API",
-    "options": [
-      "Option1",
-      "Option2",
-      "Option3"
-    ],
+    "options": ["Option1", "Option2", "Option3"],
     "answer": "Option1"
   },
   "path": "/course/quiz/question"

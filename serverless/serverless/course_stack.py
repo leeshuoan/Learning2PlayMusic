@@ -3,6 +3,7 @@ import boto3
 from aws_cdk import (
     aws_lambda as _lambda,
     aws_apigateway as apigw,
+    aws_s3 as s3,
     aws_iam,
     Stack,
     CfnOutput
@@ -26,12 +27,44 @@ class CourseStack(Stack):
         COURSE_QUIZ_FUNCTIONS_FOLDER = "course_quiz"
         COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER = "course_announcement"
 
+        
+        # Create S3 bucket with read/write allowed
+        L2PMA_question_image_bucket = s3.Bucket(self, "L2PMAQuestionImageBucket")
+        policy_statement = aws_iam.PolicyStatement(
+            effect=aws_iam.Effect.ALLOW,
+            actions=["s3:GetObject", "s3:PutObject"],
+            resources=[L2PMA_question_image_bucket.arn_for_objects("*")],
+            principals=[aws_iam.ServicePrincipal('lambda.amazonaws.com')]
+        )
+        L2PMA_question_image_bucket.add_to_resource_policy(policy_statement)
+
+        #     self,
+        #     "MyBucketPolicy",
+        #     bucket=L2PMA_question_image_bucket,
+        #     policy=[policy_statement]
+        # )
+
+
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
-        role = iam.get_role(RoleName="lambda-general-role")
-        role_arn = role["Role"]["Arn"]
+        general_role = iam.get_role(RoleName="lambda-general-role")
+        general_role_arn = general_role["Role"]["Arn"]
         LAMBDA_ROLE = aws_iam.Role.from_role_arn(
-            self, "lambda-general-role", role_arn)
+            self, "lambda-general-role", general_role_arn)
+        s3_dynamodb_role = aws_iam.Role(self, 'S3DynamodbRole',assumed_by=aws_iam.ServicePrincipal('lambda.amazonaws.com'))
+        
+        # IAM policies for dynamodb readwrite + s3 readwrite
+        dynamodb_policy = aws_iam.PolicyStatement(effect = aws_iam.Effect.ALLOW,
+          resources = ['arn:aws:dynamodb:*:*:table/*'],
+          actions = ['dynamodb:GetItem', 'dynamodb:PutItem']
+        )
+        s3_dynamodb_role.add_to_policy(dynamodb_policy)
+
+        s3_policy = aws_iam.PolicyStatement(effect = aws_iam.Effect.ALLOW,
+          resources = [f'{L2PMA_question_image_bucket.bucket_arn}/*'],
+          actions = ['s3:GetObject', 's3:PutObject'])
+        s3_dynamodb_role.add_to_policy(s3_policy)
+
 
         # Create getCourseHomework AWS Lambda function
         get_course_homework = _lambda.Function(self, "getCourseHomework", runtime=_lambda.Runtime.PYTHON_3_9,
@@ -62,12 +95,14 @@ class CourseStack(Stack):
 
         # /course/quiz/question Functions
         get_course_quiz_question = _lambda.Function(self, "getCourseQuizQuestion", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                     handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+                                                     handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=s3_dynamodb_role)
         post_course_quiz_question = _lambda.Function(self, "postCourseQuizQuestion", runtime=_lambda.Runtime.NODEJS_16_X,
-                                                     handler=f"post_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=LAMBDA_ROLE)
+                                                     handler=f"post_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=s3_dynamodb_role,
+                                                     environment={
+                                                        "QUESTION_IMAGE_BUCKET_NAME": L2PMA_question_image_bucket.bucket_name
+                                                    })
         delete_course_quiz_question = _lambda.Function(self, "deleteCourseQuizQuestion", runtime=_lambda.Runtime.NODEJS_16_X,
-                                                       handler=f"delete_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=LAMBDA_ROLE)
-
+                                                       handler=f"delete_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=s3_dynamodb_role)
         # Create Amazon API Gateway REST API
         main_api = apigw.RestApi(self, "main", description="All LMS APIs")
 
