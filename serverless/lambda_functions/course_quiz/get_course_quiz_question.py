@@ -20,7 +20,7 @@ def lambda_handler(event, context):
         # if specific questionid is specified
         if "questionId" in queryStringParameters.keys():
             questionId = queryStringParameters["questionId"]
-            response = table.query(
+            response = table.get_item(
                 KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
                 ExpressionAttributeValues={
                     ":PK": f"Course#{courseId}",
