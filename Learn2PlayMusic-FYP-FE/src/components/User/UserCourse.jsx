@@ -170,7 +170,6 @@ const UserCourse = (userInfo) => {
 
         setOpen(false);
       }).catch((error) => {
-        console.log(error)
         setOpen(false)
       })
 
@@ -212,8 +211,8 @@ const UserCourse = (userInfo) => {
       <Grid container spacing={2} sx={{ pt: 2 }}>
         <Grid item xs={12} md={3}>
           <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}>
-            {menuOptions.map((option) => (
-              <MenuItem sx={{ mb: 1, color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "", "&:hover": { color: "primary.main" } }}
+            {menuOptions.map((option, key) => (
+              <MenuItem key={key} sx={{ mb: 1, color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "", "&:hover": { color: "primary.main" } }}
                 onClick={() => menuNavigate(option)}>
                 <Typography variant='subtitle1'>{option}</Typography>
               </MenuItem>
@@ -234,8 +233,8 @@ const UserCourse = (userInfo) => {
                 </Box>
               </AccordionSummary>
               <AccordionDetails>
-                {menuOptions.map((option) => (
-                  <MenuItem sx={{ mb: 0.5, color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "", "&:hover": { color: "primary.main" } }}
+                {menuOptions.map((option, key) => (
+                  <MenuItem key={key} sx={{ mb: 0.5, color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "", "&:hover": { color: "primary.main" } }}
                     onClick={() => menuNavigate(option)}>
                     <Typography variant='subtitle1'>{option}</Typography>
                   </MenuItem>
@@ -249,8 +248,8 @@ const UserCourse = (userInfo) => {
           <Box>
             <Card sx={{ py: 3, px: 5, mt: 2, display: category == "announcement" ? "block" : category === undefined ? "block" : "none" }}>
               <Typography variant='h5'>Class Announcements</Typography>
-              {courseAnnouncements.map((announcement) => (
-                <Card variant='outlined' sx={{ boxShadow: "none", mt: 2, p: 2 }}>
+              {courseAnnouncements.map((announcement, key) => (
+                <Card key={key} variant='outlined' sx={{ boxShadow: "none", mt: 2, p: 2 }}>
                   <Typography variant='subtitle1' sx={{}}>{announcement.title}</Typography>
                   <Typography variant='subsubtitle' sx={{ mb: 1 }}>Posted {announcement.date}</Typography>
                   <Typography variant='body2'>{announcement.content}</Typography>
@@ -275,25 +274,25 @@ const UserCourse = (userInfo) => {
             </Box>
 
             <Box sx={{ display: category == "quiz" ? "block" : "none" }}>
-              {courseQuiz.map((quiz) => (
-                <Card sx={{ py: 3, px: 4, mt: 2 }}>
+              {courseQuiz.map((quiz, key) => (
+                <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
                   <Typography variant='h6' sx={{ mb: 1 }}>{quiz.QuizTitle}</Typography>
                   <Grid container spacing={2} sx={{ alignItems: "center" }}>
-                    <Grid item xs="12" sm="6">
+                    <Grid item xs={12} sm={6}>
                       <Button variant="contained" onClick={() => { navigate(`${quiz.id}`) }}>
                         <PlayCircleFilledIcon sx={{ mr: 1 }} />
                         Start Quiz
                       </Button>
                     </Grid>
-                    <Grid item xs="12" sm="3">
+                    <Grid item xs={12} sm={3}>
                       <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: "primary.main" }}>Score</Typography>
                       <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{quiz.QuizScore * 100}%</Typography>
-                      <Typography variant='body1' sx={{ display: { xs: "flex", sm: "none" } }}><Typography sx={{ color: "primary.main", mr: 0.5 }}>Score:</Typography>{quiz.QuizScore * 100}%</Typography>
+                      <Typography variant='body1' sx={{ display: { xs: "flex", sm: "none" } }}><span sx={{ color: "primary.main", mr: 0.5 }}>Score:</span>{quiz.QuizScore * 100}%</Typography>
                     </Grid>
-                    <Grid item xs="12" sm="3">
+                    <Grid item xs={12} sm={3}>
                       <Typography variant='body1' sx={{ textAlign: "center", color: 'primary.main', display: { xs: "none", sm: "block" } }}>Attempts</Typography>
                       <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block" } }}>{quiz.QuizAttempt}/{quiz.QuizMaxAttempt}</Typography>
-                      <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "flex", sm: "none" } }}><Typography sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</Typography>{quiz.QuizAttempt}/{quiz.QuizMaxAttempt}</Typography>
+                      <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "flex", sm: "none" } }}><span sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</span>{quiz.QuizAttempt}/{quiz.QuizMaxAttempt}</Typography>
                     </Grid>
                   </Grid>
                 </Card>
@@ -302,35 +301,35 @@ const UserCourse = (userInfo) => {
 
             <Box sx={{ display: category == "homework" ? "block" : "none" }}>
               <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
-                <Grid item xs="4">
+                <Grid item xs={4}>
                   <Typography variant='subtitle2'>HOMEWORK TITLE</Typography>
                 </Grid>
-                <Grid item xs="3">
+                <Grid item xs={3}>
                   <Typography variant='subtitle2' sx={{ textAlign: "center" }}>DUE DATE</Typography>
                 </Grid>
-                <Grid item xs="3">
+                <Grid item xs={3}>
                   <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SCORE</Typography>
                 </Grid>
-                <Grid item xs="2">
+                <Grid item xs={2}>
                   <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SUBMISSIONS</Typography>
                 </Grid>
               </Grid>
               {
-                courseHomework.map((homework) => (
-                  <Card sx={{ py: 3, px: 4, mt: 2 }}>
+                courseHomework.map((homework, key) => (
+                  <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
                     <Grid container spacing={2}>
-                      <Grid item xs="12" sm="4">
+                      <Grid item xs={12} sm={4}>
                         <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkTitle}</Link></Typography>
                       </Grid>
-                      <Grid item xs="12" sm="3">
+                      <Grid item xs={12} sm={3}>
                         <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.HomeworkDueDate}</Typography>
                         <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Due Date: {homework.dueDate}</Typography>
                       </Grid>
-                      <Grid item xs="12" sm="3">
+                      <Grid item xs={12} sm={3}>
                         <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.HomeworkScore}</Typography>
                         <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Score: {homework.score}</Typography>
                       </Grid>
-                      <Grid item xs="12" sm="2">
+                      <Grid item xs={12} sm={2}>
                         <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.HomeworkSubmissions}</Typography>
                         <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.HomeworkSubmissions}</Typography>
                       </Grid>
@@ -353,8 +352,8 @@ const UserCourse = (userInfo) => {
                   <Typography variant='subtitle1' sx={{ textAlign: "center", ml: 2 }}>TITLE</Typography>
                   <Typography variant='subtitle1' sx={{ textAlign: "center", mr: 2 }}>DATE AVAILABLE</Typography>
                 </Box>
-                {courseProgressReports.map((report) => (
-                  <Card variant='outlined' sx={{ py: 2, px: 2, mt: 2, boxShadow: "none" }}>
+                {courseProgressReports.map((report, key) => (
+                  <Card key={key} variant='outlined' sx={{ py: 2, px: 2, mt: 2, boxShadow: "none" }}>
                     <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                       <Typography variant='subtitle1' color="primary.main"><Link onClick={() => navigate("" + report.id)}>{report.title}</Link></Typography>
                       <Typography variant='subttile1' color="lightgrey">{report.uploadDate}</Typography>
