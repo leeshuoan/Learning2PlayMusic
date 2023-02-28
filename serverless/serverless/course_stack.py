@@ -38,13 +38,6 @@ class CourseStack(Stack):
         )
         L2PMA_question_image_bucket.add_to_resource_policy(policy_statement)
 
-        #     self,
-        #     "MyBucketPolicy",
-        #     bucket=L2PMA_question_image_bucket,
-        #     policy=[policy_statement]
-        # )
-
-
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
         general_role = iam.get_role(RoleName="lambda-general-role")
@@ -56,7 +49,7 @@ class CourseStack(Stack):
         # IAM policies for dynamodb readwrite + s3 readwrite
         dynamodb_policy = aws_iam.PolicyStatement(effect = aws_iam.Effect.ALLOW,
           resources = ['arn:aws:dynamodb:*:*:table/*'],
-          actions = ['dynamodb:GetItem', 'dynamodb:PutItem']
+          actions = ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query']
         )
         s3_dynamodb_role.add_to_policy(dynamodb_policy)
 
