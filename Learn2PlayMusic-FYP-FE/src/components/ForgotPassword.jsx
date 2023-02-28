@@ -56,78 +56,80 @@ export default function ForgotPassword({ handleSetUserInfo }) {
 
   return (
     <>
-      <Container
-        component="main"
-        maxWidth="xs"
-        sx={{
-          bgcolor: "background.paper",
-          borderRadius: 2,
-          boxShadow: theme.shadows[10],
-          width: { xs: 1, sm: 0.9 }
-        }}>
-        <CssBaseline />
-
-        <Box
+      <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
+        <Container
+          component="main"
+          maxWidth="xs"
           sx={{
-            marginTop: 8,
-            alignItems: "center",
-            p: 2,
-            py: 5,
+            bgcolor: "background.paper",
+            borderRadius: 2,
+            boxShadow: theme.shadows[10],
+            width: { xs: 1, sm: 0.9 }
           }}>
-          <Typography component="h1" variant="h5" sx={{ textAlign: "center" }}>
-            Forgot Password
-          </Typography>
-          <Box component="form" noValidate sx={{ mt: 1 }}
-            onSubmit={handleSubmit}
-          >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              sx={{ display: nextStage ? "none" : "block" }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="code"
-              label="Code"
-              name="code"
-              autoComplete="code"
-              autoFocus
-              sx={{ display: nextStage ? "block" : "none" }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="password"
-              name="password"
-              label="New Password"
-              type="password"
-              autoComplete="new-password"
-              sx={{ display: nextStage ? "block" : "none" }}
-            />
-            <Grid container sx={{ pl: 1, mt: 1, mb: 2 }}>
-              <Grid item xs>
-                <Link onClick={() => { navigate("/") }} variant="body2" color="primary.dark">
-                  Return to Login
-                </Link>
+          <CssBaseline />
+
+          <Box
+            sx={{
+              marginTop: 8,
+              alignItems: "center",
+              p: 2,
+              py: 5,
+            }}>
+            <Typography component="h1" variant="h5" sx={{ textAlign: "center" }}>
+              Forgot Password
+            </Typography>
+            <Box component="form" noValidate sx={{ mt: 1 }}
+              onSubmit={handleSubmit}
+            >
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                sx={{ display: nextStage ? "none" : "block" }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="code"
+                label="Code"
+                name="code"
+                autoComplete="code"
+                autoFocus
+                sx={{ display: nextStage ? "block" : "none" }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="password"
+                name="password"
+                label="New Password"
+                type="password"
+                autoComplete="new-password"
+                sx={{ display: nextStage ? "block" : "none" }}
+              />
+              <Grid container sx={{ pl: 1, mt: 1, mb: 2 }}>
+                <Grid item xs>
+                  <Link onClick={() => { navigate("/") }} variant="body2" color="primary.dark">
+                    Return to Login
+                  </Link>
+                </Grid>
               </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained">
-              Submit
-            </Button>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained">
+                Submit
+              </Button>
+            </Box>
           </Box>
-        </Box>
+        </Container>
       </Container>
     </>
   );

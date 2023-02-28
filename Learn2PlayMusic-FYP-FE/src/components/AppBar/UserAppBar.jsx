@@ -13,9 +13,6 @@ import {
   ListItemIcon,
   Tooltip,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import PersonAdd from "@mui/icons-material/PersonAdd";
-import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -25,18 +22,7 @@ import { useNavigate } from "react-router-dom";
 const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
   const theme = useTheme()
   const navigate = useNavigate()
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  // const pages = ["Home", "Courses"]
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
@@ -174,7 +160,7 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                   }}
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem onClick={() => {navigate("/profile")}}>
                     <Avatar />My Profile
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>

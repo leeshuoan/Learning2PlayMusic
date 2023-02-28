@@ -35,14 +35,7 @@ function DefaultAppBar({ role, handleResetRoles }) {
                 <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
                   <Toolbar disableGutters style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                      <IconButton
-                        size="large"
-                        aria-label="account of current user"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="true"
-                        onClick={handleOpenNavMenu}
-                        color="inherit"
-                      >
+                      <IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleOpenNavMenu} color="inherit">
                         <MenuIcon />
                       </IconButton>
                       <Menu
@@ -70,7 +63,7 @@ function DefaultAppBar({ role, handleResetRoles }) {
                         ))}
                       </Menu>
                     </Box>
-                    <IconButton disableRipple onClick={() => {navigate("/")}}>
+                    <IconButton disableRipple onClick={() => { navigate("/=") }}>
                       <img src="/l2pm_logo.png" width="150px" />
                     </IconButton>
 

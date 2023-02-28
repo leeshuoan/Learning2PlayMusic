@@ -24,6 +24,7 @@ import UserHomework from "./components/User/Course/UserHomework";
 import UserReport from "./components/User/Course/UserReport";
 import UserQuiz from "./components/User/Course/UserQuiz";
 import AdminHome from "./components/Admin/AdminHome";
+import Profile from "./components/Profile";
 
 Amplify.configure(aws_exports);
 
@@ -65,6 +66,7 @@ function App() {
               id: session.getIdToken().payload.sub,
               name: session.getIdToken().payload['custom:name'],
               role: userRole,
+              email: session.getIdToken().payload.email,
             };
             setUserInfo(userInfo);
           }
@@ -112,6 +114,7 @@ function App() {
             </Route>
           </Route>
 
+          <Route path="profile" element={<Profile userInfo={userInfo}></Profile>}></Route>
           <Route path="resetpassword" element={<ForgotPassword />}></Route>
           <Route path="*" element={<NotFound userRole={userInfo.role} />} />
 

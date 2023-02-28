@@ -42,6 +42,7 @@ const UserQuiz = () => {
 
         console.log(data1);
         console.log(data2);
+        console.log(data3);
 
         let courseData = {
           id: data1[0].SK.split("#")[1],
