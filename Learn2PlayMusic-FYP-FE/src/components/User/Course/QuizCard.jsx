@@ -8,11 +8,10 @@ import {
   FormControlLabel,
 } from "@mui/material";
 
-function QuizCard({ question, options, answer, image, index }) {
-  const [selectedOption, setSelectedOption] = useState("");
-
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
+function QuizCard({ question, options, answer, image, index, handleOptionChange }) {
+  console.log(image)
+  const onSelectChange = (e) => {
+    handleOptionChange(e.target.value);
   };
 
   return (
@@ -21,12 +20,11 @@ function QuizCard({ question, options, answer, image, index }) {
         <Typography gutterBottom variant="h5" component="h2">
           Q{index}.{question}
         </Typography>
-        {image && <img src={image} alt="question" />}
+        {image && <img src={`https://${image}`} alt="question" />}
         <RadioGroup
           aria-label="quiz"
           name="quiz"
-          value={selectedOption}
-          onChange={handleOptionChange}>
+          onChange={onSelectChange}>
           {options.map((option) => (
             <FormControlLabel
               key={option}
