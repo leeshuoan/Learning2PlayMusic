@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
+import TransitionModal from "../../utils/TransitionModal";
 
 const UserQuiz = () => {
   const navigate = useNavigate();
