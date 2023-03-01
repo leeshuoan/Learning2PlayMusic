@@ -11,7 +11,7 @@ def lambda_handler(event, context):
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
-        dateId = datetime.date.today()
+        dateId = datetime.today()
 
         # VALIDATION
         # check if <dateID> already exists in database

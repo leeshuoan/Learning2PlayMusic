@@ -9,10 +9,10 @@ from global_functions.exists_in_db import *
 def lambda_handler(event, context):
   
     courseId = event["queryStringParameters"]["courseId"]
-    if courseId is None or courseId == "null":
+    announcementId = event["queryStringParameters"]["announcementId"]  
+    if announcementId is None or announcementId == "null":
             sortkey = "Announcement#"
     else:
-        announcementId = event["queryStringParameters"]["announcementId"]        
         sortkey = "Announcement#" + announcementId
     # VALIDATION
     # check if <courseId> exists in database
