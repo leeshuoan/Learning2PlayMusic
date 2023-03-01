@@ -8,7 +8,6 @@ const dynamodb = new DynamoDB.DocumentClient();
 const s3 = new AWS.S3();
 
 const bucketName = process.env.QUESTION_IMAGE_BUCKET_NAME;
-const uuid = uuidv4();
 
 function checkForNull(...args) {
   const arguments = [
@@ -28,6 +27,8 @@ function checkForNull(...args) {
 }
 
 async function lambda_handler(event, context) {
+  const uuid = uuidv4();
+
   try {
     const requestBody = JSON.parse(event.body);
 
