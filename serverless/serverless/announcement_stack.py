@@ -27,16 +27,37 @@ class AnnouncementStack(Stack):
         LAMBDA_ROLE = aws_iam.Role.from_role_arn(
             self, "lambda-general-role", role_arn)
 
-        # Create getCourseAnnouncements AWS Lambda function
-        get_generalannouncements = _lambda.Function(
+        # /generalannouncements Functions
+        get_generalannouncement = _lambda.Function(
             self,
-            "getGeneralAnnouncements",  # name of your lambda function
+            "getGeneralAnnouncement",  # name of your lambda function
             runtime=_lambda.Runtime.PYTHON_3_9,
             # change based on your python file name
-            handler="get_generalannouncements.lambda_handler",
+            handler="get_generalannouncement.lambda_handler",
             code=_lambda.Code.from_asset(GENERALANNOUNCEMENT_FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE
         )
+
+        post_generalannouncement = _lambda.Function(
+            self,
+            "postGeneralAnnouncement",  # name of your lambda function
+            runtime=_lambda.Runtime.PYTHON_3_9,
+            # change based on your python file name
+            handler="post_generalannouncement.lambda_handler",
+            code=_lambda.Code.from_asset(GENERALANNOUNCEMENT_FUNCTIONS_FOLDER),
+            role=LAMBDA_ROLE
+        )
+
+        delete_generalannouncement = _lambda.Function(
+            self,
+            "deleteGeneralAnnouncement",  # name of your lambda function
+            runtime=_lambda.Runtime.PYTHON_3_9,
+            # change based on your python file name
+            handler="delete_generalannouncement.lambda_handler",
+            code=_lambda.Code.from_asset(GENERALANNOUNCEMENT_FUNCTIONS_FOLDER),
+            role=LAMBDA_ROLE
+        )
+
         # define the attributes of the existing REST API
         rest_api_id = Fn.import_value("mainApiId")
         root_resource_id = Fn.import_value("mainApiRootResourceIdOutput")
@@ -50,7 +71,13 @@ class AnnouncementStack(Stack):
             "generalannouncement")
 
         # /generalannouncements
-        generalannouncement_resource.add_method("PUT", apigw.LambdaIntegration(get_generalannouncements), request_parameters={
+        generalannouncement_resource.add_method("POST", apigw.LambdaIntegration(post_generalannouncement), request_parameters={
+            'method.request.querystring.dateId': False
+        })
+        generalannouncement_resource.add_method("GET", apigw.LambdaIntegration(get_generalannouncement), request_parameters={
+            'method.request.querystring.dateId': False
+        })
+        generalannouncement_resource.add_method("DELETE", apigw.LambdaIntegration(delete_generalannouncement), request_parameters={
             'method.request.querystring.dateId': False
         })
 

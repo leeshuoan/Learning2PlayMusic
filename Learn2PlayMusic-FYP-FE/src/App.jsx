@@ -8,7 +8,7 @@ import PrivateRoutes from "./components/utils/PrivateRoutes";
 // Amplify setup
 import aws_exports from "./aws-exports";
 import { Amplify } from "aws-amplify";
-import { Auth } from "aws-amplify";
+import { Auth, Storage } from "aws-amplify";
 // App components
 import DefaultAppBar from "./components/AppBar/DefaultAppBar";
 import SignIn from "./components/SignIn";
@@ -17,7 +17,7 @@ import NotFound from "./components/NotFound";
 import TeacherHome from "./components/Teacher/TeacherHome";
 import UserHome from "./components/User/UserHome";
 import UserCourse from "./components/User/UserCourse";
-import ChatBase from "./components/Chat/ChatBase";
+import Chat from "./components/Chat/Chat";
 import Announcements from "./components/Announcements";
 import UserClassMaterials from "./components/User/Course/UserClassMaterials";
 import UserHomework from "./components/User/Course/UserHomework";
@@ -72,7 +72,9 @@ function App() {
               name: session.getIdToken().payload['custom:name'],
               role: userRole,
               email: session.getIdToken().payload.email,
+              profileImage: session.getIdToken().payload['custom:profileImage'],
             };
+            console.log(userInfo)
             setUserInfo(userInfo);
           }
 
@@ -103,7 +105,7 @@ function App() {
 
           <Route path="teacher" element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
             <Route index element={<TeacherHome userInfo={userInfo} />} />
-            <Route path="chat" element={<ChatBase userInfo={userInfo} />} />
+            <Route path="chat" element={<Chat userInfo={userInfo} />} />
           </Route>
 
           <Route path="home" element={<PrivateRoutes userType="User"></PrivateRoutes>}>

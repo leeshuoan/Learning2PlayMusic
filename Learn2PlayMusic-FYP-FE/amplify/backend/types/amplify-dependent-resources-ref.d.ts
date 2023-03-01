@@ -10,9 +10,14 @@ export type AmplifyDependentResourcesAttributes = {
     "learn2playmusicfypfe80a00bf480a00bf4": {
       "AppClientID": "string",
       "AppClientIDWeb": "string",
+      "IdentityPoolId": "string",
+      "IdentityPoolName": "string",
       "UserPoolArn": "string",
       "UserPoolId": "string",
       "UserPoolName": "string"
+    },
+    "userPoolGroups": {
+      "AdminsGroupRole": "string"
     }
   },
   "function": {
@@ -21,6 +26,12 @@ export type AmplifyDependentResourcesAttributes = {
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
       "Name": "string",
+      "Region": "string"
+    }
+  },
+  "storage": {
+    "s3d99e2199": {
+      "BucketName": "string",
       "Region": "string"
     }
   }

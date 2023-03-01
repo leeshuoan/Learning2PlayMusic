@@ -56,7 +56,8 @@
           "attributes": [
             "UserPoolId",
             "AppClientIDWeb",
-            "AppClientID"
+            "AppClientID",
+            "IdentityPoolId"
           ],
           "category": "auth",
           "resourceName": "learn2playmusicfypfe80a00bf480a00bf4"
@@ -98,6 +99,13 @@
           "resourceName": "AdminQueries3621d01f"
         }
       ]
+    }
+  },
+  "storage": {
+    "s3d99e2199": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
     }
   }
 }

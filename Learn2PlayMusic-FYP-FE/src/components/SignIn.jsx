@@ -60,8 +60,11 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
 
           if (userRole != null) {
             let userInfo = {
+              id: session.getIdToken().payload.sub,
               name: session.getIdToken().payload["custom:name"],
+              email: session.getIdToken().payload.email,
               role: userRole,
+              profileImage: session.getIdToken().payload['custom:profileImage'],
             };
             handleSetUserInfo(userInfo);
           }
