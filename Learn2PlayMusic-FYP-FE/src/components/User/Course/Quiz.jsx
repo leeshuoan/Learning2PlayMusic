@@ -1,18 +1,21 @@
-import React from "react";
+import { useState } from "react";
 import { Grid } from "@mui/material";
 import QuizCard from "./QuizCard";
 
 function Quiz({ quizData }) {
+  console.log(quizData)
+  // const [selectedCnt, setSelectedCnt] = useState(0);
+
   return (
     <Grid container spacing={3} >
-      {quizData.map(({ question, options, answer, questionImage }, index) => (
-        <Grid key={question} item xs={12}>
+      {quizData.map(({ Question, Options, Answer }, index) => (
+        <Grid key={index} item xs={12}>
           <QuizCard
             index={index + 1}
-            question={question}
-            options={options}
-            answer={answer}
-            image={questionImage}
+            question={Question}
+            options={Options}
+            answer={Answer}
+            // selected = {selected}
           />
         </Grid>
       ))}

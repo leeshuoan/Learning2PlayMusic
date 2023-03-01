@@ -17,7 +17,7 @@ import NotFound from "./components/NotFound";
 import TeacherHome from "./components/Teacher/TeacherHome";
 import UserHome from "./components/User/UserHome";
 import UserCourse from "./components/User/UserCourse";
-import ChatBase from "./components/Chat/ChatBase";
+import Chat from "./components/Chat/Chat";
 import Announcements from "./components/Announcements";
 import UserClassMaterials from "./components/User/Course/UserClassMaterials";
 import UserHomework from "./components/User/Course/UserHomework";
@@ -105,7 +105,7 @@ function App() {
 
           <Route path="teacher" element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
             <Route index element={<TeacherHome userInfo={userInfo} />} />
-            <Route path="chat" element={<ChatBase userInfo={userInfo} />} />
+            <Route path="chat" element={<Chat userInfo={userInfo} />} />
           </Route>
 
           <Route path="home" element={<PrivateRoutes userType="User"></PrivateRoutes>}>

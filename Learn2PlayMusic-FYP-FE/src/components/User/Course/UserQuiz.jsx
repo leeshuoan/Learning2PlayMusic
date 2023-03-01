@@ -47,30 +47,6 @@ const UserQuiz = () => {
     setOpen(false);
   };
 
-  function QuizCard({ question, options, answer, image, index }) {
-    return (
-      <Card>
-        <CardContent>
-          <Typography gutterBottom variant="h6" component="h6">
-            Q{index}. {question}
-          </Typography>
-          {image && <img src={image} alt="question" />}
-          <RadioGroup aria-label="quiz" name="quiz">
-            {options.map((option) => (
-              <FormControlLabel
-                key={option}
-                value={option}
-                control={<Radio />}
-                label={option}
-              />
-            ))}
-          </RadioGroup>
-        </CardContent>
-      </Card>
-    );
-  }
-  //end new
-
   const getCourse = fetch(
     `${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`,
     {
@@ -83,8 +59,7 @@ const UserQuiz = () => {
 
   // const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`, {
   const getQuizAPI = fetch(
-    `${
-      import.meta.env.VITE_API_URL
+    `${import.meta.env.VITE_API_URL
     }/course/quiz?courseId=${courseid}&studentId=1&quizId=${quizId}`,
     {
       method: "GET",
@@ -96,8 +71,7 @@ const UserQuiz = () => {
 
   // const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`, {
   const getQuizQuestionAPI = fetch(
-    `${
-      import.meta.env.VITE_API_URL
+    `${import.meta.env.VITE_API_URL
     }/course/quiz/question?courseId=${courseid}&quizId=${quizId}`,
     {
       method: "GET",
@@ -127,10 +101,10 @@ const UserQuiz = () => {
         setCourse(courseData);
 
         setQuestionsArray(data3);
-
-        setQuizTitle(data2[0].QuizTitle);
-        setQuizAttempt(data2[0].QuizAttempt);
-        setQuizMaxAttempt(data2[0].QuizMaxAttempt);
+        console.log(data2)
+        setQuizTitle(data2.QuizTitle);
+        setQuizAttempt(data2.QuizAttempt);
+        setQuizMaxAttempt(data2.QuizMaxAttempt);
 
         setOpen(false);
       })

@@ -33,7 +33,7 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
         console.log(err)
       })
     }
-  }, [])
+  }, [userInfo])
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

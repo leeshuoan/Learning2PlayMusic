@@ -3,6 +3,7 @@ import { useTheme, Container, Typography, Box, Avatar, CssBaseline, Button, Text
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import EmailIcon from '@mui/icons-material/Email';
+import EditIcon from '@mui/icons-material/Edit';
 import { Auth, Storage } from 'aws-amplify'
 import { useNavigate } from 'react-router-dom';
 
@@ -66,16 +67,16 @@ const Profile = (userInfo) => {
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-      <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
-        <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={back}>
-          <HomeIcon sx={{ mr: 0.5 }} />
-          Home
-        </Link>
-        <Typography color="text.primary">Profile</Typography>
-      </Breadcrumbs>
+        <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
+          <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={back}>
+            <HomeIcon sx={{ mr: 0.5 }} />
+            Home
+          </Link>
+          <Typography color="text.primary">Profile</Typography>
+        </Breadcrumbs>
         <Container component="main" maxWidth="xs" sx={{ bgcolor: "background.paper", borderRadius: 2, boxShadow: theme.shadows[10], width: { xs: 1, sm: 0.9 } }}>
           <CssBaseline />
-          <Box sx={{ mt: 8, alignItems: "center", p: 1, py: 4, display: edit ? "none" : "block" }}>
+          <Box sx={{ mt: 4, alignItems: "center", p: 1, py: 4, display: edit ? "none" : "block" }}>
             <Avatar sx={{ width: 80, height: 80, mb: 1 }} src={image}></Avatar>
             <Typography variant='h6' sx={{ mb: 0.5 }}>
               {userInfo.userInfo.name}<br />
@@ -86,26 +87,27 @@ const Profile = (userInfo) => {
             <Button variant="contained" sx={{ mt: 2 }} style={{ maxHeight: "30px" }} onClick={() => { setEdit(true) }}>Edit Profile</Button>
           </Box>
 
-          <Box sx={{ mt: 8, alignItems: "center", p: 1, py: 4, display: edit ? "block" : "none" }}>
+          <Box sx={{ mt: 4, alignItems: "center", p: 1, py: 4, display: edit ? "block" : "none" }}>
             <Badge
               overlap="circular"
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               sx={{ cursor: "pointer" }}
               // onClick={}
               badgeContent={
-                <Box sx={{ background: theme.palette.background.paper, borderRadius: "3px", px: 0.5, boxShadow: theme.shadows[3] }}>
+                <Box sx={{ background: theme.palette.background.paper, borderRadius: "3px", px: 0.5, boxShadow: theme.shadows[3], display: "flex", alignItems: "center" }}>
+                  <EditIcon fontSize='8px' sx={{ mr: 0.5 }} />
                   <Typography variant='subsubtitle'>Edit</Typography>
                 </Box>
               }
               component="label"
             >
               <input
-                  hidden
-                  accept="image/*"
-                  multiple
-                  type="file"
-                  onChange={fileUploaded}
-                />
+                hidden
+                accept="image/*"
+                multiple
+                type="file"
+                onChange={fileUploaded}
+              />
               <Avatar sx={{ width: 80, height: 80, mb: 1 }} src={image}></Avatar>
             </Badge>
             <Typography variant='h6' sx={{ mb: 0.5 }}>
