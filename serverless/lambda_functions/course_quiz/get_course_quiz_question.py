@@ -4,13 +4,14 @@ import json
 
 # Get all questions by courseid and quizid
 from global_functions.get_presigned_url import *
+from global_functions.responses import *
+from global_functions.exists_in_db import *
 
 
 def lambda_handler(event, context):
 
     queryStringParameters: dict = event["queryStringParameters"]
 
-    res = {}
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
@@ -39,17 +40,8 @@ def lambda_handler(event, context):
             for item in items:
                 get_presigned_url(item)
 
+        return response_200_GET(items)
 
-            
-        res["statusCode"] = 200
-        res["headers"] = {
-            "Access-Control-Allow-Headers": "Content-Type",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST,GET,PUT"
-        }
-        res["body"] = json.dumps(items)
-
-        return res
 
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -59,9 +51,6 @@ def lambda_handler(event, context):
         print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
-        return {
-            "statusCode": 500,
-            "body": f"{exception_type}: {str(e)}",
+        return response_500((str(exception_type) + str(e)))
 
-        }
 
