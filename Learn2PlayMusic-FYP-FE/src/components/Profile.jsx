@@ -7,20 +7,24 @@ const Profile = (userInfo) => {
   const theme = useTheme()
   const [edit, setEdit] = useState(false)
   const [name, setName] = useState(userInfo.userInfo.name || "")
-  
+
   useEffect(() => {
     setName(userInfo.userInfo.name || "")
   }, [userInfo.userInfo.name])
 
   const editUser = () => {
-    setEdit(true)
-  }
-
-  async function updateUser() {
-    const user = await Auth.currentAuthenticatedUser();
-    await Auth.updateUserAttributes(user, {
-      'address': '105 Main St. New York, NY 10001'
-    });
+    setEdit(false)
+    console.log(name)
+    Auth.currentAuthenticatedUser().then((user) => {
+      return Auth.updateUserAttributes(user, {
+        'custom:name': name
+      }).then((res) => {
+        console.log(res)
+        userInfo.refreshUserInfo()
+      }).catch((err) => {
+        console.log(err)
+      })
+    })
   }
 
   console.log(userInfo)
@@ -37,7 +41,7 @@ const Profile = (userInfo) => {
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <EmailIcon sx={{ mr: 0.5 }} /> {userInfo.userInfo.email}
             </Box>
-            <Button variant="contained" sx={{ mt: 2 }} style={{ maxHeight: "30px" }} onClick={() => editUser()}>Edit Profile</Button>
+            <Button variant="contained" sx={{ mt: 2 }} style={{ maxHeight: "30px" }} onClick={() => {setEdit(true)}}>Edit Profile</Button>
           </Box>
 
           <Box sx={{ mt: 8, alignItems: "center", p: 1, py: 4, display: edit ? "block" : "none" }}>
