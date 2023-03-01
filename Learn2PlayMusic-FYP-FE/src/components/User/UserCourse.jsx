@@ -114,7 +114,7 @@ const UserCourse = (userInfo) => {
         header: "Title",
         Cell: ({ cell, row }) => (
           <>
-            <Link onClick={() => {navigate('' + row.original.id)}}>{row.original.MaterialTitle}</Link>
+            <Link onClick={() => {navigate("" + row.original.id)}}>{row.original.MaterialTitle}</Link>
           </>
         ),
       },
