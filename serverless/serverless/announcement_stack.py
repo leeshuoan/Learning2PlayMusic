@@ -40,7 +40,7 @@ class AnnouncementStack(Stack):
 
         post_generalannouncement = _lambda.Function(
             self,
-            "getGeneralAnnouncement",  # name of your lambda function
+            "postGeneralAnnouncement",  # name of your lambda function
             runtime=_lambda.Runtime.PYTHON_3_9,
             # change based on your python file name
             handler="post_generalannouncement.lambda_handler",
@@ -50,7 +50,7 @@ class AnnouncementStack(Stack):
 
         delete_generalannouncement = _lambda.Function(
             self,
-            "getGeneralAnnouncement",  # name of your lambda function
+            "deleteGeneralAnnouncement",  # name of your lambda function
             runtime=_lambda.Runtime.PYTHON_3_9,
             # change based on your python file name
             handler="delete_generalannouncement.lambda_handler",
