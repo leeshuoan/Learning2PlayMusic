@@ -3,13 +3,15 @@ import boto3
 import json
 
 # Get all questions by courseid and quizid
+from global_functions.get_presigned_url import *
+from global_functions.responses import *
+from global_functions.exists_in_db import *
 
 
 def lambda_handler(event, context):
 
     queryStringParameters: dict = event["queryStringParameters"]
 
-    res = {}
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
@@ -26,6 +28,7 @@ def lambda_handler(event, context):
                     "SK": f"Quiz#{quizId}Question#{questionId}"
                 })
             items = response["Item"]
+            get_presigned_url(items)
         else:    
             response = table.query(
                 KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
@@ -34,16 +37,11 @@ def lambda_handler(event, context):
                     ":SK": f"Quiz#{quizId}Question#"
                 })
             items = response["Items"]
-            
-        res["statusCode"] = 200
-        res["headers"] = {
-            "Access-Control-Allow-Headers": "Content-Type",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST,GET,PUT"
-        }
-        res["body"] = json.dumps(items)
+            for item in items:
+                get_presigned_url(item)
 
-        return res
+        return response_200_GET(items)
+
 
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -53,8 +51,6 @@ def lambda_handler(event, context):
         print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
-        return {
-            "statusCode": 500,
-            "body": f"{exception_type}: {str(e)}",
+        return response_500((str(exception_type) + str(e)))
 
-        }
+

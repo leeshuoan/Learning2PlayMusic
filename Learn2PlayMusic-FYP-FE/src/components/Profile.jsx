@@ -14,17 +14,16 @@ const Profile = (userInfo) => {
 
   const editUser = () => {
     setEdit(false)
-    console.log(name)
-    Auth.currentAuthenticatedUser().then((user) => {
-      return Auth.updateUserAttributes(user, {
-        'custom:name': name
-      }).then((res) => {
-        console.log(res)
-        userInfo.refreshUserInfo()
-      }).catch((err) => {
-        console.log(err)
-      })
-    })
+    // Auth.currentAuthenticatedUser().then((user) => {
+    //   return Auth.updateUserAttributes(user, {
+    //     'custom:name': name
+    //   }).then((res) => {
+    //     console.log(res)
+    //     userInfo.refreshUserInfo()
+    //   }).catch((err) => {
+    //     console.log(err)
+    //   })
+    // })
   }
 
   console.log(userInfo)
@@ -41,7 +40,7 @@ const Profile = (userInfo) => {
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <EmailIcon sx={{ mr: 0.5 }} /> {userInfo.userInfo.email}
             </Box>
-            <Button variant="contained" sx={{ mt: 2 }} style={{ maxHeight: "30px" }} onClick={() => {setEdit(true)}}>Edit Profile</Button>
+            {/* <Button variant="contained" sx={{ mt: 2 }} style={{ maxHeight: "30px" }} onClick={() => {setEdit(true)}}>Edit Profile</Button> */}
           </Box>
 
           <Box sx={{ mt: 8, alignItems: "center", p: 1, py: 4, display: edit ? "block" : "none" }}>

@@ -8,7 +8,6 @@ const dynamodb = new DynamoDB.DocumentClient();
 const s3 = new AWS.S3();
 
 const bucketName = process.env.QUESTION_IMAGE_BUCKET_NAME;
-const uuid = uuidv4();
 
 function checkForNull(...args) {
   const arguments = [
@@ -28,6 +27,8 @@ function checkForNull(...args) {
 }
 
 async function lambda_handler(event, context) {
+  const uuid = uuidv4();
+
   try {
     const requestBody = JSON.parse(event.body);
 
@@ -41,6 +42,13 @@ async function lambda_handler(event, context) {
       questionId = uuid.slice(0, 8);
     }
 
+    const courseId = requestBody.courseId;
+    const quizId = requestBody.quizId;
+    const questionOptionType = requestBody.questionOptionType;
+    const question = requestBody.question;
+    const options = requestBody.options;
+    const answer = requestBody.answer;
+
     let uploadedImage;
     let s3Params;
     if (requestBody && "questionImage" in requestBody) {
@@ -50,18 +58,13 @@ async function lambda_handler(event, context) {
       const imageBuffer = Buffer.from(base64Image, "base64");
       s3Params = {
         Bucket: bucketName,
-        Key: "" + questionId + "." + fileExtension,
+        Key: `Course${courseId}/Quiz${quizId}/Question${questionId}.${fileExtension}`,
         Body: imageBuffer,
+        ContentType: 'image/' + fileExtension
       };
 
       uploadedImage = await s3.putObject(s3Params).promise();
     }
-    const courseId = requestBody.courseId;
-    const quizId = requestBody.quizId;
-    const questionOptionType = requestBody.questionOptionType;
-    const question = requestBody.question;
-    const options = requestBody.options;
-    const answer = requestBody.answer;
 
     checkForNull(
       courseId,
