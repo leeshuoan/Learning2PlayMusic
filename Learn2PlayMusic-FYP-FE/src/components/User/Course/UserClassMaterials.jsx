@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
-import { Typography, Container, Card, Box, Link, Breadcrumbs } from '@mui/material'
+import { Typography, Container, Card, Box, Link, Breadcrumbs, Backdrop, CircularProgress } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
@@ -18,6 +18,7 @@ const UserClassMaterials = () => {
   const { courseid } = useParams()
   const { materialId } = useParams()
   const [course, setCourse] = useState({})
+  const [open, setOpen] = useState(true);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
@@ -33,6 +34,7 @@ const UserClassMaterials = () => {
           timeslot: data[0].CourseSlot,
         }
         setCourse(courseData)
+        setOpen(false)
       }).catch((error) => {
         console.log(error)
         setOpen(false)
@@ -84,6 +86,12 @@ const UserClassMaterials = () => {
         </Card>
       </Box>
 
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Container>
   )
 }
