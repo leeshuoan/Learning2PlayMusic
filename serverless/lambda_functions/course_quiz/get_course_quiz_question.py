@@ -21,11 +21,11 @@ def lambda_handler(event, context):
         if "questionId" in queryStringParameters.keys():
             questionId = queryStringParameters["questionId"]
             response = table.get_item(
-                KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
-                ExpressionAttributeValues={
-                    ":PK": f"Course#{courseId}",
-                    ":SK": f"Quiz#{quizId}Question#{questionId}"
+                Key={
+                    "PK": f"Course#{courseId}",
+                    "SK": f"Quiz#{quizId}Question#{questionId}"
                 })
+            items = response["Item"]
         else:    
             response = table.query(
                 KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
@@ -33,9 +33,8 @@ def lambda_handler(event, context):
                     ":PK": f"Course#{courseId}",
                     ":SK": f"Quiz#{quizId}Question#"
                 })
-
-        items = response["Items"]
-
+            items = response["Items"]
+            
         res["statusCode"] = 200
         res["headers"] = {
             "Access-Control-Allow-Headers": "Content-Type",

@@ -26,12 +26,12 @@ def lambda_handler(event, context):
         if "quizId" in queryStringParameters.keys():
             quizId = queryStringParameters["quizId"]
             response = table.get_item(
-                KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
-                ExpressionAttributeValues={
-                    ":PK": f"Course#{courseId}",
-                    ":SK": f"Student#{studentId}Quiz#{quizId}"
-                }
-                )
+                Key={
+                    "PK": f"Course#{courseId}",
+                    "SK": f"Student#{studentId}Quiz#{quizId}"
+                })
+            items = response["Item"]
+            
         else:
             response = table.query(
                 KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
@@ -40,12 +40,8 @@ def lambda_handler(event, context):
                     ":SK": f"Student#{studentId}Quiz#"
                 },
                 FilterExpression='attribute_not_exists(QuestionOptionType)'
-                )
-
-
-
-        items = response["Items"]
-
+            )
+            items = response["Items"]
 
         res["statusCode"] = 200
         res["headers"] = {
