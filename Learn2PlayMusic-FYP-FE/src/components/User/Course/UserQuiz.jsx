@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  useTheme,
   Typography,
   Container,
   Grid,
@@ -16,6 +17,9 @@ import {
   Backdrop,
   CircularProgress,
 } from "@mui/material";
+import QuizCard from "./QuizCard";
+import Quiz from "./Quiz";
+
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 import TransitionModal from "../../utils/TransitionModal";
@@ -27,14 +31,21 @@ const UserQuiz = () => {
   const [course, setCourse] = useState({});
   const [quizTitle, setQuizTitle] = useState("");
   const [open, setOpen] = useState(true);
+  const handleClose = () => setOpen(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const [confirmSubmit, setConfirmSubmit] = useState(false);
   const handleCloseConfirmSubmit = () => setConfirmSubmit(false);
 
-  // const [questionsArray, setQuestionsArray] = useState([]);
+  const [questionsArray, setQuestionsArray] = useState([]);
+  const theme = useTheme();
 
   const [quizMaxAttempt, setQuizMaxAttempt] = useState(0);
   const [quizAttempt, setQuizAttempt] = useState(0);
+  const submit = () => {
+    setSubmitted(true);
+    setOpen(false);
+  };
 
   function QuizCard({ question, options, answer, image, index }) {
     return (
@@ -134,7 +145,7 @@ const UserQuiz = () => {
         open={confirmSubmit}
         handleClose={handleCloseConfirmSubmit}>
         <Typography variant="h6" sx={{ textAlign: "center" }}>
-          Submit your homework?
+          Submit your quiz?
         </Typography>
         <Box
           sx={{
@@ -218,17 +229,7 @@ const UserQuiz = () => {
             <Typography variant="body2" sx={{ mb: 2 }}>
               Attempt: {quizAttempt}/{quizMaxAttempt}
             </Typography>
-            {data3.map(
-              ({ Question, Options, Answer, questionImage }, index) => (
-                <QuizCard
-                  index={index + 1}
-                  question={Question}
-                  options={Options}
-                  answer={Answer}
-                  image={questionImage}
-                />
-              )
-            )}
+            <Quiz quizData={questionsArray} />
           </Card>
         </Box>
 
@@ -237,7 +238,8 @@ const UserQuiz = () => {
         <Button
           variant="contained"
           sx={{ mt: 2 }}
-          onClick={() => setConfirmSubmit(true)}>
+          onClick={() => setConfirmSubmit(true)}
+          disabled>
           SUBMIT QUIZ
         </Button>
 
