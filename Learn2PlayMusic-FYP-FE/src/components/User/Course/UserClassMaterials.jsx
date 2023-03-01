@@ -1,42 +1,65 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
-import { Typography, Container, Card, Box, Link, Breadcrumbs } from '@mui/material'
+import { Typography, Container, Card, Box, Link, Breadcrumbs, Backdrop, CircularProgress } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
 
 const UserClassMaterials = () => {
-  const material = {
-    materialId: 1,
-    materialTitle: "Exercise 1",
-    materialType: "PDF",
-    materialDate: "1 Feb 2023, 23:59PM",
-    materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-  }
+  // const material = {
+  //   materialId: 1,
+  //   materialTitle: "Exercise 1",
+  //   materialType: "PDF",
+  //   materialDate: "1 Feb 2023, 23:59PM",
+  //   materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+  // }
 
   const navigate = useNavigate()
   const { courseid } = useParams()
   const { materialId } = useParams()
   const [course, setCourse] = useState({})
+  const [material, setMaterial] = useState({})
+  const [open, setOpen] = useState(true);
+
+  const getCourse = fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
+  const getMaterialAPI = fetch(`${import.meta.env.VITE_API_URL}/course/material?courseId=${courseid}&materialId=${materialId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((response) => response.json())
-      .then((data) => {
+    Promise.all([getCourse, getMaterialAPI])
+      .then(async ([res1, res2]) => {
+        const [data1, data2] = await Promise.all([res1.json(), res2.json()]);
         let courseData = {
-          id: data[0].SK.split("#")[1],
-          name: data[0].CourseName,
-          timeslot: data[0].CourseSlot,
+          id: data1[0].SK.split("#")[1],
+          name: data1[0].CourseName,
+          timeslot: data1[0].CourseSlot,
         }
         setCourse(courseData)
+        setOpen(false)
+
+        let mat = data2[0]
+        mat.id = mat.SK.split("Material#")[1].substr(0, 1);
+        let date_1 = new Date(mat['MaterialLessonDate']);
+        let formattedDate_1 = `${date_1.toLocaleDateString()} ${date_1.toLocaleTimeString()}`;
+        mat['MaterialLessonDate'] = formattedDate_1;
+        console.log(mat)
+        setMaterial(mat)
+
       }).catch((error) => {
         console.log(error)
         setOpen(false)
       })
+
   }, [])
 
   return (
@@ -69,21 +92,27 @@ const UserClassMaterials = () => {
 
       <Box>
         <Card sx={{ py: 3, px: 5, mt: 2 }}>
-          <Typography variant='h6' sx={{ mb: 1 }}>{material.materialTitle}</Typography>
+          <Typography variant='h6' sx={{ mb: 1 }}>{material.MaterialTitle}</Typography>
           <Typography variant='body1'>LESSON DATE</Typography>
-          <Typography variant='body2'>{material.materialDate}</Typography>
-          <Card variant='outlined' sx={{ py: material.materialType == "Link" ? 2 : 1, px: 2, mt: 2, boxShadow: "none" }}>
+          <Typography variant='body2'>{material.MaterialLessonDate}</Typography>
+          <Card variant='outlined' sx={{ py: material.MaterialType == "Link" ? 2 : 1, px: 2, mt: 2, boxShadow: "none" }}>
             <embed src=
               "https://media.geeksforgeeks.org/wp-content/cdn-uploads/20210101201653/PDF.pdf"
               width="100%"
               height="700"
               type="application/pdf"
-              style={{ display: material.materialType == "PDF" ? "block" : "none" }} />
-            <Link style={{ display: material.materialType == "Link" ? "flex" : "none" }} href={material.materialUrl} target="_blank"><InsertLinkIcon sx={{ mr: 0.5 }} />{material.materialTitle}</Link>
+              style={{ display: material.MaterialType == "PDF" ? "block" : "none" }} />
+            <Link style={{ display: material.MaterialType == "Link" ? "flex" : "none" }} href={material.MaterialS3Link} target="_blank"><InsertLinkIcon sx={{ mr: 0.5 }} />{material.MaterialTitle}</Link>
           </Card>
         </Card>
       </Box>
 
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Container>
   )
 }

@@ -77,7 +77,7 @@ const UserCourse = (userInfo) => {
     "report": "My Progress Report"
   }
 
-  const getCourse = fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
+  const getCourseAPI = fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ const UserCourse = (userInfo) => {
     headers: {
       'Content-Type': 'application/json',
     },
-  })
+})
 
   const columns = useMemo(
     () => [
@@ -114,7 +114,7 @@ const UserCourse = (userInfo) => {
         header: "Title",
         Cell: ({ cell, row }) => (
           <>
-            <Link onClick={() => {navigate(`${row.original.id}`)}}>{row.original.MaterialTitle}</Link>
+            <Link onClick={() => {navigate('' + row.original.id)}}>{row.original.MaterialTitle}</Link>
           </>
         ),
       },
@@ -133,7 +133,7 @@ const UserCourse = (userInfo) => {
   );
 
   useEffect(() => {
-    Promise.all([getCourse, getHomeworkAPI, getMaterialAPI, getQuizAPI])
+    Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI])
       .then(async ([res1, res2, res3, res4]) => {
         const [data1, data2, data3, data4] = await Promise.all([res1.json(), res2.json(), res3.json(), res4.json()]);
 
@@ -369,7 +369,6 @@ const UserCourse = (userInfo) => {
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={open}
-        onClick={() => { setOpen(false) }}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
