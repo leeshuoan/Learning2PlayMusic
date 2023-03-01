@@ -38,7 +38,7 @@ const UserHome = ({ userInfo }) => {
 
   const myCourse = {
     id: 1,
-    title: "Grade 1 Piano",
+    title: "Grade 2 Piano",
     date: "Wednesday 7pm",
   }
 
