@@ -6,14 +6,6 @@ import HomeIcon from '@mui/icons-material/Home';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
 
 const UserClassMaterials = () => {
-  // const material = {
-  //   materialId: 1,
-  //   materialTitle: "Exercise 1",
-  //   materialType: "PDF",
-  //   materialDate: "1 Feb 2023, 23:59PM",
-  //   materialUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-  // }
-
   const navigate = useNavigate()
   const { courseid } = useParams()
   const { materialId } = useParams()
@@ -51,7 +43,7 @@ const UserClassMaterials = () => {
         mat.id = mat.SK.split("Material#")[1].substr(0, 1);
         let date_1 = new Date(mat['MaterialLessonDate']);
         let formattedDate_1 = `${date_1.toLocaleDateString()} ${date_1.toLocaleTimeString()}`;
-        mat['MaterialLessonDate'] = formattedDate_1;
+        mat['MaterialLessonDate'] = formattedDate_1
         console.log(mat)
         setMaterial(mat)
 
@@ -102,7 +94,7 @@ const UserClassMaterials = () => {
               height="700"
               type="application/pdf"
               style={{ display: material.MaterialType == "PDF" ? "block" : "none" }} />
-            <Link style={{ display: material.MaterialType == "Link" ? "flex" : "none" }} href={material.MaterialS3Link} target="_blank"><InsertLinkIcon sx={{ mr: 0.5 }} />{material.MaterialTitle}</Link>
+            <Link style={{ display: material.MaterialType == "Link" ? "flex" : "none" }} href="https://www.youtube.com/watch?v=UETPELwIjho" target="_blank"><InsertLinkIcon sx={{ mr: 0.5 }} />{material.MaterialTitle}</Link>
           </Card>
         </Card>
       </Box>
