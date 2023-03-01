@@ -1,3 +1,5 @@
+import boto3
+
 def get_presigned_url(item):
     if "questionImage" in item:
         s3_client = boto3.client('s3')
