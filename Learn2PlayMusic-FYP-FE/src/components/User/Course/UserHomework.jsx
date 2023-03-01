@@ -138,7 +138,6 @@ const UserHomework = () => {
         <Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={isLoading}
-          onClick={() => { setOpen(false) }}
         >
           <CircularProgress color="inherit" />
         </Backdrop>

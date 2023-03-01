@@ -30,6 +30,7 @@ Amplify.configure(aws_exports);
 
 function App() {
   const [userInfo, setUserInfo] = useState({});
+  const [fetchUserInfo, setFetchUserInfo] = useState(false);
 
   const handleResetUserInfo = () => {
     setUserInfo({
@@ -39,6 +40,10 @@ function App() {
 
   const handleSetUserInfo = (userInfo) => {
     setUserInfo(userInfo);
+  };
+
+  const handleRefreshUserInfo = () => {
+    setFetchUserInfo(!fetchUserInfo);
   };
 
   useEffect(() => {
@@ -77,7 +82,7 @@ function App() {
         console.log(err);
         handleResetUserInfo();
       });
-  }, []);
+  }, [fetchUserInfo]);
 
   return (
     <div className="App">
@@ -114,7 +119,7 @@ function App() {
             </Route>
           </Route>
 
-          <Route path="profile" element={<Profile userInfo={userInfo}></Profile>}></Route>
+          <Route path="profile" element={<Profile userInfo={userInfo} refreshUserInfo={handleRefreshUserInfo} />}></Route>
           <Route path="resetpassword" element={<ForgotPassword />}></Route>
           <Route path="*" element={<NotFound userRole={userInfo.role} />} />
 

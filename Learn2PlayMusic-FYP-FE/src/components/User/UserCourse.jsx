@@ -104,7 +104,7 @@ const UserCourse = (userInfo) => {
     headers: {
       'Content-Type': 'application/json',
     },
-  })
+})
 
   const columns = useMemo(
     () => [
@@ -114,7 +114,7 @@ const UserCourse = (userInfo) => {
         header: "Title",
         Cell: ({ cell, row }) => (
           <>
-            <Link>{row.original.MaterialTitle}</Link>
+            <Link onClick={() => {navigate('' + row.original.id)}}>{row.original.MaterialTitle}</Link>
           </>
         ),
       },
@@ -369,7 +369,6 @@ const UserCourse = (userInfo) => {
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={open}
-        onClick={() => { setOpen(false) }}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
