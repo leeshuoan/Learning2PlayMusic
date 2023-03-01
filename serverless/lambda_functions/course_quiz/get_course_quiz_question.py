@@ -3,6 +3,7 @@ import boto3
 import json
 
 # Get all questions by courseid and quizid
+from global_functions.get_presigned_url import *
 
 
 def lambda_handler(event, context):
@@ -26,6 +27,7 @@ def lambda_handler(event, context):
                     "SK": f"Quiz#{quizId}Question#{questionId}"
                 })
             items = response["Item"]
+            get_presigned_url(items)
         else:    
             response = table.query(
                 KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
@@ -34,16 +36,10 @@ def lambda_handler(event, context):
                     ":SK": f"Quiz#{quizId}Question#"
                 })
             items = response["Items"]
+            for item in items:
+                get_presigned_url(item)
 
-        if "questionImage" in items:
-            s3_client = boto3.client('s3')
-            bucket_name = items["questionImage"].split("/")[0]
-            object_name = '/'.join(items["questionImage"].split("/")[1:])
-            response = s3_client.generate_presigned_url('get_object',
-                                                    Params={'Bucket': bucket_name,
-                                                            'Key': object_name},
-                                                    ExpiresIn=3600)
-            items["questionImage"] = response
+
             
         res["statusCode"] = 200
         res["headers"] = {
@@ -68,3 +64,4 @@ def lambda_handler(event, context):
             "body": f"{exception_type}: {str(e)}",
 
         }
+
