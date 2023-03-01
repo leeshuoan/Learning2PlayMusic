@@ -29,7 +29,7 @@ def lambda_handler(event, context):
                 })
             items = response["Item"]
             get_presigned_url(items)
-        else:    
+        else:
             response = table.query(
                 KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
                 ExpressionAttributeValues={
@@ -42,7 +42,6 @@ def lambda_handler(event, context):
 
         return response_200_GET(items)
 
-
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
         filename = exception_traceback.tb_frame.f_code.co_filename
@@ -52,5 +51,3 @@ def lambda_handler(event, context):
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
         return response_500((str(exception_type) + str(e)))
-
-
