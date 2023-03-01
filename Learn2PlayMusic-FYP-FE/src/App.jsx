@@ -8,7 +8,7 @@ import PrivateRoutes from "./components/utils/PrivateRoutes";
 // Amplify setup
 import aws_exports from "./aws-exports";
 import { Amplify } from "aws-amplify";
-import { Auth } from "aws-amplify";
+import { Auth, Storage } from "aws-amplify";
 // App components
 import DefaultAppBar from "./components/AppBar/DefaultAppBar";
 import SignIn from "./components/SignIn";
@@ -72,7 +72,9 @@ function App() {
               name: session.getIdToken().payload['custom:name'],
               role: userRole,
               email: session.getIdToken().payload.email,
+              profileImage: session.getIdToken().payload['custom:profileImage'],
             };
+            console.log(userInfo)
             setUserInfo(userInfo);
           }
 

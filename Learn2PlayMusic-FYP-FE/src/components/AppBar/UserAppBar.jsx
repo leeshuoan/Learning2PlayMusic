@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import {
   AppBar,
   Box,
@@ -14,16 +14,26 @@ import {
   Tooltip,
 } from "@mui/material";
 import Logout from "@mui/icons-material/Logout";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import ChatIcon from "@mui/icons-material/Chat";
-import { Auth } from "aws-amplify";
+import { Auth, Storage } from "aws-amplify";
 import { useNavigate } from "react-router-dom";
 
 const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
   const theme = useTheme()
   const navigate = useNavigate()
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [image, setImage] = useState(null)
+
+  useEffect(() => {
+    if (userInfo.profileImage != "none") {
+      Storage.get(userInfo.profileImage, { level: "protected" }).then((res) => {
+        setImage(res)
+      }).catch((err) => {
+        console.log(err)
+      })
+    }
+  }, [])
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -65,15 +75,6 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                 <Avatar
                   sx={{
                     display: { xs: "flex", md: "none" },
-                    width: 32,
-                    height: 32,
-                    bgcolor: "grey[100]",
-                  }}>
-                  <NotificationsIcon />
-                </Avatar>
-                <Avatar
-                  sx={{
-                    display: { xs: "flex", md: "none" },
                     ml: 1,
                     width: 32,
                     height: 32,
@@ -98,15 +99,6 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                   <Avatar
                     sx={{
                       display: { xs: "none", md: "flex" },
-                      width: 32,
-                      height: 32,
-                      bgcolor: "grey[100]",
-                    }}>
-                    <NotificationsIcon />
-                  </Avatar>
-                  <Avatar
-                    sx={{
-                      display: { xs: "none", md: "flex" },
                       ml: 1.6,
                       width: 32,
                       height: 32,
@@ -122,7 +114,7 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                       aria-controls={open ? "account-menu" : undefined}
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}>
-                      <Avatar sx={{ width: 32, height: 32 }}>U</Avatar>
+                      <Avatar sx={{ width: 32, height: 32 }} src={image}></Avatar>
                     </IconButton>
                   </Tooltip>
                 </Box>
@@ -160,8 +152,8 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                   }}
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
-                  <MenuItem onClick={() => {navigate("/profile")}}>
-                    <Avatar />My Profile
+                  <MenuItem onClick={() => { navigate("/profile") }}>
+                    <Avatar src={image} />My Profile
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>
                     <ListItemIcon>

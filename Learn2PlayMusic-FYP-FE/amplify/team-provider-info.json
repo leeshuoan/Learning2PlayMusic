@@ -24,6 +24,9 @@
       },
       "api": {
         "AdminQueries": {}
+      },
+      "storage": {
+        "s3d99e2199": {}
       }
     }
   }
