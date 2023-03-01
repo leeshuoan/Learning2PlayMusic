@@ -32,7 +32,7 @@ class CourseStack(Stack):
         L2PMA_question_image_bucket = s3.Bucket(self, "L2PMAQuestionImageBucket")
         policy_statement = aws_iam.PolicyStatement(
             effect=aws_iam.Effect.ALLOW,
-            actions=["s3:GetObject", "s3:PutObject"],
+            actions=["s3:GetObject", "s3:PutObject", ],
             resources=[L2PMA_question_image_bucket.arn_for_objects("*")],
             principals=[aws_iam.ServicePrincipal('lambda.amazonaws.com')]
         )
@@ -88,7 +88,10 @@ class CourseStack(Stack):
 
         # /course/quiz/question Functions
         get_course_quiz_question = _lambda.Function(self, "getCourseQuizQuestion", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                     handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=s3_dynamodb_role)
+                                                     handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=s3_dynamodb_role,
+                                                     environment={
+                                                        "QUESTION_IMAGE_BUCKET_NAME": L2PMA_question_image_bucket.bucket_name
+                                                    })
         post_course_quiz_question = _lambda.Function(self, "postCourseQuizQuestion", runtime=_lambda.Runtime.NODEJS_16_X,
                                                      handler=f"post_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=s3_dynamodb_role,
                                                      environment={
