@@ -8,11 +8,7 @@ from global_functions.exists_in_db import *
 # Get all general announcement
 def lambda_handler(event, context):
   
-    # Use this if testing from API gateway
     dateId = event["queryStringParameters"]["dateId"]
-
-    # Use this if testing locally on 
-    # dateId=event["dateId"]
 
     try:
         # VALIDATION
@@ -48,8 +44,4 @@ def lambda_handler(event, context):
         print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
-        return {
-            "statusCode": 500,
-            "body": str(e),
-            
-        }
+        return response_500(e)
