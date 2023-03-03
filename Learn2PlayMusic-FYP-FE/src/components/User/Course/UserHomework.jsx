@@ -137,7 +137,7 @@ const UserHomework = () => {
             }}>
             {course.name}
           </Link>
-          <Typography color="text.primary">Homework</Typography>
+          <Typography color="text.primary">{homework.title}</Typography>
         </Breadcrumbs>
 
         <Card
