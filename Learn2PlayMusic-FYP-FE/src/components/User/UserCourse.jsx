@@ -28,30 +28,6 @@ const UserCourse = (userInfo) => {
     },
   ]
 
-  const courseQuizzes = [
-    {
-      id: 1,
-      title: "Quiz 1",
-      score: "80%",
-      attempts: 1,
-      maxAttempts: 1
-    },
-    {
-      id: 2,
-      title: "Quiz 2",
-      score: "93%",
-      attempts: 1,
-      maxAttempts: 1
-    },
-    {
-      id: 3,
-      title: "Quiz 3",
-      score: "",
-      attempts: 0,
-      maxAttempts: 1
-    },
-  ]
-
   const courseProgressReports = [
     {
       id: 1,
