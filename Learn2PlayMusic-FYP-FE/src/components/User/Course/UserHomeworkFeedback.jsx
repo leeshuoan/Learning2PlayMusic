@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Container, Breadcrumbs, Link, Typography, Card, Box, Backdrop, CircularProgress  } from '@mui/material'
+import { Container, Breadcrumbs, Link, Typography, Card, Box, Backdrop, CircularProgress, Divider } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import HomeIcon from '@mui/icons-material/Home'
 import { useNavigate, useParams } from 'react-router-dom'
 
-const UserHomeworkFeedback = () => {
+const UserHomeworkFeedback = (userInfo) => {
+  console.log(userInfo)
+
   const homework = {
     id: 1,
     title: "Homework 1",
@@ -79,6 +81,25 @@ const UserHomeworkFeedback = () => {
               <Typography variant="body2" sx={{ textAlign: "right" }}>
                 Teacher
               </Typography>
+            </Box>
+          </Box>
+        </Card>
+
+        <Card sx={{ py: 3, px: 5, mt: 2 }}>
+          <Typography variant="subsubtitle" sx={{ mb: 2 }}>STUDENT NAME</Typography>
+          <Typography variant="subtitle1" sx={{ mb: 2 }}>{userInfo.userInfo.name}</Typography>
+          <Typography variant="subsubtitle" sx={{ mb: 2 }}>FILE SUBMISSION</Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}><Link>homework1_tom.jpg</Link></Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>I think the answer is piano. Piano has white keys.</Typography>
+          <Divider sx={{ my: 3 }} />
+          <Box sx={{ display: "flex" }}>
+            <Box sx={{ mr: 3 }}>
+              <Typography variant="subsubtitle" sx={{ mb: 2 }}>HOMEWORK SCORE</Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>HOMEWORK SCORE</Typography>
+            </Box>
+            <Box>
+              <Typography variant="subsubtitle" sx={{ mb: 2 }}>TEACHER'S COMMENTS</Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>Hi Tom, piano is different from organ</Typography>
             </Box>
           </Box>
         </Card>

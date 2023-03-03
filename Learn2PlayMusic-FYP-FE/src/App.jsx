@@ -117,7 +117,7 @@ function App() {
               <Route path=":category" element={<UserCourse userInfo={userInfo} />} />
               <Route path="material/:materialId" element={<UserClassMaterials />} />
               <Route path="homework/:homeworkId" element={<UserHomework />} />
-              <Route path="homework/:homeworkId/feedback" element={<UserHomeworkFeedback />} />
+              <Route path="homework/:homeworkId/feedback" element={<UserHomeworkFeedback userInfo={userInfo} />} />
               <Route path="report/:reportId" element={<UserReport />} />
               <Route path="quiz/:quizId" element={<UserQuiz />} />
             </Route>
