@@ -9,6 +9,9 @@ import PrivateRoutes from "./components/utils/PrivateRoutes";
 import aws_exports from "./aws-exports";
 import { Amplify } from "aws-amplify";
 import { Auth, Storage } from "aws-amplify";
+// Firebase setup
+import firebase from "firebase/compat/app";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 // App components
 import DefaultAppBar from "./components/AppBar/DefaultAppBar";
 import SignIn from "./components/SignIn";
@@ -28,6 +31,15 @@ import Profile from "./components/Profile";
 import UserHomeworkFeedback from "./components/User/Course/UserHomeworkFeedback";
 
 Amplify.configure(aws_exports);
+
+firebase.initializeApp({
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: "l2pm-f6b60.firebaseapp.com",
+  projectId: "l2pm-f6b60",
+  storageBucket: "l2pm-f6b60.appspot.com",
+  messagingSenderId: "66709985376",
+  appId: "1:66709985376:web:b0cd32511fc1f8f99d0b05"
+});
 
 function App() {
   const [userInfo, setUserInfo] = useState({});
@@ -106,7 +118,6 @@ function App() {
 
           <Route path="teacher" element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
             <Route index element={<TeacherHome userInfo={userInfo} />} />
-            <Route path="chat" element={<Chat userInfo={userInfo} />} />
           </Route>
 
           <Route path="home" element={<PrivateRoutes userType="User"></PrivateRoutes>}>
@@ -123,6 +134,7 @@ function App() {
             </Route>
           </Route>
 
+          <Route path="chat" element={<Chat userInfo={userInfo} />} />
           <Route path="profile" element={<Profile userInfo={userInfo} refreshUserInfo={handleRefreshUserInfo} />}></Route>
           <Route path="resetpassword" element={<ForgotPassword />}></Route>
           <Route path="*" element={<NotFound userRole={userInfo.role} />} />
