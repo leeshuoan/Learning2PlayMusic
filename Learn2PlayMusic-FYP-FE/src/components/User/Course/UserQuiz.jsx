@@ -7,10 +7,6 @@ import {
   Grid,
   Button,
   Card,
-  CardContent,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
   Box,
   Link,
   Breadcrumbs,
@@ -33,10 +29,11 @@ const UserQuiz = () => {
   const [openModal, setOpenModal] = useState(false);
   const [questionsArray, setQuestionsArray] = useState([]);
   const theme = useTheme();
-  const [selectedOptions, setSelectedOptions] = useState({});
+  const [selectedOptions, setSelectedOptions] = useState({}); //{24d690e0: "Drums", 62a1bb2d: "Drums"}
   const [quizMaxAttempt, setQuizMaxAttempt] = useState(0);
   const [quizAttempt, setQuizAttempt] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [studentId, setStudentId] = useState(-1);
 
   const getCourse = fetch(
     `${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`,
@@ -50,7 +47,8 @@ const UserQuiz = () => {
 
   // const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`, {
   const getQuizAPI = fetch(
-    `${import.meta.env.VITE_API_URL
+    `${
+      import.meta.env.VITE_API_URL
     }/course/quiz?courseId=${courseid}&studentId=1&quizId=${quizId}`,
     {
       method: "GET",
@@ -62,7 +60,8 @@ const UserQuiz = () => {
 
   // const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`, {
   const getQuizQuestionAPI = fetch(
-    `${import.meta.env.VITE_API_URL
+    `${
+      import.meta.env.VITE_API_URL
     }/course/quiz/question?courseId=${courseid}&quizId=${quizId}`,
     {
       method: "GET",
@@ -71,31 +70,48 @@ const UserQuiz = () => {
       },
     }
   );
+  // https://v4py0qe8k5.execute-api.ap-southeast-1.amazonaws.com/prod/course/quiz/submit
+  const submitQuiz = async (requestBody) => {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/course/quiz/submit`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          mode: "cors",
+          body: JSON.stringify(requestBody),
+        },
+      }
+    );
+    const data = await response.json();
+    return data;
+  };
 
   useEffect(() => {
     Promise.all([getCourse, getQuizAPI, getQuizQuestionAPI])
-      .then(async ([res1, res2, res3]) => {
-        const [data1, data2, data3] = await Promise.all([
-          res1.json(),
-          res2.json(),
-          res3.json(),
+      .then(async ([courseInfoRes, quizInfoRes, quizQnRes]) => {
+        const [courseInfo, quizInfo, quizQns] = await Promise.all([
+          courseInfoRes.json(),
+          quizInfoRes.json(),
+          quizQnRes.json(),
         ]);
 
         let courseData = {
-          id: data1[0].SK.split("#")[1],
-          name: data1[0].CourseName,
-          timeslot: data1[0].CourseSlot,
+          id: courseInfo[0].SK.split("#")[1],
+          name: courseInfo[0].CourseName,
+          timeslot: courseInfo[0].CourseSlot,
         };
         setCourse(courseData);
 
-        setQuizTitle(data2.QuizTitle);
-        setQuizAttempt(data2.QuizAttempt);
-        setQuizMaxAttempt(data2.QuizMaxAttempt);
+        setQuizTitle(quizInfo.QuizTitle);
+        setQuizAttempt(quizInfo.QuizAttempt);
+        setQuizMaxAttempt(quizInfo.QuizMaxAttempt);
+        setStudentId(quizInfo.SK.split("#")[1].split("Q")[0]);
 
-        data3.forEach((question) => {
+        quizQns.forEach((question) => {
           question["id"] = question.SK.split("Question#")[1];
         });
-        setQuestionsArray(data3);
+        setQuestionsArray(quizQns);
 
         setOpen(false);
       })
@@ -106,20 +122,57 @@ const UserQuiz = () => {
   }, []);
 
   const handleOptionChange = (id, selectedOption) => {
-    setSelectedOptions(prevOptions => ({
-      ...prevOptions, [id]: selectedOption
+    setSelectedOptions((prevOptions) => ({
+      ...prevOptions,
+      [id]: selectedOption,
     }));
   };
 
-  const confirmSubmit = () => {
-    setSubmitted(true);
+  const confirmSubmit = async () => {
+    // calc quiz score
+    const totalQuestions = questionsArray.length;
+    let correctAnswers = 0;
+    // loop thru the user's answer
+    for (let key in selectedOptions) {
+      if (selectedOptions.hasOwnProperty(key)) {
+        // loop through the answer key dictionary
+        for (let question of questionsArray) {
+          if (key === question.id) {
+            // Compare the user's response value to the "Answer" value in the answer key dictionary
+            if (selectedOptions[key] === question.Answer) {
+              correctAnswers++;
+              break;
+            }
+          }
+        }
+      }
+    }
+    let quizScore = correctAnswers / totalQuestions;
+    // prepare request body
+    const requestBody = {
+      courseId: course.id,
+      studentId: studentId,
+      quizId: quizId,
+      quizScore: quizScore,
+    };
+    // submit
+    try {
+      const submitQuizData = await submitQuiz(requestBody);
+      console.log(submitQuizData);
+      setSubmitted(true);
+    } catch (error) {
+      // todo: handle error?
+      console.log(error);
+    }
   };
 
   return (
     <>
       <TransitionModal
         open={openModal}
-        handleClose={() => { setOpenModal(false) }}>
+        handleClose={() => {
+          setOpenModal(false);
+        }}>
         <Box sx={{ display: submitted ? "none" : "block" }}>
           <Typography variant="h6" sx={{ textAlign: "center" }}>
             Submit your quiz?
@@ -142,7 +195,12 @@ const UserQuiz = () => {
               onClick={() => setOpenModal(false)}>
               Cancel
             </Button>
-            <Button variant="contained" color="primary" onClick={() => { confirmSubmit() }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                confirmSubmit();
+              }}>
               Yes
             </Button>
           </Box>
@@ -161,15 +219,25 @@ const UserQuiz = () => {
               justifyContent: "center",
               gap: "1rem",
             }}>
-            Score: {questionsArray.map((question) => {
-              if (question.Answer === selectedOptions[question.id]) {
-                return 1;
-              }
-              return 0;
-            }).reduce((a, b) => a + b, 0)}
+            Score:{" "}
+            {questionsArray
+              .map((question) => {
+                if (question.Answer === selectedOptions[question.id]) {
+                  return 1;
+                }
+                return 0;
+              })
+              .reduce((a, b) => a + b, 0)}
           </Box>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Button variant="contained" sx={{ mt: 1 }}onClick={() => { navigate(`/home/course/${courseid}/quiz`) }}>Back to Quizzes</Button>
+            <Button
+              variant="contained"
+              sx={{ mt: 1 }}
+              onClick={() => {
+                navigate(`/home/course/${courseid}/quiz`);
+              }}>
+              Back to Quizzes
+            </Button>
           </Box>
         </Box>
       </TransitionModal>
@@ -231,32 +299,39 @@ const UserQuiz = () => {
             <Typography variant="body2" sx={{ mb: 2 }}>
               Attempt: {quizAttempt}/{quizMaxAttempt}
             </Typography>
-            <Grid container spacing={3} >
-              {questionsArray.map(({ Question, Options, Answer, id, QuestionImage }, index) => (
-                <Grid key={index} item xs={12}>
-                  <QuizCard
-                    index={index + 1}
-                    question={Question}
-                    image={QuestionImage}
-                    options={Options}
-                    answer={Answer}
-                    handleOptionChange={selectedOption => { handleOptionChange(id, selectedOption) }}
-                  />
-                </Grid>
-              ))}
+            <Grid container spacing={3}>
+              {questionsArray.map(
+                ({ Question, Options, Answer, id, QuestionImage }, index) => (
+                  <Grid key={index} item xs={12}>
+                    <QuizCard
+                      index={index + 1}
+                      question={Question}
+                      image={QuestionImage}
+                      options={Options}
+                      answer={Answer}
+                      handleOptionChange={(selectedOption) => {
+                        handleOptionChange(id, selectedOption);
+                      }}
+                    />
+                  </Grid>
+                )
+              )}
             </Grid>
             {/* on submit send the quiz results to backend */}
             {/* add a submit button */}
             <Button
               variant="contained"
               sx={{ mt: 2 }}
-              onClick={() => { setOpenModal(true) }}
-              disabled={questionsArray.length != Object.keys(selectedOptions).length}>
+              onClick={() => {
+                setOpenModal(true);
+              }}
+              disabled={
+                questionsArray.length != Object.keys(selectedOptions).length
+              }>
               SUBMIT QUIZ
             </Button>
           </Card>
         </Box>
-
 
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
