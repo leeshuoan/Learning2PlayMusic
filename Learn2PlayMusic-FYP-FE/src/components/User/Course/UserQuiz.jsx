@@ -18,11 +18,10 @@ import {
   CircularProgress,
 } from "@mui/material";
 import QuizCard from "./QuizCard";
-import Quiz from "./Quiz";
-
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 import TransitionModal from "../../utils/TransitionModal";
+import celebration from "../../../assets/celebration.png";
 
 const UserQuiz = () => {
   const navigate = useNavigate();
@@ -31,21 +30,13 @@ const UserQuiz = () => {
   const [course, setCourse] = useState({});
   const [quizTitle, setQuizTitle] = useState("");
   const [open, setOpen] = useState(true);
-  const handleClose = () => setOpen(false);
-  const [submitted, setSubmitted] = useState(false);
-
-  const [confirmSubmit, setConfirmSubmit] = useState(false);
-  const handleCloseConfirmSubmit = () => setConfirmSubmit(false);
-
+  const [openModal, setOpenModal] = useState(false);
   const [questionsArray, setQuestionsArray] = useState([]);
   const theme = useTheme();
-
+  const [selectedOptions, setSelectedOptions] = useState({});
   const [quizMaxAttempt, setQuizMaxAttempt] = useState(0);
   const [quizAttempt, setQuizAttempt] = useState(0);
-  const submit = () => {
-    setSubmitted(true);
-    setOpen(false);
-  };
+  const [submitted, setSubmitted] = useState(false);
 
   const getCourse = fetch(
     `${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`,
@@ -90,9 +81,6 @@ const UserQuiz = () => {
           res3.json(),
         ]);
 
-        console.log(data1);
-        console.log(data2);
-        console.log(data3);
         let courseData = {
           id: data1[0].SK.split("#")[1],
           name: data1[0].CourseName,
@@ -100,11 +88,14 @@ const UserQuiz = () => {
         };
         setCourse(courseData);
 
-        setQuestionsArray(data3);
-        console.log(data2)
         setQuizTitle(data2.QuizTitle);
         setQuizAttempt(data2.QuizAttempt);
         setQuizMaxAttempt(data2.QuizMaxAttempt);
+
+        data3.forEach((question) => {
+          question["id"] = question.SK.split("Question#")[1];
+        });
+        setQuestionsArray(data3);
 
         setOpen(false);
       })
@@ -113,35 +104,73 @@ const UserQuiz = () => {
         setOpen(false);
       });
   }, []);
+
+  const handleOptionChange = (id, selectedOption) => {
+    setSelectedOptions(prevOptions => ({
+      ...prevOptions, [id]: selectedOption
+    }));
+  };
+
+  const confirmSubmit = () => {
+    setSubmitted(true);
+  };
+
   return (
     <>
       <TransitionModal
-        open={confirmSubmit}
-        handleClose={handleCloseConfirmSubmit}>
-        <Typography variant="h6" sx={{ textAlign: "center" }}>
-          Submit your quiz?
-        </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "1rem",
-            marginTop: "1rem",
-          }}>
-          <Button
-            variant="contained"
+        open={openModal}
+        handleClose={() => { setOpenModal(false) }}>
+        <Box sx={{ display: submitted ? "none" : "block" }}>
+          <Typography variant="h6" sx={{ textAlign: "center" }}>
+            Submit your quiz?
+          </Typography>
+          <Box
             sx={{
-              backgroundColor: "lightgrey",
-              color: "black",
-              boxShadow: theme.shadows[10],
-              ":hover": { backgroundColor: "hovergrey" },
-            }}
-            onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button variant="contained" color="primary" onClick={submit}>
-            Yes
-          </Button>
+              display: "flex",
+              justifyContent: "center",
+              gap: "1rem",
+              marginTop: "1rem",
+            }}>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "lightgrey",
+                color: "black",
+                boxShadow: theme.shadows[10],
+                ":hover": { backgroundColor: "hovergrey" },
+              }}
+              onClick={() => setOpenModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="contained" color="primary" onClick={() => { confirmSubmit() }}>
+              Yes
+            </Button>
+          </Box>
+        </Box>
+
+        <Box sx={{ display: submitted ? "block" : "none" }}>
+          <Typography variant="h6" sx={{ textAlign: "center" }}>
+            Submission Successful!
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <img src={celebration}></img>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "1rem",
+            }}>
+            Score: {questionsArray.map((question) => {
+              if (question.Answer === selectedOptions[question.id]) {
+                return 1;
+              }
+              return 0;
+            }).reduce((a, b) => a + b, 0)}
+          </Box>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Button variant="contained" sx={{ mt: 1 }}onClick={() => { navigate(`/home/course/${courseid}/quiz`) }}>Back to Quizzes</Button>
+          </Box>
         </Box>
       </TransitionModal>
 
@@ -168,8 +197,7 @@ const UserQuiz = () => {
             }}>
             {course.name}
           </Link>
-          <Typography color="text.primary">{quizTitle}</Typography>
-          <Typography color="text.secondary">{quizTitle}</Typography>
+          <Typography>{quizTitle}</Typography>
         </Breadcrumbs>
 
         <Card
@@ -203,19 +231,32 @@ const UserQuiz = () => {
             <Typography variant="body2" sx={{ mb: 2 }}>
               Attempt: {quizAttempt}/{quizMaxAttempt}
             </Typography>
-            <Quiz quizData={questionsArray} />
+            <Grid container spacing={3} >
+              {questionsArray.map(({ Question, Options, Answer, id, QuestionImage }, index) => (
+                <Grid key={index} item xs={12}>
+                  <QuizCard
+                    index={index + 1}
+                    question={Question}
+                    image={QuestionImage}
+                    options={Options}
+                    answer={Answer}
+                    handleOptionChange={selectedOption => { handleOptionChange(id, selectedOption) }}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+            {/* on submit send the quiz results to backend */}
+            {/* add a submit button */}
+            <Button
+              variant="contained"
+              sx={{ mt: 2 }}
+              onClick={() => { setOpenModal(true) }}
+              disabled={questionsArray.length != Object.keys(selectedOptions).length}>
+              SUBMIT QUIZ
+            </Button>
           </Card>
         </Box>
 
-        {/* on submit send the quiz results to backend */}
-        {/* add a submit button */}
-        <Button
-          variant="contained"
-          sx={{ mt: 2 }}
-          onClick={() => setConfirmSubmit(true)}
-          disabled>
-          SUBMIT QUIZ
-        </Button>
 
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}

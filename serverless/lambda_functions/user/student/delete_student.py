@@ -5,36 +5,28 @@ import json
 from global_functions.responses import *
 from global_functions.exists_in_db import *
 
-# Get all general announcement
 def lambda_handler(event, context):
-  
-    dateId = event["queryStringParameters"]["dateId"]
 
     try:
-        # VALIDATION
-        if dateId is None or dateId == "null":
-            sortKey = "Date#"
-        else:
-            sortKey = "Date#" + dateId
-
-        # VALIDATION
-        # check if <dateId> exists in database
-        if not id_exists("GeneralAnnouncements", "Date", dateId):
-            return response_400("dateId does not exist in database")
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
-        response = table.query(
-            KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
-            ExpressionAttributeValues={
-                ":PK": "GeneralAnnouncements",
-                ":SK": sortKey
-            })
+        # VALIDATION
+        # check if <courseId> exists in database
+        courseId = event['queryStringParameters']['courseId']
+        if not id_exists("Course", "Course", courseId):
+            return response_400("courseId does not exist in database")
 
-        items = response["Items"]
+        response = table.delete_item(
+            Key= {
+                "PK": "Course",
+                "SK": f"Course#{event['queryStringParameters']['courseId']}"
+            }
+            )
 
-        return response_200_GET(items)
-  	
+        return response_200("successfully deleted item")
+
+
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")
         exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -44,4 +36,5 @@ def lambda_handler(event, context):
         print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
+
         return response_500(e)

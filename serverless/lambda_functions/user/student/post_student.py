@@ -1,7 +1,7 @@
 import sys
 import boto3
 import json
-import datetime
+import uuid
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
@@ -11,18 +11,16 @@ def lambda_handler(event, context):
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
-        dateId = datetime.today()
+        short_uuid = str(uuid.uuid4().hex)[:8]
 
-        # VALIDATION
-        # check if <dateID> already exists in database
-        if not id_exists("GeneralAnnouncements", "Date", dateId):
-            return response_400("dateId does not exist in database")
+        # No validation needed for this function
 
         response = table.put_item(
             Item= {
-                "PK": f"GeneralAnnouncements",
-                "SK": f"Date#{dateId}",
-                "Content": json.loads(event['body'])['content'],
+                "PK": "Course",
+                "SK": f"Course#{short_uuid}",
+                "CourseName": json.loads(event['body'])['courseName'],
+                "CourseSlot": json.loads(event['body'])['courseSlot'],
             }
             )
 

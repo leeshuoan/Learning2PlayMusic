@@ -64,12 +64,9 @@ class CourseStack(Stack):
                                                handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.get_course_homework.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /course/announcement Functions
-        get_course_announcement = _lambda.Function(self, "getCourseAnnouncement",  runtime=_lambda.Runtime.PYTHON_3_9,
-                                                   handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.get_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        post_course_announcement = _lambda.Function(self, "postCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                    handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.post_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        delete_course_announcement = _lambda.Function(self, "deleteCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                      handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        get_course_announcement = _lambda.Function(self, "getCourseAnnouncement",  runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.get_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        post_course_announcement = _lambda.Function(self, "postCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.post_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        delete_course_announcement = _lambda.Function(self, "deleteCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /course Functions
         get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.get_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -257,15 +254,29 @@ class CourseStack(Stack):
         })
 
         # /course/announcement
+        # Define a JSON Schema to accept Request Body in JSON format for POST Method
+        post_course_announcement_model = main_api.add_model(
+            "PostCourseAnnouncementModel",
+            content_type="application/json",
+            model_name="PostCourseAnnouncementModel",
+            schema=apigw.JsonSchema(
+                title="PostCourseAnnouncementModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "content": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                },
+                required=["content"]))
+
         course_announcement_resource.add_method("GET", apigw.LambdaIntegration(get_course_announcement), request_parameters={
             'method.request.querystring.courseId': True,
             'method.request.querystring.announcementId': False})
         course_announcement_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_announcement), request_parameters={
             'method.request.querystring.courseId': True,
-            'method.request.querystring.announcementId': False})
-        course_announcement_resource.add_method("POST", apigw.LambdaIntegration(post_course_announcement), request_parameters={
-            'method.request.querystring.courseEndDate': True,
-            'method.request.querystring.announcementId': False})
+            'method.request.querystring.announcementId': True})
+        course_announcement_resource.add_method("POST", apigw.LambdaIntegration(post_course_announcement), request_models={
+            'application/json': post_course_announcement_model})
 
         # Enable CORS for each resource/sub-resource etc.
         course_resource.add_cors_preflight(
@@ -273,13 +284,15 @@ class CourseStack(Stack):
         course_quiz_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
         course_quiz_submit_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)   
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)   
         course_homework_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
         course_quiz_question_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
         course_material_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+        course_announcement_resource.add_cors_preflight(
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
 
         # Export API gateway to use in other Stacks
         CfnOutput(
