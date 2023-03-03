@@ -49,7 +49,7 @@ class CourseStack(Stack):
         # IAM policies for dynamodb readwrite + s3 readwrite
         dynamodb_policy = aws_iam.PolicyStatement(effect = aws_iam.Effect.ALLOW,
           resources = ['arn:aws:dynamodb:*:*:table/*'],
-          actions = ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query']
+          actions = ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query', 'dynamodb:UpdateItem']
         )
         s3_dynamodb_role.add_to_policy(dynamodb_policy)
 
@@ -83,6 +83,9 @@ class CourseStack(Stack):
         get_course_quiz = _lambda.Function(self, "getCourseQuiz", runtime=_lambda.Runtime.PYTHON_3_9,
                                               handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
+        # /course/quiz/submit
+        post_course_quiz_submit = _lambda.Function(self, "postCourseQuizSubmit", runtime=_lambda.Runtime.NODEJS_16_X,
+                                                   handler="post_course_quiz_submit.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=s3_dynamodb_role)
         # /course/quiz/question Functions
         get_course_quiz_question = _lambda.Function(self, "getCourseQuizQuestion", runtime=_lambda.Runtime.PYTHON_3_9,
                                                      handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=s3_dynamodb_role,
@@ -112,6 +115,8 @@ class CourseStack(Stack):
         # Create sub-sub-resources under the parent resource
         course_quiz_question_resource = course_quiz_resource.add_resource(
             "question")
+        course_quiz_submit_resource = course_quiz_resource.add_resource(
+            "submit")
 
         # Create methods in the required resources
 
@@ -220,6 +225,26 @@ class CourseStack(Stack):
         course_quiz_question_resource.add_method("POST", apigw.LambdaIntegration(post_course_quiz_question), request_models={
           "application/json": post_course_quiz_question_model
         })
+        # /course/quiz/question/submit
+        post_course_quiz_submit_resource_model = main_api.add_model(
+            "PostCourseQuizSubmitModel",
+            content_type="application/json",
+            model_name="PostCourseQuizSubmitModel",
+            schema=apigw.JsonSchema(
+                title="PostCourseQuizSubmitModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "quizScore": apigw.JsonSchema(type=apigw.JsonSchemaType.NUMBER),
+                    "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                },
+                required=["courseId", "quizId", "studentId", "quizScore"]))
+
+        course_quiz_submit_resource.add_method("POST", apigw.LambdaIntegration(post_course_quiz_submit), request_models={
+            "application/json": post_course_quiz_submit_resource_model
+        } )
 
         # /course/homework
         course_homework_resource.add_method("GET", apigw.LambdaIntegration(get_course_homework), request_parameters={
@@ -257,7 +282,9 @@ class CourseStack(Stack):
         course_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
         course_quiz_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+        course_quiz_submit_resource.add_cors_preflight(
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)   
         course_homework_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
         course_quiz_question_resource.add_cors_preflight(
