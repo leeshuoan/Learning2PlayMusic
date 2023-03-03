@@ -56,7 +56,14 @@ const UserHomeworkFeedback = (userInfo) => {
             <HomeIcon sx={{ mr: 0.5 }} />
             Home
           </Link>
-          <Typography color="text.primary">{course.name}</Typography>
+          <Link
+            underline="hover"
+            color="inherit"
+            onClick={() => {
+              navigate(`/home/course/${courseid}/homework`);
+            }}>
+            {course.name}
+          </Link>
           <Typography color="text.primary">{homework.title}</Typography>
 
         </Breadcrumbs>

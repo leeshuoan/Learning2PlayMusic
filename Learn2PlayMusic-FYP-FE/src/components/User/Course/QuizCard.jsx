@@ -20,7 +20,7 @@ function QuizCard({ question, options, answer, image, index, handleOptionChange 
         <Typography gutterBottom variant="h5" component="h2">
           Q{index}.{question}
         </Typography>
-        {image && <img src={`https://${image}`} alt="question" />}
+        {image && <img src={`${image}`} alt="question" />}
         <RadioGroup
           aria-label="quiz"
           name="quiz"
