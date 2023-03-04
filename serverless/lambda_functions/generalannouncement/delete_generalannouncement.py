@@ -8,15 +8,15 @@ from global_functions.exists_in_db import *
 def lambda_handler(event, context):
 
     try:
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
 
         # VALIDATION
-
         # check if <dateId> exists in database
         dateId = event['queryStringParameters']['dateId']
         if not id_exists("GeneralAnnouncements","Date",dateId):
             return response_400("dateId does not exist in database")
+
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table("LMS")
 
         response = table.delete_item(
             Key= {

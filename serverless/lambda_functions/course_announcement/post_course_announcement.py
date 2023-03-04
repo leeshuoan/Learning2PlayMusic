@@ -16,9 +16,6 @@ def lambda_handler(event, context):
         table = dynamodb.Table("LMS")
         announcementId = str(uuid.uuid4().hex)[:8]
 
-        # sgTimezone = pytz.timezone('Asia/Singapore')
-        # date = datetime.now(sgTimezone).strftime("%Y-%m-%dT%H:%M:%S")
-
         sgTimezone = dateutil.tz.gettz('Asia/Singapore')
         date = datetime.now(tz=sgTimezone).strftime("%Y-%m-%dT%H:%M:%S")
 

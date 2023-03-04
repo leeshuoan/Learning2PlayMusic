@@ -45,6 +45,7 @@ class CourseStack(Stack):
         LAMBDA_ROLE = aws_iam.Role.from_role_arn(
             self, "lambda-general-role", general_role_arn)
         s3_dynamodb_role = aws_iam.Role(self, 'S3DynamodbRole',assumed_by=aws_iam.ServicePrincipal('lambda.amazonaws.com'))
+        self.lambda_role = LAMBDA_ROLE
         
         # IAM policies for dynamodb readwrite + s3 readwrite
         dynamodb_policy = aws_iam.PolicyStatement(effect = aws_iam.Effect.ALLOW,
@@ -101,6 +102,7 @@ class CourseStack(Stack):
                                                        handler=f"delete_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=s3_dynamodb_role)
         # Create Amazon API Gateway REST API
         main_api = apigw.RestApi(self, "main", description="All LMS APIs")
+        self.main_api = main_api
 
         # Create resources for the API
         course_resource = main_api.root.add_resource("course")
@@ -305,3 +307,26 @@ class CourseStack(Stack):
             value=main_api.root.resource_id,
             export_name='mainApiRootResourceIdOutput',
         )
+
+    # For announcement_stack
+    def get_post_generalannouncement_model(self):
+      post_generalannouncement_model = self.main_api.add_model(
+          "PostGeneralAnnouncementModel",
+          content_type="application/json",
+          model_name="PostGeneralAnnouncementModel",
+          schema=apigw.JsonSchema(
+              title="PostGeneralAnnouncementModel",
+              schema=apigw.JsonSchemaVersion.DRAFT4,
+              type=apigw.JsonSchemaType.OBJECT,
+              properties={
+                  "content": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+              },
+              required=["content"]))
+
+      return post_generalannouncement_model
+
+    def get_lambda_role(self):
+      return self.lambda_role
+
+    def get_main_api(self):
+      return self.main_api
