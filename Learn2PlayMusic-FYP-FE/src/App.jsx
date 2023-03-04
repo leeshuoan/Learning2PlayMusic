@@ -9,9 +9,6 @@ import PrivateRoutes from "./components/utils/PrivateRoutes";
 import aws_exports from "./aws-exports";
 import { Amplify } from "aws-amplify";
 import { Auth, Storage } from "aws-amplify";
-// Firebase setup
-import firebase from "firebase/compat/app";
-import { useCollectionData } from "react-firebase-hooks/firestore";
 // App components
 import DefaultAppBar from "./components/AppBar/DefaultAppBar";
 import SignIn from "./components/SignIn";
@@ -32,16 +29,8 @@ import UserHomeworkFeedback from "./components/User/Course/UserHomeworkFeedback"
 
 Amplify.configure(aws_exports);
 
-firebase.initializeApp({
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: "l2pm-f6b60.firebaseapp.com",
-  projectId: "l2pm-f6b60",
-  storageBucket: "l2pm-f6b60.appspot.com",
-  messagingSenderId: "66709985376",
-  appId: "1:66709985376:web:b0cd32511fc1f8f99d0b05"
-});
-
 function App() {
+
   const [userInfo, setUserInfo] = useState({});
   const [fetchUserInfo, setFetchUserInfo] = useState(false);
 

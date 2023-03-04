@@ -1,23 +1,22 @@
 import { useState } from "react";
-
-import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
-import Drawer from "@mui/material/Drawer";
-import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
-import Button from "@mui/material/Button";
-
+import { db } from '../utils/firebase';
+import { collection, query, orderBy, limit, connectFirestoreEmulator } from "firebase/firestore";
+import { useCollectionData } from "react-firebase-hooks/firestore";
+import ChatMessage from "./ChatMessage";
+import { Breadcrumbs, Link, Box, Button, Divider, Drawer, List, ListItem, ListItemButton, Toolbar, Typography, InputBase, IconButton, ListItemText } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 const drawerWidth = 240;
 
-function Chat(props) {
-  const { window } = props;
+function Chat(userInfo) {
+  console.log(userInfo)
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const messagesRef = collection(db, "U#81c2ca2f-6a04-4e79-a41c-97aa85cf9edbT#756f1dce-9bcf-4325-b8e8-9524191938ee")
+  const chatQuery =query(messagesRef, orderBy("createdAt", "asc"), limit(25));
+  const [messages, loadingMsgs, error] = useCollectionData(chatQuery, { idField: "id" });
+  console.log(messages)
+  console.log(error)
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -35,15 +34,6 @@ function Chat(props) {
 
   return (
     <Box sx={{ display: "flex" }}>
-      {/* top row to show "chat" and create new chat button */}
-      {/* <AppBar position="static" color="primary" sx={{ height: 1/5 }}>
-        <Toolbar>
-          <Typography  component="div" align="center" sx={{ flexGrow: 1}}>
-            Chat
-          </Typography>
-        </Toolbar>
-      </AppBar> */}
-
       <Drawer
         variant="permanent"
         sx={{
@@ -57,6 +47,14 @@ function Chat(props) {
         }}>
         <Toolbar />
         <Box sx={{ overflow: "auto" }}>
+          <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ ml: 1, mt: 2 }}>
+            <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={() => { navigate('/home') }}>
+              <HomeIcon sx={{ mr: 0.5 }} />
+              Home
+            </Link>
+            <Typography>Chat</Typography>
+          </Breadcrumbs>
+          <Divider sx={{ mt:2 }} />
           <List>
             {contacts.map((contact) => (
               <div>
@@ -78,8 +76,9 @@ function Chat(props) {
           p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}>
-        <Toolbar />
         {/*  todo: render from db */}
+
+        {messages && messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
         <Typography paragraph>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
@@ -101,15 +100,7 @@ function Chat(props) {
           Consequat mauris nunc congue nisi vitae suscipit. Fringilla est
           ullamcorper eget nulla facilisi etiam dignissim diam. Pulvinar
           elementum integer enim neque volutpat ac tincidunt. Ornare suspendisse
-          sed nisi lacus sed viverra tellus. Purus sit amet volutpat consequat
-          mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis
-          risus sed vulputate odio. Morbi tincidunt ornare massa eget egestas
-          purus viverra accumsan in. In hendrerit gravida rutrum quisque non
-          tellus orci ac. Pellentesque nec nam aliquam sem et tortor. Habitant
-          morbi tristique senectus et. Adipiscing elit duis tristique
-          sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-          eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-          posuere sollicitudin aliquam ultrices sagittis orci a.
+
         </Typography>
 
         <InputBase
