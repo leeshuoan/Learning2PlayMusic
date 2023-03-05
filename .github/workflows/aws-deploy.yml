@@ -35,6 +35,4 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: "us-east-1"
       - name: Deploy to AWS
-        run: cdk deploy --app="python3 ${PWD}/cdk/my_service/app.py" --require-approval=never
-      - name: Destroy stack
-        run: cdk destroy --app="python3 ${PWD}/cdk/my_service/app.py" --force
+        run: cdk deploy --app="python3 ${PWD}/serverless/app.py" --require-approval=never
