@@ -45,7 +45,7 @@ class CourseStack(Stack):
         LAMBDA_ROLE = aws_iam.Role.from_role_arn(
             self, "lambda-general-role", general_role_arn)
         s3_dynamodb_role = aws_iam.Role(self, 'S3DynamodbRole',assumed_by=aws_iam.ServicePrincipal('lambda.amazonaws.com'))
-        
+
         # IAM policies for dynamodb readwrite + s3 readwrite
         dynamodb_policy = aws_iam.PolicyStatement(effect = aws_iam.Effect.ALLOW,
           resources = ['arn:aws:dynamodb:*:*:table/*'],
@@ -57,6 +57,9 @@ class CourseStack(Stack):
           resources = [f'{L2PMA_question_image_bucket.bucket_arn}/*'],
           actions = ['s3:GetObject', 's3:PutObject'])
         s3_dynamodb_role.add_to_policy(s3_policy)
+        AWSLambdaBasicExecutionRole = aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AWSLambdaBasicExecutionRole')
+        s3_dynamodb_role.add_managed_policy(AWSLambdaBasicExecutionRole)
+
 
 
         # Create getCourseHomework AWS Lambda function
