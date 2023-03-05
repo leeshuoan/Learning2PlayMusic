@@ -53,7 +53,7 @@ jobs:
           diff=$(cdk diff --stack UserStack)
           if [ -n "$diff" ]; then
             echo "UserStack has changes, will deploy"
-            deploy UserStack --require-approval=never
+            cdk deploy UserStack --require-approval=never
           else
             echo "UserStack is up to date, skipping deployment"
             export USERDEPLOY=false
@@ -64,7 +64,7 @@ jobs:
           diff=$(cdk diff --stack AnnouncementStack)
           if [ -n "$diff" ]; then
             echo "AnnouncementStack has changes, will deploy"
-            cd serverless && cdk deploy AnnouncementStack --require-approval=never
+            cdk deploy AnnouncementStack --require-approval=never
           else
             echo "AnnouncementStack is up to date, skipping deployment"
             export ANNOUNCEMENTDEPLOY=false
