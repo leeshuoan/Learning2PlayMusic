@@ -8,23 +8,24 @@ from global_functions.exists_in_db import *
 def lambda_handler(event, context):
 
     try:
+
+        # VALIDATION
+        # check if <studentId> exists in database
+        studentId = event['queryStringParameters']['studentId']
+        if not id_exists("User", "Student", studentId):
+            return response_404("studentId does not exist in database")
+
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
-        # VALIDATION
-        # check if <courseId> exists in database
-        courseId = event['queryStringParameters']['courseId']
-        if not id_exists("Course", "Course", courseId):
-            return response_400("courseId does not exist in database")
-
         response = table.delete_item(
             Key= {
-                "PK": "Course",
-                "SK": f"Course#{event['queryStringParameters']['courseId']}"
+                "PK": "User",
+                "SK": f"Student#{event['queryStringParameters']['studentId']}"
             }
             )
 
-        return response_200("successfully deleted item")
+        return response_200_msg("successfully deleted item")
 
 
     except Exception as e:

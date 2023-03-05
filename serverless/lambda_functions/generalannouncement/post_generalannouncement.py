@@ -16,15 +16,15 @@ def lambda_handler(event, context):
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
-        response = table.put_item(
-            Item= {
+        item = {
                 "PK": f"GeneralAnnouncements",
                 "SK": f"Date#{dateId}",
                 "Content": json.loads(event['body'])['content'],
             }
-            )
 
-        return response_200("successfully inserted item")
+        response = table.put_item(Item= item)
+
+        return response_200_msg_items("inserted", item)
 
     # currently, this is only for functions that sends in request body - to catch 'missing fields' error
     except KeyError:

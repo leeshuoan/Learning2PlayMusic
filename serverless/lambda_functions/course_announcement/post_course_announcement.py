@@ -27,18 +27,17 @@ def lambda_handler(event, context):
         # check if <courseId> exists in database
         courseId = json.loads(event['body'])['courseId']
         if not id_exists("Course", "Course", courseId):
-            return response_400("courseId does not exist in database")
+            return response_404("courseId does not exist in database")
 
-        response = table.put_item(
-            Item={
+        item = {
                 "PK": f"Course#{json.loads(event['body'])['courseId']}",
                 "SK": f"Announcement#{announcementId}",
                 "Content": json.loads(event['body'])['content'],
                 "Date": str(date)
             }
-            )
+        response = table.put_item(Item=item)
 
-        return response_200("successfully inserted item")
+        return response_200_msg_items("inserted", item)
 
     # currently, this is only for functions that sends in request body - to catch 'missing fields' error
     except KeyError:

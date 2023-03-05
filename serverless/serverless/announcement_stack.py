@@ -45,19 +45,6 @@ class AnnouncementStack(Stack):
             "generalannouncement")
 
         # /generalannouncements
-        # post_generalannouncement_model = main_api.add_model(
-        #   "PostGeneralAnnouncementModel",
-        #   content_type="application/json",
-        #   model_name="PostGeneralAnnouncementModel",
-        #   schema=apigw.JsonSchema(
-        #       title="PostGeneralAnnouncementModel",
-        #       schema=apigw.JsonSchemaVersion.DRAFT4,
-        #       type=apigw.JsonSchemaType.OBJECT,
-        #       properties={
-        #           "content": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
-        #       },
-        #       required=["content"]))
-
         model = apigw.Model(
                 self,
                 "PostGeneralAnnouncementModel",
@@ -86,4 +73,4 @@ class AnnouncementStack(Stack):
 
         # Enable CORS for each resource/sub-resource etc.
         generalannouncement_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)

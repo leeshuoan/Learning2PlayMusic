@@ -45,8 +45,7 @@ class CourseStack(Stack):
         LAMBDA_ROLE = aws_iam.Role.from_role_arn(
             self, "lambda-general-role", general_role_arn)
         s3_dynamodb_role = aws_iam.Role(self, 'S3DynamodbRole',assumed_by=aws_iam.ServicePrincipal('lambda.amazonaws.com'))
-        self.lambda_role = LAMBDA_ROLE
-        
+
         # IAM policies for dynamodb readwrite + s3 readwrite
         dynamodb_policy = aws_iam.PolicyStatement(effect = aws_iam.Effect.ALLOW,
           resources = ['arn:aws:dynamodb:*:*:table/*'],
@@ -58,6 +57,9 @@ class CourseStack(Stack):
           resources = [f'{L2PMA_question_image_bucket.bucket_arn}/*'],
           actions = ['s3:GetObject', 's3:PutObject'])
         s3_dynamodb_role.add_to_policy(s3_policy)
+        AWSLambdaBasicExecutionRole = aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AWSLambdaBasicExecutionRole')
+        s3_dynamodb_role.add_managed_policy(AWSLambdaBasicExecutionRole)
+
 
 
         # Create getCourseHomework AWS Lambda function
@@ -135,9 +137,10 @@ class CourseStack(Stack):
                 type=apigw.JsonSchemaType.OBJECT,
                 properties={
                     "courseName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "courseSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    "courseSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "teacherId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
-                required=[ "courseName", "courseSlot"]))
+                required=[ "courseName", "courseSlot", "teacherId"]))
 
         course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={
             'method.request.querystring.courseId': False})
@@ -282,19 +285,19 @@ class CourseStack(Stack):
 
         # Enable CORS for each resource/sub-resource etc.
         course_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_quiz_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE", "PUT"], status_code=200)
         course_quiz_submit_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)   
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_homework_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_quiz_question_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_material_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_announcement_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
 
         # Export API gateway to use in other Stacks
         CfnOutput(
@@ -307,26 +310,3 @@ class CourseStack(Stack):
             value=main_api.root.resource_id,
             export_name='mainApiRootResourceIdOutput',
         )
-
-    # For announcement_stack
-    def get_post_generalannouncement_model(self):
-      post_generalannouncement_model = self.main_api.add_model(
-          "PostGeneralAnnouncementModel",
-          content_type="application/json",
-          model_name="PostGeneralAnnouncementModel",
-          schema=apigw.JsonSchema(
-              title="PostGeneralAnnouncementModel",
-              schema=apigw.JsonSchemaVersion.DRAFT4,
-              type=apigw.JsonSchemaType.OBJECT,
-              properties={
-                  "content": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
-              },
-              required=["content"]))
-
-      return post_generalannouncement_model
-
-    def get_lambda_role(self):
-      return self.lambda_role
-
-    def get_main_api(self):
-      return self.main_api

@@ -13,7 +13,7 @@ def lambda_handler(event, context):
         # check if <dateId> exists in database
         dateId = event['queryStringParameters']['dateId']
         if not id_exists("GeneralAnnouncements","Date",dateId):
-            return response_400("dateId does not exist in database")
+            return response_404("dateId does not exist in database")
 
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
@@ -25,7 +25,7 @@ def lambda_handler(event, context):
             }
             )
 
-        return response_200("successfully deleted item")
+        return response_200_msg("successfully deleted item")
 
 
     except Exception as e:
