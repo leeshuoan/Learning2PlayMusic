@@ -42,13 +42,13 @@ jobs:
           diff=$(cdk diff --stack 'CourseStack' || true)
           if [ -n "$diff" ]; then
             echo "CourseStack has changes, will deploy"
-            export DEPLOY= true
+            export COURSEDEPLOY= true
           else
             echo "CourseStack is up to date, skipping deployment"
-            export DEPLOY= false
+            export COURSEDEPLOY= false
           fi
-      - name: Deploy to AWS
-        if: env.DEPLOY == true
+      - name: Deploy CourseStack to AWS
+        if: env.COURSEDEPLOY == true
         run: cd serverless && cdk deploy CourseStack --require-approval=never
       - name: Diff UserStack
         run: |
@@ -56,12 +56,12 @@ jobs:
           diff=$(cdk diff --stack 'UserStack' || true)
           if [ -n "$diff" ]; then
             echo "UserStack has changes, will deploy"
-            export DEPLOY= true
+            export USERDEPLOY= true
           else
             echo "UserStack is up to date, skipping deployment"
-            export DEPLOY= false
+            export USERDEPLOY= false
           fi
-      - name: Deploy to AWS
+      - name: Deploy UserStack to AWS
         if: env.DEPLOY == true
         run: cd serverless && cdk deploy UserStack --require-approval=never
       - name: Diff AnnouncementStack
@@ -70,11 +70,11 @@ jobs:
           diff=$(cdk diff --stack 'AnnouncementStack' || true)
           if [ -n "$diff" ]; then
             echo "AnnouncementStack has changes, will deploy"
-            export DEPLOY= true
+            export ANNOUNCEMENTDEPLOY= true
           else
             echo "AnnouncementStack is up to date, skipping deployment"
-            export DEPLOY= false
+            export ANNOUNCEMENTDEPLOY= false
           fi
-      - name: Deploy to AWS
-        if: env.DEPLOY == true
+      - name: Deploy AnnouncementStack to AWS
+        if: env.ANNOUNCEMENTDEPLOY == true
         run: cd serverless && cdk deploy AnnouncementStack --require-approval=never
