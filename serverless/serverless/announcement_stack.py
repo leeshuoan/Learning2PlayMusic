@@ -56,9 +56,10 @@ class AnnouncementStack(Stack):
                     schema=apigw.JsonSchemaVersion.DRAFT4,
                     type=apigw.JsonSchemaType.OBJECT,
                     properties={
+                        "announcementTitle": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                         "content": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                     },
-                    required=["content"]))
+                    required=["content", "announcementTitle"]))
 
 
         generalannouncement_resource.add_method("POST", apigw.LambdaIntegration(post_generalannouncement), request_models={
