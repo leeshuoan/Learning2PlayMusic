@@ -10,8 +10,9 @@ def lambda_handler(event, context):
   
     try:
         # VALIDATION
+        # check if <DateId> is being passed in
         dateId = event['queryStringParameters']
-        if dateId is None or dateId == "null":
+        if dateId is None or dateId=="null":
             sortKey = "Date#"
         else:
             dateId = event['queryStringParameters']['dateId']
@@ -20,7 +21,7 @@ def lambda_handler(event, context):
             # VALIDATION
             # check if <dateId> exists in database
             if not id_exists("GeneralAnnouncements", "Date", dateId):
-                return response_400("dateId does not exist in database")
+                return response_404("dateId does not exist in database")
 
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
@@ -34,7 +35,7 @@ def lambda_handler(event, context):
 
         items = response["Items"]
 
-        return response_200_GET(items)
+        return response_200_items(items)
   	
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

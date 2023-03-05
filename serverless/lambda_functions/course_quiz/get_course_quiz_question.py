@@ -40,7 +40,7 @@ def lambda_handler(event, context):
             for item in items:
                 get_presigned_url(item)
 
-        return response_200_GET(items)
+        return response_200_items(items)
 
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()

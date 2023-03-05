@@ -135,9 +135,10 @@ class CourseStack(Stack):
                 type=apigw.JsonSchemaType.OBJECT,
                 properties={
                     "courseName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "courseSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    "courseSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "teacherId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
-                required=[ "courseName", "courseSlot"]))
+                required=[ "courseName", "courseSlot", "teacherId"]))
 
         course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={
             'method.request.querystring.courseId': False})
@@ -282,19 +283,19 @@ class CourseStack(Stack):
 
         # Enable CORS for each resource/sub-resource etc.
         course_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_quiz_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE", "PUT"], status_code=200)
         course_quiz_submit_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)   
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_homework_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_quiz_question_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_material_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_announcement_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
 
         # Export API gateway to use in other Stacks
         CfnOutput(
@@ -307,26 +308,3 @@ class CourseStack(Stack):
             value=main_api.root.resource_id,
             export_name='mainApiRootResourceIdOutput',
         )
-
-    # For announcement_stack
-    def get_post_generalannouncement_model(self):
-      post_generalannouncement_model = self.main_api.add_model(
-          "PostGeneralAnnouncementModel",
-          content_type="application/json",
-          model_name="PostGeneralAnnouncementModel",
-          schema=apigw.JsonSchema(
-              title="PostGeneralAnnouncementModel",
-              schema=apigw.JsonSchemaVersion.DRAFT4,
-              type=apigw.JsonSchemaType.OBJECT,
-              properties={
-                  "content": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
-              },
-              required=["content"]))
-
-      return post_generalannouncement_model
-
-    def get_lambda_role(self):
-      return self.lambda_role
-
-    def get_main_api(self):
-      return self.main_api

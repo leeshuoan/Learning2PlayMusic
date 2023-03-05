@@ -17,7 +17,7 @@ def lambda_handler(event, context):
         # VALIDATION
         # check if <courseId> exists in database
         if not id_exists("Course", "Course", courseId):
-            return response_400("courseId does not exist in database")
+            return response_404("courseId does not exist in database")
 
         if 'announcementId' not in event['queryStringParameters']:
             sortKey = "Announcement#"
@@ -27,7 +27,7 @@ def lambda_handler(event, context):
 
             # check if <courseId><announcementId> exists in database
             if not combination_id_exists("Course", courseId, "Announcement", announcementId):
-                return response_400("announcementId does not exist in database")
+                return response_404("announcementId does not exist in database")
 
         response = table.query(
             KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
@@ -38,7 +38,7 @@ def lambda_handler(event, context):
 
         items = response["Items"]
 
-        return response_200_GET(items)
+        return response_200_items(items)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

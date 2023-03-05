@@ -11,30 +11,36 @@ def lambda_handler(event, context):
     try:
 
         # VALIDATION
-        # checks that teacherId passed in is not an empty string
-        if json.loads(event['body'])['teacherId']=="":
-            return response_400("teacherId is missing")
+        # checks that <studentId> passed in is not an empty string
+        if json.loads(event['body'])['studentId']=="":
+            return response_400("studentId is missing")
 
-        # check if <teacherId> exists in database
-        teacherId = json.loads(event['body'])['teacherId']
-        if not id_exists("User", "Teacher", teacherId):
-            return response_404("teacherId does not exist in database")
+        # check if <studentId> exists in database
+        studentId = json.loads(event['body'])['studentId']
+        if not id_exists("User", "Student", studentId):
+            return response_404("studentId does not exist in database")
+        
+        # check if <studentId> has been soft-deleted in database
+        isSoftDeleted = json.loads(event['body'])['isSoftDeleted']
+        print("type of isSoftDeleted", type(isSoftDeleted))
+        if isSoftDeleted:
+            return response_409("studentId has been soft-deleted")
 
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
-        short_uuid = str(uuid.uuid4().hex)[:8]
 
         item = {
-            "PK": "Course",
-            "SK": f"Course#{short_uuid}",
-            "CourseName": json.loads(event['body'])['courseName'],
-            "CourseSlot": json.loads(event['body'])['courseSlot'],
-            "TeacherId": json.loads(event['body'])['teacherId']
+            "PK": "User",
+            "SK": f"Student#{studentId}",
+            "FirstName": json.loads(event['body'])['firstName'],
+            "LastName": json.loads(event['body'])['lastName'],
+            "ContactNumber": json.loads(event['body'])['contactNumber'],
+            "isSoftDeleted": json.loads(event['body'])['isSoftDeleted']
         }
 
         response = table.put_item(Item= item)
 
-        return response_200_msg_items("inserted", item)
+        return response_200_msg_items("updated", item)
 
     # currently, this is only for functions that sends in request body - to catch 'missing fields' error
     except KeyError:

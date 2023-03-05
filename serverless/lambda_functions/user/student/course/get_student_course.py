@@ -15,7 +15,7 @@ def lambda_handler(event, context):
         # check if <studentId> exists in database
         studentId = event['queryStringParameters']['studentId']
         if not id_exists("User", "Student", studentId):
-            return response_400("studentId does not exist in database")
+            return response_404("studentId does not exist in database")
 
         response = table.query(
             KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
@@ -26,7 +26,7 @@ def lambda_handler(event, context):
 
         items = response["Items"]
 
-        return response_200_GET(items)
+        return response_200_items(items)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

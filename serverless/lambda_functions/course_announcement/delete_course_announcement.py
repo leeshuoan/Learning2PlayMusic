@@ -15,12 +15,12 @@ def lambda_handler(event, context):
         # check if <courseId> exists in database
         courseId = event['queryStringParameters']['courseId']
         if not id_exists("Course", "Course", courseId):
-            return response_400("courseId does not exist in database")
+            return response_404("courseId does not exist in database")
 
         # check if <announcementId> exists in database
         announcementId = event['queryStringParameters']['announcementId']
         if not combination_id_exists("Course", courseId, "Announcement", announcementId):
-            return response_400("announcementId does not exist in database")
+            return response_404("announcementId does not exist in database")
 
         response = table.delete_item(
             Key= {
@@ -29,7 +29,7 @@ def lambda_handler(event, context):
             }
             )
 
-        return response_200("successfully deleted item")
+        return response_200_msg("successfully deleted item")
 
 
     except Exception as e:
