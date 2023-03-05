@@ -162,12 +162,6 @@ function Chat(userInfo) {
             messages.map((msg) => (
               <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />
             ))}
-          <Box sx={{ p: 3 }}>
-            {messages &&
-              messages.map((msg) => (
-                <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />
-              ))}
-          </Box>
 
           <Box
             sx={{

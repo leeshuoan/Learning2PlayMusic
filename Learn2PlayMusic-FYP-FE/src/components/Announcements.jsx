@@ -44,7 +44,7 @@ const Announcements = () => {
         <Typography variant="h5">All Announcements</Typography>
         {announcements.map((announcement, index) => (
           <Card variant='outlined' sx={{ mt: 2, py: 3, px: 5, boxShadow: "none" }}>
-            <Typography variant="subtitle1">{announcement.Title}</Typography>
+            <Typography variant="subtitle1">{announcement.AnnouncementTitle}</Typography>
             <Typography variant="subsubtitle" sx={{ mt: 1 }}>Posted {announcement.date}</Typography>
             <Typography variant="body1" sx={{ mt: 1 }}>{announcement.Content}</Typography>
           </Card>

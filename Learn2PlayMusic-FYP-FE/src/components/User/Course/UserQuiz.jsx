@@ -1,25 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  useTheme,
-  Typography,
-  Container,
-  Grid,
-  Button,
-  Card,
-  Box,
-  Link,
-  Breadcrumbs,
-  Backdrop,
-  CircularProgress,
-} from "@mui/material";
+import {useTheme, Typography, Container, Grid, Button, Card, Box, Link, Breadcrumbs, Backdrop, CircularProgress } from "@mui/material";
 import QuizCard from "./QuizCard";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 import TransitionModal from "../../utils/TransitionModal";
 import celebration from "../../../assets/celebration.png";
 
-const UserQuiz = () => {
+const UserQuiz = (userInfo) => {
   const navigate = useNavigate();
   const { courseid } = useParams();
   const { quizId } = useParams();
@@ -33,7 +21,6 @@ const UserQuiz = () => {
   const [quizMaxAttempt, setQuizMaxAttempt] = useState(0);
   const [quizAttempt, setQuizAttempt] = useState(0);
   const [submitted, setSubmitted] = useState(false);
-  const [studentId, setStudentId] = useState(-1);
 
   const getCourse = fetch(
     `${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`,
@@ -45,11 +32,10 @@ const UserQuiz = () => {
     }
   );
 
-  // const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`, {
   const getQuizAPI = fetch(
     `${
       import.meta.env.VITE_API_URL
-    }/course/quiz?courseId=${courseid}&studentId=1&quizId=${quizId}`,
+    }/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}&quizId=${quizId}`,
     {
       method: "GET",
       headers: {
@@ -58,7 +44,6 @@ const UserQuiz = () => {
     }
   );
 
-  // const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`, {
   const getQuizQuestionAPI = fetch(
     `${
       import.meta.env.VITE_API_URL
@@ -70,7 +55,7 @@ const UserQuiz = () => {
       },
     }
   );
-  // https://v4py0qe8k5.execute-api.ap-southeast-1.amazonaws.com/prod/course/quiz/submit
+
   const submitQuiz = async (requestBody) => {
     const response = await fetch(
       `${import.meta.env.VITE_API_URL}/course/quiz/submit`,
@@ -105,7 +90,6 @@ const UserQuiz = () => {
         setQuizTitle(quizInfo.QuizTitle);
         setQuizAttempt(quizInfo.QuizAttempt);
         setQuizMaxAttempt(quizInfo.QuizMaxAttempt);
-        setStudentId(quizInfo.SK.split("#")[1].split("Q")[0]);
 
         quizQns.forEach((question) => {
           question["id"] = question.SK.split("Question#")[1];
@@ -150,7 +134,7 @@ const UserQuiz = () => {
     // prepare request body
     const requestBody = {
       courseId: course.id,
-      studentId: studentId,
+      studentId: userInfo.userInfo.id,
       quizId: quizId,
       quizScore: quizScore,
     };

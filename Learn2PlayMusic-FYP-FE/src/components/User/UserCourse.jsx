@@ -14,19 +14,7 @@ const UserCourse = (userInfo) => {
   const [courseHomework, setCourseHomework] = useState([])
   const [courseMaterial, setCourseMaterial] = useState([])
   const [courseQuiz, setCourseQuiz] = useState([])
-
-  const courseAnnouncements = [
-    {
-      title: "Change of lesson date",
-      date: "31 Jan 2023",
-      content: "Dear parents, the lesson date for 31 Jan 2023 has been changed to 1 Feb 2023. Please take note of this change. Thank you."
-    },
-    {
-      title: "Change of lesson date",
-      date: "31 Jan 2023",
-      content: "Dear parents, the lesson date for 31 Jan 2023 has been changed to 1 Feb 2023. Please take note of this change. Thank you."
-    },
-  ]
+  const [courseAnnouncements, setCourseAnnouncements] = useState([])
 
   const courseProgressReports = [
     {
@@ -60,7 +48,14 @@ const UserCourse = (userInfo) => {
     },
   })
 
-  const getHomeworkAPI = fetch(`${import.meta.env.VITE_API_URL}/course/homework?courseId=${courseid}&studentId=1`, {
+  const getCourseAnnouncementsAPI = fetch(`${import.meta.env.VITE_API_URL}/course/announcement?courseId=${courseid}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
+  const getHomeworkAPI = fetch(`${import.meta.env.VITE_API_URL}/course/homework?courseId=${courseid}&studentId=${userInfo.userInfo.id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -74,8 +69,7 @@ const UserCourse = (userInfo) => {
     },
   })
 
-  // const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`, {
-  const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=1`, {
+  const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -109,9 +103,14 @@ const UserCourse = (userInfo) => {
   );
 
   useEffect(() => {
-    Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI])
-      .then(async ([res1, res2, res3, res4]) => {
-        const [data1, data2, data3, data4] = await Promise.all([res1.json(), res2.json(), res3.json(), res4.json()]);
+    Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI])
+      .then(async ([res1, res2, res3, res4, res5]) => {
+        const [data1, data2, data3, data4, data5] = await Promise.all([res1.json(), res2.json(), res3.json(), res4.json(), res5.json()]);
+        console.log(data1)
+        console.log(data2)
+        console.log(data3)
+        console.log(data4)
+        console.log(data5)
 
         let courseData = {
           id: data1[0].SK.split("#")[1],
@@ -143,6 +142,14 @@ const UserCourse = (userInfo) => {
           data4[idx2]['QuizDueDate'] = formattedDate_2;
         }
         setCourseQuiz(data4);
+
+        for (let idx3 in data5) {
+          data5[idx3].id = data5[idx3].SK.split("Announcement#")[1].substr(0, 1);
+          let date_3 = new Date(data5[idx3]['Date']);
+          let formattedDate_3 = `${date_3.toLocaleDateString()}`;
+          data5[idx3]['Date'] = formattedDate_3;
+        }
+        setCourseAnnouncements(data5);
 
         setOpen(false);
       }).catch((error) => {
@@ -226,9 +233,9 @@ const UserCourse = (userInfo) => {
               <Typography variant='h5'>Class Announcements</Typography>
               {courseAnnouncements.map((announcement, key) => (
                 <Card key={key} variant='outlined' sx={{ boxShadow: "none", mt: 2, p: 2 }}>
-                  <Typography variant='subtitle1' sx={{}}>{announcement.title}</Typography>
-                  <Typography variant='subsubtitle' sx={{ mb: 1 }}>Posted {announcement.date}</Typography>
-                  <Typography variant='body2'>{announcement.content}</Typography>
+                  <Typography variant='subtitle1' sx={{}}>{announcement.Title}</Typography>
+                  <Typography variant='subsubtitle' sx={{ mb: 1 }}>Posted {announcement.Date}</Typography>
+                  <Typography variant='body2'>{announcement.Content}</Typography>
                 </Card>
               ))}
             </Card>
@@ -255,7 +262,7 @@ const UserCourse = (userInfo) => {
                   <Typography variant='h6' sx={{ mb: 1 }}>{quiz.QuizTitle}</Typography>
                   <Grid container spacing={2} sx={{ alignItems: "center" }}>
                     <Grid item xs={12} sm={6}>
-                      <Button variant="contained" onClick={() => { navigate(`${quiz.id}`) }}>
+                      <Button variant="contained" disabled={quiz.QuizAttempt >= quiz.QuizMaxAttempt} onClick={() => { navigate(`${quiz.id}`) }}>
                         <PlayCircleFilledIcon sx={{ mr: 1 }} />
                         Start Quiz
                       </Button>
