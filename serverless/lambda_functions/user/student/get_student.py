@@ -17,7 +17,7 @@ def lambda_handler(event, context):
             studentId = event['queryStringParameters']['studentId']
             sortKey = "Student#" + studentId
 
-            # check if <userName> exists in database
+            # check if <studentId> exists in database
             if not id_exists("User", "Student", studentId):
                 return response_404("studentId does not exist in database")
 

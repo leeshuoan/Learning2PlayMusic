@@ -8,6 +8,17 @@ from global_functions.exists_in_db import *
 
 def lambda_handler(event, context):
 
+    ## PROGRESS HALT AS FE DOESNT NEED THIS - VALIDATION UNPASSED FOR SOFT-DELETION
+    return {
+        "statusCode": 418, # I'm a teapot
+        "headers": {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST,GET,DELETE,PUT"
+        },
+        "body": json.dumps("I'm a teapot")
+    }
+
     try:
 
         # VALIDATION

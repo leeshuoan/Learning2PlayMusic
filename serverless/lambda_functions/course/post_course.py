@@ -29,7 +29,8 @@ def lambda_handler(event, context):
             "SK": f"Course#{short_uuid}",
             "CourseName": json.loads(event['body'])['courseName'],
             "CourseSlot": json.loads(event['body'])['courseSlot'],
-            "TeacherId": json.loads(event['body'])['teacherId']
+            "TeacherId": json.loads(event['body'])['teacherId'],
+            "TeacherName": json.loads(event['body'])['teacherName']
         }
 
         response = table.put_item(Item= item)
