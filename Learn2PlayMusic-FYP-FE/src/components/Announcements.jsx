@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState, useEffect } from 'react'
 import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Breadcrumbs } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
@@ -6,35 +6,34 @@ import { useNavigate } from 'react-router-dom';
 
 
 const Announcements = () => {
-  const announcements = [
-    {
-      title: "New Course Available",
-      date: "31 Jan 2023",
-      content: "The Premium Children's Piano Course for age 5 and above. Students are prepared for graded examinations of The Associated Board Royal Schools of Music (ABRSM). 'Enjoyment through achievement' is a phrase that sums up ABRSM's philosophy, and earning an ABRSM certificate is a rewarding experience."
-    },
-    {
-      title: "New Course Available",
-      date: "31 Jan 2023",
-      content: "The Premium Children's Piano Course for age 5 and above. Students are prepared for graded examinations of The Associated Board Royal Schools of Music (ABRSM). 'Enjoyment through achievement' is a phrase that sums up ABRSM's philosophy, and earning an ABRSM certificate is a rewarding experience."
-    },
-    {
-      title: "New Course Available",
-      date: "31 Jan 2023",
-      content: "The Premium Children's Piano Course for age 5 and above. Students are prepared for graded examinations of The Associated Board Royal Schools of Music (ABRSM). 'Enjoyment through achievement' is a phrase that sums up ABRSM's philosophy, and earning an ABRSM certificate is a rewarding experience."
+  const [announcements, setAnnouncements] = useState([])
+
+  const getGeneralAnnouncements = fetch(`${import.meta.env.VITE_API_URL}/generalannouncement`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
     }
-  ]
+  })
 
   const navigate = useNavigate()
 
-  const back = () => {
-    navigate('/home')
-    return;
-  }
+  useEffect(() => {
+    Promise.all([getGeneralAnnouncements]).then(async ([res1]) => {
+      const [data1] = await Promise.all([res1.json()])
+      console.log(data1)
+      for (let idx in data1) {
+        data1[idx].date = new Date(data1[idx].SK.split('Date#')[1]).toLocaleDateString()
+      }
+      setAnnouncements(data1)
+    }).catch((error) => {
+      console.log(error)
+    })
+  }, [])
 
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
-        <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={back}>
+        <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={() => navigate('/home')}>
           <HomeIcon sx={{ mr: 0.5 }} />
           Home
         </Link>
@@ -45,9 +44,9 @@ const Announcements = () => {
         <Typography variant="h5">All Announcements</Typography>
         {announcements.map((announcement, index) => (
           <Card variant='outlined' sx={{ mt: 2, py: 3, px: 5, boxShadow: "none" }}>
-            <Typography variant="subtitle1">{announcement.title}</Typography>
+            <Typography variant="subtitle1">{announcement.Title}</Typography>
             <Typography variant="subsubtitle" sx={{ mt: 1 }}>Posted {announcement.date}</Typography>
-            <Typography variant="body1" sx={{ mt: 1 }}>{announcement.content}</Typography>
+            <Typography variant="body1" sx={{ mt: 1 }}>{announcement.Content}</Typography>
           </Card>
         ))}
       </Card>

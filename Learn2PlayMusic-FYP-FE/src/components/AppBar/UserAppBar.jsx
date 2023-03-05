@@ -70,6 +70,7 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                     width: 32,
                     height: 32,
                     bgcolor: "grey[100]",
+                    "&:hover": { cursor: "pointer" }
                   }}>
                   <ChatIcon onClick={() => navigate("/chat")} />
                 </Avatar>
