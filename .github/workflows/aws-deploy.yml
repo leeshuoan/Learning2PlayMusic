@@ -17,7 +17,7 @@ jobs:
         run: cd serverless && pipenv install --dev
       
       - name: Install AWS CLI
-        uses: aws-actions/aws-cli@v2.4.4
+        run: sudo apt-get update && sudo apt-get install -y awscli
       
       - name: Deploy stack
         env:
