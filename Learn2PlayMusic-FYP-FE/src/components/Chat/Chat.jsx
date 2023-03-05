@@ -1,36 +1,50 @@
 import { useState } from "react";
 import { db } from '../utils/firebase';
-import { collection, query, orderBy, limit, connectFirestoreEmulator } from "firebase/firestore";
+import { collection, query, orderBy, limit, addDoc } from "firebase/firestore";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import ChatMessage from "./ChatMessage";
-import { Breadcrumbs, Link, Box, Button, Divider, Drawer, List, ListItem, ListItemButton, Toolbar, Typography, InputBase, IconButton, ListItemText } from "@mui/material";
+import { Breadcrumbs, Link, Box, Button, Divider, Drawer, List, ListItem, ListItemButton, Toolbar, Typography, InputBase, ListItemText, Card } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 const drawerWidth = 240;
 
 function Chat(userInfo) {
-  console.log(userInfo)
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const contacts = [
+    {
+      id: "Chat#1",
+      name: "TeacherName",
+    },
+    {
+      id: "Chat#2",
+      name: "AdminName",
+    },
+  ];
 
-  const messagesRef = collection(db, "U#81c2ca2f-6a04-4e79-a41c-97aa85cf9edbT#756f1dce-9bcf-4325-b8e8-9524191938ee")
-  const chatQuery =query(messagesRef, orderBy("createdAt", "asc"), limit(25));
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [newMsg, setNewMsg] = useState("");
+
+  const messagesRef = collection(db, "Chat#1")
+  const chatQuery = query(messagesRef, orderBy("createdAt", "asc"), limit(25));
+
   const [messages, loadingMsgs, error] = useCollectionData(chatQuery, { idField: "id" });
-  console.log(messages)
-  console.log(error)
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  const contacts = [
-    {
-      id: 1,
-      name: "Hen Doe",
-    },
-    {
-      id: 2,
-      name: "Jane Doe",
-    },
-  ];
+
+  const sendMsg = async () => {
+    await addDoc(messagesRef, {
+      text: newMsg,
+      createdAt: new Date(),
+      uid: userInfo.userInfo.id,
+    })
+    // const chatRef = doc(db, "Chat#1", "hi")
+    // await setDoc(chatRef, {
+    //   text: newMsg,
+    //   createdAt: new Date(),
+    //   uid: userInfo.id,
+    // }, { merge: true })
+  }
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -54,8 +68,8 @@ function Chat(userInfo) {
             </Link>
             <Typography>Chat</Typography>
           </Breadcrumbs>
-          <Divider sx={{ mt:2 }} />
-          <List>
+          <Divider sx={{ mt: 2 }} />
+          <List sx={{ p: 0 }}>
             {contacts.map((contact) => (
               <div>
                 <ListItem key={contact.id} disablePadding>
@@ -73,47 +87,27 @@ function Chat(userInfo) {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}>
-        {/*  todo: render from db */}
 
-        {messages && messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
-        <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Rhoncus
-          dolor purus non enim praesent elementum facilisis leo vel. Risus at
-          ultrices mi tempus imperdiet. Semper risus in hendrerit gravida rutrum
-          quisque non tellus. Convallis convallis tellus id interdum velit
-          laoreet id donec ultrices. Odio morbi quis commodo odio aenean sed
-          adipiscing. Amet nisl suscipit adipiscing bibendum est ultricies
-          integer quis. Cursus euismod quis viverra nibh cras. Metus vulputate
-          eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo
-          quis imperdiet massa tincidunt. Cras tincidunt lobortis feugiat
-          vivamus at augue. At augue eget arcu dictum varius duis at consectetur
-          lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa sapien
-          faucibus et molestie ac.
-        </Typography>
-        <Divider />
+        <Box sx={{ p: 3 }}>
+          {messages && messages.map((msg) => <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />)}
+        </Box>
 
-        <Typography paragraph>
-          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est
-          ullamcorper eget nulla facilisi etiam dignissim diam. Pulvinar
-          elementum integer enim neque volutpat ac tincidunt. Ornare suspendisse
-
-        </Typography>
-
-        <InputBase
-          sx={{ width: "90%" }}
-          className="inputBase"
-          placeholder="Type your message"
-        />
-        <IconButton aria-label="send">
-          {/* TODO: handle send message action in the icon */}
-          <Button variant="contained" size="large">
+        <Box sx={{ display: "flex", position: "fixed", bottom: 0, width: { sm: `calc(100% - ${drawerWidth}px)` }, p: 3 }}>
+          <Card variant="contained" sx={{ flexGrow: 1, display: "flex", alignItems: "center", p: 1, mr: 3, border: "black" }}>
+            <InputBase
+              sx={{ width: "100%" }}
+              className="inputBase"
+              placeholder="Type your message"
+              value={newMsg}
+              onChange={(e) => setNewMsg(e.target.value)}
+            />
+          </Card>
+          <Button variant="contained" size="large" onClick={() => {sendMsg()}}>
             Send
           </Button>
-        </IconButton>
+        </Box>
       </Box>
     </Box>
   );

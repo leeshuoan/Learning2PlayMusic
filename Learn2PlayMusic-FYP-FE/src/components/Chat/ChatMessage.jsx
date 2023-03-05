@@ -1,18 +1,22 @@
 import React from 'react'
-import { Grid, ListItemText } from '@mui/material'
+import { Grid, ListItemText, Divider } from '@mui/material'
 
-const ChatMessage = (message) => {
-  const chatTimestamp = message.message.createdAt.toDate().toLocaleDateString() + " " + message.message.createdAt.toDate().toLocaleTimeString()
+const ChatMessage = ({message, userInfo}) => {
+  const chatTimestamp = message.createdAt.toDate().toLocaleDateString() + " " + message.createdAt.toDate().toLocaleTimeString()
+  let msgAlign = "right"
+  if (userInfo.userInfo.id != message.uid) {
+    msgAlign = "left"
+  } 
 
-  console.log(message)
   return (
     <>
       <Grid item xs={12}>
-        <ListItemText align="right" primary={message.message.text}></ListItemText>
+        <ListItemText align={msgAlign} primary={message.text}></ListItemText>
       </Grid>
       <Grid item xs={12}>
-        <ListItemText align="right" secondary={chatTimestamp}></ListItemText>
+        <ListItemText align={msgAlign} secondary={chatTimestamp}></ListItemText>
       </Grid>
+      <Divider/>
     </>
   )
 }
