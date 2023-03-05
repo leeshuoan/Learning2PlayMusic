@@ -1,6 +1,6 @@
-import { Typography, Container, Grid, Card, Box, Link } from '@mui/material'
-import banner from '../../assets/banner.jpg'
-import React from 'react'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Typography, Container, Grid, Card, Box, Link, Button } from '@mui/material'
 
 const TeacherHome = ({ userInfo }) => {
   const announcements = [
@@ -36,48 +36,58 @@ const TeacherHome = ({ userInfo }) => {
     }
   ]
 
-  const myCourses = [
-    {
-      title: "Grade 1 Piano",
-      date: "Wednesday 7pm",
-    },
-    {
-      title: "Grade 1 Piano",
-      date: "Wednesday 7pm",
-    },
-    {
-      title: "Grade 1 Piano",
-      date: "Wednesday 7pm",
-    },
-    {
-      title: "Grade 1 Piano",
-      date: "Wednesday 7pm",
-    },
-  ]
+  const myCourse = {
+    id: 1,
+    title: "Grade 2 Piano",
+    date: "Wednesday 7pm",
+  }
+
+  const navigate = useNavigate()
+
+  const getCourses = fetch(`${import.meta.env.VITE_API_URL}/courses`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+
+  const getGeneralAnnouncements = fetch(`${import.meta.env.VITE_API_URL}/getGeneralAnnouncements`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+
+  useEffect(() => {
+    Promise.all([getCourses, getGeneralAnnouncements]).then(([res1, res2]) => {
+      return Promise.all([res1.json(), res2.json()]).then(
+        ([data1, data2]) => {
+          console.log(data1)
+          console.log(data2)
+        }
+      )
+    }).catch((error) => {
+      console.log(error)
+    })
+  }, [])
 
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        {/* <img src={banner} width="100%"></img> */}
-        <Typography variant='h4' sx={{ mt: 3, textAlign: "center" }}>Welcome Back, {userInfo.name}</Typography>
+        <Typography variant='h4' sx={{ mt: 3 }}>Welcome Back, {userInfo.name}</Typography>
 
-            <Card sx={{ py: 3, px: 4, mt:2 }}>
-              <Typography variant='h6'>My Courses</Typography>
-              <Grid container spacing={1}>
-                {myCourses.map((myCourse, index) => (
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Card variant='outlined' sx={{ boxShadow: "none", my: 1, p: 2 }} key={index}>
-                      <img src={course}></img>
-                      <Typography variant='subtitle2' sx={{ pt: 1, color: "primary.main" }}>{myCourse.title}</Typography>
-                      <Typography variant='body2'>{myCourse.date}</Typography>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-              <Box sx={{ textAlign: "center" }}>
-                <Link >View All Courses</Link>
-              </Box>
-            </Card>
+        <Card sx={{ p: 2, px: 5, mt: 2 }} style={{ background: `linear-gradient(45deg, rgba(23,76,106,1) 0%, rgba(35,77,116,0.5) 100%)` }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box>
+              <Typography variant='h4' color="white">{myCourse.title}</Typography>
+              <Typography variant='body2' color="white">Every {myCourse.date}</Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Button variant="contained" sx={{ color: "black", backgroundColor: "white", boxShadow: "none", "&:hover": { backgroundColor: "lightgrey" } }}
+                onClick={() => { navigate(`course/${myCourse.id}`) }}>GO TO COURSE PAGE</Button>
+            </Box>
+          </Box>
+        </Card>
 
         <Grid container spacing={2} sx={{ pt: 2 }}>
           <Grid item xs={12} md={9}>
@@ -91,7 +101,7 @@ const TeacherHome = ({ userInfo }) => {
                 </Card>
               ))}
               <Box sx={{ textAlign: "center" }}>
-                <Link >View All Announcements</Link>
+                <Link onClick={() => { navigate("announcements") }}>View All Announcements</Link>
               </Box>
             </Card>
           </Grid>

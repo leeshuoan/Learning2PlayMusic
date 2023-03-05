@@ -131,8 +131,8 @@ const UserCourse = (userInfo) => {
         for (let idx1 in data3) {
           data3[idx1].id = data3[idx1].SK.split("Material#")[1].substr(0, 1);
           let date_1 = new Date(data3[idx1]['MaterialLessonDate']);
-          let formattedDate_1 = `${date_1.toLocaleDateString()} ${date_1.toLocaleTimeString()}`;
-          data3[idx1]['MaterialLessonDate'] = formattedDate_1.substr(0, formattedDate_1.length - 12);
+          let formattedDate_1 = `${date_1.toLocaleDateString()}`;
+          data3[idx1]['MaterialLessonDate'] = formattedDate_1
         }
         setCourseMaterial(data3);
 
@@ -277,37 +277,37 @@ const UserCourse = (userInfo) => {
 
             <Box sx={{ display: category == "homework" ? "block" : "none" }}>
               <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Typography variant='subtitle2'>HOMEWORK TITLE</Typography>
                 </Grid>
                 <Grid item xs={3}>
                   <Typography variant='subtitle2' sx={{ textAlign: "center" }}>DUE DATE</Typography>
                 </Grid>
                 <Grid item xs={3}>
-                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SCORE</Typography>
-                </Grid>
-                <Grid item xs={2}>
                   <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SUBMISSIONS</Typography>
+                </Grid>
+                <Grid item xs={3}>
+                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>EVALUATION STATUS</Typography>
                 </Grid>
               </Grid>
               {
                 courseHomework.map((homework, key) => (
                   <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
                     <Grid container spacing={2}>
-                      <Grid item xs={12} sm={4}>
+                      <Grid item xs={12} sm={3}>
                         <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkTitle}</Link></Typography>
                       </Grid>
                       <Grid item xs={12} sm={3}>
                         <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.HomeworkDueDate}</Typography>
-                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Due Date: {homework.dueDate}</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Due Date: {homework.HomeworkDueDate}</Typography>
                       </Grid>
                       <Grid item xs={12} sm={3}>
-                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.HomeworkScore}</Typography>
-                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Score: {homework.score}</Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={2}>
                         <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.HomeworkSubmissions}</Typography>
                         <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.HomeworkSubmissions}</Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={3}>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}><Link onClick={() => navigate(homework.id + "/feedback")}>Marked</Link></Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Evaluation Status: <Link onClick={() => navigate(homework.id + "/feedback")}>Marked</Link></Typography>
                       </Grid>
                     </Grid>
                   </Card>

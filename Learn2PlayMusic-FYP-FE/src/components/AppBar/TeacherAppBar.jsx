@@ -1,10 +1,9 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import {
   AppBar,
   Box,
   Toolbar,
   IconButton,
-  Typography,
   Menu,
   Container,
   MenuItem,
@@ -14,31 +13,27 @@ import {
   ListItemIcon,
   Tooltip,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import PersonAdd from "@mui/icons-material/PersonAdd";
-import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import ChatIcon from "@mui/icons-material/Chat";
-import { Auth } from "aws-amplify";
+import { Auth, Storage } from "aws-amplify";
 import { useNavigate } from "react-router-dom";
 
 const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
   const theme = useTheme()
   const navigate = useNavigate()
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  // const pages = ["Home", "Courses"]
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [image, setImage] = useState(null)
+
+  useEffect(() => {
+    if (userInfo.profileImage != "none") {
+      Storage.get(userInfo.profileImage, { level: "protected" }).then((res) => {
+        setImage(res)
+      }).catch((err) => {
+        console.log(err)
+      })
+    }
+  }, [userInfo])
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -56,15 +51,6 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
     }).catch((err) => console.log(err))
   };
 
-  const handleRoute = (page) => {
-    if (page === "Home") {
-      navigate("/teacher");
-    } else if (page === "Courses") {
-      navigate("/teacher/courses");
-    } else if (page === "Chat") {
-      navigate("/teacher/chat");
-    }
-  };
   return (
     <>
       {
@@ -77,57 +63,21 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
               sx={{ display: "flex", justifyContent: "space-between" }}>
               {/* MOBILE NAV */}
               <Box sx={{ display: { xs: "flex", md: "none" } }}>
-                <IconButton
-                  size="large"
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleOpenNavMenu}
-                  color="inherit">
-                  <MenuIcon />
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorElNav}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "left",
-                  }}
-                  open={Boolean(anchorElNav)}
-                  onClose={handleCloseNavMenu}
+                <Avatar
                   sx={{
-                    display: { xs: 'block', md: 'none' },
-                  }}
-                >
-                  {/* {pages.map((page) => (
-                    <MenuItem key={page} onClick={() => handleRoute(page)}>
-                      <Typography textAlign="center">{page}</Typography>
-                    </MenuItem>
-                  ))} */}
-                  <MenuItem>NOTHING HERE YET</MenuItem>
-                </Menu>
+                    display: { xs: "flex", md: "none" },
+                    ml: 1,
+                    width: 32,
+                    height: 32,
+                    bgcolor: "grey[100]",
+                  }}>
+                  <ChatIcon onClick={() => navigate("/chat")} />
+                </Avatar>
               </Box>
 
-              <IconButton disableRipple onClick={() => {navigate("/teacher")}}>
-              <img src="/l2pm_logo.png" width="150px" />
+              <IconButton disableRipple onClick={() => { navigate("/home") }}>
+                <img src="/l2pm_logo.png" width="150px" />
               </IconButton>
-
-              {/* DESKTOP NAV */}
-              {/* <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                {pages.map((page) => (
-                  <MenuItem
-                    sx={{ bgcolor: "background.paper" }}
-                    key={page}
-                    onClick={() => handleRoute(page)}>
-                    <Typography textAlign="center">{page}</Typography>
-                  </MenuItem>
-                ))}
-              </Box> */}
 
               {/* USER MENU */}
               <Box>
@@ -140,21 +90,12 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
                   <Avatar
                     sx={{
                       display: { xs: "none", md: "flex" },
+                      ml: 1.6,
                       width: 32,
                       height: 32,
                       bgcolor: "grey[100]",
                     }}>
-                    <NotificationsIcon />
-                  </Avatar>
-                  <Avatar
-                    sx={{
-                      display: { xs: "none", md: "flex" },
-                      ml: 2,
-                      width: 32,
-                      height: 32,
-                      bgcolor: "grey[100]",
-                    }}>
-                    <ChatIcon onClick={() => handleRoute("Chat")} />
+                    <ChatIcon onClick={() => navigate("/chat")} />
                   </Avatar>
                   <Tooltip title="Account settings">
                     <IconButton
@@ -164,7 +105,7 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
                       aria-controls={open ? "account-menu" : undefined}
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}>
-                      <Avatar sx={{ width: 32, height: 32 }}>T</Avatar>
+                      <Avatar sx={{ width: 32, height: 32 }} src={image}></Avatar>
                     </IconButton>
                   </Tooltip>
                 </Box>
@@ -181,10 +122,10 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
                       filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
                       mt: 1.5,
                       "& .MuiAvatar-root": {
-                        width: 32,
-                        height: 32,
+                        width: 25,
+                        height: 25,
                         ml: -0.5,
-                        mr: 1,
+                        mr: 2,
                       },
                       "&:before": {
                         content: '""',
@@ -202,24 +143,8 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
                   }}
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
-                  <MenuItem onClick={handleClose}>
-                    <Avatar /> Profile
-                  </MenuItem>
-                  <MenuItem onClick={handleClose}>
-                    <Avatar /> My account
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem onClick={handleClose}>
-                    <ListItemIcon>
-                      <PersonAdd fontSize="small" />
-                    </ListItemIcon>
-                    Add another account
-                  </MenuItem>
-                  <MenuItem onClick={handleClose}>
-                    <ListItemIcon>
-                      <Settings fontSize="small" />
-                    </ListItemIcon>
-                    Settings
+                  <MenuItem onClick={() => { navigate("/profile") }}>
+                    <Avatar src={image} />My Profile
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>
                     <ListItemIcon>

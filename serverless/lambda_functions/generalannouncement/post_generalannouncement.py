@@ -1,7 +1,8 @@
 import sys
 import boto3
 import json
-import datetime
+from datetime import datetime
+import dateutil.tz
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
@@ -9,24 +10,21 @@ from global_functions.exists_in_db import *
 def lambda_handler(event, context):
 
     try:
+        sgTimezone = dateutil.tz.gettz('Asia/Singapore')
+        dateId = datetime.now(tz=sgTimezone).strftime("%Y-%m-%dT%H:%M:%S")
+
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
-        dateId = datetime.today()
 
-        # VALIDATION
-        # check if <dateID> already exists in database
-        if not id_exists("GeneralAnnouncements", "Date", dateId):
-            return response_400("dateId does not exist in database")
-
-        response = table.put_item(
-            Item= {
+        item = {
                 "PK": f"GeneralAnnouncements",
                 "SK": f"Date#{dateId}",
                 "Content": json.loads(event['body'])['content'],
             }
-            )
 
-        return response_200("successfully inserted item")
+        response = table.put_item(Item= item)
+
+        return response_200_msg_items("inserted", item)
 
     # currently, this is only for functions that sends in request body - to catch 'missing fields' error
     except KeyError:

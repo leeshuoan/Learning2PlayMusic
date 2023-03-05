@@ -41,3 +41,25 @@ def combination_id_exists(pk_name, pk_id, sk_name, sk_id):
         return True
 
     return False
+
+# checks if userName exists in the database
+# to prevent creation of the same user through POST method
+# 2 users (e.g. 2 students) can have the SAME firstName and lastName BUT NOT the same userName
+# 2 users (e.g. 1 student, 1 teacher) can have the SAME firstName, lastName and userName
+def user_name_for_user_type_exists(userName, userType):
+    dynamodb = boto3.resource("dynamodb")
+    table = dynamodb.Table("LMS")
+
+    response = table.query(
+        KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
+        ExpressionAttributeValues={
+            ":PK": f"{userName}", # e.g. aiwei00 OR angeline00
+            ":SK": f"{userType}#" # e.g. Student# OR Admin#
+        })
+
+    if response['Count'] != 0:
+        # e.g.
+        # if it's (aiwei00, Student), then it means this user has already been created
+        return True
+
+    return False

@@ -8,23 +8,22 @@ from global_functions.exists_in_db import *
 def lambda_handler(event, context):
 
     try:
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
 
+        # check if <studentId> is being passed in
         studentId = event['queryStringParameters']
-
-        # CATCHING EMPTY QUERY PARAMETER PASSED IN
         if studentId is None or studentId == "null":
             sortKey = "Student#"
         else:
             studentId = event['queryStringParameters']['studentId']
             sortKey = "Student#" + studentId
 
-            # VALIDATION
-            # check if <courseId> exists in database
+            # check if <userName> exists in database
             if not id_exists("User", "Student", studentId):
-                return response_400("studentId does not exist in database")
+                return response_404("studentId (aka student's username) does not exist in database")
 
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table("LMS")
+        
         response = table.query(
             KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
             ExpressionAttributeValues={
@@ -35,7 +34,7 @@ def lambda_handler(event, context):
 
         items = response["Items"]
 
-        return response_200_GET(items)
+        return response_200_items(items)
 
 
     except Exception as e:

@@ -104,6 +104,7 @@ class CourseStack(Stack):
                                                        handler=f"delete_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=s3_dynamodb_role)
         # Create Amazon API Gateway REST API
         main_api = apigw.RestApi(self, "main", description="All LMS APIs")
+        self.main_api = main_api
 
         # Create resources for the API
         course_resource = main_api.root.add_resource("course")
@@ -136,9 +137,10 @@ class CourseStack(Stack):
                 type=apigw.JsonSchemaType.OBJECT,
                 properties={
                     "courseName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "courseSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    "courseSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "teacherId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
-                required=[ "courseName", "courseSlot"]))
+                required=[ "courseName", "courseSlot", "teacherId"]))
 
         course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={
             'method.request.querystring.courseId': False})
@@ -283,19 +285,19 @@ class CourseStack(Stack):
 
         # Enable CORS for each resource/sub-resource etc.
         course_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_quiz_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE", "PUT"], status_code=200)
         course_quiz_submit_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)   
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_homework_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_quiz_question_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_material_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_announcement_resource.add_cors_preflight(
-            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE"], status_code=200)
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
 
         # Export API gateway to use in other Stacks
         CfnOutput(
