@@ -84,12 +84,13 @@ class UserStack(Stack):
                     schema=apigw.JsonSchemaVersion.DRAFT4,
                     type=apigw.JsonSchemaType.OBJECT,
                     properties={
+                        "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                         "userName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                         "firstName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                         "lastName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                         "contactNumber": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                     },
-                    required=["userName", "firstName", "lastName", "contactNumber"]))
+                    required=["studentId", "userName", "firstName", "lastName", "contactNumber"]))
 
         put_user_student_model = apigw.Model(
                 self,
@@ -103,13 +104,12 @@ class UserStack(Stack):
                     type=apigw.JsonSchemaType.OBJECT,
                     properties={
                         "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                        "userName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                         "firstName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                         "lastName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                         "contactNumber": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                         "isSoftDeleted": apigw.JsonSchema(type=apigw.JsonSchemaType.BOOLEAN)
                     },
-                    required=["studentId", "userName", "firstName", "lastName", "contactNumber", "isSoftDeleted"]))
+                    required=["studentId", "firstName", "lastName", "contactNumber", "isSoftDeleted"]))
 
         student_resource.add_method("GET", apigw.LambdaIntegration(get_student), request_parameters={
           'method.request.querystring.studentId': False})

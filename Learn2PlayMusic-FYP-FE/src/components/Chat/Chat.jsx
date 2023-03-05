@@ -145,7 +145,18 @@ function Chat(userInfo) {
         sx={{
           flexGrow: 1,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
+          pb: 10
         }}>
+
+        <Box sx={{
+          p: 3,
+          display: "flex",
+          flexDirection: "column",
+          height: 600,
+          overflow: "hidden",
+          overflowY: "scroll",
+        }}>
+          {messages && messages.map((msg) => <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />)}
         <Box sx={{ p: 3 }}>
           {messages &&
             messages.map((msg) => (

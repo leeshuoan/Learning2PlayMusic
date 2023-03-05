@@ -19,7 +19,7 @@ def lambda_handler(event, context):
 
             # check if <userName> exists in database
             if not id_exists("User", "Student", studentId):
-                return response_404("studentId (aka student's username) does not exist in database")
+                return response_404("studentId does not exist in database")
 
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")

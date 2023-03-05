@@ -55,7 +55,7 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
     <>
       {
         <AppBar
-          position="relative"
+          position="sticky"
           sx={{ bgcolor: theme.palette.background.paper, zIndex: 9999 }}>
           <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
             <Toolbar
