@@ -16,6 +16,7 @@ def lambda_handler(event, context):
         table = dynamodb.Table("LMS")
 
         courseId = queryStringParameters["courseId"]
+        studentId = queryStringParameters["studentId"]
 
         # if specific homeworkId is specified
         if "homeworkId" in queryStringParameters.keys():
@@ -23,14 +24,14 @@ def lambda_handler(event, context):
             response = table.get_item(
                 Key={
                     ":PK": f"Course#{courseId}",
-                    ":SK": f"Homework#{homeworkId}"
+                    ":SK": f"Student#{studentId}Homework#{homeworkId}"
                 })
         else:
             response = table.query(
                 KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
                 ExpressionAttributeValues={
                     ":PK": f"Course#{courseId}",
-                    ":SK": f"Homework#"
+                    ":SK": f"Student#{studentId}Homework#"
                 })
 
         items = response["Items"]

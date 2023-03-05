@@ -29,7 +29,7 @@ async function lambda_handler(event, context) {
         const courseId = requestBody.courseId;
         const studentId = requestBody.studentId;
         const quizId = requestBody.quizId;
-        const quizScore = requestBody.quizScore; 
+        const quizScore = requestBody.quizScore;
 
         checkForNull(
             courseId,
@@ -38,20 +38,40 @@ async function lambda_handler(event, context) {
             quizScore
         );
 
-        const params = {
+        const getAttemptsParams = {
             TableName: "LMS",
             Key: {
-              "PK": `Course#${courseId}`,
-              "SK": `Student#${studentId}Quiz#${quizId}`
+                "PK": `Course#${courseId}`,
+                "SK": `Student#${studentId}Quiz#${quizId}`
+            },
+            AttributesToGet: [
+                "QuizAttempt",
+                "QuizMaxAttempt"
+            ]
+        };
+
+        attemptsResponse = await dynamodb.get(getAttemptsParams).promise();
+        attempts = attemptsResponse.Item;
+
+        if (attempts.QuizAttempt >= attempts.QuizMaxAttempt) {
+            throw new Error("Already attempted max number of times: " + attempts.QuizAttempt);
+        }
+
+        const putParams = {
+            TableName: "LMS",
+            Key: {
+                "PK": `Course#${courseId}`,
+                "SK": `Student#${studentId}Quiz#${quizId}`
             },
             UpdateExpression: "set QuizScore = :newQuizScore, QuizAttempt = QuizAttempt + :val",
             ExpressionAttributeValues: {
-              ":newQuizScore": quizScore,
-              ":val": 1
+                ":newQuizScore": quizScore,
+                ":val": 1
             }
-          };
+        };
 
-        await dynamodb.update(params).promise();
+        await dynamodb.update(putParams).promise();
+
         return response_200(`Quiz ${quizId} successfully submitted`)
 
     } catch (e) {
