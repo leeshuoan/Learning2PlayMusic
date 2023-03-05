@@ -51,15 +51,6 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
     }).catch((err) => console.log(err))
   };
 
-  const handleRoute = (page) => {
-    if (page === "Home") {
-      navigate("/teacher");
-    } else if (page === "Courses") {
-      navigate("/teacher/courses");
-    } else if (page === "Chat") {
-      navigate("/teacher/chat");
-    }
-  };
   return (
     <>
       {
@@ -80,7 +71,7 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                     height: 32,
                     bgcolor: "grey[100]",
                   }}>
-                  <ChatIcon onClick={() => handleRoute("Chat")} />
+                  <ChatIcon onClick={() => navigate("/chat")} />
                 </Avatar>
               </Box>
 
@@ -104,7 +95,7 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                       height: 32,
                       bgcolor: "grey[100]",
                     }}>
-                    <ChatIcon onClick={() => handleRoute("Chat")} />
+                    <ChatIcon onClick={() => navigate("/chat")} />
                   </Avatar>
                   <Tooltip title="Account settings">
                     <IconButton

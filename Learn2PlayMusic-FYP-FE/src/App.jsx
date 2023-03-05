@@ -30,6 +30,7 @@ import UserHomeworkFeedback from "./components/User/Course/UserHomeworkFeedback"
 Amplify.configure(aws_exports);
 
 function App() {
+
   const [userInfo, setUserInfo] = useState({});
   const [fetchUserInfo, setFetchUserInfo] = useState(false);
 
@@ -106,7 +107,6 @@ function App() {
 
           <Route path="teacher" element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
             <Route index element={<TeacherHome userInfo={userInfo} />} />
-            <Route path="chat" element={<Chat userInfo={userInfo} />} />
           </Route>
 
           <Route path="home" element={<PrivateRoutes userType="User"></PrivateRoutes>}>
@@ -123,6 +123,7 @@ function App() {
             </Route>
           </Route>
 
+          <Route path="chat" element={<Chat userInfo={userInfo} />} />
           <Route path="profile" element={<Profile userInfo={userInfo} refreshUserInfo={handleRefreshUserInfo} />}></Route>
           <Route path="resetpassword" element={<ForgotPassword />}></Route>
           <Route path="*" element={<NotFound userRole={userInfo.role} />} />
