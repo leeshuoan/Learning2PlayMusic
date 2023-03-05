@@ -1,40 +1,22 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Typography, Container, Grid, Card, Box, Link, Button } from '@mui/material'
 
 const TeacherHome = ({ userInfo }) => {
-  const announcements = [
-    {
-      title: "New Course Available",
-      date: "31 Jan 2023",
-      content: "The Premium Children's Piano Course for age 5 and above. Students are prepared for graded examinations of The Associated Board Royal Schools of Music (ABRSM). 'Enjoyment through achievement' is a phrase that sums up ABRSM's philosophy, and earning an ABRSM certificate is a rewarding experience."
-    },
-    {
-      title: "New Course Available",
-      date: "31 Jan 2023",
-      content: "The Premium Children's Piano Course for age 5 and above. Students are prepared for graded examinations of The Associated Board Royal Schools of Music (ABRSM). 'Enjoyment through achievement' is a phrase that sums up ABRSM's philosophy, and earning an ABRSM certificate is a rewarding experience."
-    },
-    {
-      title: "New Course Available",
-      date: "31 Jan 2023",
-      content: "The Premium Children's Piano Course for age 5 and above. Students are prepared for graded examinations of The Associated Board Royal Schools of Music (ABRSM). 'Enjoyment through achievement' is a phrase that sums up ABRSM's philosophy, and earning an ABRSM certificate is a rewarding experience."
-    }
-  ]
-
-  const upcomingClasses = [
-    {
-      title: "Piano",
-      date: "31 Jan 2023, 4:00pm",
-    },
-    {
-      title: "Piano",
-      date: "31 Jan 2023, 4:00pm",
-    },
-    {
-      title: "Piano",
-      date: "31 Jan 2023, 4:00pm",
-    }
-  ]
+  // const upcomingClasses = [
+  //   {
+  //     title: "Piano",
+  //     date: "31 Jan 2023, 4:00pm",
+  //   },
+  //   {
+  //     title: "Piano",
+  //     date: "31 Jan 2023, 4:00pm",
+  //   },
+  //   {
+  //     title: "Piano",
+  //     date: "31 Jan 2023, 4:00pm",
+  //   }
+  // ]
 
   const myCourse = {
     id: 1,
@@ -42,16 +24,17 @@ const TeacherHome = ({ userInfo }) => {
     date: "Wednesday 7pm",
   }
 
+  const [announcements, setAnnouncements] = useState([])
   const navigate = useNavigate()
 
-  const getCourses = fetch(`${import.meta.env.VITE_API_URL}/courses`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  })
+  // const getCourses = fetch(`${import.meta.env.VITE_API_URL}/courses`, {
+  //   method: 'GET',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   }
+  // })
 
-  const getGeneralAnnouncements = fetch(`${import.meta.env.VITE_API_URL}/getGeneralAnnouncements`, {
+  const getGeneralAnnouncements = fetch(`${import.meta.env.VITE_API_URL}/generalannouncement`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -59,13 +42,14 @@ const TeacherHome = ({ userInfo }) => {
   })
 
   useEffect(() => {
-    Promise.all([getCourses, getGeneralAnnouncements]).then(([res1, res2]) => {
-      return Promise.all([res1.json(), res2.json()]).then(
-        ([data1, data2]) => {
-          console.log(data1)
-          console.log(data2)
-        }
-      )
+    Promise.all([getGeneralAnnouncements]).then(async ([res1]) => {
+      const [data1] = await Promise.all([res1.json()])
+      data1.splice(3, data1.length - 3)
+      console.log(data1)
+      for (let idx in data1) {
+        data1[idx].date = new Date(data1[idx].SK.split('Date#')[1]).toLocaleDateString()
+      }
+      setAnnouncements(data1)
     }).catch((error) => {
       console.log(error)
     })
@@ -90,14 +74,14 @@ const TeacherHome = ({ userInfo }) => {
         </Card>
 
         <Grid container spacing={2} sx={{ pt: 2 }}>
-          <Grid item xs={12} md={9}>
+          <Grid item xs={12} md={12}>
             <Card sx={{ py: 3, px: 4 }}>
               <Typography variant='h6'>Annoucements</Typography>
               {announcements.map((announcement, index) => (
                 <Card variant='outlined' sx={{ boxShadow: "none", my: 1, p: 2 }} key={index}>
-                  <Typography variant='subtitle2'>{announcement.title}</Typography>
+                  <Typography variant='subtitle2'>{announcement.Title}</Typography>
                   <Typography variant='subsubtitle'>Posted {announcement.date}</Typography>
-                  <Typography variant='body2' sx={{ mt: 1 }}>{announcement.content}</Typography>
+                  <Typography variant='body2' sx={{ mt: 1 }}>{announcement.Content}</Typography>
                 </Card>
               ))}
               <Box sx={{ textAlign: "center" }}>
@@ -105,7 +89,7 @@ const TeacherHome = ({ userInfo }) => {
               </Box>
             </Card>
           </Grid>
-          <Grid item xs={12} md={3}>
+          {/* <Grid item xs={12} md={3}>
             <Card sx={{ py: 3, px: 2 }}>
               <Typography variant='h6' sx={{ textAlign: "center" }}>Upcoming Classes</Typography>
               {upcomingClasses.map((upcomingClass, index) => (
@@ -115,7 +99,7 @@ const TeacherHome = ({ userInfo }) => {
                 </Card>
               ))}
             </Card>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Container>
     </>
