@@ -20,7 +20,7 @@ class CourseStack(Stack):
         # The code that defines your stack goes here
 
         # Define Constants Here
-        FUNCTIONS_FOLDER = "/lambda_functions/"
+        FUNCTIONS_FOLDER = ".serverless//lambda_functions/"
         COURSE_FUNCTIONS_FOLDER = "course"
         COURSE_MATERIAL_FUNCTIONS_FOLDER = "course_material"
         COURSE_HOMEWORK_FUNCTIONS_FOLDER = "course_homework"
