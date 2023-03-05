@@ -131,8 +131,8 @@ const UserCourse = (userInfo) => {
         for (let idx1 in data3) {
           data3[idx1].id = data3[idx1].SK.split("Material#")[1].substr(0, 1);
           let date_1 = new Date(data3[idx1]['MaterialLessonDate']);
-          let formattedDate_1 = `${date_1.toLocaleDateString()} ${date_1.toLocaleTimeString()}`;
-          data3[idx1]['MaterialLessonDate'] = formattedDate_1.substr(0, formattedDate_1.length - 12);
+          let formattedDate_1 = `${date_1.toLocaleDateString()}`;
+          data3[idx1]['MaterialLessonDate'] = formattedDate_1
         }
         setCourseMaterial(data3);
 

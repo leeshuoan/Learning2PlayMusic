@@ -55,8 +55,8 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
     <>
       {
         <AppBar
-          position="static"
-          sx={{ bgcolor: theme.palette.background.paper }}>
+          position="relative"
+          sx={{ bgcolor: theme.palette.background.paper, zIndex: 9999 }}>
           <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
             <Toolbar
               disableGutters
@@ -94,6 +94,7 @@ const UserAppBar = ({ userInfo, handleResetUserInfo }) => {
                       width: 32,
                       height: 32,
                       bgcolor: "grey[100]",
+                      "&:hover": { cursor: "pointer" }
                     }}>
                     <ChatIcon onClick={() => navigate("/chat")} />
                   </Avatar>
