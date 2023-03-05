@@ -87,9 +87,17 @@ function Chat(userInfo) {
         sx={{
           flexGrow: 1,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
+          pb: 10
         }}>
 
-        <Box sx={{ p: 3 }}>
+        <Box sx={{
+          p: 3,
+          display: "flex",
+          flexDirection: "column",
+          height: 600,
+          overflow: "hidden",
+          overflowY: "scroll",
+        }}>
           {messages && messages.map((msg) => <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />)}
         </Box>
 
@@ -103,7 +111,7 @@ function Chat(userInfo) {
               onChange={(e) => setNewMsg(e.target.value)}
             />
           </Card>
-          <Button variant="contained" size="large" onClick={() => {sendMsg()}}>
+          <Button variant="contained" size="large" onClick={() => { sendMsg() }}>
             Send
           </Button>
         </Box>
