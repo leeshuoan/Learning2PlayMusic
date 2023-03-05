@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: yarn
       - name: Install AWS CDK
-        run: npm install -g aws-cdk
+        run: yarn global add aws-cdk
       - name: Synth stack
         run: cd serverless && yarn cdk synth
       - name: Deploy stack
