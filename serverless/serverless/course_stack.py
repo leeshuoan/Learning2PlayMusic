@@ -60,11 +60,13 @@ class CourseStack(Stack):
         AWSLambdaBasicExecutionRole = aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AWSLambdaBasicExecutionRole')
         s3_dynamodb_role.add_managed_policy(AWSLambdaBasicExecutionRole)
 
-
-
         # Create getCourseHomework AWS Lambda function
         get_course_homework = _lambda.Function(self, "getCourseHomework", runtime=_lambda.Runtime.PYTHON_3_9,
                                                handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.get_course_homework.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+        # Create getCourseHomeworkFeedback AWS Lambda function
+        get_course_homework_feedback = _lambda.Function(self, "getCourseHomeworkFeedback", runtime=_lambda.Runtime.PYTHON_3_9,
+                                               handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.get_course_homework_feedback.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /course/announcement Functions
         get_course_announcement = _lambda.Function(self, "getCourseAnnouncement",  runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.get_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -121,6 +123,9 @@ class CourseStack(Stack):
             "question")
         course_quiz_submit_resource = course_quiz_resource.add_resource(
             "submit")
+        course_homework_feedback_resource = course_homework_resource.add_resource(
+            "feedback")
+        
 
         # Create methods in the required resources
 
@@ -254,9 +259,17 @@ class CourseStack(Stack):
         # /course/homework
         course_homework_resource.add_method("GET", apigw.LambdaIntegration(get_course_homework), request_parameters={
           'method.request.querystring.courseId': True,
+          'method.request.querystring.homeworkId': False
+        })
+
+        # /course/homework/feedback
+        course_homework_feedback_resource.add_method("GET", apigw.LambdaIntegration(get_course_homework_feedback), request_parameters={
+          'method.request.querystring.courseId': True,
           'method.request.querystring.studentId': True,
           'method.request.querystring.homeworkId': False
         })
+
+        
 
         # /course/announcement
         # Define a JSON Schema to accept Request Body in JSON format for POST Method
@@ -297,6 +310,8 @@ class CourseStack(Stack):
         course_material_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_announcement_resource.add_cors_preflight(
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        course_homework_feedback_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
 
         # Export API gateway to use in other Stacks

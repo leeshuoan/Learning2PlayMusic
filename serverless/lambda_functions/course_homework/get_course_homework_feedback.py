@@ -1,11 +1,15 @@
 import sys
 import boto3
 import json
+import decimal
 
 # Get all homework by courseid
 
 from global_functions.responses import *
 
+class Encoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal): return float(obj)
 
 def lambda_handler(event, context):
 
@@ -23,9 +27,10 @@ def lambda_handler(event, context):
             homeworkId = queryStringParameters["homeworkId"]
             response = table.get_item(
                 Key={
-                    ":PK": f"Course#{courseId}",
-                    ":SK": f"Student#{studentId}Homework#{homeworkId}"
+                    "PK": f"Course#{courseId}",
+                    "SK": f"Student#{studentId}Homework#{homeworkId}"
                 })
+            items = response["Item"]
         else:
             response = table.query(
                 KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
@@ -33,11 +38,17 @@ def lambda_handler(event, context):
                     ":PK": f"Course#{courseId}",
                     ":SK": f"Student#{studentId}Homework#"
                 })
+            items = response["Items"]
+            
+        res["statusCode"] = 200
+        res["headers"] = {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST,GET,PUT"
+        }
+        res["body"] = json.dumps(items, cls = Encoder)
 
-        items = response["Items"]
-
-
-        return response_200_items(items)
+        return res
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")
