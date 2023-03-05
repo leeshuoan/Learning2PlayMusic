@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { db } from "../utils/firebase";
+import { useNavigate } from "react-router-dom";
+import { db } from '../utils/firebase';
 import { collection, query, orderBy, limit, addDoc } from "firebase/firestore";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import ChatMessage from "./ChatMessage";
@@ -37,6 +38,7 @@ function Chat(userInfo) {
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [newMsg, setNewMsg] = useState("");
+  const navigate = useNavigate()
 
   const messagesRef = collection(db, "Chat#1");
   const chatQuery = query(messagesRef, orderBy("createdAt", "asc"), limit(25));
@@ -152,7 +154,7 @@ function Chat(userInfo) {
             p: 3,
             display: "flex",
             flexDirection: "column",
-            height: 600,
+            height: 500, // NEED TO FIX
             overflow: "hidden",
             overflowY: "scroll",
           }}>
