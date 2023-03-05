@@ -21,13 +21,20 @@ def lambda_handler(event, context):
             return response_404("studentId does not exist in database")
         
         # check if <studentId> has been soft-deleted in database
-        isSoftDeleted = json.loads(event['body'])['isSoftDeleted']
-        print("type of isSoftDeleted", type(isSoftDeleted))
-        if isSoftDeleted:
-            return response_409("studentId has been soft-deleted")
-
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
+
+        response = table.query(
+            KeyConditionExpression="PK = :PK AND SK = :SK",
+            ExpressionAttributeValues={
+                ":PK": "User",
+                ":SK": f"Student#{studentId}"
+            }
+            )
+
+        items = response["Items"]
+        if items['isSoftDeleted'] == True:
+            return response_409("studentId has been soft-deleted")
 
         item = {
             "PK": "User",

@@ -85,12 +85,11 @@ class UserStack(Stack):
                     type=apigw.JsonSchemaType.OBJECT,
                     properties={
                         "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                        "userName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                         "firstName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                         "lastName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                         "contactNumber": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                     },
-                    required=["studentId", "userName", "firstName", "lastName", "contactNumber"]))
+                    required=["studentId", "firstName", "lastName", "contactNumber"]))
 
         put_user_student_model = apigw.Model(
                 self,
