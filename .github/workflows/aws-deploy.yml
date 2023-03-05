@@ -42,11 +42,11 @@ jobs:
           diff=$(cdk diff --app 'python app.py' || true)
           if [ -n "$diff" ]; then
             echo "Stack has changes, will deploy"
-            export DEPLOY="true"
+            export DEPLOY= true
           else
             echo "Stack is up to date, skipping deployment"
-            export DEPLOY="false"
+            export DEPLOY= false
           fi
       - name: Deploy to AWS
-        if: env.DEPLOY == "true"
+        if: env.DEPLOY == true
         run: cd serverless && cdk deploy --all --require-approval=never
