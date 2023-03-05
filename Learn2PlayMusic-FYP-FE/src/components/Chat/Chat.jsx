@@ -145,61 +145,65 @@ function Chat(userInfo) {
         sx={{
           flexGrow: 1,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
-          pb: 10
+          pb: 10,
         }}>
-
-        <Box sx={{
-          p: 3,
-          display: "flex",
-          flexDirection: "column",
-          height: 600,
-          overflow: "hidden",
-          overflowY: "scroll",
-        }}>
-          {messages && messages.map((msg) => <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />)}
-        <Box sx={{ p: 3 }}>
+        <Box
+          sx={{
+            p: 3,
+            display: "flex",
+            flexDirection: "column",
+            height: 600,
+            overflow: "hidden",
+            overflowY: "scroll",
+          }}>
           {messages &&
             messages.map((msg) => (
               <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />
             ))}
-        </Box>
+          <Box sx={{ p: 3 }}>
+            {messages &&
+              messages.map((msg) => (
+                <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />
+              ))}
+          </Box>
 
-        <Box
-          sx={{
-            display: "flex",
-            position: "fixed",
-            bottom: 0,
-            width: { sm: `calc(100% - ${drawerWidth}px)` },
-            p: 3,
-          }}>
-          <Card
-            variant="contained"
+          <Box
             sx={{
-              flexGrow: 1,
               display: "flex",
-              alignItems: "center",
-              p: 1,
-              mr: 3,
-              border: "black",
+              position: "fixed",
+              bottom: 0,
+              width: { sm: `calc(100% - ${drawerWidth}px)` },
+              p: 3,
             }}>
-            <InputBase
-              sx={{ width: "100%" }}
-              className="inputBase"
-              placeholder="Type your message"
-              value={newMsg}
-              onChange={(e) => setNewMsg(e.target.value)}
-              onKeyDown={handleKeyPress}
-            />
-          </Card>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => {
-              sendMsg();
-            }}
-            disabled={newMsg === ""}>
-            Send
-          </Button>
+            <Card
+              variant="contained"
+              sx={{
+                flexGrow: 1,
+                display: "flex",
+                alignItems: "center",
+                p: 1,
+                mr: 3,
+                border: "black",
+              }}>
+              <InputBase
+                sx={{ width: "100%" }}
+                className="inputBase"
+                placeholder="Type your message"
+                value={newMsg}
+                onChange={(e) => setNewMsg(e.target.value)}
+                onKeyDown={handleKeyPress}
+              />
+            </Card>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => {
+                sendMsg();
+              }}
+              disabled={newMsg === ""}>
+              Send
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Box>
