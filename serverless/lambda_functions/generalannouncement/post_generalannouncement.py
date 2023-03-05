@@ -20,6 +20,7 @@ def lambda_handler(event, context):
                 "PK": f"GeneralAnnouncements",
                 "SK": f"Date#{dateId}",
                 "Content": json.loads(event['body'])['content'],
+                "Title": json.loads(event['body']['title'])
             }
 
         response = table.put_item(Item= item)
