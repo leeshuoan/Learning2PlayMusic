@@ -39,42 +39,33 @@ jobs:
       - name: Diff CourseStack
         run: |
           cd serverless
-          diff=$(cdk diff --stack CourseStack || true)
+          diff=$(cdk diff --stack CourseStack)
           if [ -n "$diff" ]; then
             echo "CourseStack has changes, will deploy"
-            export COURSEDEPLOY=true
+            cdk deploy CourseStack --require-approval=never
           else
             echo "CourseStack is up to date, skipping deployment"
             export COURSEDEPLOY=false
           fi
-      - name: Deploy CourseStack to AWS
-        if: env.COURSEDEPLOY==true
-        run: cd serverless && cdk deploy CourseStack --require-approval=never
       - name: Diff UserStack
         run: |
           cd serverless
-          diff=$(cdk diff --stack UserStack || true)
+          diff=$(cdk diff --stack UserStack)
           if [ -n "$diff" ]; then
             echo "UserStack has changes, will deploy"
-            export USERDEPLOY=true
+            cd serverless && cdk deploy UserStack --require-approval=never
           else
             echo "UserStack is up to date, skipping deployment"
             export USERDEPLOY=false
           fi
-      - name: Deploy UserStack to AWS
-        if: env.DEPLOY==true
-        run: cd serverless && cdk deploy UserStack --require-approval=never
       - name: Diff AnnouncementStack
         run: |
           cd serverless
-          diff=$(cdk diff --stack AnnouncementStack || true)
+          diff=$(cdk diff --stack AnnouncementStack)
           if [ -n "$diff" ]; then
             echo "AnnouncementStack has changes, will deploy"
-            export ANNOUNCEMENTDEPLOY=true
+            cd serverless && cdk deploy AnnouncementStack --require-approval=never
           else
             echo "AnnouncementStack is up to date, skipping deployment"
             export ANNOUNCEMENTDEPLOY=false
           fi
-      - name: Deploy AnnouncementStack to AWS
-        if: env.ANNOUNCEMENTDEPLOY==true
-        run: cd serverless && cdk deploy AnnouncementStack --require-approval=never
