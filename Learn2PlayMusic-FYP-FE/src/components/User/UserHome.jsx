@@ -3,20 +3,20 @@ import { useNavigate } from 'react-router-dom'
 import { Typography, Container, Grid, Card, Box, Link, Button } from '@mui/material'
 
 const UserHome = ({ userInfo }) => {
-  const upcomingClasses = [
-    {
-      title: "Piano",
-      date: "31 Jan 2023, 4:00pm",
-    },
-    {
-      title: "Piano",
-      date: "31 Jan 2023, 4:00pm",
-    },
-    {
-      title: "Piano",
-      date: "31 Jan 2023, 4:00pm",
-    }
-  ]
+  // const upcomingClasses = [
+  //   {
+  //     title: "Piano",
+  //     date: "31 Jan 2023, 4:00pm",
+  //   },
+  //   {
+  //     title: "Piano",
+  //     date: "31 Jan 2023, 4:00pm",
+  //   },
+  //   {
+  //     title: "Piano",
+  //     date: "31 Jan 2023, 4:00pm",
+  //   }
+  // ]
 
   const myCourse = {
     id: 1,
@@ -44,6 +44,7 @@ const UserHome = ({ userInfo }) => {
   useEffect(() => {
     Promise.all([getGeneralAnnouncements]).then(async ([res1]) => {
       const [data1] = await Promise.all([res1.json()])
+      data1.splice(3, data1.length - 3)
       console.log(data1)
       for (let idx in data1) {
         data1[idx].date = new Date(data1[idx].SK.split('Date#')[1]).toLocaleDateString()
@@ -73,7 +74,7 @@ const UserHome = ({ userInfo }) => {
         </Card>
 
         <Grid container spacing={2} sx={{ pt: 2 }}>
-          <Grid item xs={12} md={9}>
+          <Grid item xs={12} md={12}>
             <Card sx={{ py: 3, px: 4 }}>
               <Typography variant='h6'>Annoucements</Typography>
               {announcements.map((announcement, index) => (
@@ -88,7 +89,7 @@ const UserHome = ({ userInfo }) => {
               </Box>
             </Card>
           </Grid>
-          <Grid item xs={12} md={3}>
+          {/* <Grid item xs={12} md={3}>
             <Card sx={{ py: 3, px: 2 }}>
               <Typography variant='h6' sx={{ textAlign: "center" }}>Upcoming Classes</Typography>
               {upcomingClasses.map((upcomingClass, index) => (
@@ -98,7 +99,7 @@ const UserHome = ({ userInfo }) => {
                 </Card>
               ))}
             </Card>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Container>
     </>

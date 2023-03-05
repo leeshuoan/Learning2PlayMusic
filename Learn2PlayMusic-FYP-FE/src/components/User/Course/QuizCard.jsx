@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 
 function QuizCard({ question, options, answer, image, index, handleOptionChange }) {
-  console.log(image)
   const onSelectChange = (e) => {
     handleOptionChange(e.target.value);
   };
