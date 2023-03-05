@@ -27,7 +27,7 @@ jobs:
         run: |
           cd serverless
           python -m pip install --upgrade pip
-          python -m pip install "requirements.txt"
+          python -m pip install -r "requirements.txt"
           # install your Python dependencies here
           npm install -g aws-cdk
       - name: Configure AWS credentials
