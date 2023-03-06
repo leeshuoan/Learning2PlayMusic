@@ -30,17 +30,22 @@ class CourseStack(Stack):
         
         # Create S3 bucket with read/write allowed
         L2PMA_question_image_bucket = s3.Bucket(self, "L2PMAQuestionImageBucket")
-        policy_statement = aws_iam.PolicyStatement(
+        L2PMA_question_image_bucket_policy_statement = aws_iam.PolicyStatement(
             effect=aws_iam.Effect.ALLOW,
             actions=["s3:GetObject", "s3:PutObject", ],
             resources=[L2PMA_question_image_bucket.arn_for_objects("*")],
             principals=[aws_iam.ServicePrincipal('lambda.amazonaws.com')]
         )
-        L2PMA_question_image_bucket.add_to_resource_policy(policy_statement)
+        L2PMA_question_image_bucket.add_to_resource_policy(L2PMA_question_image_bucket_policy_statement)
 
-        # Create S3 bucket with read/write allowed
         L2PMA_homework_submission_bucket = s3.Bucket(self, "L2PMAHomeworkSubmissionBucket")
-        L2PMA_homework_submission_bucket.add_to_resource_policy(policy_statement)
+        L2PMA_homework_submission_bucket_policy_statement = aws_iam.PolicyStatement(
+            effect=aws_iam.Effect.ALLOW,
+            actions=["s3:GetObject", "s3:PutObject", ],
+            resources=[L2PMA_homework_submission_bucket.arn_for_objects("*")],
+            principals=[aws_iam.ServicePrincipal('lambda.amazonaws.com')]
+        )
+        L2PMA_homework_submission_bucket.add_to_resource_policy(L2PMA_homework_submission_bucket_policy_statement)
 
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
