@@ -19,8 +19,11 @@ import {
   InputBase,
   ListItemText,
   Card,
+  IconButton,
+  Grid,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
+import MenuIcon from "@mui/icons-material/Menu";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { width } from "@mui/system";
 const drawerWidth = 240;
@@ -60,30 +63,46 @@ function Chat(userInfo) {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  // check for SG phone number or email
-  function invalidMessage(message) {
-    // Regular expression patterns
-    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-    const phoneRegex = /[6|8|9]\d{7}|\+65[6|8|9]\d{7}|\+65\s[6|8|9]\d{7}/g;
 
-    // Check if message contains email
-    if (emailRegex.test(message)) {
-      return true; // message is invalid
-    } else {
-      // remove all non digits in the message
-      phoneNumCheck = message.replace(/\D/g, "");
-      // Check if message contains phone number
-      if (phoneRegex.test(phoneNumCheck)) {
-        return true; // message is invalid
-      }
-      return false; // message is valid
-    }
-  }
   const handleKeyPress = (event) => {
     if (event.key === "Enter" && newMsg !== "") {
       sendMsg();
     }
   };
+
+  const drawer = (
+    <div>
+      <Breadcrumbs
+        aria-label="breadcrumb"
+        separator={<NavigateNextIcon fontSize="small" />}
+        sx={{ ml: 1, mt: 2 }}>
+        <Link
+          underline="hover"
+          color="inherit"
+          sx={{ display: "flex", alignItems: "center" }}
+          onClick={() => {
+            navigate("/home");
+          }}>
+          <HomeIcon sx={{ mr: 0.5 }} />
+          Home
+        </Link>
+        <Typography>Chat</Typography>
+      </Breadcrumbs>
+      <Divider sx={{ mt: 2 }} />
+      <List sx={{ p: 0 }}>
+        {contacts.map((contact) => (
+          <div>
+            <ListItem key={contact.id} disablePadding>
+              <ListItemButton>
+                <ListItemText primary={contact.name} />
+              </ListItemButton>
+            </ListItem>
+            <Divider />
+          </div>
+        ))}
+      </List>
+    </div>
+  );
   const sendMsg = async () => {
     // if (invalidMessage(newMsg)) {
     //   return; //show some messaeg?
@@ -109,48 +128,30 @@ function Chat(userInfo) {
 
   return (
     <Box sx={{ display: "flex" }}>
+      {/* mobile drawer */}
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: "block", sm: "none" },
+          "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+        }}>
+        <Box sx={{ overflow: "auto" }}>{drawer}</Box>
+      </Drawer>
+      {/* main drawer */}
       <Drawer
         variant="permanent"
         sx={{
-          width: drawerWidth,
-          flexShrink: 1,
-          [`& .MuiDrawer-paper`]: {
-            width: drawerWidth,
-            boxSizing: "border-box",
-          },
-        }}>
+          display: { xs: "none", sm: "block" },
+          "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+        }}
+        open>
         <Toolbar />
-        <Box sx={{ overflow: "auto" }}>
-          <Breadcrumbs
-            aria-label="breadcrumb"
-            separator={<NavigateNextIcon fontSize="small" />}
-            sx={{ ml: 1, mt: 2 }}>
-            <Link
-              underline="hover"
-              color="inherit"
-              sx={{ display: "flex", alignItems: "center" }}
-              onClick={() => {
-                navigate("/home");
-              }}>
-              <HomeIcon sx={{ mr: 0.5 }} />
-              Home
-            </Link>
-            <Typography>Chat</Typography>
-          </Breadcrumbs>
-          <Divider sx={{ mt: 2 }} />
-          <List sx={{ p: 0 }}>
-            {contacts.map((contact) => (
-              <div>
-                <ListItem key={contact.id} disablePadding>
-                  <ListItemButton>
-                    <ListItemText primary={contact.name} />
-                  </ListItemButton>
-                </ListItem>
-                <Divider />
-              </div>
-            ))}
-          </List>
-        </Box>
+        <Box sx={{ overflow: "auto" }}>{drawer}</Box>
       </Drawer>
       <Box
         component="main"
@@ -159,6 +160,27 @@ function Chat(userInfo) {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           pb: 10,
         }}>
+        <Grid container spacing={2}>
+          <Grid item xs={2}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ ml: 1, display: { sm: "none" } }}>
+              <MenuIcon />
+            </IconButton>
+          </Grid>
+          <Grid item xs={8}>
+            <Typography variant="h6" align="center" mt={1} sx={{display: { sm: "none" } }}>
+              Chat
+            </Typography>
+            <Typography variant="h6" align="center" mt={1} sx={{ ml: `${drawerWidth}px`, display: { xs: "none", sm:"block" } }}>
+              Chat
+            </Typography>
+          </Grid>
+          <Grid item xs={2} />
+        </Grid>
         <Box
           sx={{
             p: 3,
