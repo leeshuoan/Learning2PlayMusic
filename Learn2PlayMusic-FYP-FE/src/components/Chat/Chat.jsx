@@ -38,7 +38,7 @@ function Chat(userInfo) {
 
   const messagesEndRef = useRef(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [selectedChat, setSelectedChat] = useState(contacts[0].id);
+  const [selectedChat, setSelectedChat] = useState(contacts[0]);
   const [newMsg, setNewMsg] = useState("");
   const navigate = useNavigate();
 
@@ -135,7 +135,7 @@ function Chat(userInfo) {
           <List sx={{ p: 0 }}>
             {contacts.map((contact) => (
               <>
-                <ListItem key={contact.id} selected={selectedChat == contact.id} disablePadding>
+                <ListItem key={contact.id} selected={selectedChat.id == contact.id} disablePadding>
                   <ListItemButton>
                     <ListItemText primary={contact.name} />
                   </ListItemButton>
@@ -156,12 +156,14 @@ function Chat(userInfo) {
         <Box
           sx={{
             p: 3,
+            pt: 2,
             display: "flex",
             flexDirection: "column",
             height: `calc(100vh - ${useAppBarHeight() + 96}px)`, // NEED TO FIX
             overflow: "hidden",
             overflowY: "scroll",
           }}>
+          <Typography variant="h6" sx={{ textAlign: "center" }}>{selectedChat.name}</Typography>
           {messages &&
             messages.map((msg) => (
               <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />
