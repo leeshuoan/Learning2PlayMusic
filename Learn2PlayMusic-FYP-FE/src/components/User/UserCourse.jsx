@@ -124,8 +124,9 @@ const UserCourse = (userInfo) => {
       setCourseAnnouncements(announcementsData);
     }
 
-    fetchData()
-    setOpen(false);
+    fetchData().then(() => {
+      setOpen(false);
+    });
 }, [])
 
 const menuNavigate = (option) => {

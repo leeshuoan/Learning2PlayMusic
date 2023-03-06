@@ -9,42 +9,42 @@ const UserHome = ({ userInfo }) => {
   const [announcements, setAnnouncements] = useState([])
   const navigate = useNavigate()
 
-async function request(url) {
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  return response.json();
-}
-
-const fetchCourses = request(`${import.meta.env.VITE_API_URL}/user/student/course?studentId=${userInfo.id}`);
-const fetchAnnouncements = request(`${import.meta.env.VITE_API_URL}/generalannouncement`);
-
-useEffect(() => {
-  async function fetchData() {
-    try {
-      const [courses, announcements] = await Promise.all([fetchCourses, fetchAnnouncements]);
-
-      const announcementsData = announcements.slice(0, 3).map(a => ({
-        ...a,
-        date: new Date(a.SK.split('Date#')[1]).toLocaleDateString(),
-      }));
-      setAnnouncements(announcementsData);
-
-      if (courses.message === '[ERROR] studentId does not exist in database') {
-        setUnEnrolled(true);
-      } else {
-        setMyCourses(courses);
-      }
-      setOpen(false);
-    } catch (error) {
-      console.error(error);
-    }
+  async function request(endpoint) {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
   }
-  fetchData();
-}, []);
+
+  const fetchCourses = request(`/user/student/course?studentId=${userInfo.id}`);
+  const fetchAnnouncements = request(`/generalannouncement`);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [courses, announcements] = await Promise.all([fetchCourses, fetchAnnouncements]);
+
+        const announcementsData = announcements.slice(0, 3).map(a => ({
+          ...a,
+          date: new Date(a.SK.split('Date#')[1]).toLocaleDateString(),
+        }));
+        setAnnouncements(announcementsData);
+
+        if (courses.message === '[ERROR] studentId does not exist in database') {
+          setUnEnrolled(true);
+        } else {
+          setMyCourses(courses);
+        }
+        setOpen(false);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -89,11 +89,11 @@ useEffect(() => {
           </Grid>
         </Grid>
         <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={open}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Container>
     </>
   )
