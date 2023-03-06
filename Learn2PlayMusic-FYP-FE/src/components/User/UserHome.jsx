@@ -9,7 +9,7 @@ const UserHome = ({ userInfo }) => {
   const [announcements, setAnnouncements] = useState([])
   const navigate = useNavigate()
 
-  const getCourse = fetch(`${import.meta.env.VITE_API_URL}/user/student/course?studentId=${userInfo.id}`, {
+  const getCourses = fetch(`${import.meta.env.VITE_API_URL}/user/student/course?studentId=${userInfo.id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -24,8 +24,9 @@ const UserHome = ({ userInfo }) => {
   })
 
   useEffect(() => {
-    Promise.all([getGeneralAnnouncements, getCourse]).then(async ([res1, res2]) => {
+    Promise.all([getGeneralAnnouncements, getCourses]).then(async ([res1, res2]) => {
       const [data1, data2] = await Promise.all([res1.json(), res2.json()])
+      console.log(data2)
       data1.splice(3, data1.length - 3)
       for (let idx in data1) {
         data1[idx].date = new Date(data1[idx].SK.split('Date#')[1]).toLocaleDateString()
