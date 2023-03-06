@@ -131,10 +131,10 @@ class CourseStack(Stack):
         course_resource = main_api.root.add_resource("course")
 
         # Create sub-resources under the parent resource
+        course_student_resource = course_resource.add_resource("student")
         course_quiz_resource = course_resource.add_resource("quiz")
         course_homework_resource = course_resource.add_resource("homework")
-        course_announcement_resource = course_resource.add_resource(
-            "announcement")
+        course_announcement_resource = course_resource.add_resource("announcement")
         course_material_resource = course_resource.add_resource("material")
 
         # Create sub-sub-resources under the parent resource
