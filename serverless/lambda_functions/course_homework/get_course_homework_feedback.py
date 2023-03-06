@@ -30,6 +30,9 @@ def lambda_handler(event, context):
                     "PK": f"Course#{courseId}",
                     "SK": f"Student#{studentId}Homework#{homeworkId}"
                 })
+            if "Item" not in response:
+                raise Exception("No such courseid/studentid/homeworkid")
+            
             items = response["Item"]
         else:
             response = table.query(
@@ -39,7 +42,7 @@ def lambda_handler(event, context):
                     ":SK": f"Student#{studentId}Homework#"
                 })
             items = response["Items"]
-            
+
         res["statusCode"] = 200
         res["headers"] = {
             "Access-Control-Allow-Headers": "Content-Type",
