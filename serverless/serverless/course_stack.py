@@ -22,6 +22,7 @@ class CourseStack(Stack):
         # Define Constants Here
         FUNCTIONS_FOLDER = "./lambda_functions/"
         COURSE_FUNCTIONS_FOLDER = "course"
+        COURSE_STUDENT_FUNCTIONS_FOLDER = "course.student"
         COURSE_MATERIAL_FUNCTIONS_FOLDER = "course_material"
         COURSE_HOMEWORK_FUNCTIONS_FOLDER = "course_homework"
         COURSE_QUIZ_FUNCTIONS_FOLDER = "course_quiz"
@@ -68,18 +69,21 @@ class CourseStack(Stack):
         get_course_homework_feedback = _lambda.Function(self, "getCourseHomeworkFeedback", runtime=_lambda.Runtime.PYTHON_3_9,
                                                handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.get_course_homework_feedback.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
-        # /course/announcement Functions
+        # /course/announcement
         get_course_announcement = _lambda.Function(self, "getCourseAnnouncement",  runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.get_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course_announcement = _lambda.Function(self, "postCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.post_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course_announcement = _lambda.Function(self, "deleteCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
-        # /course Functions
+        # /course
         get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.get_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course = _lambda.Function(self, "postCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.post_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course = _lambda.Function(self, "deleteCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.delete_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
+        # /course/student
+        get_course_student = _lambda.Function(self, "getCourseStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_STUDENT_FUNCTIONS_FOLDER}.get_course_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
-        # # /course/material Functions
+
+        # # /course/material
         get_course_material = _lambda.Function(self, "get_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.get_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course_material = _lambda.Function(self, "post_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.post_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course_material = _lambda.Function(self, "delete_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.delete_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -91,7 +95,7 @@ class CourseStack(Stack):
         # /course/quiz/submit
         post_course_quiz_submit = _lambda.Function(self, "postCourseQuizSubmit", runtime=_lambda.Runtime.NODEJS_16_X,
                                                    handler="post_course_quiz_submit.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=s3_dynamodb_role)
-        # /course/quiz/question Functions
+        # /course/quiz/question
         get_course_quiz_question = _lambda.Function(self, "getCourseQuizQuestion", runtime=_lambda.Runtime.PYTHON_3_9,
                                                      handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=s3_dynamodb_role,
                                                      environment={
@@ -114,21 +118,17 @@ class CourseStack(Stack):
         # Create sub-resources under the parent resource
         course_quiz_resource = course_resource.add_resource("quiz")
         course_homework_resource = course_resource.add_resource("homework")
-        course_announcement_resource = course_resource.add_resource(
-            "announcement")
+        course_announcement_resource = course_resource.add_resource("announcement")
         course_material_resource = course_resource.add_resource("material")
 
         # Create sub-sub-resources under the parent resource
-        course_quiz_question_resource = course_quiz_resource.add_resource(
-            "question")
-        course_quiz_submit_resource = course_quiz_resource.add_resource(
-            "submit")
-        course_homework_feedback_resource = course_homework_resource.add_resource(
-            "feedback")
+        course_student_resource = course_resource.add_resource("student")
+        course_quiz_question_resource = course_quiz_resource.add_resource("question")
+        course_quiz_submit_resource = course_quiz_resource.add_resource("submit")
+        course_homework_feedback_resource = course_homework_resource.add_resource("feedback")
         
 
         # Create methods in the required resources
-
         # /course
         # Define a JSON Schema to accept Request Body in JSON format for POST Method
         post_course_model = main_api.add_model(
@@ -154,6 +154,10 @@ class CourseStack(Stack):
             'method.request.querystring.courseId': True})
         course_resource.add_method("POST", apigw.LambdaIntegration(post_course), request_models={
             "application/json": post_course_model})
+
+        # /course/student
+        course_student_resource.add_method("GET", apigw.LambdaIntegration(get_course_student), request_parameters={
+            'method.request.querystring.courseId': True})
 
         # /course/material
         # Define a JSON Schema to accept Request Body in JSON format for POST Method
