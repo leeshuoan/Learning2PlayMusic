@@ -4,28 +4,10 @@ import { db } from "../utils/firebase";
 import { collection, query, orderBy, limit, addDoc } from "firebase/firestore";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import ChatMessage from "./ChatMessage";
-import {
-  Breadcrumbs,
-  Link,
-  Box,
-  Button,
-  Divider,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  Toolbar,
-  Typography,
-  InputBase,
-  ListItemText,
-  Card,
-  IconButton,
-  Grid,
-} from "@mui/material";
+import { Breadcrumbs, Link, Box, Button, Divider, Drawer, List, ListItem, ListItemButton, Toolbar, Typography, InputBase, ListItemText, Card } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import MenuIcon from "@mui/icons-material/Menu";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import { width } from "@mui/system";
+import useAppBarHeight from "../utils/AppBarHeight";
 const drawerWidth = 240;
 
 function Chat(userInfo) {
@@ -63,49 +45,33 @@ function Chat(userInfo) {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+  // check for SG phone number or email
+  function invalidMessage(message) {
+    // Regular expression patterns
+    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+    const phoneRegex = /[6|8|9]\d{7}|\+65[6|8|9]\d{7}|\+65\s[6|8|9]\d{7}/g;
 
+    // Check if message contains email
+    if (emailRegex.test(message)) {
+      return true; // message is invalid
+    } else {
+      // remove all non digits in the message
+      phoneNumCheck = message.replace(/\D/g, "");
+      // Check if message contains phone number
+      if (phoneRegex.test(phoneNumCheck)) {
+        return true; // message is invalid
+      }
+      return false; // message is valid
+    }
+  }
   const handleKeyPress = (event) => {
     if (event.key === "Enter" && newMsg !== "") {
       sendMsg();
     }
   };
-
-  const drawer = (
-    <div>
-      <Breadcrumbs
-        aria-label="breadcrumb"
-        separator={<NavigateNextIcon fontSize="small" />}
-        sx={{ ml: 1, mt: 2 }}>
-        <Link
-          underline="hover"
-          color="inherit"
-          sx={{ display: "flex", alignItems: "center" }}
-          onClick={() => {
-            navigate("/home");
-          }}>
-          <HomeIcon sx={{ mr: 0.5 }} />
-          Home
-        </Link>
-        <Typography>Chat</Typography>
-      </Breadcrumbs>
-      <Divider sx={{ mt: 2 }} />
-      <List sx={{ p: 0 }}>
-        {contacts.map((contact) => (
-          <div>
-            <ListItem key={contact.id} disablePadding>
-              <ListItemButton>
-                <ListItemText primary={contact.name} />
-              </ListItemButton>
-            </ListItem>
-            <Divider />
-          </div>
-        ))}
-      </List>
-    </div>
-  );
   const sendMsg = async () => {
     // if (invalidMessage(newMsg)) {
-    //   return; //show some messaeg?
+    //   return; //show some message?
     // }
     var chatMsg = newMsg
       .replace(/[6|8|9]\d{7}|\+65[6|8|9]\d{7}|\+65\s[6|8|9]\d{7}/g, "*********")
@@ -117,41 +83,53 @@ function Chat(userInfo) {
       uid: userInfo.userInfo.id,
     });
     console.log("Message sent!");
-    // const chatRef = doc(db, "Chat#1", "hi")
-    // await setDoc(chatRef, {
-    //   text: newMsg,
-    //   createdAt: new Date(),
-    //   uid: userInfo.id,
-    // }, { merge: true })
     setNewMsg("");
   };
 
   return (
     <Box sx={{ display: "flex" }}>
-      {/* mobile drawer */}
-      <Drawer
-        variant="temporary"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
-        }}
-        sx={{
-          display: { xs: "block", sm: "none" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
-        }}>
-        <Box sx={{ overflow: "auto" }}>{drawer}</Box>
-      </Drawer>
-      {/* main drawer */}
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: "none", sm: "block" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
-        }}
-        open>
+          width: drawerWidth,
+          flexShrink: 1,
+          [`& .MuiDrawer-paper`]: {
+            width: drawerWidth,
+            boxSizing: "border-box",
+          },
+        }}>
         <Toolbar />
-        <Box sx={{ overflow: "auto" }}>{drawer}</Box>
+        <Box sx={{ overflow: "auto" }}>
+          <Breadcrumbs
+            aria-label="breadcrumb"
+            separator={<NavigateNextIcon fontSize="small" />}
+            sx={{ ml: 1, mt: 2 }}>
+            <Link
+              underline="hover"
+              color="inherit"
+              sx={{ display: "flex", alignItems: "center" }}
+              onClick={() => {
+                navigate("/home");
+              }}>
+              <HomeIcon sx={{ mr: 0.5 }} />
+              Home
+            </Link>
+            <Typography>Chat</Typography>
+          </Breadcrumbs>
+          <Divider sx={{ mt: 2 }} />
+          <List sx={{ p: 0 }}>
+            {contacts.map((contact) => (
+              <>
+                <ListItem key={contact.id} disablePadding>
+                  <ListItemButton>
+                    <ListItemText primary={contact.name} />
+                  </ListItemButton>
+                </ListItem>
+                <Divider />
+              </>
+            ))}
+          </List>
+        </Box>
       </Drawer>
       <Box
         component="main"
@@ -160,33 +138,12 @@ function Chat(userInfo) {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           pb: 10,
         }}>
-        <Grid container spacing={2}>
-          <Grid item xs={2}>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ ml: 1, display: { sm: "none" } }}>
-              <MenuIcon />
-            </IconButton>
-          </Grid>
-          <Grid item xs={8}>
-            <Typography variant="h6" align="center" mt={1} sx={{display: { sm: "none" } }}>
-              Chat
-            </Typography>
-            <Typography variant="h6" align="center" mt={1} sx={{ ml: `${drawerWidth}px`, display: { xs: "none", sm:"block" } }}>
-              Chat
-            </Typography>
-          </Grid>
-          <Grid item xs={2} />
-        </Grid>
         <Box
           sx={{
             p: 3,
             display: "flex",
             flexDirection: "column",
-            height: 500, // NEED TO FIX
+            height: `calc(100vh - ${useAppBarHeight()+96}px)`, // NEED TO FIX
             overflow: "hidden",
             overflowY: "scroll",
           }}>
@@ -200,8 +157,9 @@ function Chat(userInfo) {
               display: "flex",
               position: "fixed",
               bottom: 0,
-              width: { sm: `calc(100% - ${drawerWidth}px)` },
-              p: 3,
+              width: { sm: `calc(100% - ${drawerWidth+40}px)` },
+              p: 3, 
+              pl: 0
             }}>
             <Card
               variant="contained"
