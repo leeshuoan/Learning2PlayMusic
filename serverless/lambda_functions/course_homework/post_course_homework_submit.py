@@ -4,10 +4,14 @@ import json
 import uuid
 import os
 
+from global_functions.responses import *
+
 dynamodb = boto3.resource('dynamodb')
 table_name = "LMS"
+table = dynamodb.Table(table_name)
 bucket_name = os.environ['HOMEWORK_SUBMISSION_BUCKET_NAME']
 s3 = boto3.client('s3')
+
 
 def lambda_handler(event, context):
     try:
@@ -22,44 +26,35 @@ def lambda_handler(event, context):
         base64_value = base64data.split(',')[1]
         homework_content = base64.b64decode(base64_value)
 
+        random_uuid = str(uuid.uuid4().int)[:8]
         # Upload the image data to S3
-        key = f'Course{course_id}/Student{student_id}/Homework{homework_id}.{file_extension}'
+        key = f'Course{course_id}/Student{student_id}/Homework{homework_id}_{random_uuid}.{file_extension}'
         if file_extension == "pdf":
             content_type = "application/pdf"
+        elif file_extension == "png" or file_extension == "jpg" or file_extension == "jpeg":
+            content_type = f'image/{file_extension}'
         else:
-            content_type = f'image/{file_extension}'       
+            raise ("Submission must a .pdf, .png, .jpg or .jpeg file")
 
         s3_params = {
             'Bucket': bucket_name,
             'Key': key,
             'Body': homework_content,
             'ContentType': content_type,
-            'ContentDisposition:': "inline"
+            'ContentDisposition': "inline"
         }
 
-        uploaded_image = s3.put_object(**s3_params)
+        s3.put_object(**s3_params)
 
-        return {
-            "statusCode": 200,
-            "body": json.dumps({"message": f"{file_extension} file successfully uploaded"})
-        }
-        dynamo_key = {
-            "PK": f"Course#{course_id}",
-            "SK": f"Student#{student_id}Quiz#{homework_id}"
+        item = {
+            'PK': f'Course#{course_id}',
+            'SK': f'Student#{student_id}Homework#{homework_id}',
+            'HomeworkContent': bucket_name + "/" + key
         }
 
+        response = table.put_item(Item=item)
 
-        update_params = {
-            "TableName": table_name,
-            "Key": key,
-        }
-
-        after_update_response = dynamodb.put_item(update_params)
-
-
+        return response_202_msg(f"{file_extension} file successfully uploaded")
 
     except Exception as e:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"error": str(e)})
-        }
+        return response_400(str(e))
