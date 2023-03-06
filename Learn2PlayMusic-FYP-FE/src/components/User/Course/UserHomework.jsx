@@ -136,7 +136,7 @@ const UserHomework = () => {
             }}>
             {course.name}
           </Link>
-          <Typography color="text.primary">{homework.title}</Typography>
+          <Typography color="text.primary">{homework.name}</Typography>
         </Breadcrumbs>
 
         <Card
@@ -154,7 +154,7 @@ const UserHomework = () => {
           <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
             <Box>
               <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
-                Miss Felicia Ng
+                {course.teacher}
               </Typography>
               <Typography variant="body2" sx={{ textAlign: "right" }}>
                 Teacher

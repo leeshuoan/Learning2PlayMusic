@@ -6,6 +6,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import EditIcon from '@mui/icons-material/Edit';
 import { Auth, Storage } from 'aws-amplify'
 import { useNavigate } from 'react-router-dom';
+import { toast } from "react-toastify";
 
 const Profile = (userInfo) => {
   const theme = useTheme()
@@ -56,6 +57,7 @@ const Profile = (userInfo) => {
           console.log(err)
         })
       })
+      toast.success("Profile updated successfully")
     }).catch((err) => {
       console.log(err)
     })

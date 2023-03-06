@@ -5,8 +5,6 @@ import HomeIcon from '@mui/icons-material/Home'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const UserHomeworkFeedback = (userInfo) => {
-  console.log(userInfo)
-
   const homework = {
     id: 1,
     title: "Homework 1",
@@ -19,33 +17,40 @@ const UserHomeworkFeedback = (userInfo) => {
   const { homeworkId } = useParams();
   const [open, setOpen] = useState(true);
   const [course, setCourse] = useState({})
+  const [feedback, setFeedback] = useState({})
 
-  const getCourseAPI = fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+  async function request(endpoint) {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  }
+
+  const getCourseAPI = request(`/course?courseId=${courseid}`)
+  const getHomeworkFeedbackAPI = request(`/course/homework/feedback?courseId=${courseid}&studentId=${userInfo.userInfo.id}&homeworkId=${homeworkId}`)
 
   useEffect(() => {
-    Promise.all([getCourseAPI])
-      .then(async ([res1]) => {
-        const [data1] = await Promise.all([
-          res1.json(),
-        ]);
+    async function fetchData() {
+      const [data1, data2] = await Promise.all([getCourseAPI, getHomeworkFeedbackAPI])
+      console.log(data2)
 
-        let courseData = {
-          id: data1[0].SK.split("#")[1],
-          name: data1[0].CourseName,
-          timeslot: data1[0].CourseSlot,
-        };
-        setCourse(courseData);
-        setOpen(false)
-      })
-      .catch((error) => {
-        console.log(error);
-        setOpen(false);
-      });
+      let courseData = {
+        id: data1[0].SK.split("#")[1],
+        name: data1[0].CourseName,
+        timeslot: data1[0].CourseSlot,
+        teacher: data1[0].TeacherName
+      };
+      setCourse(courseData);
+      setFeedback(data2)
+    }
+
+
+    fetchData().then(() => {
+      setOpen(false)
+    })
   }, []);
 
   return (
@@ -83,7 +88,7 @@ const UserHomeworkFeedback = (userInfo) => {
           <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
             <Box>
               <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
-                Miss Felicia Ng
+                {course.teacher}
               </Typography>
               <Typography variant="body2" sx={{ textAlign: "right" }}>
                 Teacher
@@ -96,17 +101,17 @@ const UserHomeworkFeedback = (userInfo) => {
           <Typography variant="subsubtitle" sx={{ mb: 2 }}>STUDENT NAME</Typography>
           <Typography variant="subtitle1" sx={{ mb: 2 }}>{userInfo.userInfo.name}</Typography>
           <Typography variant="subsubtitle" sx={{ mb: 2 }}>FILE SUBMISSION</Typography>
-          <Typography variant="body1" sx={{ mb: 2 }}><Link>homework1_tom.jpg</Link></Typography>
-          <Typography variant="body1" sx={{ mb: 2 }}>I think the answer is piano. Piano has white keys.</Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}><Link>{feedback.SubmissionFileName}</Link></Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>{feedback.SubmissionContent}</Typography>
           <Divider sx={{ my: 3 }} />
           <Box sx={{ display: "flex" }}>
             <Box sx={{ mr: 3 }}>
               <Typography variant="subsubtitle" sx={{ mb: 2 }}>HOMEWORK SCORE</Typography>
-              <Typography variant="body1" sx={{ mb: 2 }}>HOMEWORK SCORE</Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>{feedback.HomeworkScore * 100}%</Typography>
             </Box>
             <Box>
               <Typography variant="subsubtitle" sx={{ mb: 2 }}>TEACHER'S COMMENTS</Typography>
-              <Typography variant="body1" sx={{ mb: 2 }}>Hi Tom, piano is different from organ</Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>{feedback.TeacherComments}</Typography>
             </Box>
           </Box>
         </Card>

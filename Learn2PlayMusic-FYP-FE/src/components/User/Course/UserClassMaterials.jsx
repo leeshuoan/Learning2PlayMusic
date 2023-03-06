@@ -35,6 +35,7 @@ const UserClassMaterials = () => {
           id: data1[0].SK.split("#")[1],
           name: data1[0].CourseName,
           timeslot: data1[0].CourseSlot,
+          teacher: data1[0].TeacherName
         }
         setCourse(courseData)
         setOpen(false)
@@ -76,7 +77,7 @@ const UserClassMaterials = () => {
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
           <Box>
-            <Typography variant='subtitle1' sx={{ mb: 0.5 }}>Miss Felicia Ng</Typography>
+            <Typography variant='subtitle1' sx={{ mb: 0.5 }}>{course.teacher}</Typography>
             <Typography variant='body2' sx={{ textAlign: "right" }}>Teacher</Typography>
           </Box>
         </Box>

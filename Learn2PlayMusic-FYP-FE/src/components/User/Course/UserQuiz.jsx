@@ -84,6 +84,7 @@ const UserQuiz = (userInfo) => {
           id: courseInfo[0].SK.split("#")[1],
           name: courseInfo[0].CourseName,
           timeslot: courseInfo[0].CourseSlot,
+          teacher: courseInfo[0].TeacherName,
         };
         setCourse(courseData);
 
@@ -266,7 +267,7 @@ const UserQuiz = (userInfo) => {
           <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
             <Box>
               <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
-                Miss Felicia Ng
+                {course.teacher}
               </Typography>
               <Typography variant="body2" sx={{ textAlign: "right" }}>
                 Teacher
