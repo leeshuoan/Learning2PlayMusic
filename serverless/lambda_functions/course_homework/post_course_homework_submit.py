@@ -1,57 +1,60 @@
+import base64
 import boto3
 import json
 import uuid
+import os
 
-dynamodb = boto3.client('dynamodb')
-dynamodb_resource = boto3.resource('dynamodb')
+from global_functions.responses import *
+
+dynamodb = boto3.resource('dynamodb')
 table_name = "LMS"
+table = dynamodb.Table(table_name)
+bucket_name = os.environ['HOMEWORK_SUBMISSION_BUCKET_NAME']
+s3 = boto3.client('s3')
 
-       
+
 def lambda_handler(event, context):
     try:
         request_body = json.loads(event['body'])
         course_id = request_body['courseId']
         student_id = request_body['studentId']
-        quiz_id = request_body['quizId']
-        quiz_score = request_body['quizScore']
+        homework_id = request_body['homeworkId']
+        base64data = request_body['homeworkContent']
 
-        key = {
-            "PK": f"Course#{course_id}",
-            "SK": f"Student#{student_id}Quiz#{quiz_id}"
+        # Extract the file extension and decode the base64 data
+        file_extension = base64data.split(';')[0].split('/')[1]
+        base64_value = base64data.split(',')[1]
+        homework_content = base64.b64decode(base64_value)
+
+        random_uuid = str(uuid.uuid4().int)[:8]
+        # Upload the image data to S3
+        key = f'Course{course_id}/Student{student_id}/Homework{homework_id}_{random_uuid}.{file_extension}'
+        if file_extension == "pdf":
+            content_type = "application/pdf"
+        elif file_extension == "png" or file_extension == "jpg" or file_extension == "jpeg":
+            content_type = f'image/{file_extension}'
+        else:
+            raise ("Submission must a .pdf, .png, .jpg or .jpeg file")
+
+        s3_params = {
+            'Bucket': bucket_name,
+            'Key': key,
+            'Body': homework_content,
+            'ContentType': content_type,
+            'ContentDisposition': "inline"
         }
 
-        get_attempts_response = dynamodb.get_item(
-            TableName=table_name,
-            Key=key,
-            ProjectionExpression="QuizAttempt, QuizMaxAttempt"
-        )
+        s3.put_object(**s3_params)
 
-        attempts = get_attempts_response['Item']
-        if attempts['QuizAttempt'] >= attempts['QuizMaxAttempt']:
-            raise ValueError(f"Already attempted max number of times: {attempts['QuizAttempt']}")
-
-        update_expression = "set QuizScore = :newQuizScore, QuizAttempt = QuizAttempt + :val"
-        expression_attribute_values = {
-            ":newQuizScore": {"N": str(quiz_score)},
-            ":val": {"N": str(1)}
+        item = {
+            'PK': f'Course#{course_id}',
+            'SK': f'Student#{student_id}Homework#{homework_id}',
+            'HomeworkContent': bucket_name + "/" + key
         }
 
-        update_params = {
-            "TableName": table_name,
-            "Key": key,
-            "UpdateExpression": update_expression,
-            "ExpressionAttributeValues": expression_attribute_values
-        }
+        response = table.put_item(Item=item)
 
-        after_update_response = dynamodb.update_item(**update_params)
-
-        return {
-            "statusCode": 200,
-            "body": json.dumps({"message": f"Quiz {quiz_id} successfully submitted"})
-        }
+        return response_202_msg(f"{file_extension} file successfully uploaded")
 
     except Exception as e:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"error": str(e)})
-        }
+        return response_400(str(e))

@@ -23,10 +23,20 @@ def lambda_handler(event, context):
                 ":PK": f"Student#{studentId}",
                 ":SK": "Course#"
             })
+        
+        courses = []
 
-        items = response["Items"]
+        for course in response["Items"]:
+            courseInfos = table.query(
+                KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
+                ExpressionAttributeValues={
+                    ":PK": "Course",
+                    ":SK": course["SK"]
+                }
+            )
+            courses.append(courseInfos["Items"][0])
 
-        return response_200_items(items)
+        return response_200_items(courses)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

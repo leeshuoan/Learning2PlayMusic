@@ -1,20 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  useTheme,
-  Typography,
-  Container,
-  Card,
-  Box,
-  TextField,
-  Link,
-  Button,
-  Breadcrumbs,
-  Backdrop,
-  IconButton,
-  CircularProgress,
-} from "@mui/material";
-
+import { useTheme, Typography, Container, Card, Box, TextField, Link, Button, Breadcrumbs, Backdrop, IconButton, CircularProgress } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
@@ -23,24 +9,60 @@ import TransitionModal from "../../utils/TransitionModal";
 import celebration from "../../../assets/celebration.png";
 
 const UserHomework = () => {
-  const homework = {
-    id: 1,
-    title: "Homework 1",
-    assignedDate: "1 feb 2023, 23:59pm ",
-    dueDate: "10 feb 2023, 23:59pm",
-  };
-
   const theme = useTheme();
   const navigate = useNavigate();
   const { courseid } = useParams();
   const { homeworkId } = useParams();
   const [file, setFile] = useState(null);
   const [course, setCourse] = useState({});
+  const [homework, setHomework] = useState({});
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [submitted, setSubmitted] = useState(false);
   const [textFieldValue, setTextFieldValue] = useState("");
   const handleClose = () => setOpen(false);
+
+  async function request(endpoint) {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  }
+
+  const getCourseAPI = request(`/course?courseId=${courseid}`);
+  const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&homeworkId=${homeworkId}`);
+
+  useEffect(() => {
+    async function fetchData() {
+      const [data1, data2] = await Promise.all([getCourseAPI, getHomeworkAPI]);
+
+      let courseData = {
+        id: data1[0].SK.split("#")[1],
+        name: data1[0].CourseName,
+        timeslot: data1[0].CourseSlot,
+      };
+      setCourse(courseData);
+
+      let formattedDueDate = new Date(data2.HomeworkDueDate).toLocaleDateString() + " " + new Date(data2.HomeworkDueDate).toLocaleTimeString();
+      let formattedAssignedDate = new Date(data2.HomeworkAssignedDate).toLocaleDateString() + " " + new Date(data2.HomeworkAssignedDate).toLocaleTimeString();
+
+      let homeworkData = {
+        id: data2.SK.split("#")[1],
+        name: data2.HomeworkName,
+        description: data2.HomeworkDescription,
+        dueDate: formattedDueDate,
+        assignedDate: formattedAssignedDate
+      };
+      setHomework(homeworkData);
+    }
+
+    fetchData().then(() => {
+      setIsLoading(false);
+    });
+  }, []);
 
   const handleTextFieldChange = (event) => {
     setTextFieldValue(event.target.value);
@@ -60,29 +82,6 @@ const UserHomework = () => {
   const handleRemoveFile = () => {
     setFile(null);
   };
-
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        let courseData = {
-          id: data[0].SK.split("#")[1],
-          name: data[0].CourseName,
-          timeslot: data[0].CourseSlot,
-        };
-        setCourse(courseData);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-        setIsLoading(false);
-      });
-  }, []);
 
   return (
     <>
@@ -167,13 +166,10 @@ const UserHomework = () => {
         <Box sx={{ display: submitted ? "none" : "block" }}>
           <Card sx={{ py: 3, px: 5, mt: 2 }}>
             <Typography variant="h6" sx={{ mb: 1 }}>
-              {homework.title}
+              {homework.name}
             </Typography>
             <Typography variant="body2">
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sed
-              delectus nostrum non rerum ut temporibus maiores totam molestias,
-              quas unde eius officiis repellat, illum repudiandae earum,
-              consectetur dicta facere ipsam.
+              {homework.description}
             </Typography>
             <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-start" }}>
               <Box>
@@ -240,7 +236,7 @@ const UserHomework = () => {
               rows={7}
               multiline
               fullWidth
-              sx={{ mt: 4 }}
+              sx={{ mt: 1 }}
               value={textFieldValue}
               onChange={handleTextFieldChange}
             />
