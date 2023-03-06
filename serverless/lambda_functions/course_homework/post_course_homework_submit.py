@@ -19,7 +19,7 @@ def lambda_handler(event, context):
 
         # Extract the file extension and decode the base64 data
         file_extension = base64data.split(';')[0].split('/')[1]
-        base64_value = base64data.split('')[1]
+        base64_value = base64data.split(',')[1]
         homework_content = base64.b64decode(base64_value)
 
         # Upload the image data to S3
