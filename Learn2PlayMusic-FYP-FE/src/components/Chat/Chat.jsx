@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { db } from '../utils/firebase';
+import { db } from "../utils/firebase";
 import { collection, query, orderBy, limit, addDoc } from "firebase/firestore";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import ChatMessage from "./ChatMessage";
@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import { width } from "@mui/system";
 const drawerWidth = 240;
 
 function Chat(userInfo) {
@@ -36,9 +37,10 @@ function Chat(userInfo) {
     },
   ];
 
+  const messagesEndRef = useRef(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [newMsg, setNewMsg] = useState("");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const messagesRef = collection(db, "Chat#1");
   const chatQuery = query(messagesRef, orderBy("createdAt", "asc"), limit(25));
@@ -46,6 +48,14 @@ function Chat(userInfo) {
   const [messages, loadingMsgs, error] = useCollectionData(chatQuery, {
     idField: "id",
   });
+
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -162,7 +172,7 @@ function Chat(userInfo) {
             messages.map((msg) => (
               <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />
             ))}
-
+          <div ref={messagesEndRef} />
           <Box
             sx={{
               display: "flex",
