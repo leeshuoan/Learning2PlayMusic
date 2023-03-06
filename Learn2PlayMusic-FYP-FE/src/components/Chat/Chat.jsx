@@ -11,7 +11,8 @@ import useAppBarHeight from "../utils/AppBarHeight";
 const drawerWidth = 240;
 
 function Chat(userInfo) {
-  const contacts = [
+  console.log(userInfo)
+  let contacts = [
     {
       id: "Chat#1",
       name: "TeacherName",
@@ -22,8 +23,22 @@ function Chat(userInfo) {
     },
   ];
 
+  if (userInfo.userInfo.name === "TeacherName") {
+    contacts = [
+      {
+        id: "Chat#1",
+        name: "StudentName",
+      },
+      {
+        id: "Chat#2",
+        name: "AdminName",
+      },
+    ];
+  }
+
   const messagesEndRef = useRef(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [selectedChat, setSelectedChat] = useState(contacts[0].id);
   const [newMsg, setNewMsg] = useState("");
   const navigate = useNavigate();
 
@@ -120,7 +135,7 @@ function Chat(userInfo) {
           <List sx={{ p: 0 }}>
             {contacts.map((contact) => (
               <>
-                <ListItem key={contact.id} disablePadding>
+                <ListItem key={contact.id} selected={selectedChat == contact.id} disablePadding>
                   <ListItemButton>
                     <ListItemText primary={contact.name} />
                   </ListItemButton>
@@ -143,7 +158,7 @@ function Chat(userInfo) {
             p: 3,
             display: "flex",
             flexDirection: "column",
-            height: `calc(100vh - ${useAppBarHeight()+96}px)`, // NEED TO FIX
+            height: `calc(100vh - ${useAppBarHeight() + 96}px)`, // NEED TO FIX
             overflow: "hidden",
             overflowY: "scroll",
           }}>
@@ -157,8 +172,8 @@ function Chat(userInfo) {
               display: "flex",
               position: "fixed",
               bottom: 0,
-              width: { sm: `calc(100% - ${drawerWidth+40}px)` },
-              p: 3, 
+              width: { sm: `calc(100% - ${drawerWidth + 40}px)` },
+              p: 3,
               pl: 0
             }}>
             <Card

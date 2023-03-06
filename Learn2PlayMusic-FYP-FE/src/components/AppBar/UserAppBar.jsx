@@ -1,18 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Menu,
-  Container,
-  MenuItem,
-  useTheme,
-  Avatar,
-  Divider,
-  ListItemIcon,
-  Tooltip,
-} from "@mui/material";
+import { AppBar, Box, Toolbar, IconButton, Menu, Container, MenuItem, useTheme, Avatar, Divider, ListItemIcon, Tooltip } from "@mui/material";
 import Logout from "@mui/icons-material/Logout";
 import ChatIcon from "@mui/icons-material/Chat";
 import { Auth, Storage } from "aws-amplify";

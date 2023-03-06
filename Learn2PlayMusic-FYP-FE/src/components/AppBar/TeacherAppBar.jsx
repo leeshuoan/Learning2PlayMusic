@@ -1,18 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Menu,
-  Container,
-  MenuItem,
-  useTheme,
-  Avatar,
-  Divider,
-  ListItemIcon,
-  Tooltip,
-} from "@mui/material";
+import { AppBar, Box, Toolbar, IconButton, Menu, Container, MenuItem, useTheme, Avatar, Divider, ListItemIcon, Tooltip } from "@mui/material";
 import Logout from "@mui/icons-material/Logout";
 import ChatIcon from "@mui/icons-material/Chat";
 import { Auth, Storage } from "aws-amplify";
@@ -55,8 +42,8 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
     <>
       {
         <AppBar
-          position="static"
-          sx={{ bgcolor: theme.palette.background.paper }}>
+          position="sticky"
+          sx={{ bgcolor: theme.palette.background.paper, zIndex: 9999 }}>
           <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
             <Toolbar
               disableGutters
@@ -70,6 +57,7 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
                     width: 32,
                     height: 32,
                     bgcolor: "grey[100]",
+                    "&:hover": { cursor: "pointer" }
                   }}>
                   <ChatIcon onClick={() => navigate("/chat")} />
                 </Avatar>
@@ -94,6 +82,7 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
                       width: 32,
                       height: 32,
                       bgcolor: "grey[100]",
+                      "&:hover": { cursor: "pointer" }
                     }}>
                     <ChatIcon onClick={() => navigate("/chat")} />
                   </Avatar>
