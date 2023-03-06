@@ -18,7 +18,7 @@ class CourseStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # The code that defines your stack goes here
-        f = 3
+
         # Define Constants Here
         FUNCTIONS_FOLDER = "./lambda_functions/"
         COURSE_FUNCTIONS_FOLDER = "course"
@@ -38,6 +38,10 @@ class CourseStack(Stack):
         )
         L2PMA_question_image_bucket.add_to_resource_policy(policy_statement)
 
+        # Create S3 bucket with read/write allowed
+        L2PMA_homework_submission_bucket = s3.Bucket(self, "L2PMAHomeworkSubmissionBucket")
+        L2PMA_homework_submission_bucket.add_to_resource_policy(policy_statement)
+
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
         general_role = iam.get_role(RoleName="lambda-general-role")
@@ -54,7 +58,7 @@ class CourseStack(Stack):
         S3_DYNAMODB_ROLE.add_to_policy(dynamodb_policy)
 
         s3_policy = aws_iam.PolicyStatement(effect = aws_iam.Effect.ALLOW,
-          resources = [f'{L2PMA_question_image_bucket.bucket_arn}/*'],
+          resources = [f'{L2PMA_question_image_bucket.bucket_arn}/*', f'{L2PMA_homework_submission_bucket.bucket_arn}/*'],
           actions = ['s3:GetObject', 's3:PutObject'])
         S3_DYNAMODB_ROLE.add_to_policy(s3_policy)
         AWSLambdaBasicExecutionRole = aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AWSLambdaBasicExecutionRole')
@@ -66,11 +70,13 @@ class CourseStack(Stack):
 
         # Create /course/homework/feedback AWS Lambda function
         get_course_homework_feedback = _lambda.Function(self, "getCourseHomeworkFeedback", runtime=_lambda.Runtime.PYTHON_3_9,
-                                               handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.get_course_homework_feedback.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+                                               handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.get_course_homework_feedback.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE,
+                                                environment={"HOMEWORK_SUBMISSION_BUCKET_NAME": L2PMA_homework_submission_bucket.bucket_name})
 
         # /course/homework/submit function
         post_course_homework_submit = _lambda.Function(self, "postCourseHomeworkSubmit", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.post_course_homework_submit.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE)
+                                                handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.post_course_homework_submit.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE,
+                                                environment={"HOMEWORK_SUBMISSION_BUCKET_NAME": L2PMA_homework_submission_bucket.bucket_name})
 
         # /course/announcement Functions
         get_course_announcement = _lambda.Function(self, "getCourseAnnouncement",  runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.get_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
