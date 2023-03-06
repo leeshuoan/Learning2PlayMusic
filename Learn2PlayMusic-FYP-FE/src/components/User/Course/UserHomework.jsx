@@ -42,6 +42,13 @@ const UserHomework = () => {
   const [textFieldValue, setTextFieldValue] = useState("");
   const handleClose = () => setOpen(false);
 
+  const getHomeworkAPI = fetch(`${import.meta.env.VITE_API_URL}/course/homework?courseId=${courseid}&homeworkId=${homeworkId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+
   const handleTextFieldChange = (event) => {
     setTextFieldValue(event.target.value);
   };

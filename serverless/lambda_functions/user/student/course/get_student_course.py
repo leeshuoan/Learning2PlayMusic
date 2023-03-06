@@ -34,7 +34,7 @@ def lambda_handler(event, context):
                     ":SK": course["SK"]
                 }
             )
-            courses.append(courseInfos["items"][0])
+            courses.append(courseInfos["Items"][0])
 
         return response_200_items(courses)
 
