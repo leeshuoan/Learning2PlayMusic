@@ -291,8 +291,8 @@ class CourseStack(Stack):
                     "homeworkId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)                },
                 required=["courseId", "studentId", "homeworkId"]))
 
-        course_homework_submit_resource.add_method("POST", apigw.LambdaIntegration(post_course_quiz_submit), request_models={
-            "application/json": post_course_quiz_submit_resource_model
+        course_homework_submit_resource.add_method("POST", apigw.LambdaIntegration(post_course_homework_submit), request_models={
+            "application/json": post_course_homework_submit_resource_model
         } )
         
 
