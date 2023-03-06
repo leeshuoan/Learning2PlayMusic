@@ -24,15 +24,20 @@ def lambda_handler(event, context):
             studentId = event['queryStringParameters']['studentId']
             sortKey = "Student#" + studentId
 
-            # check if <courseId><studentId> exists in database
-            if not combination_id_exists("Course", courseId, "Student", studentId):
+            # check if <studentId> exists in database
+            if not id_exists("User", "Student", studentId):
                 return response_404("studentId does not exist in database")
 
+            # check if <courseId><studentId> exists in database
+            if not combination_id_exists("Student", studentId, "Course", courseId):
+                return response_202_msg("studentId is not registered with the course. To do so, please use /user/student/course to register")
+
         response = table.query(
-            KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
+            IndexName="SK-PK-index",
+            KeyConditionExpression="SK = :SK AND begins_with(PK, :PK)",
             ExpressionAttributeValues={
-                ":PK": f"Course#{courseId}",
-                ":SK": sortKey
+                ":SK": f"Course#{courseId}",
+                ":PK": sortKey
             })
 
         items = response["Items"]

@@ -178,7 +178,9 @@ class CourseStack(Stack):
 
         # /course/student
         course_student_resource.add_method("GET", apigw.LambdaIntegration(get_course_student), request_parameters={
-            'method.request.querystring.courseId': True})
+            'method.request.querystring.courseId': True,
+            'method.request.querystring.studentId': False,
+            })
 
         # /course/material
         # Define a JSON Schema to accept Request Body in JSON format for POST Method
