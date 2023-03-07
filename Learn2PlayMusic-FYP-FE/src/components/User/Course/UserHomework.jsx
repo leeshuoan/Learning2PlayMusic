@@ -8,7 +8,7 @@ import UploadIcon from "@mui/icons-material/Upload";
 import TransitionModal from "../../utils/TransitionModal";
 import celebration from "../../../assets/celebration.png";
 
-const UserHomework = () => {
+const UserHomework = (userInfo) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { courseid } = useParams();
@@ -71,12 +71,40 @@ const UserHomework = () => {
   var isButtonDisabled = textFieldValue === "" && file === null;
 
   const submit = () => {
-    setSubmitted(true);
-    setOpen(false);
+    console.log(file)
+
+    const reader = new FileReader();
+    reader.readAsBinaryString(file);
+
+    let homeworkAttachment = "";
+    reader.onload = (event) => {
+      homeworkAttachment = `data:${file.type};base64,${btoa(event.target.result)}`
+      console.log(homeworkAttachment)
+
+      fetch(`${import.meta.env.VITE_API_URL}/course/homework/submit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            courseId: courseid,
+            studentId: userInfo.userInfo.id,
+            homeworkId: homeworkId,
+            homeworkContent: homeworkAttachment,
+          }),
+        }).then((response) => {
+          setSubmitted(true);
+          setOpen(false);
+        }).catch((error) => {
+          console.log(error);
+          console.log(error,message);
+          });          
+    }
+
   };
 
   const fileUploaded = (e) => {
-    setFile(e.target.files[0].name);
+    setFile(e.target.files[0]);
   };
 
   const handleRemoveFile = () => {
@@ -222,7 +250,7 @@ const UserHomework = () => {
                     <ClearIcon />
                   </IconButton>
 
-                  {file}
+                  {file.name}
                 </Typography>
               </div>
             ) : (
