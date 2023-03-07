@@ -22,10 +22,10 @@ def lambda_handler(event, context):
         course_id = request_body['courseId']
         student_id = request_body['studentId']
         homework_id = request_body['homeworkId']
-        handle_content(
+        increment = handle_content(
             request_body, course_id, student_id, homework_id, table)
         handle_attachment(
-            request_body, course_id, student_id, homework_id, table)
+            request_body, course_id, student_id, homework_id, table, increment)
 
         return response_202_msg(f"homework successfully submitted")
 
@@ -52,8 +52,10 @@ def handle_content(request_body, course_id, student_id, homework_id, table):
             }
         )
 
+        return 0
+    return 1
 
-def handle_attachment(request_body, course_id, student_id, homework_id, table):
+def handle_attachment(request_body, course_id, student_id, homework_id, table, increment):
 
     if 'homeworkAttachment' in request_body:
         base64data = request_body['homeworkAttachment']
@@ -102,7 +104,7 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table):
                 ExpressionAttributeValues={
                     ':filename': item['FileName'],
                     ':attachment': item['HomeworkAttachment'],
-                    ':increment': 1,
+                    ':increment': increment,
                     ':start': 0,
                 }
             ),
