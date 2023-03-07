@@ -100,7 +100,7 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table, i
             # The item already exists, update it
             table.update_item(
                 Key=key,
-                UpdateExpression='set SubmissionFileName = if_not_exists(SubmissionFileName, :filename), HomeworkAttachment=if_not_exists(SubmissionFileName, :attachment), NumAttempts = if_not_exists(NumAttempts, :start) + :increment',
+                UpdateExpression='set SubmissionFileName = :filename, HomeworkAttachment=:attachment, NumAttempts = if_not_exists(NumAttempts, :start) + :increment',
                 ExpressionAttributeValues={
                     ':filename': item['FileName'],
                     ':attachment': item['HomeworkAttachment'],
