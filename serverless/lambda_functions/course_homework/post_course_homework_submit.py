@@ -48,8 +48,7 @@ def handle_content(request_body, course_id, student_id, homework_id, table):
                 ':start': 0,
                 ':increment': 1,
                 ':marked': False
-            },
-            ConditionExpression=f"attribute_exists(NumAttempts)"
+            }
         )
 
 
@@ -98,11 +97,12 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table):
             # The item already exists, update it
             table.update_item(
                 Key=key,
-                UpdateExpression='set SubmissionFileName=:filename, HomeworkAttachment=:attachment, NumAttempts = NumAttempts + :increment',
+                UpdateExpression='set SubmissionFileName = if_not_exists(SubmissionFileName, :filename), HomeworkAttachment=if_not_exists(SubmissionFileName, :attachment), NumAttempts = if_not_exists(NumAttempts, :start)',
                 ExpressionAttributeValues={
                     ':filename': item['FileName'],
                     ':attachment': item['HomeworkAttachment'],
-                    ':increment': 1
+                    ':increment': 1,
+                    ':start': 0,
                 }
             ),
 
