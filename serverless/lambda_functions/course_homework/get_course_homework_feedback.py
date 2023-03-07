@@ -35,6 +35,7 @@ def lambda_handler(event, context):
                 raise Exception("No such courseid/studentid/homeworkid")
             
             items = response["Item"]
+            get_presigned_url(items, "HomeworkAttachment")
 
 
         else:
@@ -45,7 +46,8 @@ def lambda_handler(event, context):
                     ":SK": f"Student#{studentId}Homework#"
                 })
             items = response["Items"]
-            get_presigned_url(items, "HomeworkAttachment")
+            for item in items:
+                get_presigned_url(item, "HomeworkAttachment")
 
 
 
