@@ -16,15 +16,52 @@ s3 = boto3.client('s3')
 def lambda_handler(event, context):
     try:
         request_body = json.loads(event['body'])
+        if 'homeworkContent' not in request_body and 'homeworkAttachment' not in request_body:
+            raise ("Both content and attachment cannot be empty!")
+
         course_id = request_body['courseId']
         student_id = request_body['studentId']
         homework_id = request_body['homeworkId']
-        base64data = request_body['homeworkContent']
+        content_item = handle_content(
+            request_body, course_id, student_id, homework_id, table)
+        attachment_item = handle_attachment(
+            request_body, course_id, student_id, homework_id, table)
+
+        return response_202_msg(f"homework successfully submitted")
+
+    except Exception as e:
+        return response_400(str(e))
+
+
+def handle_content(request_body, course_id, student_id, homework_id, key, table):
+
+    if 'homeworkContent' in request_body:
+        key = {
+            'PK': f'Course#{course_id}',
+            'SK': f'Student#{student_id}Homework#{homework_id}',
+        }
+
+        table.update_item(
+            Key= key,
+            UpdateExpression=f"SET NumAttempts = if_not_exists(NumAttempts, :start) + :increment, Marked=:marked",
+            ExpressionAttributeValues={
+                ':start': 0,
+                ':increment': 1,
+                ':marked': False
+            },
+            ConditionExpression=f"attribute_exists(NumAttempts)"
+        )
+
+
+def handle_attachment(request_body, course_id, student_id, homework_id, table):
+
+    if 'homeworkAttachment' in request_body:
+        base64data = request_body['homeworkAttachment']
 
         # Extract the file extension and decode the base64 data
         file_extension = base64data.split(';')[0].split('/')[1]
         base64_value = base64data.split(',')[1]
-        homework_content = base64.b64decode(base64_value)
+        homework_attachment = base64.b64decode(base64_value)
 
         random_uuid = str(uuid.uuid4().int)[:8]
         # Upload the image data to S3
@@ -34,27 +71,50 @@ def lambda_handler(event, context):
         elif file_extension == "png" or file_extension == "jpg" or file_extension == "jpeg":
             content_type = f'image/{file_extension}'
         else:
-            raise ("Submission must a .pdf, .png, .jpg or .jpeg file")
+            raise ("Attachment must a .pdf, .png, .jpg or .jpeg file")
 
         s3_params = {
             'Bucket': bucket_name,
             'Key': key,
-            'Body': homework_content,
+            'Body': homework_attachment,
             'ContentType': content_type,
             'ContentDisposition': "inline"
         }
-
         s3.put_object(**s3_params)
 
+        # DYNAMODB STUFF
         item = {
-            'PK': f'Course#{course_id}',
-            'SK': f'Student#{student_id}Homework#{homework_id}',
-            'HomeworkContent': bucket_name + "/" + key
+            'FileName': f'Homework{homework_id}_{random_uuid}.{file_extension}',
+            'HomeworkAttachment': bucket_name + "/" + key
         }
 
-        response = table.put_item(Item=item)
+        key = {
+            'PK': f'Course#{course_id}',
+            'SK': f'Student#{student_id}Homework#{homework_id}',
+        }
+        response = table.get_item(Key=key)
 
-        return response_202_msg(f"{file_extension} file successfully uploaded")
+        if 'Item' in response:
+            # The item already exists, update it
+            table.update_item(
+                Key=key,
+                UpdateExpression='set SubmissionFileName=:filename, HomeworkAttachment=:attachment, NumAttempts = NumAttempts + :increment',
+                ExpressionAttributeValues={
+                    ':filename': item['FileName'],
+                    ':attachment': item['HomeworkAttachment'],
+                    ':increment': 1
+                }
+            ),
 
-    except Exception as e:
-        return response_400(str(e))
+        else:
+            # The item does not exist, put it
+            table.put_item(
+                Item={
+                    'PK': f'Course#{course_id}',
+                    'SK': f'Student#{student_id}Homework#{homework_id}',
+                    'NumAttempts': 0,
+                    'Marked': False,
+                    'SubmissionFileName': item['FileName'],
+                    'HomeworkAttachment': item['HomeworkAttachment'],
+                }
+            )
