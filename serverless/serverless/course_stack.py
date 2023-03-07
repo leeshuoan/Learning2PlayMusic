@@ -23,6 +23,7 @@ class CourseStack(Stack):
         FUNCTIONS_FOLDER = "./lambda_functions/"
         COURSE_FUNCTIONS_FOLDER = "course"
         COURSE_STUDENT_FUNCTIONS_FOLDER = "course.student"
+        COURSE_TEACHER_FUNCTIONS_FOLDER = "course.teacher"
         COURSE_MATERIAL_FUNCTIONS_FOLDER = "course_material"
         COURSE_HOMEWORK_FUNCTIONS_FOLDER = "course_homework"
         COURSE_QUIZ_FUNCTIONS_FOLDER = "course_quiz"
@@ -97,6 +98,8 @@ class CourseStack(Stack):
         # /course/student
         get_course_student = _lambda.Function(self, "getCourseStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_STUDENT_FUNCTIONS_FOLDER}.get_course_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
+        # /course/teacher
+        get_course_teacher = _lambda.Function(self, "getCourseTeacher", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_TEACHER_FUNCTIONS_FOLDER}.get_course_teacher.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /course/material Functions
         get_course_material = _lambda.Function(self, "get_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.get_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -132,6 +135,7 @@ class CourseStack(Stack):
 
         # Create sub-resources under the parent resource
         course_student_resource = course_resource.add_resource("student")
+        course_teacher_resource = course_resource.add_resource("teacher")
         course_quiz_resource = course_resource.add_resource("quiz")
         course_homework_resource = course_resource.add_resource("homework")
         course_announcement_resource = course_resource.add_resource("announcement")
@@ -180,6 +184,12 @@ class CourseStack(Stack):
         course_student_resource.add_method("GET", apigw.LambdaIntegration(get_course_student), request_parameters={
             'method.request.querystring.courseId': True,
             'method.request.querystring.studentId': False,
+            })
+
+        # /course/teacher
+        course_teacher_resource.add_method("GET", apigw.LambdaIntegration(get_course_teacher), request_parameters={
+            'method.request.querystring.courseId': True,
+            'method.request.querystring.teacherId': False,
             })
 
         # /course/material
@@ -344,6 +354,10 @@ class CourseStack(Stack):
 
         # Enable CORS for each resource/sub-resource etc.
         course_resource.add_cors_preflight(
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        course_student_resource.add_cors_preflight(
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        course_teacher_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_quiz_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "PUT", "DELETE", "PUT"], status_code=200)
