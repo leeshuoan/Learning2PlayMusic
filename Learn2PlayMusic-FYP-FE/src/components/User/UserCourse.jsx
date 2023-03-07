@@ -81,9 +81,9 @@ const UserCourse = (userInfo) => {
   ], []);
 
   useEffect(() => {
-    async function fetchData () {
-      const [data1, data2, data3, data4, data5] = await Promise.all([ getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI ]);
-    
+    async function fetchData() {
+      const [data1, data2, data3, data4, data5] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI]);
+
       console.log(data1)
       const courseData = {
         id: data1[0].SK.split("#")[1],
@@ -92,15 +92,48 @@ const UserCourse = (userInfo) => {
         teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
-  
-      const homeworkData = data2.map((homework) => {
-        const id = homework.SK.split("Homework#")[1].substr(0, 1);
-        const date = new Date(homework.HomeworkDueDate);
-        const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-        return { ...homework, id, HomeworkDueDate: formattedDate };
-      });
-      setCourseHomework(homeworkData);
-  
+
+      console.log(data2)
+      async function fetchHomeworkData() {
+        try {
+          const homeworkData = await Promise.all(
+            data2.map(async (homework) => {
+              const id = homework.SK.split("Homework#")[1].substr(0, 1);
+              const date = new Date(homework.HomeworkDueDate);
+              const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+      
+              const homeworkFeedback = await fetchHomeworkFeedback(id);
+              console.log(homeworkFeedback);
+      
+              return {
+                ...homework,
+                id,
+                HomeworkDueDate: formattedDate,
+                EvaluationStatus: homeworkFeedback.EvaluationStatus,
+                NumSubmissions: homeworkFeedback.NumSubmissions,
+              };
+            })
+          );
+      
+          return homeworkData;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      
+      async function fetchHomeworkFeedback(id) {
+        const data = await request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${id}&studentId=${userInfo.userInfo.id}`);
+        const homeworkFeedback = {
+          EvaluationStatus: data.EvaluationStatus != undefined ? data.EvaluationStatus : "",
+          NumSubmissions: data.NumSubmissions != undefined ? data.NumSubmissions : "",
+        }
+        return homeworkFeedback
+      }
+      
+      fetchHomeworkData().then((data) => {
+        setCourseHomework(data);
+      });      
+
       const materialData = data3.map((material) => {
         const id = material.SK.split("Material#")[1].substr(0, 1);
         const date = new Date(material.MaterialLessonDate);
@@ -108,7 +141,7 @@ const UserCourse = (userInfo) => {
         return { ...material, id, MaterialLessonDate: formattedDate };
       });
       setCourseMaterial(materialData);
-  
+
       const quizData = data4.map((quiz) => {
         const id = quiz.SK.split("Quiz#")[1].substr(0, 1);
         const date = new Date(quiz.QuizDueDate);
@@ -116,7 +149,7 @@ const UserCourse = (userInfo) => {
         return { ...quiz, id, QuizDueDate: formattedDate };
       });
       setCourseQuiz(quizData);
-  
+
       const announcementsData = data5.map((announcement) => {
         const id = announcement.SK.split("Announcement#")[1].substr(0, 1);
         const date = new Date(announcement.Date);
@@ -129,207 +162,207 @@ const UserCourse = (userInfo) => {
     fetchData().then(() => {
       setOpen(false);
     });
-}, [])
+  }, [])
 
-const menuNavigate = (option) => {
-  if (option == "Announcements") navigate(`/home/course/${course.id}/announcement`)
-  if (option == "Class Materials") navigate(`/home/course/${course.id}/material`)
-  if (option == "Quizzes") navigate(`/home/course/${course.id}/quiz`)
-  if (option == "Homework") navigate(`/home/course/${course.id}/homework`)
-  if (option == "My Progress Report") navigate(`/home/course/${course.id}/report`)
-}
+  const menuNavigate = (option) => {
+    if (option == "Announcements") navigate(`/home/course/${course.id}/announcement`)
+    if (option == "Class Materials") navigate(`/home/course/${course.id}/material`)
+    if (option == "Quizzes") navigate(`/home/course/${course.id}/quiz`)
+    if (option == "Homework") navigate(`/home/course/${course.id}/homework`)
+    if (option == "My Progress Report") navigate(`/home/course/${course.id}/report`)
+  }
 
-return (
-  <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-    <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
-      <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={() => { navigate('/home') }}>
-        <HomeIcon sx={{ mr: 0.5 }} />
-        Home
-      </Link>
-      <Typography color="text.primary">{course.name}</Typography>
-    </Breadcrumbs>
+  return (
+    <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
+      <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
+        <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={() => { navigate('/home') }}>
+          <HomeIcon sx={{ mr: 0.5 }} />
+          Home
+        </Link>
+        <Typography color="text.primary">{course.name}</Typography>
+      </Breadcrumbs>
 
-    <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Box>
-          <Typography variant='h5' sx={{ color: "primary.main" }}>{course.name}</Typography>
-          <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.timeslot}</Typography>
+      <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Box>
+            <Typography variant='h5' sx={{ color: "primary.main" }}>{course.name}</Typography>
+            <Typography variant='subtitle2' sx={{ mb: 1 }}>Date: {course.timeslot}</Typography>
+          </Box>
         </Box>
-      </Box>
-      <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
-        <Box>
-          <Typography variant='subtitle1' sx={{ mb: 0.5 }}>{course.teacher}</Typography>
-          <Typography variant='body2' sx={{ textAlign: "right" }}>Teacher</Typography>
+        <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+          <Box>
+            <Typography variant='subtitle1' sx={{ mb: 0.5 }}>{course.teacher}</Typography>
+            <Typography variant='body2' sx={{ textAlign: "right" }}>Teacher</Typography>
+          </Box>
         </Box>
-      </Box>
-    </Card>
+      </Card>
 
-    <Grid container spacing={2} sx={{ pt: 2 }}>
-      <Grid item xs={12} md={3}>
-        <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}>
-          {menuOptions.map((option, key) => (
-            <MenuItem key={key} sx={{ mb: 1, color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "", "&:hover": { color: "primary.main" } }}
-              onClick={() => menuNavigate(option)}>
-              <Typography variant='subtitle1'>{option}</Typography>
-            </MenuItem>
-          ))}
-        </Card>
-
-        <Card sx={{ py: { sm: 1 }, px: 1, display: { xs: "block", sm: "none" } }}>
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <Typography variant='h5' sx={{ color: "primary.main" }}>
-                  {category === undefined ? "Announcements" : routeMenuMapping[category]}
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              {menuOptions.map((option, key) => (
-                <MenuItem key={key} sx={{ mb: 0.5, color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "", "&:hover": { color: "primary.main" } }}
-                  onClick={() => menuNavigate(option)}>
-                  <Typography variant='subtitle1'>{option}</Typography>
-                </MenuItem>
-              ))}
-            </AccordionDetails>
-          </Accordion>
-        </Card>
-      </Grid>
-
-      <Grid item xs={12} md={9}>
-        <Box>
-          <Card sx={{ py: 3, px: 5, mt: 2, display: category == "announcement" ? "block" : category === undefined ? "block" : "none" }}>
-            <Typography variant='h5'>Class Announcements</Typography>
-            {courseAnnouncements.map((announcement, key) => (
-              <Card key={key} variant='outlined' sx={{ boxShadow: "none", mt: 2, p: 2 }}>
-                <Typography variant='subtitle1' sx={{}}>{announcement.Title}</Typography>
-                <Typography variant='subsubtitle' sx={{ mb: 1 }}>Posted {announcement.Date}</Typography>
-                <Typography variant='body2'>{announcement.Content}</Typography>
-              </Card>
+      <Grid container spacing={2} sx={{ pt: 2 }}>
+        <Grid item xs={12} md={3}>
+          <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}>
+            {menuOptions.map((option, key) => (
+              <MenuItem key={key} sx={{ mb: 1, color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "", "&:hover": { color: "primary.main" } }}
+                onClick={() => menuNavigate(option)}>
+                <Typography variant='subtitle1'>{option}</Typography>
+              </MenuItem>
             ))}
           </Card>
 
-          <Box sx={{ display: category == "material" ? "block" : "none" }}>
-            <Box m={2}>
-              <MaterialReactTable
-                columns={columns}
-                data={courseMaterial}
-                initialState={{ density: "compact" }}
-                renderTopToolbarCustomActions={({ table }) => {
-                  return (
-                    <Typography m={1} variant="h6">
-                      Class Materials
-                    </Typography>
-                  );
-                }}></MaterialReactTable>
+          <Card sx={{ py: { sm: 1 }, px: 1, display: { xs: "block", sm: "none" } }}>
+            <Accordion>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <Typography variant='h5' sx={{ color: "primary.main" }}>
+                    {category === undefined ? "Announcements" : routeMenuMapping[category]}
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                {menuOptions.map((option, key) => (
+                  <MenuItem key={key} sx={{ mb: 0.5, color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "", "&:hover": { color: "primary.main" } }}
+                    onClick={() => menuNavigate(option)}>
+                    <Typography variant='subtitle1'>{option}</Typography>
+                  </MenuItem>
+                ))}
+              </AccordionDetails>
+            </Accordion>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={9}>
+          <Box>
+            <Card sx={{ py: 3, px: 5, mt: 2, display: category == "announcement" ? "block" : category === undefined ? "block" : "none" }}>
+              <Typography variant='h5'>Class Announcements</Typography>
+              {courseAnnouncements.map((announcement, key) => (
+                <Card key={key} variant='outlined' sx={{ boxShadow: "none", mt: 2, p: 2 }}>
+                  <Typography variant='subtitle1' sx={{}}>{announcement.Title}</Typography>
+                  <Typography variant='subsubtitle' sx={{ mb: 1 }}>Posted {announcement.Date}</Typography>
+                  <Typography variant='body2'>{announcement.Content}</Typography>
+                </Card>
+              ))}
+            </Card>
+
+            <Box sx={{ display: category == "material" ? "block" : "none" }}>
+              <Box m={2}>
+                <MaterialReactTable
+                  columns={columns}
+                  data={courseMaterial}
+                  initialState={{ density: "compact" }}
+                  renderTopToolbarCustomActions={({ table }) => {
+                    return (
+                      <Typography m={1} variant="h6">
+                        Class Materials
+                      </Typography>
+                    );
+                  }}></MaterialReactTable>
+              </Box>
             </Box>
-          </Box>
 
-          <Box sx={{ display: category == "quiz" ? "block" : "none" }}>
-            {courseQuiz.map((quiz, key) => (
-              <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
-                <Typography variant='h6' sx={{ mb: 1 }}>{quiz.QuizTitle}</Typography>
-                <Grid container spacing={2} sx={{ alignItems: "center" }}>
-                  <Grid item xs={12} sm={6}>
-                    <Button variant="contained" disabled={quiz.QuizAttempt >= quiz.QuizMaxAttempt} onClick={() => { navigate(`${quiz.id}`) }}>
-                      <PlayCircleFilledIcon sx={{ mr: 1 }} />
-                      Start Quiz
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: "primary.main" }}>Score</Typography>
-                    <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{quiz.QuizScore * 100}%</Typography>
-                    <Typography variant='body1' sx={{ display: { xs: "flex", sm: "none" } }}><span sx={{ color: "primary.main", mr: 0.5 }}>Score:</span>{quiz.QuizScore * 100}%</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <Typography variant='body1' sx={{ textAlign: "center", color: 'primary.main', display: { xs: "none", sm: "block" } }}>Attempts</Typography>
-                    <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block" } }}>{quiz.QuizAttempt}/{quiz.QuizMaxAttempt}</Typography>
-                    <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "flex", sm: "none" } }}><span sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</span>{quiz.QuizAttempt}/{quiz.QuizMaxAttempt}</Typography>
-                  </Grid>
-                </Grid>
-              </Card>
-            ))}
-          </Box>
-
-          <Box sx={{ display: category == "homework" ? "block" : "none" }}>
-            <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
-              <Grid item xs={3}>
-                <Typography variant='subtitle2'>HOMEWORK TITLE</Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Typography variant='subtitle2' sx={{ textAlign: "center" }}>DUE DATE</Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SUBMISSIONS</Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Typography variant='subtitle2' sx={{ textAlign: "center" }}>EVALUATION STATUS</Typography>
-              </Grid>
-            </Grid>
-            {
-              courseHomework.map((homework, key) => (
+            <Box sx={{ display: category == "quiz" ? "block" : "none" }}>
+              {courseQuiz.map((quiz, key) => (
                 <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={3}>
-                      <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkName}</Link></Typography>
+                  <Typography variant='h6' sx={{ mb: 1 }}>{quiz.QuizTitle}</Typography>
+                  <Grid container spacing={2} sx={{ alignItems: "center" }}>
+                    <Grid item xs={12} sm={6}>
+                      <Button variant="contained" disabled={quiz.QuizAttempt >= quiz.QuizMaxAttempt} onClick={() => { navigate(`${quiz.id}`) }}>
+                        <PlayCircleFilledIcon sx={{ mr: 1 }} />
+                        Start Quiz
+                      </Button>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.HomeworkDueDate}</Typography>
-                      <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Due Date: {homework.HomeworkDueDate}</Typography>
+                      <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: "primary.main" }}>Score</Typography>
+                      <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{quiz.QuizScore * 100}%</Typography>
+                      <Typography variant='body1' sx={{ display: { xs: "flex", sm: "none" } }}><span sx={{ color: "primary.main", mr: 0.5 }}>Score:</span>{quiz.QuizScore * 100}%</Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.HomeworkSubmissions}</Typography>
-                      <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.HomeworkSubmissions}</Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}><Link onClick={() => navigate(homework.id + "/feedback")}>Marked</Link></Typography>
-                      <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Evaluation Status: <Link onClick={() => navigate(homework.id + "/feedback")}>Marked</Link></Typography>
+                      <Typography variant='body1' sx={{ textAlign: "center", color: 'primary.main', display: { xs: "none", sm: "block" } }}>Attempts</Typography>
+                      <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block" } }}>{quiz.QuizAttempt}/{quiz.QuizMaxAttempt}</Typography>
+                      <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "flex", sm: "none" } }}><span sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</span>{quiz.QuizAttempt}/{quiz.QuizMaxAttempt}</Typography>
                     </Grid>
                   </Grid>
                 </Card>
               ))}
-          </Box>
+            </Box>
 
-          <Box sx={{ display: category == "report" ? "block" : "none" }}>
-            <Card sx={{ py: 3, px: 4, mt: 2 }}>
-              <Typography variant='subtitle1' sx={{ textAlign: "center" }}>Your Points</Typography>
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <EmojiEventsIcon fontSize="large" sx={{ color: '#FFB118' }} />
-                <Typography variant='h4'>203</Typography>
-              </Box>
-            </Card>
-            <Card sx={{ py: 3, px: 5, mt: 2 }}>
-              <Typography variant='h6' sx={{ textAlign: "center" }}>My Progress Report</Typography>
-              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography variant='subtitle1' sx={{ textAlign: "center", ml: 2 }}>TITLE</Typography>
-                <Typography variant='subtitle1' sx={{ textAlign: "center", mr: 2 }}>DATE AVAILABLE</Typography>
-              </Box>
-              {courseProgressReports.map((report, key) => (
-                <Card key={key} variant='outlined' sx={{ py: 2, px: 2, mt: 2, boxShadow: "none" }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <Typography variant='subtitle1' color="primary.main"><Link onClick={() => navigate("" + report.id)}>{report.title}</Link></Typography>
-                    <Typography variant='subttile1' color="lightgrey">{report.uploadDate}</Typography>
-                  </Box>
-                </Card>
-              ))}
-            </Card>
-          </Box>
+            <Box sx={{ display: category == "homework" ? "block" : "none" }}>
+              <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
+                <Grid item xs={3}>
+                  <Typography variant='subtitle2'>HOMEWORK TITLE</Typography>
+                </Grid>
+                <Grid item xs={3}>
+                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>DUE DATE</Typography>
+                </Grid>
+                <Grid item xs={3}>
+                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>SUBMISSIONS</Typography>
+                </Grid>
+                <Grid item xs={3}>
+                  <Typography variant='subtitle2' sx={{ textAlign: "center" }}>EVALUATION STATUS</Typography>
+                </Grid>
+              </Grid>
+              {
+                courseHomework.map((homework, key) => (
+                  <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={3}>
+                        <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkName}</Link></Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={3}>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.HomeworkDueDate}</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Due Date: {homework.HomeworkDueDate}</Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={3}>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.NumSubmissions}</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.NumSubmissions}</Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={3}>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}><Link onClick={() => navigate(homework.id + "/feedback")}>{homework.EvaluationStatus}</Link></Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Evaluation Status: <Link onClick={() => navigate(homework.id + "/feedback")}>{homework.EvaluationStatus}</Link></Typography>
+                      </Grid>
+                    </Grid>
+                  </Card>
+                ))}
+            </Box>
 
-        </Box>
+            <Box sx={{ display: category == "report" ? "block" : "none" }}>
+              <Card sx={{ py: 3, px: 4, mt: 2 }}>
+                <Typography variant='subtitle1' sx={{ textAlign: "center" }}>Your Points</Typography>
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <EmojiEventsIcon fontSize="large" sx={{ color: '#FFB118' }} />
+                  <Typography variant='h4'>203</Typography>
+                </Box>
+              </Card>
+              <Card sx={{ py: 3, px: 5, mt: 2 }}>
+                <Typography variant='h6' sx={{ textAlign: "center" }}>My Progress Report</Typography>
+                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Typography variant='subtitle1' sx={{ textAlign: "center", ml: 2 }}>TITLE</Typography>
+                  <Typography variant='subtitle1' sx={{ textAlign: "center", mr: 2 }}>DATE AVAILABLE</Typography>
+                </Box>
+                {courseProgressReports.map((report, key) => (
+                  <Card key={key} variant='outlined' sx={{ py: 2, px: 2, mt: 2, boxShadow: "none" }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                      <Typography variant='subtitle1' color="primary.main"><Link onClick={() => navigate("" + report.id)}>{report.title}</Link></Typography>
+                      <Typography variant='subttile1' color="lightgrey">{report.uploadDate}</Typography>
+                    </Box>
+                  </Card>
+                ))}
+              </Card>
+            </Box>
+
+          </Box>
+        </Grid>
       </Grid>
-    </Grid>
-    <Backdrop
-      sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      open={open}
-    >
-      <CircularProgress color="inherit" />
-    </Backdrop>
-  </Container>
-)
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </Container>
+  )
 }
 
 export default UserCourse
