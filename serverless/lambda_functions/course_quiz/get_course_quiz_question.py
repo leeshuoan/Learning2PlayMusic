@@ -28,7 +28,7 @@ def lambda_handler(event, context):
                     "SK": f"Quiz#{quizId}Question#{questionId}"
                 })
             items = response["Item"]
-            get_presigned_url(items)
+            get_presigned_url(items, "QuestionImage")
         else:
             response = table.query(
                 KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
@@ -38,7 +38,7 @@ def lambda_handler(event, context):
                 })
             items = response["Items"]
             for item in items:
-                get_presigned_url(item)
+                get_presigned_url(item, "QuestionImage")
 
         return response_200_items(items)
 

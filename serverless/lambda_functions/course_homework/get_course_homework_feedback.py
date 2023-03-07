@@ -6,6 +6,7 @@ import decimal
 # Get all homework by courseid
 
 from global_functions.responses import *
+from global_functions.get_presigned_url import get_presigned_url
 
 class Encoder(json.JSONEncoder):
     def default(self, obj):
@@ -34,6 +35,8 @@ def lambda_handler(event, context):
                 raise Exception("No such courseid/studentid/homeworkid")
             
             items = response["Item"]
+            get_presigned_url(items, "HomeworkAttachment")
+
         else:
             response = table.query(
                 KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
@@ -42,6 +45,9 @@ def lambda_handler(event, context):
                     ":SK": f"Student#{studentId}Homework#"
                 })
             items = response["Items"]
+            get_presigned_url(items, "HomeworkAttachment")
+
+
 
         res["statusCode"] = 200
         res["headers"] = {
