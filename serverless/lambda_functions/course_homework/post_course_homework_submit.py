@@ -43,7 +43,7 @@ def handle_content(request_body, course_id, student_id, homework_id, table):
 
         table.update_item(
             Key=key,
-            UpdateExpression=f"SET NumAttempts = if_not_exists(NumAttempts, :start) + :increment, Marked=:marked",
+            UpdateExpression=f"SET NumAttempts = if_not_exists(NumAttempts, :start) + :increment, Marked = if_not_exists(Marked, :marked)",
             ExpressionAttributeValues={
                 ':start': 0,
                 ':increment': 1,
