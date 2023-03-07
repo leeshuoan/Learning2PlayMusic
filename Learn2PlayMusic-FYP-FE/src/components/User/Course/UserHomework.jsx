@@ -79,7 +79,6 @@ const UserHomework = (userInfo) => {
     let homeworkAttachment = "";
     reader.onload = (event) => {
       homeworkAttachment = `data:${file.type};base64,${btoa(event.target.result)}`
-      console.log(homeworkAttachment)
 
       fetch(`${import.meta.env.VITE_API_URL}/course/homework/submit`, {
         method: "POST",
@@ -90,7 +89,8 @@ const UserHomework = (userInfo) => {
             courseId: courseid,
             studentId: userInfo.userInfo.id,
             homeworkId: homeworkId,
-            homeworkContent: homeworkAttachment,
+            homeworkAttachment: homeworkAttachment,
+            homeworkContent: textFieldValue,
           }),
         }).then((response) => {
           setSubmitted(true);
@@ -230,7 +230,7 @@ const UserHomework = (userInfo) => {
                 ADD A FILE
                 <input
                   hidden
-                  accept="*"
+                  accept="application/pdf, image/*"
                   multiple
                   type="file"
                   onChange={fileUploaded}

@@ -109,12 +109,11 @@ const UserCourse = (userInfo) => {
                 ...homework,
                 id,
                 HomeworkDueDate: formattedDate,
-                EvaluationStatus: homeworkFeedback.EvaluationStatus,
-                NumSubmissions: homeworkFeedback.NumSubmissions,
+                Marked: homeworkFeedback.Marked,
+                NumAttempts: homeworkFeedback.NumAttempts,
               };
             })
           );
-      
           return homeworkData;
         } catch (error) {
           console.log(error);
@@ -123,9 +122,10 @@ const UserCourse = (userInfo) => {
       
       async function fetchHomeworkFeedback(id) {
         const data = await request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${id}&studentId=${userInfo.userInfo.id}`);
+        console.log(data)
         const homeworkFeedback = {
-          EvaluationStatus: data.EvaluationStatus != undefined ? data.EvaluationStatus : "",
-          NumSubmissions: data.NumSubmissions != undefined ? data.NumSubmissions : "",
+          Marked: data.Marked,
+          NumAttempts: data.NumAttempts != 0 ? data.NumAttempts : "",
         }
         return homeworkFeedback
       }
@@ -315,12 +315,12 @@ const UserCourse = (userInfo) => {
                         <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Due Date: {homework.HomeworkDueDate}</Typography>
                       </Grid>
                       <Grid item xs={12} sm={3}>
-                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.NumSubmissions}</Typography>
-                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.NumSubmissions}</Typography>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? 'grey' : '' }}>{homework.NumAttempts}</Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? 'grey' : '' }}>Submissions: {homework.NumAttempts}</Typography>
                       </Grid>
                       <Grid item xs={12} sm={3}>
-                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}><Link onClick={() => navigate(homework.id + "/feedback")}>{homework.EvaluationStatus}</Link></Typography>
-                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Evaluation Status: <Link onClick={() => navigate(homework.id + "/feedback")}>{homework.EvaluationStatus}</Link></Typography>
+                        <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}><Link onClick={() => navigate(homework.id + "/feedback")}>{homework.Marked ? "Marked" : ""}</Link></Typography>
+                        <Typography variant='body1' sx={{ display: { xs: "block", sm: "none" } }}>Evaluation Status: <Link onClick={() => navigate(homework.id + "/feedback")}>{homework.Marked ? "Marked" : ""}</Link></Typography>
                       </Grid>
                     </Grid>
                   </Card>

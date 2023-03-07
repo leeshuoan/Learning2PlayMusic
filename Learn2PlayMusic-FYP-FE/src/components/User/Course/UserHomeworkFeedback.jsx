@@ -5,13 +5,6 @@ import HomeIcon from '@mui/icons-material/Home'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const UserHomeworkFeedback = (userInfo) => {
-  const homework = {
-    id: 1,
-    title: "Homework 1",
-    assignedDate: "1 feb 2023, 23:59pm ",
-    dueDate: "10 feb 2023, 23:59pm",
-  };
-
   const navigate = useNavigate()
   const { courseid } = useParams()
   const { homeworkId } = useParams();
@@ -69,7 +62,7 @@ const UserHomeworkFeedback = (userInfo) => {
             }}>
             {course.name}
           </Link>
-          <Typography color="text.primary">{homework.title}</Typography>
+          <Typography color="text.primary">Homework</Typography>
 
         </Breadcrumbs>
 
@@ -101,7 +94,7 @@ const UserHomeworkFeedback = (userInfo) => {
           <Typography variant="subsubtitle" sx={{ mb: 2 }}>STUDENT NAME</Typography>
           <Typography variant="subtitle1" sx={{ mb: 2 }}>{userInfo.userInfo.name}</Typography>
           <Typography variant="subsubtitle" sx={{ mb: 2 }}>FILE SUBMISSION</Typography>
-          <Typography variant="body1" sx={{ mb: 2 }}><Link>{feedback.SubmissionFileName}</Link></Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}><Link onClick={() => {window.open(feedback.HomeworkAttachment, '_blank')}}>{feedback.SubmissionFileName}</Link></Typography>
           <Typography variant="body1" sx={{ mb: 2 }}>{feedback.SubmissionContent}</Typography>
           <Divider sx={{ my: 3 }} />
           <Box sx={{ display: "flex" }}>
