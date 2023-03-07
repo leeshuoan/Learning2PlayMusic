@@ -8,5 +8,5 @@ def get_presigned_url(item, to_find):
         response = s3_client.generate_presigned_url('get_object',
                                                 Params={'Bucket': bucket_name,
                                                         'Key': object_name},
-                                                ExpiresIn=3600000)
+                                                ExpiresIn=3600)
         item[to_find] = response
