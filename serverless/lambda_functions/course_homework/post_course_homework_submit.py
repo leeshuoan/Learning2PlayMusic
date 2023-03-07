@@ -22,9 +22,9 @@ def lambda_handler(event, context):
         course_id = request_body['courseId']
         student_id = request_body['studentId']
         homework_id = request_body['homeworkId']
-        content_item = handle_content(
+        handle_content(
             request_body, course_id, student_id, homework_id, table)
-        attachment_item = handle_attachment(
+        handle_attachment(
             request_body, course_id, student_id, homework_id, table)
 
         return response_202_msg(f"homework successfully submitted")
@@ -33,7 +33,7 @@ def lambda_handler(event, context):
         return response_400(str(e))
 
 
-def handle_content(request_body, course_id, student_id, homework_id, key, table):
+def handle_content(request_body, course_id, student_id, homework_id, table):
 
     if 'homeworkContent' in request_body:
         key = {
@@ -42,7 +42,7 @@ def handle_content(request_body, course_id, student_id, homework_id, key, table)
         }
 
         table.update_item(
-            Key= key,
+            Key=key,
             UpdateExpression=f"SET NumAttempts = if_not_exists(NumAttempts, :start) + :increment, Marked=:marked",
             ExpressionAttributeValues={
                 ':start': 0,
