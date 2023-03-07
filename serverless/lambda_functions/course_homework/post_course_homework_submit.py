@@ -48,7 +48,7 @@ def handle_content(request_body, course_id, student_id, homework_id, table):
                 ':start': 0,
                 ':increment': 1,
                 ':marked': False,
-                ':homeworkcontent': request_body['homeworkContent']
+                ':homeworkContent': request_body['homeworkContent']
             }
         )
 
