@@ -35,7 +35,8 @@ def lambda_handler(event, context):
                 raise Exception("No such courseid/studentid/homeworkid")
             
             items = response["Item"]
-            get_presigned_url(items, "HomeworkAttachment")
+            for item in items:
+                get_presigned_url(item, "HomeworkAttachment")
 
         else:
             response = table.query(
