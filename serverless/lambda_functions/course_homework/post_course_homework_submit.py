@@ -17,7 +17,7 @@ def lambda_handler(event, context):
     try:
         request_body = json.loads(event['body'])
         if 'homeworkContent' not in request_body and 'homeworkAttachment' not in request_body:
-            raise ("Both content and attachment cannot be empty!")
+            raise Exception("Both content and attachment cannot be empty!")
 
         course_id = request_body['courseId']
         student_id = request_body['studentId']
