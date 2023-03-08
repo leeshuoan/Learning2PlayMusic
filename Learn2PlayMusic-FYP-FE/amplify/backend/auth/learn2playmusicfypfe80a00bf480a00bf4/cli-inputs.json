@@ -36,7 +36,7 @@
     "sharedId": "80a00bf4",
     "resourceName": "learn2playmusicfypfe80a00bf480a00bf4",
     "authSelections": "identityPoolAndUserPool",
-    "useDefault": "manual",
+    "useDefault": "default",
     "usernameAttributes": [
       "email"
     ],
@@ -64,6 +64,11 @@
       ]
     },
     "breakCircularDependency": true,
-    "dependsOn": []
+    "dependsOn": [],
+    "authProviders": [],
+    "parentStack": {
+      "Ref": "AWS::StackId"
+    },
+    "permissions": []
   }
 }

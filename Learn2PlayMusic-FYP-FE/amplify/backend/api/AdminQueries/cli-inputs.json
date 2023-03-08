@@ -1,16 +1,17 @@
 {
   "version": 1,
+  "corsConfiguration": {
+    "AllowedOrigins": "*",
+    "AllowedHeaders": "*",
+    "AllowedMethods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "MaxAgeSeconds": 3000
+  },
   "paths": {
     "/{proxy+}": {
       "lambdaFunction": "AdminQueries3621d01f",
       "permissions": {
         "setting": "private",
-        "auth": [
-          "create",
-          "read",
-          "update",
-          "delete"
-        ]
+        "auth": ["create", "read", "update", "delete"]
       }
     }
   }
