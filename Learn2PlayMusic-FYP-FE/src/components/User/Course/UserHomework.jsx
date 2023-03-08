@@ -73,33 +73,37 @@ const UserHomework = (userInfo) => {
   const submit = () => {
     console.log(file)
 
-    const reader = new FileReader();
-    reader.readAsBinaryString(file);
-
     let homeworkAttachment = "";
-    reader.onload = (event) => {
-      homeworkAttachment = `data:${file.type};base64,${btoa(event.target.result)}`
 
-      fetch(`${import.meta.env.VITE_API_URL}/course/homework/submit`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            courseId: courseid,
-            studentId: userInfo.userInfo.id,
-            homeworkId: homeworkId,
-            homeworkAttachment: homeworkAttachment,
-            homeworkContent: textFieldValue,
-          }),
-        }).then((response) => {
-          setSubmitted(true);
-          setOpen(false);
-        }).catch((error) => {
-          console.log(error);
-          console.log(error,message);
-          });          
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsBinaryString(file);
+
+      reader.onload = (event) => {
+        homeworkAttachment = `data:${file.type};base64,${btoa(event.target.result)}`
+      }
     }
+
+    fetch(`${import.meta.env.VITE_API_URL}/course/homework/submit`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        courseId: courseid,
+        studentId: userInfo.userInfo.id,
+        homeworkId: homeworkId,
+        homeworkAttachment: homeworkAttachment,
+        homeworkContent: textFieldValue,
+      }),
+    }).then((response) => {
+      console.log(response)
+      setSubmitted(true);
+      setOpen(false);
+    }).catch((error) => {
+      console.log(error);
+      console.log(error.message);
+    });
 
   };
 
