@@ -269,10 +269,10 @@ async function signUserOut(username) {
     throw err;
   }
 }
-
+// custom functions
 // Creates a user as an administrator.
 async function createUser(userPoolId, username, password, email, name, role) {
-  var params = {
+  var createParams = {
     UserPoolId: userPoolId /* required */,
     Username: username /* required */,
 
@@ -295,16 +295,52 @@ async function createUser(userPoolId, username, password, email, name, role) {
       },
     ],
   };
+  const resetParams = {
+    UserPoolId: userPoolId /* required */,
+    Username: username /* required */,
+  };
+  const addUserToGroupParams = {
+    GroupName: role /* required */,
+    UserPoolId: userPoolId /* required */,
+    Username: username /* required */,
+  };
 
   console.log(`Attempting to create user ${username}`);
   try {
-    const result = await cognitoIdentityServiceProvider
-      .adminCreateUser(params)
+    // ===== create =====
+    const createResult = await cognitoIdentityServiceProvider
+      .adminCreateUser(createParams)
       .promise();
     console.log(`${username} successfully created`); // successful response
+    // ===== reset password =====
+    const resetResult = await cognitoIdentityServiceProvider
+      .adminResetUserPassword(resetParams)
+      .promise();
+    console.log(`${username} password reset`); // successful response
+    // ===== add to group =====
+    const addResult = await cognitoIdentityServiceProvider
+      .adminAddUserToGroup(addUserToGroupParams)
+      .promise();
+    console.log(`${username} added to group ${role}`); // successful response
     return {
       message: `${username} successfully created`,
     };
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+// list groups
+async function listGroups(userPoolId) {
+  var params = {
+    UserPoolId: userPoolId,
+  };
+  try {
+    const result = await cognitoIdentityServiceProvider
+      .listGroups(params)
+      .promise();
+    return result;
   } catch (err) {
     console.log(err);
     throw err;
@@ -337,5 +373,6 @@ module.exports = {
   listUsersInGroup,
   signUserOut,
   createUser,
+  listGroups,
   deleteUser,
 };

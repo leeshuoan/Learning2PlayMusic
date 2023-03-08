@@ -166,6 +166,8 @@
                 "cognito-idp:ListUsers",
                 "cognito-idp:ListGroups",
                 "cognito-idp:AdminCreateUser",
+                "cognito-idp:AdminResetUserPassword",
+                "cognito-idp:AdminAddUserToGroup",
                 "cognito-idp:AdminDeleteUser"
               ],
               "Resource": {

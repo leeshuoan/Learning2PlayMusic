@@ -14,10 +14,9 @@ import uuid from "react-uuid";
 
 export default function CreateUserForm({ handleClose }) {
   const USERPOOLID = "ap-southeast-1_WMzch8no8";
-  const ROLES = ["Student", "Teacher", "Admin", "SuperAdmin"];
+  const ROLES = ["Student", "Teacher", "Admin", "SuperAdmin"]; // change with roles from API "ListGroups"
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
   const [role, setRole] = React.useState("");
 
   const handleNameChange = (event) => {
@@ -26,27 +25,44 @@ export default function CreateUserForm({ handleClose }) {
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
   const handleRoleChange = (event) => {
     setRole(event.target.value);
+  };
+
+  const listGroups = async () => {
+    let apiName = "AdminQueries";
+    let path = "/listGroups";
+    let myInit = {
+      queryStringParameters: {},
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${(await Auth.currentSession())
+          .getAccessToken()
+          .getJwtToken()}`,
+      },
+      body: {
+        userPoolId: USERPOOLID,
+      },
+    };
+    let groups = await API.get(apiName, path, myInit);
+    setRole(groups.Groups);
+    console.log(groups);
   };
 
   const createNewUser = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    var password = data.get("password");
     var email = data.get("email");
     var name = data.get("name");
     var role = data.get("role");
 
-    if (password === "" || email === "" || name === "" || role === "") {
+    if (email === "" || name === "" || role === "") {
       console.log("Please fill in all fields");
       return;
     }
 
     var username = uuid();
+    var password = uuid(); //  randomly generate cause will immediately call for reset password
     let apiName = "AdminQueries";
     let path = "/createUser";
     let myInit = {
@@ -68,6 +84,10 @@ export default function CreateUserForm({ handleClose }) {
     console.log(myInit);
     let users = await API.post(apiName, path, myInit);
   };
+
+  React.useEffect(() => {
+    listGroups();
+  }, []);
 
   return (
     <div>
@@ -107,20 +127,6 @@ export default function CreateUserForm({ handleClose }) {
               autoComplete="email"
               value={email}
               onChange={handleEmailChange}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={handlePasswordChange}
             />
           </Grid>
           <Grid item xs={12}>

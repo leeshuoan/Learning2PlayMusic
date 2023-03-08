@@ -29,6 +29,7 @@ const {
   signUserOut,
   // custom
   createUser,
+  listGroups,
   deleteUser,
 } = require("./cognitoActions");
 
@@ -294,7 +295,7 @@ app.post("/signUserOut", async (req, res, next) => {
     next(err);
   }
 });
-// custom
+// custom apis
 app.post("/createUser", async (req, res, next) => {
   if (!req.body.username) {
     const err = new Error("username is required");
@@ -327,6 +328,17 @@ app.post("/createUser", async (req, res, next) => {
   }
 });
 
+// list groups
+app.get("/listGroups", async (req, res, next) => {
+  try {
+    const response = await listGroups(req.body.userPoolId);
+    res.status(200).json(response);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// delete user not ready yet!
 app.post("/deleteUser", async (req, res, next) => {
   if (!req.body.username) {
     const err = new Error("username is required");
