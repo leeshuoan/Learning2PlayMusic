@@ -15,6 +15,7 @@ import SignIn from "./components/SignIn";
 import ForgotPassword from "./components/ForgotPassword";
 import NotFound from "./components/NotFound";
 import TeacherHome from "./components/Teacher/TeacherHome";
+import TeacherCourse from "./components/Teacher/TeacherCourse";
 import UserHome from "./components/User/UserHome";
 import UserCourse from "./components/User/UserCourse";
 import Chat from "./components/Chat/Chat";
@@ -30,7 +31,6 @@ import UserHomeworkFeedback from "./components/User/Course/UserHomeworkFeedback"
 Amplify.configure(aws_exports);
 
 function App() {
-
   const [userInfo, setUserInfo] = useState({});
   const [fetchUserInfo, setFetchUserInfo] = useState(false);
 
@@ -59,7 +59,7 @@ function App() {
           }
 
           let groups = session.getIdToken().payload["cognito:groups"];
-          let userRole = null
+          let userRole = null;
           if (groups.includes("Admins")) {
             userRole = "Admin";
           } else if (groups.includes("Teachers")) {
@@ -71,15 +71,14 @@ function App() {
           if (userRole != null) {
             let userInfo = {
               id: session.getIdToken().payload.sub,
-              name: session.getIdToken().payload['custom:name'],
+              name: session.getIdToken().payload["custom:name"],
               role: userRole,
               email: session.getIdToken().payload.email,
-              profileImage: session.getIdToken().payload['custom:profileImage'],
+              profileImage: session.getIdToken().payload["custom:profileImage"],
             };
-            console.log(userInfo)
+            console.log(userInfo);
             setUserInfo(userInfo);
           }
-
         });
       })
       .catch((err) => {
@@ -98,36 +97,88 @@ function App() {
         <ToastContainer />
         <Routes>
           <Route path="/">
-            <Route index element={<SignIn userInfo={userInfo} handleSetUserInfo={handleSetUserInfo} />} />
+            <Route
+              index
+              element={
+                <SignIn
+                  userInfo={userInfo}
+                  handleSetUserInfo={handleSetUserInfo}
+                />
+              }
+            />
           </Route>
 
-          <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}>
+          <Route
+            path="admin"
+            element={<PrivateRoutes userType="Admin"></PrivateRoutes>}
+          >
             <Route index element={<AdminHome userInfo={userInfo} />} />
           </Route>
 
-          <Route path="teacher" element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
+          <Route
+            path="teacher"
+            element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}
+          >
             <Route index element={<TeacherHome userInfo={userInfo} />} />
+            <Route
+              path="announcements"
+              element={<Announcements userInfo={userInfo} />}
+            />
+            <Route path="course/:courseid">
+              <Route index element={<TeacherCourse userInfo={userInfo} />} />
+              {/* <Route path=":category" element={<UserCourse userInfo={userInfo} />} />
+                <Route path="material/:materialId" element={<UserClassMaterials />} />
+                <Route path="homework/:homeworkId" element={<UserHomework userInfo={userInfo} />} />
+                <Route path="homework/:homeworkId/feedback" element={<UserHomeworkFeedback userInfo={userInfo} />} />
+                <Route path="report/:reportId" element={<UserReport />} />
+                <Route path="quiz/:quizId" element={<UserQuiz userInfo={userInfo}/>} /> */}
+            </Route>
           </Route>
 
-          <Route path="home" element={<PrivateRoutes userType="User"></PrivateRoutes>}>
+          <Route
+            path="home"
+            element={<PrivateRoutes userType="User"></PrivateRoutes>}
+          >
             <Route index element={<UserHome userInfo={userInfo} />} />
             <Route path="announcements" element={<Announcements />} />
             <Route path="course/:courseid">
               <Route index element={<UserCourse userInfo={userInfo} />} />
-              <Route path=":category" element={<UserCourse userInfo={userInfo} />} />
-              <Route path="material/:materialId" element={<UserClassMaterials />} />
-              <Route path="homework/:homeworkId" element={<UserHomework userInfo={userInfo} />} />
-              <Route path="homework/:homeworkId/feedback" element={<UserHomeworkFeedback userInfo={userInfo} />} />
+              <Route
+                path=":category"
+                element={<UserCourse userInfo={userInfo} />}
+              />
+              <Route
+                path="material/:materialId"
+                element={<UserClassMaterials />}
+              />
+              <Route
+                path="homework/:homeworkId"
+                element={<UserHomework userInfo={userInfo} />}
+              />
+              <Route
+                path="homework/:homeworkId/feedback"
+                element={<UserHomeworkFeedback userInfo={userInfo} />}
+              />
               <Route path="report/:reportId" element={<UserReport />} />
-              <Route path="quiz/:quizId" element={<UserQuiz userInfo={userInfo}/>} />
+              <Route
+                path="quiz/:quizId"
+                element={<UserQuiz userInfo={userInfo} />}
+              />
             </Route>
           </Route>
 
           <Route path="chat" element={<Chat userInfo={userInfo} />} />
-          <Route path="profile" element={<Profile userInfo={userInfo} refreshUserInfo={handleRefreshUserInfo} />}></Route>
+          <Route
+            path="profile"
+            element={
+              <Profile
+                userInfo={userInfo}
+                refreshUserInfo={handleRefreshUserInfo}
+              />
+            }
+          ></Route>
           <Route path="resetpassword" element={<ForgotPassword />}></Route>
           <Route path="*" element={<NotFound userRole={userInfo.role} />} />
-
         </Routes>
       </ThemeProvider>
     </div>

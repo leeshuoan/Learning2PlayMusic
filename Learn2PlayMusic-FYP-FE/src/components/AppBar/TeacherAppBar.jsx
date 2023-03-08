@@ -63,7 +63,7 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
                 </Avatar>
               </Box>
 
-              <IconButton disableRipple onClick={() => { navigate("/home") }}>
+              <IconButton disableRipple onClick={() => { navigate("/teacher") }}>
                 <img src="/l2pm_logo.png" width="150px" />
               </IconButton>
 

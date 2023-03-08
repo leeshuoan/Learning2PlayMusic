@@ -1,91 +1,131 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Typography, Container, Grid, Card, Box, Link, Button } from '@mui/material'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Typography,
+  Container,
+  Grid,
+  Card,
+  Box,
+  Link,
+  Button,
+} from "@mui/material";
 
 const TeacherHome = ({ userInfo }) => {
-  // const upcomingClasses = [
-  //   {
-  //     title: "Piano",
-  //     date: "31 Jan 2023, 4:00pm",
-  //   },
-  //   {
-  //     title: "Piano",
-  //     date: "31 Jan 2023, 4:00pm",
-  //   },
-  //   {
-  //     title: "Piano",
-  //     date: "31 Jan 2023, 4:00pm",
-  //   }
-  // ]
 
-  const myCourse = {
-    id: 1,
-    title: "Grade 2 Piano",
-    date: "Wednesday 7pm",
+  const [myCourses, setMyCourses] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const navigate = useNavigate();
+
+  async function request(endpoint) {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.json();
   }
 
-  const [announcements, setAnnouncements] = useState([])
-  const navigate = useNavigate()
-
-  // const getCourses = fetch(`${import.meta.env.VITE_API_URL}/courses`, {
-  //   method: 'GET',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   }
-  // })
-
-  const getGeneralAnnouncements = fetch(`${import.meta.env.VITE_API_URL}/generalannouncement`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  })
+  const fetchAnnouncements = request(`/generalannouncement`);
+  const fetchCourses = request(`/user/teacher/course?teacherId=${userInfo.id}`);
 
   useEffect(() => {
-    Promise.all([getGeneralAnnouncements]).then(async ([res1]) => {
-      const [data1] = await Promise.all([res1.json()])
-      data1.splice(3, data1.length - 3)
-      console.log(data1)
-      for (let idx in data1) {
-        data1[idx].date = new Date(data1[idx].SK.split('Date#')[1]).toLocaleDateString()
+    async function fetchData() {
+      try {
+        const [courses, announcements] = await Promise.all([
+          fetchCourses,
+          fetchAnnouncements,
+        ]);
+        const announcementsData = announcements.slice(0, 3).map((a) => ({
+          ...a,
+          date: new Date(a.SK.split("Date#")[1]).toLocaleDateString(),
+        }));
+        setAnnouncements(announcementsData);
+
+        if (
+          courses.message === "[ERROR] studentId does not exist in database"
+        ) {
+          setUnEnrolled(true);
+        } else {
+          setMyCourses(courses);
+        }
+        console.log(courses);
+      } catch (error) {
+        console.error(error);
       }
-      setAnnouncements(data1)
-    }).catch((error) => {
-      console.log(error)
-    })
-  }, [])
+    }
+    fetchData();
+  }, []);
 
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <Typography variant='h4' sx={{ mt: 3 }}>Welcome Back, {userInfo.name}</Typography>
+        <Typography variant="h4" sx={{ mt: 3 }}>
+          Welcome Back, {userInfo.name}
+        </Typography>
 
-        <Card sx={{ p: 2, px: 5, mt: 2 }} style={{ background: `linear-gradient(45deg, rgba(23,76,106,1) 0%, rgba(35,77,116,0.5) 100%)` }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Box>
-              <Typography variant='h4' color="white">{myCourse.title}</Typography>
-              <Typography variant='body2' color="white">Every {myCourse.date}</Typography>
+        {myCourses.map((myCourse, index) => (
+          <Card
+            sx={{ p: 2, px: 5, mt: 2 }}
+            key={index}
+            style={{
+              background: `linear-gradient(45deg, rgba(23,76,106,1) 0%, rgba(35,77,116,0.5) 100%)`,
+            }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Box>
+                <Typography variant="h4" color="white">
+                  {myCourse.CourseName}
+                </Typography>
+                <Typography variant="body2" color="white">
+                  Every {myCourse.CourseSlot}
+                </Typography>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Button
+                  variant="contained"
+                  sx={{
+                    color: "black",
+                    backgroundColor: "white",
+                    boxShadow: "none",
+                    "&:hover": { backgroundColor: "lightgrey" },
+                  }}
+                  onClick={() => {
+                    navigate(`course/${myCourse.SK.split("Course#")[1]}`);
+                  }}>
+                  GO TO COURSE PAGE
+                </Button>
+              </Box>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Button variant="contained" sx={{ color: "black", backgroundColor: "white", boxShadow: "none", "&:hover": { backgroundColor: "lightgrey" } }}
-                onClick={() => { navigate(`course/${myCourse.id}`) }}>GO TO COURSE PAGE</Button>
-            </Box>
-          </Box>
-        </Card>
+          </Card>
+        ))}
 
         <Grid container spacing={2} sx={{ pt: 2 }}>
           <Grid item xs={12} md={12}>
             <Card sx={{ py: 3, px: 4 }}>
-              <Typography variant='h6'>Annoucements</Typography>
+              <Typography variant="h6">Annoucements</Typography>
               {announcements.map((announcement, index) => (
-                <Card variant='outlined' sx={{ boxShadow: "none", my: 1, p: 2 }} key={index}>
-                  <Typography variant='subtitle2'>{announcement.Title}</Typography>
-                  <Typography variant='subsubtitle'>Posted {announcement.date}</Typography>
-                  <Typography variant='body2' sx={{ mt: 1 }}>{announcement.Content}</Typography>
+                <Card
+                  variant="outlined"
+                  sx={{ boxShadow: "none", my: 1, p: 2 }}
+                  key={index}>
+                  <Typography variant="subtitle2">
+                    {announcement.Title}
+                  </Typography>
+                  <Typography variant="subsubtitle">
+                    Posted {announcement.date}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    {announcement.Content}
+                  </Typography>
                 </Card>
               ))}
               <Box sx={{ textAlign: "center" }}>
-                <Link onClick={() => { navigate("announcements") }}>View All Announcements</Link>
+                <Link
+                  onClick={() => {
+                    navigate("announcements");
+                  }}>
+                  View All Announcements
+                </Link>
               </Box>
             </Card>
           </Grid>
@@ -103,7 +143,7 @@ const TeacherHome = ({ userInfo }) => {
         </Grid>
       </Container>
     </>
-  )
-}
+  );
+};
 
-export default TeacherHome
+export default TeacherHome;
