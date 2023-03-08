@@ -29,6 +29,7 @@ const {
   signUserOut,
   // custom
   createUser,
+  listGroups,
   deleteUser,
 } = require("./cognitoActions");
 
@@ -325,6 +326,17 @@ app.post("/createUser", async (req, res, next) => {
     throw err;
   }
 });
+
+// list groups
+app.get("/listGroups", async (req, res, next) => {
+  try {
+    const response = await listGroups();
+    res.status(200).json(response);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // delete user not ready yet!
 app.post("/deleteUser", async (req, res, next) => {
   if (!req.body.username) {

@@ -317,14 +317,14 @@ async function createUser(username, password, email, name, role) {
       .promise();
     console.log(`${username} successfully created`); // successful response
     // ===== reset password =====
-    // const resetResult = await cognitoIdentityServiceProvider
-    //   .adminResetUserPassword(resetParams)
-    //   .promise();
-    // console.log(`${username} password reset`); // successful response
-    // // ===== add to group =====
-    // const addResult = await cognitoIdentityServiceProvider
-    //   .adminAddUserToGroup(addUserToGroupParams)
-    //   .promise();
+    const resetResult = await cognitoIdentityServiceProvider
+      .adminResetUserPassword(resetParams)
+      .promise();
+    console.log(`${username} password reset`); // successful response
+    // ===== add to group =====
+    const addResult = await cognitoIdentityServiceProvider
+      .adminAddUserToGroup(addUserToGroupParams)
+      .promise();
     console.log(`${username} added to group ${role}`); // successful response
     return {
       message: `${username} successfully created`,
@@ -334,6 +334,8 @@ async function createUser(username, password, email, name, role) {
     throw err;
   }
 }
+
+
 
 // delete user as an administrator
 async function deleteUser(username, userPoolId) {
@@ -361,5 +363,6 @@ module.exports = {
   listUsersInGroup,
   signUserOut,
   createUser,
+  listGroups,
   deleteUser,
 };
