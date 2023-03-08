@@ -12,6 +12,11 @@
  * and limitations under the License.
  */
 
+// get the Console class
+const { Console } = require("console");
+// get fs module for creating write streams
+const fs = require("fs");
+
 const { CognitoIdentityServiceProvider } = require("aws-sdk");
 
 const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
@@ -271,7 +276,7 @@ async function signUserOut(username) {
 }
 // custom functions
 // Creates a user as an administrator.
-async function createUser(userPoolId, username, password, email, name, role) {
+async function createUser(username, password, email, name, role) {
   var createParams = {
     UserPoolId: userPoolId /* required */,
     Username: username /* required */,
@@ -330,21 +335,7 @@ async function createUser(userPoolId, username, password, email, name, role) {
   }
 }
 
-// list groups
-async function listGroups(userPoolId) {
-  var params = {
-    UserPoolId: userPoolId,
-  };
-  try {
-    const result = await cognitoIdentityServiceProvider
-      .listGroups(params)
-      .promise();
-    return result;
-  } catch (err) {
-    console.log(err);
-    throw err;
-  }
-}
+
 
 // delete user as an administrator
 async function deleteUser(username, userPoolId) {

@@ -315,7 +315,6 @@ app.post("/createUser", async (req, res, next) => {
   try {
     //userPoolId, username, password, email, name, role
     const response = await createUser(
-      req.body.userPoolId,
       req.body.username,
       req.body.password,
       req.body.email,
@@ -331,7 +330,7 @@ app.post("/createUser", async (req, res, next) => {
 // list groups
 app.get("/listGroups", async (req, res, next) => {
   try {
-    const response = await listGroups(req.body.userPoolId);
+    const response = await listGroups();
     res.status(200).json(response);
   } catch (err) {
     next(err);

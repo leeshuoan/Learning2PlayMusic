@@ -12,13 +12,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Auth, API } from "aws-amplify";
 import uuid from "react-uuid";
 
-export default function CreateUserForm({ handleClose }) {
-  const USERPOOLID = "ap-southeast-1_WMzch8no8";
-  // const ROLES = ["Student", "Teacher", "Admin", "SuperAdmin"]; // change with roles from API "ListGroups"
+export default function CreateUserForm({ roles, handleClose }) {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [role, setRole] = React.useState("");
-  const [roles, setRoles] = React.useState([]);
 
   const handleNameChange = (event) => {
     setName(event.target.value);
@@ -28,31 +25,6 @@ export default function CreateUserForm({ handleClose }) {
   };
   const handleRoleChange = (event) => {
     setRole(event.target.value);
-  };
-
-  const listGroups = async () => {
-    let apiName = "AdminQueries";
-    let path = "/listGroups";
-    let myInit = {
-      queryStringParameters: {},
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `${(await Auth.currentSession())
-          .getAccessToken()
-          .getJwtToken()}`,
-      },
-      body: {
-        userPoolId: USERPOOLID,
-      },
-    };
-    let groups = await API.get(apiName, path, myInit);
-    var roles = [];
-    for (let idx in groups.Groups) {
-      roles = [...roles, groups.Groups[idx].GroupName];
-    }
-
-    setRoles(roles);
-    console.log(roles);
   };
 
   const createNewUser = async (event) => {
@@ -72,6 +44,7 @@ export default function CreateUserForm({ handleClose }) {
     let apiName = "AdminQueries";
     let path = "/createUser";
     let myInit = {
+      queryStringParameters: {},
       headers: {
         "Content-Type": "application/json",
         Authorization: `${(await Auth.currentSession())
@@ -79,7 +52,6 @@ export default function CreateUserForm({ handleClose }) {
           .getJwtToken()}`,
       },
       body: {
-        userPoolId: USERPOOLID,
         username: username,
         password: password,
         email: email,
@@ -94,11 +66,6 @@ export default function CreateUserForm({ handleClose }) {
       console.log(error);
     }
   };
-
-  React.useEffect(() => {
-    listGroups();
-  }, []);
-
   return (
     <div>
       <form noValidate onSubmit={createNewUser}>

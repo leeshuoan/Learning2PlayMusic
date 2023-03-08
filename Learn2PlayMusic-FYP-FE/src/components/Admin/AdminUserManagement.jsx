@@ -8,12 +8,34 @@ import TransitionModal from "../utils/TransitionModal";
 const AdminUserManagement = () => {
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
+  const [roles, setRoles] = useState([]);
 
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
+  };
+  // list groups
+  const listGroups = async () => {
+    let apiName = "AdminQueries";
+    let path = "/listGroups";
+    let myInit = {
+      queryStringParameters: {},
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${(await Auth.currentSession())
+          .getAccessToken()
+          .getJwtToken()}`,
+      },
+    };
+    let groups = await API.get(apiName, path, myInit);
+    var rs = [];
+    for (let idx in groups.Groups) {
+      rs.push(groups.Groups[idx].GroupName);
+    }
+    setRoles(rs);
+    console.log(rs);
   };
 
   const listUsers = async () => {
@@ -58,6 +80,7 @@ const AdminUserManagement = () => {
 
   useEffect(() => {
     listUsers();
+    listGroups();
     console.log(data);
     return () => {};
   }, []);
@@ -120,7 +143,7 @@ const AdminUserManagement = () => {
           boxShadow: 24,
           p: 4,
         }}>
-        {<CreateUserForm handleClose={handleClose} />}
+        {<CreateUserForm roles={roles} handleClose={handleClose} />}
       </TransitionModal>
       <Typography variant="h5" sx={{ m: 1, mt: 4 }}>
         User Management
