@@ -14,10 +14,11 @@ import uuid from "react-uuid";
 
 export default function CreateUserForm({ handleClose }) {
   const USERPOOLID = "ap-southeast-1_WMzch8no8";
-  const ROLES = ["Student", "Teacher", "Admin", "SuperAdmin"]; // change with roles from API "ListGroups"
+  // const ROLES = ["Student", "Teacher", "Admin", "SuperAdmin"]; // change with roles from API "ListGroups"
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [role, setRole] = React.useState("");
+  const [roles, setRoles] = React.useState([]);
 
   const handleNameChange = (event) => {
     setName(event.target.value);
@@ -45,8 +46,13 @@ export default function CreateUserForm({ handleClose }) {
       },
     };
     let groups = await API.get(apiName, path, myInit);
-    setRole(groups.Groups);
-    console.log(groups);
+    var roles = [];
+    for (let idx in groups.Groups) {
+      roles = [...roles, groups.Groups[idx].GroupName];
+    }
+
+    setRoles(roles);
+    console.log(roles);
   };
 
   const createNewUser = async (event) => {
@@ -82,7 +88,11 @@ export default function CreateUserForm({ handleClose }) {
       },
     };
     console.log(myInit);
-    let users = await API.post(apiName, path, myInit);
+    try {
+      let users = await API.post(apiName, path, myInit);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   React.useEffect(() => {
@@ -138,7 +148,7 @@ export default function CreateUserForm({ handleClose }) {
               value={role}
               onChange={handleRoleChange}
               fullWidth>
-              {ROLES.map((r) =>
+              {roles.map((r) =>
                 r === "Student" ? (
                   <MenuItem key={"User"} value={"User"}>
                     {"Student"}

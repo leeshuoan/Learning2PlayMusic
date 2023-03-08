@@ -266,7 +266,7 @@ app.get("/listUsersInGroup", async (req, res, next) => {
     }
     res.status(200).json(response);
   } catch (err) {
-    next(err);
+    next(err + req.body);
   }
 });
 
@@ -324,7 +324,7 @@ app.post("/createUser", async (req, res, next) => {
     );
     res.status(200).json(response);
   } catch (err) {
-    next(err);
+    throw err;
   }
 });
 

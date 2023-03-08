@@ -277,7 +277,6 @@ async function createUser(userPoolId, username, password, email, name, role) {
     Username: username /* required */,
 
     DesiredDeliveryMediums: ["EMAIL"],
-    // (optional) ForceAliasCreation: true || false,
     MessageAction: "SUPPRESS",
     TemporaryPassword: password,
     UserAttributes: [
