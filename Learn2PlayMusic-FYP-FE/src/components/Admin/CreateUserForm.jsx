@@ -131,7 +131,7 @@ export default function CreateUserForm({ roles, handleClose }) {
           <Grid item xs={12}></Grid>
         </Grid>
         <Button type="submit" fullWidth variant="contained" color="primary">
-          Sign Up
+          Create
         </Button>
       </form>
     </div>
