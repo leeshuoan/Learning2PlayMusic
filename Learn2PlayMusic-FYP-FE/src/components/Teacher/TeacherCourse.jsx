@@ -336,12 +336,19 @@ const TeacherCourse = (userInfo) => {
             >
               <Grid container>
                 <Grid item xs={10} md={11}>
-                  <Typography variant="h5">
-                    Class Announcements{"       "}
-                  </Typography>
+                  <Typography variant="h5">Class Announcements</Typography>
                 </Grid>
                 <Grid item xs={2} md={1}>
-                  <Button variant="contained"> + New </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      navigate("announcement/new", {
+                        state: { course: course, title: "", description: "" },
+                      });
+                    }}
+                  >
+                    +&nbsp;New
+                  </Button>
                 </Grid>
               </Grid>
               {courseAnnouncements.map((announcement, key) => (
@@ -362,8 +369,23 @@ const TeacherCourse = (userInfo) => {
                         divider={<Divider orientation="vertical" flexItem />}
                         spacing={2}
                       >
-                        <Typography>Edit</Typography>
-                        <Typography>Delete</Typography>
+                        <Typography
+                          onClick={() => {
+                            navigate("announcement/edit", {
+                              state: {
+                                course: course,
+                                title: announcement.Title,
+                                description: announcement.Content,
+                              },
+                            });
+                          }}
+                        >
+                          <Link>Edit</Link>
+                        </Typography>
+                        <Typography>
+                          {/* TODO: confirm delete and handle delete */}
+                          <Link>Delete</Link>
+                        </Typography>
                       </Stack>
                     </Grid>
                   </Grid>
