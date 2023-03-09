@@ -16,7 +16,7 @@ s3 = boto3.client('s3')
 def lambda_handler(event, context):
     try:
         request_body = json.loads(event['body'])
-        if 'homeworkContent' not in request_body and 'homeworkAttachment' not in request_body:
+        if not request_body["homeworkContent"].strip() and request_body['homeworkAttachment'] == "":
             raise Exception("Both content and attachment cannot be empty!")
 
         course_id = request_body['courseId']
@@ -53,6 +53,17 @@ def handle_content(request_body, course_id, student_id, homework_id, table):
         )
 
         return 0
+    else:
+        table.update_item(
+            Key=key,
+            UpdateExpression=f"SET NumAttempts = if_not_exists(NumAttempts, :start) + :increment, Marked = if_not_exists(Marked, :marked), HomeworkContent = :homeworkContent, HomeworkScore = if_not_exists(HomeworkScore, :start)",
+            ExpressionAttributeValues={
+                ':start': 0,
+                ':increment': 1,
+                ':marked': False,
+                ':homeworkContent': ""
+            }
+        )
     return 1
 
 def handle_attachment(request_body, course_id, student_id, homework_id, table, increment):
@@ -120,5 +131,16 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table, i
                     'SubmissionFileName': item['FileName'],
                     'HomeworkAttachment': item['HomeworkAttachment'],
                     'HomeworkScore': 0
+                }
+            )
+    else:
+            table.update_item(
+                Key=key,
+                UpdateExpression='set SubmissionFileName = :filename, HomeworkAttachment=:attachment, NumAttempts = if_not_exists(NumAttempts, :start) + :increment',
+                ExpressionAttributeValues={
+                    ':filename': "",
+                    ':attachment': "",
+                    ':increment': increment,
+                    ':start': 0,
                 }
             )
