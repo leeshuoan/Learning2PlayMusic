@@ -175,6 +175,7 @@ const TeacherCourse = (userInfo) => {
 
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
+{/* breadcrumbs ======================================================================================================================== */}
       <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
         <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={() => { navigate("/teacher"); }} >
           <HomeIcon sx={{ mr: 0.5 }} />
@@ -195,7 +196,7 @@ const TeacherCourse = (userInfo) => {
           </Box>
         </Box>
       </Card>
-
+{/* side menu ======================================================================================================================== */}
       <Grid container spacing={2} sx={{ pt: 2 }}>
         <Grid item xs={12} md={3}>
           <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}>
@@ -237,27 +238,16 @@ const TeacherCourse = (userInfo) => {
             </Accordion>
           </Card>
         </Grid>
-
+{/* course announcements ================================================================================ */}
         <Grid item xs={12} md={9}>
           <Box>
-            <Card
-              sx={{ py: 3, px: 5, mt: 2,
-                display: category == "announcement" ? "block" : category === undefined ? "block" : "none",
-              }}
-            >
+            <Card sx={{ py: 3, px: 5, mt: 2, display: category == "announcement" ? "block" : category === undefined ? "block" : "none", }} >
               <Grid container>
                 <Grid item xs={10} md={11}>
                   <Typography variant="h5">Class Announcements</Typography>
                 </Grid>
                 <Grid item xs={2} md={1}>
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      navigate("announcement/new", {
-                        state: { course: course, title: "", description: "" },
-                      });
-                    }}
-                  >
+                  <Button variant="contained" onClick={() => { navigate("announcement/new", { state: { course: course, title: "", description: "" }, }); }}>
                     +&nbsp;New
                   </Button>
                 </Grid>
@@ -291,7 +281,7 @@ const TeacherCourse = (userInfo) => {
                 </Card>
               ))}
             </Card>
-
+{/* course materials ========================================================================================================================*/}
             <Box sx={{ display: category == "material" ? "block" : "none" }}>
               <Box m={2}>
                 <MaterialReactTable
@@ -306,6 +296,7 @@ const TeacherCourse = (userInfo) => {
                 ></MaterialReactTable>
               </Box>
             </Box>
+{/* quiz ==================================================================================================== */}
 
             <Box sx={{ display: category == "quiz" ? "block" : "none" }}>
               {courseQuiz.map((quiz, key) => (
@@ -353,7 +344,7 @@ const TeacherCourse = (userInfo) => {
                 </Card>
               ))}
             </Box>
-
+{/* homework ==================================================================================================== */}
             <Box sx={{ display: category == "homework" ? "block" : "none" }}>
               <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
                 <Grid item xs={3}>
@@ -413,7 +404,7 @@ const TeacherCourse = (userInfo) => {
                 </Card>
               ))}
             </Box>
-
+{/* report ==================================================================================================== */}
             <Box sx={{ display: category == "report" ? "block" : "none" }}>
               <Card sx={{ py: 3, px: 4, mt: 2 }}>
                 <Typography variant="subtitle1" sx={{ textAlign: "center" }}>

@@ -42,9 +42,12 @@ def lambda_handler(event, context):
                 "Content": json.loads(event['body'])['content'],
                 "Date": str(date)
             }
-        response = table.put_item(Item=item)
+        response = table.update_item(Key={"PK": f"Course#{json.loads(event['body'])['courseId']}",
+                "SK": f"Announcement#{announcementId}",}, UpdateExpression="set Title = :t, Content = :c, Date = :d",
+                ExpressionAttributeValues={":t": json.loads(event['body'])['title'], ":c": json.loads(event['body'])['content'], ":d": str(date)
+                }, ReturnValues="UPDATED_NEW")
 
-        return response_200_msg_items("inserted", item)
+        return response_200_msg_items("updated", item)
 
     # currently, this is only for functions that sends in request body - to catch 'missing fields' error
     except KeyError:

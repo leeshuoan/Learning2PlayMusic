@@ -127,7 +127,7 @@ function App() {
             />
             <Route path="course/:courseid">
               <Route index element={<TeacherCourse userInfo={userInfo} />} />
-              <Route path="announcement/:announcementId" element={<CourseAnnouncementForm/>}/>
+              <Route path="announcement/:type/:announcementId?" element={<CourseAnnouncementForm/>}/>
               {/* <Route path=":category" element={<X userInfo={userInfo} />} />
                 <Route path="material/:materialId" element={<UserClassMaterials />} />
                 <Route path="homework/:homeworkId" element={<UserHomework userInfo={userInfo} />} />
