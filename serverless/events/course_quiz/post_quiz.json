@@ -1,0 +1,12 @@
+{
+    "httpMethod": "POST",
+    "queryStringParameters": {
+      "foo": "bar"
+    },
+    "body": {
+      "courseId": 1,
+      "quizTitle": "Sample Course Title",
+      "quizMaxAttempts": 1
+    },
+    "path": "/course/quiz/question"
+  }
