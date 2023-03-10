@@ -8,7 +8,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import TransitionModal from "../utils/TransitionModal";
-import CustomSnackBar from "../utils/CustomSnackBar";
 
 const TeacherCourse = (userInfo) => {
   const [open, setOpen] = useState(true);
