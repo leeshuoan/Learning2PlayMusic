@@ -38,7 +38,7 @@ def handle_content(request_body, course_id, student_id, homework_id, table):
         'PK': f'Course#{course_id}',
         'SK': f'Student#{student_id}Homework#{homework_id}',
     }
-    if 'homeworkContent' in request_body:
+    if request_body['homeworkContent'] != "" :
 
         table.update_item(
             Key=key,
@@ -72,7 +72,7 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table, i
         'SK': f'Student#{student_id}Homework#{homework_id}',
     }
 
-    if 'homeworkAttachment' in request_body:
+    if request_body['homeworkAttachment'] != "":
         base64data = request_body['homeworkAttachment']
 
         # Extract the file extension and decode the base64 data
@@ -105,10 +105,6 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table, i
             'HomeworkAttachment': bucket_name + "/" + s3key
         }
 
-        key = {
-            'PK': f'Course#{course_id}',
-            'SK': f'Student#{student_id}Homework#{homework_id}',
-        }
         response = table.get_item(Key=key)
 
         if 'Item' in response:
