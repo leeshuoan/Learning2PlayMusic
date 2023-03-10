@@ -34,12 +34,11 @@ def lambda_handler(event, context):
 
 
 def handle_content(request_body, course_id, student_id, homework_id, table):
-
+    key = {
+        'PK': f'Course#{course_id}',
+        'SK': f'Student#{student_id}Homework#{homework_id}',
+    }
     if 'homeworkContent' in request_body:
-        key = {
-            'PK': f'Course#{course_id}',
-            'SK': f'Student#{student_id}Homework#{homework_id}',
-        }
 
         table.update_item(
             Key=key,
@@ -68,6 +67,11 @@ def handle_content(request_body, course_id, student_id, homework_id, table):
 
 def handle_attachment(request_body, course_id, student_id, homework_id, table, increment):
 
+    key = {
+        'PK': f'Course#{course_id}',
+        'SK': f'Student#{student_id}Homework#{homework_id}',
+    }
+
     if 'homeworkAttachment' in request_body:
         base64data = request_body['homeworkAttachment']
 
@@ -78,7 +82,7 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table, i
 
         random_uuid = str(uuid.uuid4().int)[:8]
         # Upload the image data to S3
-        key = f'Course{course_id}/Student{student_id}/Homework{homework_id}_{random_uuid}.{file_extension}'
+        s3key = f'Course{course_id}/Student{student_id}/Homework{homework_id}_{random_uuid}.{file_extension}'
         if file_extension == "pdf":
             content_type = "application/pdf"
         elif file_extension == "png" or file_extension == "jpg" or file_extension == "jpeg":
@@ -88,7 +92,7 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table, i
 
         s3_params = {
             'Bucket': bucket_name,
-            'Key': key,
+            'Key': s3key,
             'Body': homework_attachment,
             'ContentType': content_type,
             'ContentDisposition': "inline"
@@ -98,7 +102,7 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table, i
         # DYNAMODB STUFF
         item = {
             'FileName': f'Homework{homework_id}_{random_uuid}.{file_extension}',
-            'HomeworkAttachment': bucket_name + "/" + key
+            'HomeworkAttachment': bucket_name + "/" + s3key
         }
 
         key = {
