@@ -1,5 +1,5 @@
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { Box, Button, Breadcrumbs, Card, Container, Typography, TextField, Link } from "@mui/material";
+import { Box, Button, Breadcrumbs, Card, Container, Typography, TextField, Link, Alert, Snackbar } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
@@ -8,10 +8,17 @@ import { useState } from "react";
 export default function CourseAnnouncementForm() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [alert, setAlert] = useState(false);
   const navigate = useNavigate();
   const { state } = useLocation();
-
   var course = state.course;
+
+  const closeAlert = () => {
+    setAlert(false);
+  };
+  const openAlert = () => {
+    setAlert(true);
+  };
 
   async function handleAddAnnouncement(title, content) {
     // add API Call here
@@ -24,7 +31,7 @@ export default function CourseAnnouncementForm() {
         courseId: course.id,
         content: content,
         title: title,
-      }
+      },
     });
     return response;
   }
@@ -39,13 +46,13 @@ export default function CourseAnnouncementForm() {
         content: content,
         title: title,
       },
-    });    
+    });
     return response;
   }
 
-  async function handleSubmit(){
+  async function handleSubmit() {
     if (title == "" || content == "") {
-      alert("Please fill in all fields");
+      openAlert();
       return;
     }
     if (state.title == "") {
@@ -59,10 +66,15 @@ export default function CourseAnnouncementForm() {
     if (response.status == 200) {
       navigate(`/teacher/course/${course.id}`);
     }
-  };
+  }
 
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
+      <Snackbar open={alert} autoHideDuration={6000} onClose={closeAlert}>
+        <Alert severity="error" sx={{ mt: 3 }} onClose={closeAlert}>
+          <strong>Please fill in all the fields!</strong>
+        </Alert>
+      </Snackbar>
       <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
         <Link
           underline="hover"

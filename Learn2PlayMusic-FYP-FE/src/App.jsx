@@ -91,94 +91,48 @@ function App() {
   return (
     <div className="App">
       <ThemeProvider>
-        <DefaultAppBar
-          userInfo={userInfo}
-          handleResetUserInfo={() => handleResetUserInfo()}
-        />
+        <DefaultAppBar userInfo={userInfo} handleResetUserInfo={() => handleResetUserInfo()} />
         <ToastContainer />
         <Routes>
           <Route path="/">
-            <Route
-              index
-              element={
-                <SignIn
-                  userInfo={userInfo}
-                  handleSetUserInfo={handleSetUserInfo}
-                />
-              }
-            />
+            <Route index element={<SignIn userInfo={userInfo} handleSetUserInfo={handleSetUserInfo} />} />
           </Route>
 
-          <Route
-            path="admin"
-            element={<PrivateRoutes userType="Admin"></PrivateRoutes>}
-          >
+          <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}>
             <Route index element={<AdminHome userInfo={userInfo} />} />
           </Route>
 
-          <Route
-            path="teacher"
-            element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}
-          >
+          <Route path="teacher" element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
             <Route index element={<TeacherHome userInfo={userInfo} />} />
-            <Route
-              path="announcements"
-              element={<Announcements userInfo={userInfo} />}
-            />
+            <Route path="announcements" element={<Announcements userInfo={userInfo} />} />
             <Route path="course/:courseid">
               <Route index element={<TeacherCourse userInfo={userInfo} />} />
-              <Route path="announcement/:type/:announcementId?" element={<CourseAnnouncementForm/>}/>
-              {/* <Route path=":category" element={<X userInfo={userInfo} />} />
-                <Route path="material/:materialId" element={<UserClassMaterials />} />
+              <Route path="announcement/:type/:announcementId?" element={<CourseAnnouncementForm />} />
+              <Route path=":category" element={<TeacherCourse userInfo={userInfo} />} />
+              {/* <Route path="material/:materialId" element={<UserClassMaterials />} />
                 <Route path="homework/:homeworkId" element={<UserHomework userInfo={userInfo} />} />
                 <Route path="homework/:homeworkId/feedback" element={<UserHomeworkFeedback userInfo={userInfo} />} />
                 <Route path="report/:reportId" element={<UserReport />} />
-                <Route path="quiz/:quizId" element={<UserQuiz userInfo={userInfo}/>} /> */}
+                <Route path="quiz/:quizId" element={<UserQuiz userInfo={userInfo}/>} />  */}
             </Route>
           </Route>
 
-          <Route
-            path="home"
-            element={<PrivateRoutes userType="User"></PrivateRoutes>}
-          >
+          <Route path="home" element={<PrivateRoutes userType="User"></PrivateRoutes>}>
             <Route index element={<UserHome userInfo={userInfo} />} />
             <Route path="announcements" element={<Announcements />} />
             <Route path="course/:courseid">
               <Route index element={<UserCourse userInfo={userInfo} />} />
-              <Route
-                path=":category"
-                element={<UserCourse userInfo={userInfo} />}
-              />
-              <Route
-                path="material/:materialId"
-                element={<UserClassMaterials />}
-              />
-              <Route
-                path="homework/:homeworkId"
-                element={<UserHomework userInfo={userInfo} />}
-              />
-              <Route
-                path="homework/:homeworkId/feedback"
-                element={<UserHomeworkFeedback userInfo={userInfo} />}
-              />
+              <Route path=":category" element={<UserCourse userInfo={userInfo} />} />
+              <Route path="material/:materialId" element={<UserClassMaterials />} />
+              <Route path="homework/:homeworkId" element={<UserHomework userInfo={userInfo} />} />
+              <Route path="homework/:homeworkId/feedback" element={<UserHomeworkFeedback userInfo={userInfo} />} />
               <Route path="report/:reportId" element={<UserReport />} />
-              <Route
-                path="quiz/:quizId"
-                element={<UserQuiz userInfo={userInfo} />}
-              />
+              <Route path="quiz/:quizId" element={<UserQuiz userInfo={userInfo} />} />
             </Route>
           </Route>
 
           <Route path="chat" element={<Chat userInfo={userInfo} />} />
-          <Route
-            path="profile"
-            element={
-              <Profile
-                userInfo={userInfo}
-                refreshUserInfo={handleRefreshUserInfo}
-              />
-            }
-          ></Route>
+          <Route path="profile" element={<Profile userInfo={userInfo} refreshUserInfo={handleRefreshUserInfo} />}></Route>
           <Route path="resetpassword" element={<ForgotPassword />}></Route>
           <Route path="*" element={<NotFound userRole={userInfo.role} />} />
         </Routes>
