@@ -1,23 +1,6 @@
 import { useMemo, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Typography,
-  Container,
-  Grid,
-  Card,
-  Box,
-  MenuItem,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Link,
-  Button,
-  Divider,
-  Breadcrumbs,
-  Backdrop,
-  Stack,
-  CircularProgress,
-} from "@mui/material";
+import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Divider, Breadcrumbs, Backdrop, Stack, CircularProgress } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
@@ -49,13 +32,7 @@ const TeacherCourse = (userInfo) => {
   const navigate = useNavigate();
   const { category } = useParams();
   const { courseid } = useParams();
-  const menuOptions = [
-    "Announcements",
-    "Class Materials",
-    "Quizzes",
-    "Homework",
-    "My Progress Report",
-  ];
+  const menuOptions = ["Announcements", "Class Materials", "Quizzes", "Homework", "My Progress Report"];
   const routeMenuMapping = {
     announcement: "Announcements",
     material: "Class Materials",
@@ -75,16 +52,10 @@ const TeacherCourse = (userInfo) => {
   }
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
-  const getCourseAnnouncementsAPI = request(
-    `/course/announcement?courseId=${courseid}`
-  );
-  const getHomeworkAPI = request(
-    `/course/homework?courseId=${courseid}&studentId=${userInfo.userInfo.id}`
-  );
+  const getCourseAnnouncementsAPI = request(`/course/announcement?courseId=${courseid}`);
+  const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
   const getMaterialAPI = request(`/course/material?courseId=${courseid}`);
-  const getQuizAPI = request(
-    `/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`
-  );
+  const getQuizAPI = request(`/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
 
   const columns = useMemo(
     () => [
@@ -92,15 +63,7 @@ const TeacherCourse = (userInfo) => {
         accessorKey: "MaterialTitle",
         id: "title",
         header: "Title",
-        Cell: ({ cell, row }) => (
-          <Link
-            onClick={() =>
-              navigate(`/home/course/${courseid}/material/${row.original.id}`)
-            }
-          >
-            {row.original.MaterialTitle}
-          </Link>
-        ),
+        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/home/course/${courseid}/material/${row.original.id}`)}>{row.original.MaterialTitle}</Link>,
       },
       {
         accessorKey: "MaterialType",
@@ -118,13 +81,7 @@ const TeacherCourse = (userInfo) => {
 
   useEffect(() => {
     async function fetchData() {
-      const [data1, data2, data3, data4, data5] = await Promise.all([
-        getCourseAPI,
-        getHomeworkAPI,
-        getMaterialAPI,
-        getQuizAPI,
-        getCourseAnnouncementsAPI,
-      ]);
+      const [data1, data2, data3, data4, data5] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI]);
 
       console.log(data1);
       const courseData = {
@@ -142,12 +99,12 @@ const TeacherCourse = (userInfo) => {
       //       data2.map(async (homework) => {
       //         const id = homework.SK.split("Homework#")[1].substr(0, 1);
       //         const date = new Date(homework.HomeworkDueDate);
-      //         const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+      // const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
 
-      //         const homeworkFeedback = await fetchHomeworkFeedback(id);
-      //         console.log(homeworkFeedback);
+      // const homeworkFeedback = await fetchHomeworkFeedback(id);
+      // console.log(homeworkFeedback);
 
-      //         return {
+      // return {
       //           ...homework,
       //           id,
       //           HomeworkDueDate: formattedDate,
@@ -209,31 +166,17 @@ const TeacherCourse = (userInfo) => {
   }, []);
 
   const menuNavigate = (option) => {
-    if (option == "Announcements")
-      navigate(`/home/course/${course.id}/announcement`);
-    if (option == "Class Materials")
-      navigate(`/home/course/${course.id}/material`);
+    if (option == "Announcements") navigate(`/home/course/${course.id}/announcement`);
+    if (option == "Class Materials") navigate(`/home/course/${course.id}/material`);
     if (option == "Quizzes") navigate(`/home/course/${course.id}/quiz`);
     if (option == "Homework") navigate(`/home/course/${course.id}/homework`);
-    if (option == "My Progress Report")
-      navigate(`/home/course/${course.id}/report`);
+    if (option == "My Progress Report") navigate(`/home/course/${course.id}/report`);
   };
 
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-      <Breadcrumbs
-        aria-label="breadcrumb"
-        separator={<NavigateNextIcon fontSize="small" />}
-        sx={{ mt: 3 }}
-      >
-        <Link
-          underline="hover"
-          color="inherit"
-          sx={{ display: "flex", alignItems: "center" }}
-          onClick={() => {
-            navigate("/teacher");
-          }}
-        >
+      <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
+        <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={() => { navigate("/teacher"); }} >
           <HomeIcon sx={{ mr: 0.5 }} />
           Home
         </Link>
@@ -255,20 +198,11 @@ const TeacherCourse = (userInfo) => {
 
       <Grid container spacing={2} sx={{ pt: 2 }}>
         <Grid item xs={12} md={3}>
-          <Card
-            sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}
-          >
+          <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}>
             {menuOptions.map((option, key) => (
-              <MenuItem
-                key={key}
-                sx={{
+              <MenuItem key={key} sx={{
                   mb: 1,
-                  color:
-                    routeMenuMapping[category] == option
-                      ? "primary.main"
-                      : category === undefined && option == "Announcements"
-                      ? "primary.main"
-                      : "",
+                  color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "",
                   "&:hover": { color: "primary.main" },
                 }}
                 onClick={() => menuNavigate(option)}
@@ -278,35 +212,20 @@ const TeacherCourse = (userInfo) => {
             ))}
           </Card>
 
-          <Card
-            sx={{ py: { sm: 1 }, px: 1, display: { xs: "block", sm: "none" } }}
-          >
+          <Card sx={{ py: { sm: 1 }, px: 1, display: { xs: "block", sm: "none" } }}>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <Typography variant="h5" sx={{ color: "primary.main" }}>
-                    {category === undefined
-                      ? "Announcements"
-                      : routeMenuMapping[category]}
+                    {category === undefined ? "Announcements" : routeMenuMapping[category]}
                   </Typography>
                 </Box>
               </AccordionSummary>
               <AccordionDetails>
                 {menuOptions.map((option, key) => (
-                  <MenuItem
-                    key={key}
-                    sx={{
+                  <MenuItem key={key} sx={{
                       mb: 0.5,
-                      color:
-                        routeMenuMapping[category] == option
-                          ? "primary.main"
-                          : category === undefined && option == "Announcements"
-                          ? "primary.main"
-                          : "",
+                      color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "",
                       "&:hover": { color: "primary.main" },
                     }}
                     onClick={() => menuNavigate(option)}
@@ -322,16 +241,8 @@ const TeacherCourse = (userInfo) => {
         <Grid item xs={12} md={9}>
           <Box>
             <Card
-              sx={{
-                py: 3,
-                px: 5,
-                mt: 2,
-                display:
-                  category == "announcement"
-                    ? "block"
-                    : category === undefined
-                    ? "block"
-                    : "none",
+              sx={{ py: 3, px: 5, mt: 2,
+                display: category == "announcement" ? "block" : category === undefined ? "block" : "none",
               }}
             >
               <Grid container>
@@ -352,11 +263,7 @@ const TeacherCourse = (userInfo) => {
                 </Grid>
               </Grid>
               {courseAnnouncements.map((announcement, key) => (
-                <Card
-                  key={key}
-                  variant="outlined"
-                  sx={{ boxShadow: "none", mt: 2, p: 2 }}
-                >
+                <Card key={key} variant="outlined" sx={{ boxShadow: "none", mt: 2, p: 2 }}>
                   <Grid container>
                     <Grid item xs={8} sm={8} md={10}>
                       <Typography variant="subtitle1" sx={{}}>
@@ -364,21 +271,9 @@ const TeacherCourse = (userInfo) => {
                       </Typography>
                     </Grid>
                     <Grid item xs={4} sm={4} md={2}>
-                      <Stack
-                        direction="row"
-                        divider={<Divider orientation="vertical" flexItem />}
-                        spacing={2}
-                      >
-                        <Typography
-                          onClick={() => {
-                            navigate("announcement/edit", {
-                              state: {
-                                course: course,
-                                title: announcement.Title,
-                                description: announcement.Content,
-                              },
-                            });
-                          }}
+                      <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
+                        <Typography onClick={() => { navigate("announcement/edit",
+                        { state: { course: course, title: announcement.Title, description: announcement.Content, }, }); }}
                         >
                           <Link>Edit</Link>
                         </Typography>
@@ -392,9 +287,7 @@ const TeacherCourse = (userInfo) => {
                   <Typography variant="subsubtitle" sx={{ mb: 1 }}>
                     Posted {announcement.Date}
                   </Typography>
-                  <Typography variant="body2">
-                    {announcement.Content}
-                  </Typography>
+                  <Typography variant="body2">{announcement.Content}</Typography>
                 </Card>
               ))}
             </Card>
@@ -402,9 +295,7 @@ const TeacherCourse = (userInfo) => {
             <Box sx={{ display: category == "material" ? "block" : "none" }}>
               <Box m={2}>
                 <MaterialReactTable
-                  columns={columns}
-                  data={courseMaterial}
-                  initialState={{ density: "compact" }}
+                  columns={columns} data={courseMaterial} initialState={{ density: "compact" }}
                   renderTopToolbarCustomActions={({ table }) => {
                     return (
                       <Typography m={1} variant="h6">
@@ -424,26 +315,12 @@ const TeacherCourse = (userInfo) => {
                   </Typography>
                   <Grid container spacing={2} sx={{ alignItems: "center" }}>
                     <Grid item xs={12} sm={6}>
-                      <Button
-                        variant="contained"
-                        disabled={quiz.QuizAttempt >= quiz.QuizMaxAttempt}
-                        onClick={() => {
-                          navigate(`${quiz.id}`);
-                        }}
-                      >
+                      <Button variant="contained" disabled={quiz.QuizAttempt >= quiz.QuizMaxAttempt} onClick={() => { navigate(`${quiz.id}`); }} >
                         <PlayCircleFilledIcon sx={{ mr: 1 }} />
                         Start Quiz
                       </Button>
                     </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          display: { xs: "none", sm: "block" },
-                          color: "primary.main",
-                        }}
-                      >
+                    <Grid item xs={12} sm={3}> <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: "primary.main", }} >
                         Score
                       </Typography>
                       <Typography
@@ -455,47 +332,20 @@ const TeacherCourse = (userInfo) => {
                       >
                         {quiz.QuizScore * 100}%
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{ display: { xs: "flex", sm: "none" } }}
-                      >
-                        <span sx={{ color: "primary.main", mr: 0.5 }}>
-                          Score:
-                        </span>
+                      <Typography variant="body1" sx={{ display: { xs: "flex", sm: "none" } }}>
+                        <span sx={{ color: "primary.main", mr: 0.5 }}>Score:</span>
                         {quiz.QuizScore * 100}%
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          color: "primary.main",
-                          display: { xs: "none", sm: "block" },
-                        }}
-                      >
+                      <Typography variant="body1" sx={{ textAlign: "center", color: "primary.main", display: { xs: "none", sm: "block" }, }} >
                         Attempts
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          color: quiz.attempts == 0 ? "grey" : "",
-                          display: { xs: "none", sm: "block" },
-                        }}
-                      >
+                      <Typography variant="body1" sx={{ textAlign: "center", color: quiz.attempts == 0 ? "grey" : "", display: { xs: "none", sm: "block" }, }} >
                         {quiz.QuizAttempt}/{quiz.QuizMaxAttempt}
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: quiz.attempts == 0 ? "grey" : "",
-                          display: { xs: "flex", sm: "none" },
-                        }}
-                      >
-                        <span sx={{ color: "primary.main", mr: 0.5 }}>
-                          Attempts:
-                        </span>
+                      <Typography variant="body1" sx={{ color: quiz.attempts == 0 ? "grey" : "", display: { xs: "flex", sm: "none" }, }} >
+                        <span sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</span>
                         {quiz.QuizAttempt}/{quiz.QuizMaxAttempt}
                       </Typography>
                     </Grid>
@@ -505,11 +355,7 @@ const TeacherCourse = (userInfo) => {
             </Box>
 
             <Box sx={{ display: category == "homework" ? "block" : "none" }}>
-              <Grid
-                container
-                spacing={2}
-                sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}
-              >
+              <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
                 <Grid item xs={3}>
                   <Typography variant="subtitle2">HOMEWORK TITLE</Typography>
                 </Grid>
@@ -533,77 +379,34 @@ const TeacherCourse = (userInfo) => {
                 <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
                   <Grid container spacing={2}>
                     <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{ color: "primary.main" }}
-                      >
-                        <Link onClick={() => navigate("" + homework.id)}>
-                          {homework.HomeworkName}
-                        </Link>
+                      <Typography variant="body1" sx={{ color: "primary.main" }}>
+                        <Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkName}</Link>
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          display: { xs: "none", sm: "block" },
-                        }}
-                      >
+                      <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, }} >
                         {homework.HomeworkDueDate}
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{ display: { xs: "block", sm: "none" } }}
-                      >
+
+                      <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
                         Due Date: {homework.HomeworkDueDate}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          display: { xs: "none", sm: "block" },
-                          color: homework.submission == 0 ? "grey" : "",
-                        }}
-                      >
+                      <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? "grey" : "", }} >
                         {homework.NumAttempts}
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          display: { xs: "block", sm: "none" },
-                          color: homework.submission == 0 ? "grey" : "",
-                        }}
-                      >
+
+                      <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? "grey" : "", }} >
                         Submissions: {homework.NumAttempts}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          display: { xs: "none", sm: "block" },
-                        }}
-                      >
-                        <Link
-                          onClick={() => navigate(homework.id + "/feedback")}
-                        >
-                          {homework.Marked ? "Marked" : ""}
-                        </Link>
+                      <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, }} >
+                        <Link onClick={() => navigate(homework.id + "/feedback")}>{homework.Marked ? "Marked" : ""}</Link>
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{ display: { xs: "block", sm: "none" } }}
-                      >
-                        Evaluation Status:{" "}
-                        <Link
-                          onClick={() => navigate(homework.id + "/feedback")}
-                        >
-                          {homework.Marked ? "Marked" : ""}
-                        </Link>
+                      <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
+                        Evaluation Status: <Link onClick={() => navigate(homework.id + "/feedback")}>{homework.Marked ? "Marked" : ""}</Link>
                       </Typography>
                     </Grid>
                   </Grid>
@@ -626,32 +429,18 @@ const TeacherCourse = (userInfo) => {
                   My Progress Report
                 </Typography>
                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ textAlign: "center", ml: 2 }}
-                  >
+                  <Typography variant="subtitle1" sx={{ textAlign: "center", ml: 2 }}>
                     TITLE
                   </Typography>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ textAlign: "center", mr: 2 }}
-                  >
+                  <Typography variant="subtitle1" sx={{ textAlign: "center", mr: 2 }}>
                     DATE AVAILABLE
                   </Typography>
                 </Box>
                 {courseProgressReports.map((report, key) => (
-                  <Card
-                    key={key}
-                    variant="outlined"
-                    sx={{ py: 2, px: 2, mt: 2, boxShadow: "none" }}
-                  >
-                    <Box
-                      sx={{ display: "flex", justifyContent: "space-between" }}
-                    >
+                  <Card key={key} variant="outlined" sx={{ py: 2, px: 2, mt: 2, boxShadow: "none" }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                       <Typography variant="subtitle1" color="primary.main">
-                        <Link onClick={() => navigate("" + report.id)}>
-                          {report.title}
-                        </Link>
+                        <Link onClick={() => navigate("" + report.id)}>{report.title}</Link>
                       </Typography>
                       <Typography variant="subttile1" color="lightgrey">
                         {report.uploadDate}
@@ -664,10 +453,7 @@ const TeacherCourse = (userInfo) => {
           </Box>
         </Grid>
       </Grid>
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-      >
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </Container>
