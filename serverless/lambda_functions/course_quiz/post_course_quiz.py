@@ -15,8 +15,6 @@ def lambda_handler(event, context):
 
     try:
         request_body = json.loads(event['body'])
-        if not request_body["homeworkContent"].strip() and request_body['homeworkAttachment'] == "":
-            raise Exception("Both content and attachment cannot be empty!")
 
         course_id = request_body['courseId']
         quiz_title = request_body['quizTitle']
