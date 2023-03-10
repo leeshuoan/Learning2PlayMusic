@@ -89,6 +89,7 @@ class CourseStack(Stack):
         get_course_announcement = _lambda.Function(self, "getCourseAnnouncement",  runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.get_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course_announcement = _lambda.Function(self, "postCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.post_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course_announcement = _lambda.Function(self, "deleteCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        put_course_announcement = _lambda.Function(self, "putCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /course Functions
         get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.get_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -360,7 +361,23 @@ class CourseStack(Stack):
                 type=apigw.JsonSchemaType.OBJECT,
                 properties={
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "content": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    "content": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "title": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                },
+                required=["content"]))
+        
+        put_course_announcement_model = main_api.add_model(
+            "PutCourseAnnouncementModel",
+            content_type="application/json",
+            model_name="PutCourseAnnouncementModel",
+            schema=apigw.JsonSchema(
+                title="PutCourseAnnouncementModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "content": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "title": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
                 required=["content"]))
 
@@ -372,6 +389,8 @@ class CourseStack(Stack):
             'method.request.querystring.announcementId': True})
         course_announcement_resource.add_method("POST", apigw.LambdaIntegration(post_course_announcement), request_models={
             'application/json': post_course_announcement_model})
+        course_announcement_resource.add_method("PUT", apigw.LambdaIntegration(put_course_announcement), request_models={
+            'application/json': put_course_announcement_model})
 
         # Enable CORS for each resource/sub-resource etc.
         course_resource.add_cors_preflight(

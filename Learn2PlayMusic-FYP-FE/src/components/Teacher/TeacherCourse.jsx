@@ -1,29 +1,14 @@
 import { useMemo, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Typography,
-  Container,
-  Grid,
-  Card,
-  Box,
-  MenuItem,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Link,
-  Button,
-  Divider,
-  Breadcrumbs,
-  Backdrop,
-  Stack,
-  CircularProgress,
-} from "@mui/material";
+import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Divider, Breadcrumbs, Backdrop, Stack, CircularProgress, Snackbar, Alert } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import TransitionModal from "../utils/TransitionModal";
+import CustomSnackBar from "../utils/CustomSnackBar";
 
 const TeacherCourse = (userInfo) => {
   const [open, setOpen] = useState(true);
@@ -32,6 +17,15 @@ const TeacherCourse = (userInfo) => {
   const [courseMaterial, setCourseMaterial] = useState([]);
   const [courseQuiz, setCourseQuiz] = useState([]);
   const [courseAnnouncements, setCourseAnnouncements] = useState([]);
+  const [deleteAnnouncementModal, setDeleteAnnouncementModal] = useState(false);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+  const [alert, setAlert] = useState(false);
+  const [severity, setSeverity] = useState("error");
+  const [alertMessage, setAlertMessage] = useState("");
+
+  const closeAlert = () => {
+    setAlert(false);
+  };
 
   const courseProgressReports = [
     {
@@ -49,13 +43,7 @@ const TeacherCourse = (userInfo) => {
   const navigate = useNavigate();
   const { category } = useParams();
   const { courseid } = useParams();
-  const menuOptions = [
-    "Announcements",
-    "Class Materials",
-    "Quizzes",
-    "Homework",
-    "My Progress Report",
-  ];
+  const menuOptions = ["Announcements", "Class Materials", "Quizzes", "Homework", "My Progress Report"];
   const routeMenuMapping = {
     announcement: "Announcements",
     material: "Class Materials",
@@ -75,16 +63,10 @@ const TeacherCourse = (userInfo) => {
   }
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
-  const getCourseAnnouncementsAPI = request(
-    `/course/announcement?courseId=${courseid}`
-  );
-  const getHomeworkAPI = request(
-    `/course/homework?courseId=${courseid}&studentId=${userInfo.userInfo.id}`
-  );
+  const getCourseAnnouncementsAPI = request(`/course/announcement?courseId=${courseid}`);
+  const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
   const getMaterialAPI = request(`/course/material?courseId=${courseid}`);
-  const getQuizAPI = request(
-    `/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`
-  );
+  const getQuizAPI = request(`/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
 
   const columns = useMemo(
     () => [
@@ -92,15 +74,7 @@ const TeacherCourse = (userInfo) => {
         accessorKey: "MaterialTitle",
         id: "title",
         header: "Title",
-        Cell: ({ cell, row }) => (
-          <Link
-            onClick={() =>
-              navigate(`/home/course/${courseid}/material/${row.original.id}`)
-            }
-          >
-            {row.original.MaterialTitle}
-          </Link>
-        ),
+        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/home/course/${courseid}/material/${row.original.id}`)}>{row.original.MaterialTitle}</Link>,
       },
       {
         accessorKey: "MaterialType",
@@ -115,16 +89,50 @@ const TeacherCourse = (userInfo) => {
     ],
     []
   );
+  async function deleteAnnouncement() {
+    console.log(selectedAnnouncement);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/course/announcement?courseId=${courseid}&announcementId=${selectedAnnouncement}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    // reset
+    setSelectedAnnouncement(null);
+    setDeleteAnnouncementModal(false);
+    fetch(`${import.meta.env.VITE_API_URL}/course/announcement?courseId=${courseid}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        var refreshedAnnouncement = res.map((announcement) => {
+          console.log(announcement);
+          const id = announcement.SK.split("Announcement#")[1];
+          const date = new Date(announcement.Date);
+          const formattedDate = date.toLocaleDateString();
+          return { ...announcement, id, Date: formattedDate };
+        });
+        setCourseAnnouncements(refreshedAnnouncement);
+        // alert
+        if (response.status === 200) {
+          setSeverity("success");
+          setAlert(true);
+          setAlertMessage("Announcement deleted successfully!");
+        } else {
+          setSeverity("error");
+          setAlert(true);
+          setAlertMessage("An unexpected error occured");
+        }
+      });
+    return;
+  }
 
   useEffect(() => {
     async function fetchData() {
-      const [data1, data2, data3, data4, data5] = await Promise.all([
-        getCourseAPI,
-        getHomeworkAPI,
-        getMaterialAPI,
-        getQuizAPI,
-        getCourseAnnouncementsAPI,
-      ]);
+      const [data1, data2, data3, data4, data5] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI]);
 
       console.log(data1);
       const courseData = {
@@ -142,12 +150,12 @@ const TeacherCourse = (userInfo) => {
       //       data2.map(async (homework) => {
       //         const id = homework.SK.split("Homework#")[1].substr(0, 1);
       //         const date = new Date(homework.HomeworkDueDate);
-      //         const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+      // const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
 
-      //         const homeworkFeedback = await fetchHomeworkFeedback(id);
-      //         console.log(homeworkFeedback);
+      // const homeworkFeedback = await fetchHomeworkFeedback(id);
+      // console.log(homeworkFeedback);
 
-      //         return {
+      // return {
       //           ...homework,
       //           id,
       //           HomeworkDueDate: formattedDate,
@@ -195,12 +203,14 @@ const TeacherCourse = (userInfo) => {
       setCourseQuiz(quizData);
 
       const announcementsData = data5.map((announcement) => {
-        const id = announcement.SK.split("Announcement#")[1].substr(0, 1);
+        console.log(announcement);
+        const id = announcement.SK.split("Announcement#")[1];
         const date = new Date(announcement.Date);
         const formattedDate = date.toLocaleDateString();
         return { ...announcement, id, Date: formattedDate };
       });
       setCourseAnnouncements(announcementsData);
+      console.log(announcementsData);
     }
 
     fetchData().then(() => {
@@ -209,37 +219,63 @@ const TeacherCourse = (userInfo) => {
   }, []);
 
   const menuNavigate = (option) => {
-    if (option == "Announcements")
-      navigate(`/home/course/${course.id}/announcement`);
-    if (option == "Class Materials")
-      navigate(`/home/course/${course.id}/material`);
-    if (option == "Quizzes") navigate(`/home/course/${course.id}/quiz`);
-    if (option == "Homework") navigate(`/home/course/${course.id}/homework`);
-    if (option == "My Progress Report")
-      navigate(`/home/course/${course.id}/report`);
+    if (option == "Announcements") navigate(`/teacher/course/${course.id}/announcement`);
+    if (option == "Class Materials") navigate(`/teacher/course/${course.id}/material`);
+    if (option == "Quizzes") navigate(`/teacher/course/${course.id}/quiz`);
+    if (option == "Homework") navigate(`/teacher/course/${course.id}/homework`);
+    if (option == "My Progress Report") navigate(`/teacher/course/${course.id}/report`);
   };
 
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-      <Breadcrumbs
-        aria-label="breadcrumb"
-        separator={<NavigateNextIcon fontSize="small" />}
-        sx={{ mt: 3 }}
-      >
+      {/* Delete announement modal ========================================================================================================================*/}
+      <Snackbar open={alert} autoHideDuration={6000} onClose={closeAlert}>
+        <Alert severity={severity} sx={{ mt: 3 }} onClose={closeAlert}>
+          <strong>{alertMessage}</strong>
+        </Alert>
+      </Snackbar>
+      <TransitionModal
+        open={deleteAnnouncementModal}
+        handleClose={() => {
+          setDeleteAnnouncementModal(false);
+        }}>
+        <Box sx={{ p: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Delete Announcement
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Are you sure you want to delete this announcement?
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mx: 2 }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mr: 1, color: "primary.main" }}
+            onClick={() => {
+              setDeleteAnnouncementModal(false);
+            }}>
+            Cancel
+          </Button>
+          <Button fullWidth variant="contained" color="error" onClick={deleteAnnouncement}>
+            Delete
+          </Button>
+        </Box>
+      </TransitionModal>
+      {/* breadcrumbs ======================================================================================================================== */}
+      <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
         <Link
           underline="hover"
           color="inherit"
           sx={{ display: "flex", alignItems: "center" }}
           onClick={() => {
             navigate("/teacher");
-          }}
-        >
+          }}>
           <HomeIcon sx={{ mr: 0.5 }} />
           Home
         </Link>
         <Typography color="text.primary">{course.name}</Typography>
       </Breadcrumbs>
-
       <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box>
@@ -252,46 +288,30 @@ const TeacherCourse = (userInfo) => {
           </Box>
         </Box>
       </Card>
-
+      {/* side menu ======================================================================================================================== */}
       <Grid container spacing={2} sx={{ pt: 2 }}>
         <Grid item xs={12} md={3}>
-          <Card
-            sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}
-          >
+          <Card sx={{ py: 2, px: 3, mt: 2, display: { xs: "none", sm: "block" } }}>
             {menuOptions.map((option, key) => (
               <MenuItem
                 key={key}
                 sx={{
                   mb: 1,
-                  color:
-                    routeMenuMapping[category] == option
-                      ? "primary.main"
-                      : category === undefined && option == "Announcements"
-                      ? "primary.main"
-                      : "",
+                  color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "",
                   "&:hover": { color: "primary.main" },
                 }}
-                onClick={() => menuNavigate(option)}
-              >
+                onClick={() => menuNavigate(option)}>
                 <Typography variant="subtitle1">{option}</Typography>
               </MenuItem>
             ))}
           </Card>
 
-          <Card
-            sx={{ py: { sm: 1 }, px: 1, display: { xs: "block", sm: "none" } }}
-          >
+          <Card sx={{ py: { sm: 1 }, px: 1, display: { xs: "block", sm: "none" } }}>
             <Accordion>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <Typography variant="h5" sx={{ color: "primary.main" }}>
-                    {category === undefined
-                      ? "Announcements"
-                      : routeMenuMapping[category]}
+                    {category === undefined ? "Announcements" : routeMenuMapping[category]}
                   </Typography>
                 </Box>
               </AccordionSummary>
@@ -301,16 +321,10 @@ const TeacherCourse = (userInfo) => {
                     key={key}
                     sx={{
                       mb: 0.5,
-                      color:
-                        routeMenuMapping[category] == option
-                          ? "primary.main"
-                          : category === undefined && option == "Announcements"
-                          ? "primary.main"
-                          : "",
+                      color: routeMenuMapping[category] == option ? "primary.main" : category === undefined && option == "Announcements" ? "primary.main" : "",
                       "&:hover": { color: "primary.main" },
                     }}
-                    onClick={() => menuNavigate(option)}
-                  >
+                    onClick={() => menuNavigate(option)}>
                     <Typography variant="subtitle1">{option}</Typography>
                   </MenuItem>
                 ))}
@@ -318,22 +332,10 @@ const TeacherCourse = (userInfo) => {
             </Accordion>
           </Card>
         </Grid>
-
+        {/* course announcements ================================================================================ */}
         <Grid item xs={12} md={9}>
           <Box>
-            <Card
-              sx={{
-                py: 3,
-                px: 5,
-                mt: 2,
-                display:
-                  category == "announcement"
-                    ? "block"
-                    : category === undefined
-                    ? "block"
-                    : "none",
-              }}
-            >
+            <Card sx={{ py: 3, px: 5, mt: 2, display: category == "announcement" ? "block" : category === undefined ? "block" : "none" }}>
               <Grid container>
                 <Grid item xs={10} md={11}>
                   <Typography variant="h5">Class Announcements</Typography>
@@ -342,21 +344,14 @@ const TeacherCourse = (userInfo) => {
                   <Button
                     variant="contained"
                     onClick={() => {
-                      navigate("announcement/new", {
-                        state: { course: course, title: "", description: "" },
-                      });
-                    }}
-                  >
+                      navigate("announcement/new", { state: { course: course, title: "", description: "" } });
+                    }}>
                     +&nbsp;New
                   </Button>
                 </Grid>
               </Grid>
               {courseAnnouncements.map((announcement, key) => (
-                <Card
-                  key={key}
-                  variant="outlined"
-                  sx={{ boxShadow: "none", mt: 2, p: 2 }}
-                >
+                <Card key={key} variant="outlined" sx={{ boxShadow: "none", mt: 2, p: 2 }}>
                   <Grid container>
                     <Grid item xs={8} sm={8} md={10}>
                       <Typography variant="subtitle1" sx={{}}>
@@ -364,26 +359,18 @@ const TeacherCourse = (userInfo) => {
                       </Typography>
                     </Grid>
                     <Grid item xs={4} sm={4} md={2}>
-                      <Stack
-                        direction="row"
-                        divider={<Divider orientation="vertical" flexItem />}
-                        spacing={2}
-                      >
+                      <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
                         <Typography
                           onClick={() => {
-                            navigate("announcement/edit", {
-                              state: {
-                                course: course,
-                                title: announcement.Title,
-                                description: announcement.Content,
-                              },
-                            });
-                          }}
-                        >
+                            navigate("announcement/edit", { state: { course: course, title: announcement.Title, description: announcement.Content } });
+                          }}>
                           <Link>Edit</Link>
                         </Typography>
-                        <Typography>
-                          {/* TODO: confirm delete and handle delete */}
+                        <Typography
+                          onClick={() => {
+                            setDeleteAnnouncementModal(true);
+                            setSelectedAnnouncement(announcement.id);
+                          }}>
                           <Link>Delete</Link>
                         </Typography>
                       </Stack>
@@ -392,13 +379,11 @@ const TeacherCourse = (userInfo) => {
                   <Typography variant="subsubtitle" sx={{ mb: 1 }}>
                     Posted {announcement.Date}
                   </Typography>
-                  <Typography variant="body2">
-                    {announcement.Content}
-                  </Typography>
+                  <Typography variant="body2">{announcement.Content}</Typography>
                 </Card>
               ))}
             </Card>
-
+            {/* course materials ========================================================================================================================*/}
             <Box sx={{ display: category == "material" ? "block" : "none" }}>
               <Box m={2}>
                 <MaterialReactTable
@@ -411,10 +396,10 @@ const TeacherCourse = (userInfo) => {
                         Class Materials
                       </Typography>
                     );
-                  }}
-                ></MaterialReactTable>
+                  }}></MaterialReactTable>
               </Box>
             </Box>
+            {/* quiz ==================================================================================================== */}
 
             <Box sx={{ display: category == "quiz" ? "block" : "none" }}>
               {courseQuiz.map((quiz, key) => (
@@ -429,21 +414,14 @@ const TeacherCourse = (userInfo) => {
                         disabled={quiz.QuizAttempt >= quiz.QuizMaxAttempt}
                         onClick={() => {
                           navigate(`${quiz.id}`);
-                        }}
-                      >
+                        }}>
                         <PlayCircleFilledIcon sx={{ mr: 1 }} />
                         Start Quiz
                       </Button>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          display: { xs: "none", sm: "block" },
-                          color: "primary.main",
-                        }}
-                      >
+                      {" "}
+                      <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: "primary.main" }}>
                         Score
                       </Typography>
                       <Typography
@@ -451,51 +429,23 @@ const TeacherCourse = (userInfo) => {
                         sx={{
                           textAlign: "center",
                           display: { xs: "none", sm: "block" },
-                        }}
-                      >
+                        }}>
                         {quiz.QuizScore * 100}%
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{ display: { xs: "flex", sm: "none" } }}
-                      >
-                        <span sx={{ color: "primary.main", mr: 0.5 }}>
-                          Score:
-                        </span>
+                      <Typography variant="body1" sx={{ display: { xs: "flex", sm: "none" } }}>
+                        <span sx={{ color: "primary.main", mr: 0.5 }}>Score:</span>
                         {quiz.QuizScore * 100}%
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          color: "primary.main",
-                          display: { xs: "none", sm: "block" },
-                        }}
-                      >
+                      <Typography variant="body1" sx={{ textAlign: "center", color: "primary.main", display: { xs: "none", sm: "block" } }}>
                         Attempts
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          color: quiz.attempts == 0 ? "grey" : "",
-                          display: { xs: "none", sm: "block" },
-                        }}
-                      >
+                      <Typography variant="body1" sx={{ textAlign: "center", color: quiz.attempts == 0 ? "grey" : "", display: { xs: "none", sm: "block" } }}>
                         {quiz.QuizAttempt}/{quiz.QuizMaxAttempt}
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: quiz.attempts == 0 ? "grey" : "",
-                          display: { xs: "flex", sm: "none" },
-                        }}
-                      >
-                        <span sx={{ color: "primary.main", mr: 0.5 }}>
-                          Attempts:
-                        </span>
+                      <Typography variant="body1" sx={{ color: quiz.attempts == 0 ? "grey" : "", display: { xs: "flex", sm: "none" } }}>
+                        <span sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</span>
                         {quiz.QuizAttempt}/{quiz.QuizMaxAttempt}
                       </Typography>
                     </Grid>
@@ -503,13 +453,9 @@ const TeacherCourse = (userInfo) => {
                 </Card>
               ))}
             </Box>
-
+            {/* homework ==================================================================================================== */}
             <Box sx={{ display: category == "homework" ? "block" : "none" }}>
-              <Grid
-                container
-                spacing={2}
-                sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}
-              >
+              <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
                 <Grid item xs={3}>
                   <Typography variant="subtitle2">HOMEWORK TITLE</Typography>
                 </Grid>
@@ -533,84 +479,41 @@ const TeacherCourse = (userInfo) => {
                 <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
                   <Grid container spacing={2}>
                     <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{ color: "primary.main" }}
-                      >
-                        <Link onClick={() => navigate("" + homework.id)}>
-                          {homework.HomeworkName}
-                        </Link>
+                      <Typography variant="body1" sx={{ color: "primary.main" }}>
+                        <Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkName}</Link>
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          display: { xs: "none", sm: "block" },
-                        }}
-                      >
+                      <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
                         {homework.HomeworkDueDate}
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{ display: { xs: "block", sm: "none" } }}
-                      >
+
+                      <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
                         Due Date: {homework.HomeworkDueDate}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          display: { xs: "none", sm: "block" },
-                          color: homework.submission == 0 ? "grey" : "",
-                        }}
-                      >
+                      <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? "grey" : "" }}>
                         {homework.NumAttempts}
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          display: { xs: "block", sm: "none" },
-                          color: homework.submission == 0 ? "grey" : "",
-                        }}
-                      >
+
+                      <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? "grey" : "" }}>
                         Submissions: {homework.NumAttempts}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          display: { xs: "none", sm: "block" },
-                        }}
-                      >
-                        <Link
-                          onClick={() => navigate(homework.id + "/feedback")}
-                        >
-                          {homework.Marked ? "Marked" : ""}
-                        </Link>
+                      <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
+                        <Link onClick={() => navigate(homework.id + "/feedback")}>{homework.Marked ? "Marked" : ""}</Link>
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{ display: { xs: "block", sm: "none" } }}
-                      >
-                        Evaluation Status:{" "}
-                        <Link
-                          onClick={() => navigate(homework.id + "/feedback")}
-                        >
-                          {homework.Marked ? "Marked" : ""}
-                        </Link>
+                      <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
+                        Evaluation Status: <Link onClick={() => navigate(homework.id + "/feedback")}>{homework.Marked ? "Marked" : ""}</Link>
                       </Typography>
                     </Grid>
                   </Grid>
                 </Card>
               ))}
             </Box>
-
+            {/* report ==================================================================================================== */}
             <Box sx={{ display: category == "report" ? "block" : "none" }}>
               <Card sx={{ py: 3, px: 4, mt: 2 }}>
                 <Typography variant="subtitle1" sx={{ textAlign: "center" }}>
@@ -626,32 +529,18 @@ const TeacherCourse = (userInfo) => {
                   My Progress Report
                 </Typography>
                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ textAlign: "center", ml: 2 }}
-                  >
+                  <Typography variant="subtitle1" sx={{ textAlign: "center", ml: 2 }}>
                     TITLE
                   </Typography>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ textAlign: "center", mr: 2 }}
-                  >
+                  <Typography variant="subtitle1" sx={{ textAlign: "center", mr: 2 }}>
                     DATE AVAILABLE
                   </Typography>
                 </Box>
                 {courseProgressReports.map((report, key) => (
-                  <Card
-                    key={key}
-                    variant="outlined"
-                    sx={{ py: 2, px: 2, mt: 2, boxShadow: "none" }}
-                  >
-                    <Box
-                      sx={{ display: "flex", justifyContent: "space-between" }}
-                    >
+                  <Card key={key} variant="outlined" sx={{ py: 2, px: 2, mt: 2, boxShadow: "none" }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                       <Typography variant="subtitle1" color="primary.main">
-                        <Link onClick={() => navigate("" + report.id)}>
-                          {report.title}
-                        </Link>
+                        <Link onClick={() => navigate("" + report.id)}>{report.title}</Link>
                       </Typography>
                       <Typography variant="subttile1" color="lightgrey">
                         {report.uploadDate}
@@ -664,10 +553,7 @@ const TeacherCourse = (userInfo) => {
           </Box>
         </Grid>
       </Grid>
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-      >
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </Container>
