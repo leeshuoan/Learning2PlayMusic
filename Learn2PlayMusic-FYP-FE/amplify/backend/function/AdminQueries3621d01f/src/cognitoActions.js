@@ -333,14 +333,13 @@ async function createUser(username, password, email, name, role) {
   }
 }
 
-
-
 // delete user as an administrator
 async function deleteUser(username, userPoolId) {
   var params = {
     UserPoolId: userPoolId /* required */,
     Username: username /* required */,
   };
+  console.log(`Attempting to delete user ${username}`)
   try {
     const result = await cognitoIdentityServiceProvider
       .adminDeleteUser(params)

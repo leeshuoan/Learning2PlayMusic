@@ -11,10 +11,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-const express = require("express");
-const bodyParser = require("body-parser");
-const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
-const cors = require("cors");
+const express = require('express');
+const bodyParser = require('body-parser');
+const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
 
 const {
   addUserToGroup,
@@ -31,10 +30,9 @@ const {
   // custom
   createUser,
   deleteUser,
-} = require("./cognitoActions");
+} = require('./cognitoActions');
 
 const app = express();
-app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(awsServerlessExpressMiddleware.eventContext());
@@ -332,11 +330,6 @@ app.post("/createUser", async (req, res, next) => {
 app.post("/deleteUser", async (req, res, next) => {
   if (!req.body.username) {
     const err = new Error("username is required");
-    err.statusCode = 400;
-    return next(err);
-  }
-  if (!req.body.userPoolId) {
-    const err = new Error("userPoolId is required");
     err.statusCode = 400;
     return next(err);
   }

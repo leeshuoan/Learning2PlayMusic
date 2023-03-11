@@ -3,13 +3,6 @@
 
 const awsmobile = {
     "aws_project_region": "ap-southeast-1",
-    "aws_cloud_logic_custom": [
-        {
-            "name": "AdminQueries",
-            "endpoint": "https://kg52c576v2.execute-api.ap-southeast-1.amazonaws.com/dev",
-            "region": "ap-southeast-1"
-        }
-    ],
     "aws_cognito_identity_pool_id": "ap-southeast-1:a7ef5067-bed9-4659-b6b6-ce5f44cb1a41",
     "aws_cognito_region": "ap-southeast-1",
     "aws_user_pools_id": "ap-southeast-1_WMzch8no8",
@@ -32,6 +25,13 @@ const awsmobile = {
     },
     "aws_cognito_verification_mechanisms": [
         "EMAIL"
+    ],
+    "aws_cloud_logic_custom": [
+        {
+            "name": "AdminQueries",
+            "endpoint": "https://kg52c576v2.execute-api.ap-southeast-1.amazonaws.com/dev",
+            "region": "ap-southeast-1"
+        }
     ],
     "aws_user_files_s3_bucket": "learn2playmusicfypfeaec26cf6f3d7407294cc6ebce05224255-dev",
     "aws_user_files_s3_bucket_region": "ap-southeast-1"
