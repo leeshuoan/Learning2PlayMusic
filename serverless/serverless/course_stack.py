@@ -197,8 +197,7 @@ class CourseStack(Stack):
 
         # /course/teacher
         course_teacher_resource.add_method("GET", apigw.LambdaIntegration(get_course_teacher), request_parameters={
-            'method.request.querystring.courseId': True,
-            'method.request.querystring.teacherId': False,
+            'method.request.querystring.courseId': True
             })
 
         # /course/material
