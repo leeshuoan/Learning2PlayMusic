@@ -20,28 +20,14 @@ def lambda_handler(event, context):
         table = dynamodb.Table("LMS")
         
         courseId = queryStringParameters["courseId"]
-        studentId = queryStringParameters["studentId"]
 
-        # if specific quizId is specified
-        if "quizId" in queryStringParameters.keys():
-            quizId = queryStringParameters["quizId"]
-            response = table.get_item(
-                Key={
-                    "PK": f"Course#{courseId}",
-                    "SK": f"Student#{studentId}Quiz#{quizId}"
-                })
-            items = response["Item"]
-            
+        if "studentId" not in queryStringParameters.keys():
+            items = handle_general_course_quiz(courseId, table, queryStringParameters)
+
         else:
-            response = table.query(
-                KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
-                ExpressionAttributeValues={
-                    ":PK": f"Course#{courseId}",
-                    ":SK": f"Student#{studentId}Quiz#"
-                },
-                FilterExpression='attribute_not_exists(QuestionOptionType)'
-            )
-            items = response["Items"]
+            studentId = queryStringParameters["studentId"]
+            items = handle_student_course_quiz(courseId, studentId, table, queryStringParameters)
+
 
         res["statusCode"] = 200
         res["headers"] = {
@@ -64,3 +50,50 @@ def lambda_handler(event, context):
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
         return response_500((str(exception_type) + str(e)))
+
+
+def handle_general_course_quiz(courseId, table, queryStringParameters):
+    if "quizId" in queryStringParameters.keys():
+        quizId = queryStringParameters["quizId"]
+        response = table.get_item(
+            Key={
+                "PK": f"Course#{courseId}",
+                "SK": f"Quiz#{quizId}"
+            })
+        items = response["Item"]
+        
+    else:
+        response = table.query(
+            KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+            ExpressionAttributeValues={
+                ":PK": f"Course#{courseId}",
+                ":SK": f"Quiz#"
+            },
+            FilterExpression='attribute_not_exists(QuestionOptionType)'
+        )
+        items = response["Items"]
+
+    return items
+
+def handle_student_course_quiz(courseId, studentId, table, queryStringParameters):
+    if "quizId" in queryStringParameters.keys():
+        quizId = queryStringParameters["quizId"]
+        response = table.get_item(
+            Key={
+                "PK": f"Course#{courseId}",
+                "SK": f"Student#{studentId}Quiz#{quizId}"
+            })
+        items = response["Item"]
+        
+    else:
+        response = table.query(
+            KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+            ExpressionAttributeValues={
+                ":PK": f"Course#{courseId}",
+                ":SK": f"Student#{studentId}Quiz#"
+            },
+            FilterExpression='attribute_not_exists(QuestionOptionType)'
+        )
+        items = response["Items"]
+
+    return items
