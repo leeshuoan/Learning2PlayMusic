@@ -237,6 +237,7 @@ class CourseStack(Stack):
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "quizTitle": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "quizMaxAttempts": apigw.JsonSchema(type=apigw.JsonSchemaType.INTEGER),
+                    "quizDescription": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
                 required=["courseId", "quizTitle", "quizMaxAttempts"]))
         
