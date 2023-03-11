@@ -13,7 +13,9 @@ const AdminUserManagement = () => {
   const [reloadData, setReloadData] = useState(false);
   const [openCreateUser, setOpenCreateUser] = useState(false);
   const [openDisableUser, setOpenDisableUser] = useState(false);
-  const [selectedUser, setSelectedUser] = useState("");
+  const [openDeleteUser, setOpenDeleteUser] = useState(false);
+  const [toDisableUser, setToDisableUser] = useState("");
+  const [toDeleteUser, setToDeleteUser] = useState("");
   const [roles, setRoles] = useState([]);
 
   // list groups
@@ -81,8 +83,8 @@ const AdminUserManagement = () => {
 
   const disableUser = async (user) => {
     setOpenDisableUser(true)
-    setSelectedUser(user)
-    console.log(selectedUser)
+    setToDisableUser(user)
+    console.log(toDisableUser)
   }
 
   const confirmDisableUser = async () => {
@@ -96,7 +98,7 @@ const AdminUserManagement = () => {
           .getJwtToken()}`,
       },
       body: {
-        username: selectedUser.Username,
+        username: toDisableUser.Username,
       }
     };
     let success = await API.post(apiName, path, myInit);
@@ -107,6 +109,36 @@ const AdminUserManagement = () => {
       })
       setReloadData(!reloadData)
       setOpenDisableUser(false)
+    }
+  }
+
+  const deleteUser = async (user) => {
+    setOpenDeleteUser(true)
+    setToDeleteUser(user)
+  }
+
+  const confirmDeleteUser = async () => {
+    let apiName = "AdminQueries";
+    let path = "/deleteUser";
+    let myInit = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${(await Auth.currentSession())
+          .getAccessToken()
+          .getJwtToken()}`,
+      },
+      body: {
+        username: toDeleteUser.Username,
+      }
+    };
+    let success = await API.post(apiName, path, myInit);
+    console.log(success)
+    if (success.message) {
+      toast.success("User deleted successfully", {
+        position: toast.POSITION.TOP_CENTER,
+      })
+      setReloadData(!reloadData)
+      setOpenDeleteUser(false)
     }
   }
 
@@ -161,8 +193,9 @@ const AdminUserManagement = () => {
               gap: "1rem",
             }}>
             <Button variant="contained">Enroll</Button>
-            <Button variant="contained" onClick={() => { disableUser(row.original) }}>Disable</Button>
-            <Button variant="contained">Delete</Button>
+            <Button variant="contained" sx={{ display: row.original.Enabled == "Enabled" ? "block" : "none" }} onClick={() => { disableUser(row.original) }}>Disable</Button>
+            <Button variant="contained" sx={{ display: row.original.Enabled == "Enabled" ? "none" : "block" }} onClick={() => { disableUser(row.original) }}>Enable</Button>
+            <Button variant="contained" color="error" disabled={ row.original.Enabled == "Enabled" ? true : false } onClick={() => { deleteUser(row.original) }}>Delete</Button>
           </Box>
         ),
       },
@@ -190,6 +223,44 @@ const AdminUserManagement = () => {
         {<CreateUserForm roles={roles} handleClose={() => createdUser()} />}
       </TransitionModal>
       <TransitionModal
+        open={openDeleteUser}
+        handleClose={() => setOpenDeleteUser(false)}
+        style={{
+          position: "relative",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "50%",
+          bgcolor: "background.paper",
+          border: "1px solid #000",
+          borderRadius: 2,
+          p: 4,
+        }}>
+        <>
+          <Grid container spacing={2}>
+            <Grid item xs={1}>
+              <CloseIcon sx={{ "&:hover": { cursor: "pointer" } }} onClick={() => { setOpenDeleteUser(false) }} />
+            </Grid>
+            <Grid item xs={10}>
+              <Typography align="center" variant="h5">
+                Delete User?
+              </Typography>
+              <Typography align="center" color="error" variant="subtitle1">
+                Warning: This action cannot be undone.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sx={{ display: "flex", alignItems: "center", flexDirection:  "column" }}>
+              <Box>Name: {toDeleteUser && toDeleteUser.Attributes.Name}</Box>
+              <Box>Email: {toDeleteUser && toDeleteUser.Attributes.Email}</Box>
+            </Grid>
+            <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+              <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmDeleteUser()}>Delete</Button>
+              <Button variant="contained" sx={{ backgroundColor: "lightgrey", color: 'black', boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }} onClick={() => { setOpenDeleteUser(false) }}>Cancel</Button>
+            </Grid>
+          </Grid>
+        </>
+      </TransitionModal>
+      <TransitionModal
         open={openDisableUser}
         handleClose={() => setOpenDisableUser(false)}
         style={{
@@ -214,8 +285,8 @@ const AdminUserManagement = () => {
               </Typography>
             </Grid>
             <Grid item xs={12} sx={{ display: "flex", alignItems: "center", flexDirection:  "column" }}>
-              <Box>Name: {selectedUser && selectedUser.Attributes.Name}</Box>
-              <Box>Email: {selectedUser && selectedUser.Attributes.Email}</Box>
+              <Box>Name: {toDisableUser && toDisableUser.Attributes.Name}</Box>
+              <Box>Email: {toDisableUser && toDisableUser.Attributes.Email}</Box>
             </Grid>
             <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
               <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmDisableUser()}>Disable</Button>
