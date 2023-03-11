@@ -65,7 +65,6 @@ export default function CreateUserForm({ roles, handleClose }) {
     console.log(myInit);
     try {
       let success = await API.post(apiName, path, myInit);
-      console.log(users)
       if (success.message) {
         toast.success("User created successfully", {
           position: toast.POSITION.TOP_CENTER,
@@ -84,11 +83,11 @@ export default function CreateUserForm({ roles, handleClose }) {
       <form noValidate onSubmit={createNewUser}>
         <Grid container spacing={2}>
           <Grid item xs={1}>
-            <CloseIcon onClick={() => handleClose()} />
+            <CloseIcon sx={{ "&:hover": {cursor: "pointer"} }} onClick={() => handleClose()} />
           </Grid>
           <Grid item xs={10}>
             <Typography align="center" variant="h4">
-              <b>Create new user</b>
+              Create new user
             </Typography>
           </Grid>
           <Grid item xs={12} sm={12}>
