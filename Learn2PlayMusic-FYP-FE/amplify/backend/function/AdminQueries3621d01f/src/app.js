@@ -30,7 +30,6 @@ const {
   signUserOut,
   // custom
   createUser,
-  listGroups,
   deleteUser,
 } = require("./cognitoActions");
 
@@ -326,16 +325,6 @@ app.post("/createUser", async (req, res, next) => {
     res.status(200).json(response);
   } catch (err) {
     throw err;
-  }
-});
-
-// list groups
-app.get("/listGroups", async (req, res, next) => {
-  try {
-    const response = await listGroups();
-    res.status(200).json(response);
-  } catch (err) {
-    next(err);
   }
 });
 

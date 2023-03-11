@@ -11,6 +11,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { Auth, API } from "aws-amplify";
 import uuid from "react-uuid";
+import { toast } from "react-toastify";
 
 export default function CreateUserForm({ roles, handleClose }) {
   const [name, setName] = React.useState("");
@@ -36,10 +37,12 @@ export default function CreateUserForm({ roles, handleClose }) {
 
     if (email === "" || name === "" || role === "") {
       console.log("Please fill in all fields");
+      toast.error("Please fill in all fields", {
+        position: toast.POSITION.TOP_CENTER,
+      });
       return;
     }
 
-    var username = uuid();
     var password = uuid(); //  randomly generate cause will immediately call for reset password
     let apiName = "AdminQueries";
     let path = "/createUser";
@@ -52,7 +55,7 @@ export default function CreateUserForm({ roles, handleClose }) {
           .getJwtToken()}`,
       },
       body: {
-        username: username,
+        username: email,
         password: password,
         email: email,
         name: name,
@@ -61,9 +64,19 @@ export default function CreateUserForm({ roles, handleClose }) {
     };
     console.log(myInit);
     try {
-      let users = await API.post(apiName, path, myInit);
+      let success = await API.post(apiName, path, myInit);
+      console.log(users)
+      if (success.message) {
+        toast.success("User created successfully", {
+          position: toast.POSITION.TOP_CENTER,
+        });
+        handleClose();
+      }
     } catch (error) {
-      console.log(error);
+      console.log(error.message)
+      toast.error("Error creating user", {
+        position: toast.POSITION.TOP_CENTER,
+        });
     }
   };
   return (

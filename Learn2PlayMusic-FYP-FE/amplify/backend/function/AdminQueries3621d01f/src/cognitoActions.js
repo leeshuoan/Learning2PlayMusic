@@ -282,7 +282,6 @@ async function createUser(username, password, email, name, role) {
     Username: username /* required */,
 
     DesiredDeliveryMediums: ["EMAIL"],
-    MessageAction: "SUPPRESS",
     TemporaryPassword: password,
     UserAttributes: [
       {
@@ -290,13 +289,17 @@ async function createUser(username, password, email, name, role) {
         Value: email,
       },
       {
-        Name: "role",
+        Name: "custom:name",
+        Value: name,
+      },
+      {
+        Name: "custom:role",
         Value: role,
       },
       {
-        Name: "name",
-        Value: name,
-      },
+        Name: "custom:profileImage",
+        Value: " "
+      }
     ],
   };
   const resetParams = {
@@ -316,11 +319,6 @@ async function createUser(username, password, email, name, role) {
       .adminCreateUser(createParams)
       .promise();
     console.log(`${username} successfully created`); // successful response
-    // ===== reset password =====
-    const resetResult = await cognitoIdentityServiceProvider
-      .adminResetUserPassword(resetParams)
-      .promise();
-    console.log(`${username} password reset`); // successful response
     // ===== add to group =====
     const addResult = await cognitoIdentityServiceProvider
       .adminAddUserToGroup(addUserToGroupParams)
