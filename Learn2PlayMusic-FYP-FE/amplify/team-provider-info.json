@@ -19,14 +19,14 @@
       "function": {
         "AdminQueries3621d01f": {
           "deploymentBucketName": "amplify-learn2playmusicfypfe-dev-224255-deployment",
-          "s3Key": "amplify-builds/AdminQueries3621d01f-2f6f334248704737414b-build.zip"
+          "s3Key": "amplify-builds/AdminQueries3621d01f-6d54432f44696d474332-build.zip"
         }
-      },
-      "api": {
-        "AdminQueries": {}
       },
       "storage": {
         "s3d99e2199": {}
+      },
+      "api": {
+        "AdminQueries": {}
       }
     }
   }
