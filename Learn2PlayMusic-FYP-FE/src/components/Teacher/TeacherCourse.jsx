@@ -38,7 +38,7 @@ const TeacherCourse = (userInfo) => {
       uploadDate: "31 Jun 2023",
     },
   ];
-
+  // navigate pages
   const navigate = useNavigate();
   const { category } = useParams();
   const { courseid } = useParams();
@@ -50,7 +50,7 @@ const TeacherCourse = (userInfo) => {
     homework: "Homework",
     report: "My Progress Report",
   };
-
+  // api calls
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
       method: "GET",
@@ -66,28 +66,50 @@ const TeacherCourse = (userInfo) => {
   const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
   const getMaterialAPI = request(`/course/material?courseId=${courseid}`);
   const getQuizAPI = request(`/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
-
-  const columns = useMemo(
+  // material table configs
+  const courseMaterialsColumns = useMemo(
     () => [
       {
         accessorKey: "MaterialTitle",
         id: "title",
         header: "Title",
-        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/home/course/${courseid}/material/${row.original.id}`)}>{row.original.MaterialTitle}</Link>,
+        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/material/view/${row.original.id}`, { state: { material: row.original, course: course } })}>{row.original.MaterialTitle}</Link>,
       },
       {
         accessorKey: "MaterialType",
         id: "type",
         header: "Type",
+        size: 50, //SMALL
       },
       {
         accessorKey: "MaterialLessonDate",
         id: "lessonDate",
         header: "Lesson Date",
+        size: 100, //medium
+      },
+      {
+        accessorKey: "Actions",
+        id: "actions",
+        header: "Actions",
+        Cell: ({ cell, row }) => (
+          <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
+            <Typography
+              variant="button"
+              onClick={() => {
+                navigate(`/teacher/course/${courseid}/material/edit/${row.original.id}`, { state: { material: row.original, course: course } });
+              }}>
+              <Link underline="hover">Edit</Link>
+            </Typography>
+            <Typography variant="button" onClick={request}>
+              <Link underline="hover">Delete</Link>
+            </Typography>
+          </Stack>
+        ),
       },
     ],
-    []
+    [course]
   );
+  // announcement delete announcement
   async function deleteAnnouncement() {
     console.log(selectedAnnouncement);
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/announcement?courseId=${courseid}&announcementId=${selectedAnnouncement}`, {
@@ -360,17 +382,19 @@ const TeacherCourse = (userInfo) => {
                     <Grid item xs={4} sm={4} md={2}>
                       <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
                         <Typography
+                          variant="button"
                           onClick={() => {
                             navigate("announcement/edit", { state: { course: course, title: announcement.Title, description: announcement.Content } });
                           }}>
-                          <Link>Edit</Link>
+                          <Link underline="hover">Edit</Link>
                         </Typography>
                         <Typography
+                          variant="button"
                           onClick={() => {
                             setDeleteAnnouncementModal(true);
                             setSelectedAnnouncement(announcement.id);
                           }}>
-                          <Link>Delete</Link>
+                          <Link underline="hover">Delete</Link>
                         </Typography>
                       </Stack>
                     </Grid>
@@ -384,19 +408,25 @@ const TeacherCourse = (userInfo) => {
             </Card>
             {/* course materials ========================================================================================================================*/}
             <Box sx={{ display: category == "material" ? "block" : "none" }}>
-              <Box m={2}>
-                <MaterialReactTable
-                  columns={columns}
-                  data={courseMaterial}
-                  initialState={{ density: "compact" }}
-                  renderTopToolbarCustomActions={({ table }) => {
-                    return (
-                      <Typography m={1} variant="h6">
-                        Class Materials
-                      </Typography>
-                    );
-                  }}></MaterialReactTable>
-              </Box>
+              <Card sx={{ py: 3, px: 5, mt: 2, display: category == "material" ? "block" : category === undefined ? "block" : "none" }}>
+                <Grid container>
+                  <Grid item xs={10} md={11}>
+                    <Typography variant="h5">Class Materials</Typography>
+                  </Grid>
+                  <Grid item xs={2} md={1}>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        navigate("material/new", { state: { material: {}, course: {} } });
+                      }}>
+                      +&nbsp;New
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} sx={{ mt: 3 }}>
+                    <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
+                  </Grid>
+                </Grid>
+              </Card>
             </Box>
             {/* quiz ==================================================================================================== */}
 

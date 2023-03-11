@@ -1,0 +1,9 @@
+{
+  "httpMethod": "PUT",
+  "body": {
+    "courseId": "1111",
+    "content": "test announcement edit joe content", 
+    "title": "test announcement title edit"
+  },
+  "path": "/course/announcement"
+}

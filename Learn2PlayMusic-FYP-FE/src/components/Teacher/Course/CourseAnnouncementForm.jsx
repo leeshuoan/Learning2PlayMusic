@@ -1,4 +1,4 @@
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Box, Button, Breadcrumbs, Card, Container, Typography, TextField, Link, Alert, Snackbar } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
@@ -12,6 +12,7 @@ export default function CourseAnnouncementForm() {
   const navigate = useNavigate();
   const { state } = useLocation();
   var course = state.course;
+  const endpoint = `${import.meta.env.VITE_API_URL}/course/announcement`;
 
   const closeAlert = () => {
     setAlert(false);
@@ -22,7 +23,7 @@ export default function CourseAnnouncementForm() {
 
   async function handleAddAnnouncement(title, content) {
     // add API Call here
-    const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +37,7 @@ export default function CourseAnnouncementForm() {
     return response;
   }
   async function handleEditAnnouncement(title, content) {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+    const response = await fetch(endpoint, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -104,7 +105,7 @@ export default function CourseAnnouncementForm() {
               {course.name}
             </Typography>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Date: {course.timeslot}
+              Timeslot: {course.timeslot}
             </Typography>
           </Box>
         </Box>
@@ -112,10 +113,10 @@ export default function CourseAnnouncementForm() {
       <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
         <Box sx={{ display: "flex", width: "100%" }}>
           <Container maxWidth="xl">
-            <Typography variant="h5" sx={{ color: "primary", mt: "10px" }}>
-              {state.title == "" ? "New Announcement" : "Edit Announcement"}
+            <Typography variant="h5" sx={{ color: "primary", mt: 3 }}>
+              {state.title == "" ? "New" : "Edit"} Announcement
             </Typography>
-            <br></br>
+
             <TextField
               required
               fullWidth
@@ -126,10 +127,9 @@ export default function CourseAnnouncementForm() {
               onChange={() => {
                 setTitle(event.target.value);
               }}
+              sx={{ mt: 3 }}
             />
-            <br></br>
-            <br></br>
-            <br></br>
+
             <TextField
               required
               fullWidth
@@ -142,14 +142,22 @@ export default function CourseAnnouncementForm() {
               onChange={() => {
                 setContent(event.target.value);
               }}
+              sx={{ mt: 3 }}
             />
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <Button fullWidth variant="contained" onClick={handleSubmit} sx={{ mb: "5px" }}>
-              {state.title == "" ? "Add" : "Edit"}
-            </Button>
+
+            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3, mb: 1 }}>
+              <Button
+                variant="outlined"
+                sx={{ color: "primary.main" }}
+                onClick={() => {
+                  navigate(`/teacher/course/${course.id}`);
+                }}>
+                Cancel
+              </Button>
+              <Button variant="contained" onClick={handleSubmit}>
+                {state.title == "" ? "Post" : "Update"}
+              </Button>
+            </Box>
           </Container>
         </Box>
       </Card>

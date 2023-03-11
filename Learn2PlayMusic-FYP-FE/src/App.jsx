@@ -10,24 +10,29 @@ import aws_exports from "./aws-exports";
 import { Amplify } from "aws-amplify";
 import { Auth, Storage } from "aws-amplify";
 // App components
+// general
+import Chat from "./components/Chat/Chat";
+import Announcements from "./components/Announcements";
 import DefaultAppBar from "./components/AppBar/DefaultAppBar";
 import SignIn from "./components/SignIn";
 import ForgotPassword from "./components/ForgotPassword";
 import NotFound from "./components/NotFound";
-import TeacherHome from "./components/Teacher/TeacherHome";
-import TeacherCourse from "./components/Teacher/TeacherCourse";
+import Profile from "./components/Profile";
+// user
 import UserHome from "./components/User/UserHome";
 import UserCourse from "./components/User/UserCourse";
-import Chat from "./components/Chat/Chat";
-import Announcements from "./components/Announcements";
 import UserClassMaterials from "./components/User/Course/UserClassMaterials";
 import UserHomework from "./components/User/Course/UserHomework";
 import UserReport from "./components/User/Course/UserReport";
 import UserQuiz from "./components/User/Course/UserQuiz";
-import AdminHome from "./components/Admin/AdminHome";
-import Profile from "./components/Profile";
 import UserHomeworkFeedback from "./components/User/Course/UserHomeworkFeedback";
-import CourseAnnouncementForm from "./components/Teacher/CourseAnnouncementForm";
+// admin
+import AdminHome from "./components/Admin/AdminHome";
+// teacher
+import TeacherHome from "./components/Teacher/TeacherHome";
+import TeacherCourse from "./components/Teacher/TeacherCourse";
+import CourseAnnouncementForm from "./components/Teacher/Course/CourseAnnouncementForm";
+import CourseMaterialsForm from "./components/Teacher/Course/CourseMaterialsForm";
 
 Amplify.configure(aws_exports);
 
@@ -107,10 +112,10 @@ function App() {
             <Route path="announcements" element={<Announcements userInfo={userInfo} />} />
             <Route path="course/:courseid">
               <Route index element={<TeacherCourse userInfo={userInfo} />} />
-              <Route path="announcement/:type/:announcementId?" element={<CourseAnnouncementForm />} />
               <Route path=":category" element={<TeacherCourse userInfo={userInfo} />} />
-              {/* <Route path="material/:materialId" element={<UserClassMaterials />} />
-                <Route path="homework/:homeworkId" element={<UserHomework userInfo={userInfo} />} />
+              <Route path="announcement/:type/:announcementId?" element={<CourseAnnouncementForm />} />
+              <Route path="material/:type/:materialid?" element={<CourseMaterialsForm />} />
+              {/* <Route path="homework/:homeworkId" element={<UserHomework userInfo={userInfo} />} />
                 <Route path="homework/:homeworkId/feedback" element={<UserHomeworkFeedback userInfo={userInfo} />} />
                 <Route path="report/:reportId" element={<UserReport />} />
                 <Route path="quiz/:quizId" element={<UserQuiz userInfo={userInfo}/>} />  */}

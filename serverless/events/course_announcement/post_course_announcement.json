@@ -1,0 +1,9 @@
+{
+  "httpMethod": "POST",
+  "body": {
+    "courseId": "1111",
+    "content": "test announcement", 
+    "title": "test announcement title"
+  },
+  "path": "/course/announcement"
+}
