@@ -28,6 +28,7 @@ class CourseStack(Stack):
         COURSE_HOMEWORK_FUNCTIONS_FOLDER = "course_homework"
         COURSE_QUIZ_FUNCTIONS_FOLDER = "course_quiz"
         COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER = "course_announcement"
+        COURSE_CLASSLIST_FUNCTIONS_FOLDER = "course_classlist"
 
         
         # Create S3 bucket with read/write allowed
@@ -102,10 +103,13 @@ class CourseStack(Stack):
         # /course/teacher
         get_course_teacher = _lambda.Function(self, "getCourseTeacher", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_TEACHER_FUNCTIONS_FOLDER}.get_course_teacher.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
-        # /course/material Functions
+        # /course/material
         get_course_material = _lambda.Function(self, "get_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.get_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course_material = _lambda.Function(self, "post_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.post_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course_material = _lambda.Function(self, "delete_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.delete_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+        # /course/classlist
+        get_course_classlist = _lambda.Function(self, "get_course_classlist", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_CLASSLIST_FUNCTIONS_FOLDER}.get_course_classlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /course/quiz/
         get_course_quiz = _lambda.Function(self, "getCourseQuiz", runtime=_lambda.Runtime.PYTHON_3_9,
@@ -143,6 +147,7 @@ class CourseStack(Stack):
         course_homework_resource = course_resource.add_resource("homework")
         course_announcement_resource = course_resource.add_resource("announcement")
         course_material_resource = course_resource.add_resource("material")
+        course_classlist_resource = course_resource.add_resource("classlist")
 
         # Create sub-sub-resources under the parent resource
         course_quiz_question_resource = course_quiz_resource.add_resource(
@@ -223,6 +228,11 @@ class CourseStack(Stack):
             'method.request.querystring.materialId': True})
         course_material_resource.add_method("POST", apigw.LambdaIntegration(post_course_material), request_models={
             "application/json": post_course_material_model})
+
+        # /course/classlist
+        course_classlist_resource.add_method("GET", apigw.LambdaIntegration(get_course_classlist), request_parameters={
+          'method.request.querystring.courseId': True
+        })
 
         # /course/quiz
         post_course_quiz_model = main_api.add_model(
@@ -415,6 +425,8 @@ class CourseStack(Stack):
         course_material_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_announcement_resource.add_cors_preflight(
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        course_classlist_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
 
 
