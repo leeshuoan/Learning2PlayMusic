@@ -1,29 +1,27 @@
-import * as React from 'react';
-import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, MenuItem, useTheme, Avatar, Divider, ListItemIcon, Tooltip } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
-import Logout from '@mui/icons-material/Logout';
-import { Auth } from 'aws-amplify';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { AppBar, Box, Toolbar, IconButton, Menu, Container, MenuItem, useTheme, Avatar, Divider, ListItemIcon, Tooltip } from "@mui/material";
+import Logout from "@mui/icons-material/Logout";
+import ChatIcon from "@mui/icons-material/Chat";
+import { Auth, Storage } from "aws-amplify";
+import { useNavigate } from "react-router-dom";
 
 const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
   const theme = useTheme()
   const navigate = useNavigate()
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const pages = ["AdminTemp"]
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  
-    const handleCloseNavMenu = () => {
-      setAnchorElNav(null);
-    };
-  
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  
+  const [image, setImage] = useState(null)
+
+  useEffect(() => {
+    if (userInfo.profileImage != "none") {
+      Storage.get(userInfo.profileImage, { level: "protected" }).then((res) => {
+        setImage(res)
+      }).catch((err) => {
+        console.log(err)
+      })
+    }
+  }, [userInfo])
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -40,79 +38,63 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
     }).catch((err) => console.log(err))
   };
 
-  const handleRoute = (page) => {
-  }
   return (
     <>
       {
-        <AppBar position="static" sx={{ bgcolor: theme.palette.background.paper }}>
+        <AppBar
+          position="sticky"
+          sx={{ bgcolor: theme.palette.background.paper, zIndex: 9999 }}>
           <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-            <Toolbar disableGutters style={{ display: 'flex', justifyContent: 'space-between' }}>
-
+            <Toolbar
+              disableGutters
+              sx={{ display: "flex", justifyContent: "space-between" }}>
               {/* MOBILE NAV */}
-              <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-                <IconButton
-                  size="large"
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleOpenNavMenu}
-                  color="inherit"
-                >
-                  <MenuIcon />
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorElNav}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                  }}
-                  open={Boolean(anchorElNav)}
-                  onClose={handleCloseNavMenu}
+              <Box sx={{ display: { xs: "flex", md: "none" } }}>
+                <Avatar
                   sx={{
-                    display: { xs: 'block', md: 'none' },
-                  }}
-                >
-                  {pages.map((page) => (
-                    <MenuItem key={page} onClick={() => handleRoute(page)}>
-                      <Typography textAlign="center" >{page}</Typography>
-                    </MenuItem>
-                  ))}
-                </Menu>
+                    display: { xs: "flex", md: "none" },
+                    ml: 1,
+                    width: 32,
+                    height: 32,
+                    bgcolor: "grey[100]",
+                    "&:hover": { cursor: "pointer" }
+                  }}>
+                  <ChatIcon onClick={() => navigate("/chat")} />
+                </Avatar>
               </Box>
 
-              <IconButton disableRipple onClick={() => {navigate("/admin")}}>
-              <img src="/l2pm_logo.png" width="150px" />
+              <IconButton disableRipple onClick={() => { navigate("/admin") }}>
+                <img src="/l2pm_logo.png" width="150px" />
               </IconButton>
-
-              {/* DESKTOP NAV */}
-              <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                {pages.map((page) => (
-                  <MenuItem key={page} onClick={() => handleRoute(page)}>
-                    <Typography textAlign="center" >{page}</Typography>
-                  </MenuItem>
-                ))}
-              </Box>
 
               {/* USER MENU */}
               <Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    textAlign: "center",
+                  }}>
+                  <Avatar
+                    sx={{
+                      display: { xs: "none", md: "flex" },
+                      ml: 1.6,
+                      width: 32,
+                      height: 32,
+                      bgcolor: "grey[100]",
+                      "&:hover": { cursor: "pointer" }
+                    }}>
+                    <ChatIcon onClick={() => navigate("/chat")} />
+                  </Avatar>
                   <Tooltip title="Account settings">
                     <IconButton
                       onClick={handleClick}
                       size="small"
-                      sx={{ ml: 2 }}
-                      aria-controls={open ? 'account-menu' : undefined}
+                      sx={{ ml: 1 }}
+                      aria-controls={open ? "account-menu" : undefined}
                       aria-haspopup="true"
-                      aria-expanded={open ? 'true' : undefined}
-                    >
-                      <Avatar sx={{ width: 32, height: 32 }}>A</Avatar>
+                      aria-expanded={open ? "true" : undefined}>
+                      <Avatar sx={{ width: 32, height: 32 }} src={image}></Avatar>
                     </IconButton>
                   </Tooltip>
                 </Box>
@@ -125,50 +107,33 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
                   PaperProps={{
                     elevation: 0,
                     sx: {
-                      overflow: 'visible',
-                      filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                      overflow: "visible",
+                      filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
                       mt: 1.5,
-                      '& .MuiAvatar-root': {
-                        width: 32,
-                        height: 32,
+                      "& .MuiAvatar-root": {
+                        width: 25,
+                        height: 25,
                         ml: -0.5,
-                        mr: 1,
+                        mr: 2,
                       },
-                      '&:before': {
+                      "&:before": {
                         content: '""',
-                        display: 'block',
-                        position: 'absolute',
+                        display: "block",
+                        position: "absolute",
                         top: 0,
                         right: 14,
                         width: 10,
                         height: 10,
-                        bgcolor: 'background.paper',
-                        transform: 'translateY(-50%) rotate(45deg)',
+                        bgcolor: "background.paper",
+                        transform: "translateY(-50%) rotate(45deg)",
                         zIndex: 0,
                       },
                     },
                   }}
-                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                >
-                  <MenuItem onClick={handleClose}>
-                    <Avatar /> Profile
-                  </MenuItem>
-                  <MenuItem onClick={handleClose}>
-                    <Avatar /> My account
-                  </MenuItem>
-                  <Divider />
-                  <MenuItem onClick={handleClose}>
-                    <ListItemIcon>
-                      <PersonAdd fontSize="small" />
-                    </ListItemIcon>
-                    Add another account
-                  </MenuItem>
-                  <MenuItem onClick={handleClose}>
-                    <ListItemIcon>
-                      <Settings fontSize="small" />
-                    </ListItemIcon>
-                    Settings
+                  transformOrigin={{ horizontal: "right", vertical: "top" }}
+                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
+                  <MenuItem onClick={() => { navigate("/profile") }}>
+                    <Avatar src={image} />My Profile
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
@@ -184,6 +149,6 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
       }
     </>
   );
-}
+};
 
 export default AdminAppBar;
