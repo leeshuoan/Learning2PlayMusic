@@ -11,9 +11,10 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-const express = require('express');
-const bodyParser = require('body-parser');
-const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
+const express = require("express");
+const bodyParser = require("body-parser");
+const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
+const cors = require("cors");
 
 const {
   addUserToGroup,
@@ -27,17 +28,24 @@ const {
   listGroupsForUser,
   listUsersInGroup,
   signUserOut,
-} = require('./cognitoActions');
+  // custom
+  createUser,
+  deleteUser,
+} = require("./cognitoActions");
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(awsServerlessExpressMiddleware.eventContext());
 
 // Enable CORS for all methods
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
   next();
 });
 
@@ -45,64 +53,77 @@ app.use((req, res, next) => {
 const allowedGroup = process.env.GROUP;
 
 const checkGroup = function (req, res, next) {
-  if (req.path == '/signUserOut') {
+  if (req.path == "/signUserOut") {
     return next();
   }
 
-  if (typeof allowedGroup === 'undefined' || allowedGroup === 'NONE') {
+  if (typeof allowedGroup === "undefined" || allowedGroup === "NONE") {
     return next();
   }
 
   // Fail if group enforcement is being used
-  if (req.apiGateway.event.requestContext.authorizer.claims['cognito:groups']) {
-    const groups = req.apiGateway.event.requestContext.authorizer.claims['cognito:groups'].split(',');
+  if (req.apiGateway.event.requestContext.authorizer.claims["cognito:groups"]) {
+    const groups =
+      req.apiGateway.event.requestContext.authorizer.claims[
+        "cognito:groups"
+      ].split(",");
     if (!(allowedGroup && groups.indexOf(allowedGroup) > -1)) {
-      const err = new Error(`User does not have permissions to perform administrative tasks`);
+      const err = new Error(
+        `User does not have permissions to perform administrative tasks`
+      );
       next(err);
     }
   } else {
-    const err = new Error(`User does not have permissions to perform administrative tasks`);
+    const err = new Error(
+      `User does not have permissions to perform administrative tasks`
+    );
     err.statusCode = 403;
     next(err);
   }
   next();
 };
 
-app.all('*', checkGroup);
+app.all("*", checkGroup);
 
-app.post('/addUserToGroup', async (req, res, next) => {
+app.post("/addUserToGroup", async (req, res, next) => {
   if (!req.body.username || !req.body.groupname) {
-    const err = new Error('username and groupname are required');
+    const err = new Error("username and groupname are required");
     err.statusCode = 400;
     return next(err);
   }
 
   try {
-    const response = await addUserToGroup(req.body.username, req.body.groupname);
+    const response = await addUserToGroup(
+      req.body.username,
+      req.body.groupname
+    );
     res.status(200).json(response);
   } catch (err) {
     next(err);
   }
 });
 
-app.post('/removeUserFromGroup', async (req, res, next) => {
+app.post("/removeUserFromGroup", async (req, res, next) => {
   if (!req.body.username || !req.body.groupname) {
-    const err = new Error('username and groupname are required');
+    const err = new Error("username and groupname are required");
     err.statusCode = 400;
     return next(err);
   }
 
   try {
-    const response = await removeUserFromGroup(req.body.username, req.body.groupname);
+    const response = await removeUserFromGroup(
+      req.body.username,
+      req.body.groupname
+    );
     res.status(200).json(response);
   } catch (err) {
     next(err);
   }
 });
 
-app.post('/confirmUserSignUp', async (req, res, next) => {
+app.post("/confirmUserSignUp", async (req, res, next) => {
   if (!req.body.username) {
-    const err = new Error('username is required');
+    const err = new Error("username is required");
     err.statusCode = 400;
     return next(err);
   }
@@ -115,9 +136,9 @@ app.post('/confirmUserSignUp', async (req, res, next) => {
   }
 });
 
-app.post('/disableUser', async (req, res, next) => {
+app.post("/disableUser", async (req, res, next) => {
   if (!req.body.username) {
-    const err = new Error('username is required');
+    const err = new Error("username is required");
     err.statusCode = 400;
     return next(err);
   }
@@ -130,9 +151,9 @@ app.post('/disableUser', async (req, res, next) => {
   }
 });
 
-app.post('/enableUser', async (req, res, next) => {
+app.post("/enableUser", async (req, res, next) => {
   if (!req.body.username) {
-    const err = new Error('username is required');
+    const err = new Error("username is required");
     err.statusCode = 400;
     return next(err);
   }
@@ -145,9 +166,9 @@ app.post('/enableUser', async (req, res, next) => {
   }
 });
 
-app.get('/getUser', async (req, res, next) => {
+app.get("/getUser", async (req, res, next) => {
   if (!req.query.username) {
-    const err = new Error('username is required');
+    const err = new Error("username is required");
     err.statusCode = 400;
     return next(err);
   }
@@ -160,7 +181,7 @@ app.get('/getUser', async (req, res, next) => {
   }
 });
 
-app.get('/listUsers', async (req, res, next) => {
+app.get("/listUsers", async (req, res, next) => {
   try {
     let response;
     if (req.query.token) {
@@ -176,7 +197,7 @@ app.get('/listUsers', async (req, res, next) => {
   }
 });
 
-app.get('/listGroups', async (req, res, next) => {
+app.get("/listGroups", async (req, res, next) => {
   try {
     let response;
     if (req.query.token) {
@@ -192,9 +213,9 @@ app.get('/listGroups', async (req, res, next) => {
   }
 });
 
-app.get('/listGroupsForUser', async (req, res, next) => {
+app.get("/listGroupsForUser", async (req, res, next) => {
   if (!req.query.username) {
-    const err = new Error('username is required');
+    const err = new Error("username is required");
     err.statusCode = 400;
     return next(err);
   }
@@ -202,9 +223,16 @@ app.get('/listGroupsForUser', async (req, res, next) => {
   try {
     let response;
     if (req.query.token) {
-      response = await listGroupsForUser(req.query.username, req.query.limit || 25, req.query.token);
+      response = await listGroupsForUser(
+        req.query.username,
+        req.query.limit || 25,
+        req.query.token
+      );
     } else if (req.query.limit) {
-      response = await listGroupsForUser(req.query.username, (Limit = req.query.limit));
+      response = await listGroupsForUser(
+        req.query.username,
+        (Limit = req.query.limit)
+      );
     } else {
       response = await listGroupsForUser(req.query.username);
     }
@@ -214,9 +242,9 @@ app.get('/listGroupsForUser', async (req, res, next) => {
   }
 });
 
-app.get('/listUsersInGroup', async (req, res, next) => {
+app.get("/listUsersInGroup", async (req, res, next) => {
   if (!req.query.groupname) {
-    const err = new Error('groupname is required');
+    const err = new Error("groupname is required");
     err.statusCode = 400;
     return next(err);
   }
@@ -224,19 +252,26 @@ app.get('/listUsersInGroup', async (req, res, next) => {
   try {
     let response;
     if (req.query.token) {
-      response = await listUsersInGroup(req.query.groupname, req.query.limit || 25, req.query.token);
+      response = await listUsersInGroup(
+        req.query.groupname,
+        req.query.limit || 25,
+        req.query.token
+      );
     } else if (req.query.limit) {
-      response = await listUsersInGroup(req.query.groupname, (Limit = req.query.limit));
+      response = await listUsersInGroup(
+        req.query.groupname,
+        (Limit = req.query.limit)
+      );
     } else {
       response = await listUsersInGroup(req.query.groupname);
     }
     res.status(200).json(response);
   } catch (err) {
-    next(err);
+    next(err + req.body);
   }
 });
 
-app.post('/signUserOut', async (req, res, next) => {
+app.post("/signUserOut", async (req, res, next) => {
   /**
    * To prevent rogue actions of users with escalated privilege signing
    * other users out, we ensure it's the same user making the call
@@ -244,16 +279,69 @@ app.post('/signUserOut', async (req, res, next) => {
    * such as updating an attribute, not services consuming the JWT
    */
   if (
-    req.body.username != req.apiGateway.event.requestContext.authorizer.claims.username &&
-    req.body.username != /[^/]*$/.exec(req.apiGateway.event.requestContext.identity.userArn)[0]
+    req.body.username !=
+      req.apiGateway.event.requestContext.authorizer.claims.username &&
+    req.body.username !=
+      /[^/]*$/.exec(req.apiGateway.event.requestContext.identity.userArn)[0]
   ) {
-    const err = new Error('only the user can sign themselves out');
+    const err = new Error("only the user can sign themselves out");
     err.statusCode = 400;
     return next(err);
   }
 
   try {
     const response = await signUserOut(req.body.username);
+    res.status(200).json(response);
+  } catch (err) {
+    next(err);
+  }
+});
+// custom apis
+app.post("/createUser", async (req, res, next) => {
+  if (!req.body.username) {
+    const err = new Error("username is required");
+    err.statusCode = 400;
+    return next(err);
+  }
+  if (!req.body.password) {
+    const err = new Error("password is required");
+    err.statusCode = 400;
+    return next(err);
+  }
+  if (!req.body.email) {
+    const err = new Error("email is required");
+    err.statusCode = 400;
+    return next(err);
+  }
+  try {
+    //userPoolId, username, password, email, name, role
+    const response = await createUser(
+      req.body.username,
+      req.body.password,
+      req.body.email,
+      req.body.name,
+      req.body.role
+    );
+    res.status(200).json(response);
+  } catch (err) {
+    throw err;
+  }
+});
+
+// delete user not ready yet!
+app.post("/deleteUser", async (req, res, next) => {
+  if (!req.body.username) {
+    const err = new Error("username is required");
+    err.statusCode = 400;
+    return next(err);
+  }
+  if (!req.body.userPoolId) {
+    const err = new Error("userPoolId is required");
+    err.statusCode = 400;
+    return next(err);
+  }
+  try {
+    const response = await deleteUser(req.body.username, req.body.userPoolId);
     res.status(200).json(response);
   } catch (err) {
     next(err);
@@ -268,7 +356,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(3000, () => {
-  console.log('App started');
+  console.log("App started");
 });
 
 module.exports = app;
