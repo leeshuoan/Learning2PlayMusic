@@ -246,7 +246,7 @@ class CourseStack(Stack):
 
         course_quiz_resource.add_method("GET", apigw.LambdaIntegration(get_course_quiz), request_parameters={
           'method.request.querystring.courseId': True,
-          'method.request.querystring.studentId': True,
+          'method.request.querystring.studentId': False,
           'method.request.querystring.quizId': False,
         })
 
