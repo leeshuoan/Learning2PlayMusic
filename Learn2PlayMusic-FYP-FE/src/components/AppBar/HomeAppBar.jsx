@@ -1,10 +1,12 @@
 import React from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import AdminAppBar from './AdminAppBar';
+import { useNavigate } from 'react-router-dom';
 import { AppBar, Box, Toolbar, IconButton, Menu, Container, MenuItem, useTheme, Typography } from '@mui/material';
 
 function DefaultAppBar({ role, handleResetRoles }) {
   const theme = useTheme()
+  const navigate = useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const pages = ['Our Website', 'Contact Us']
 
@@ -63,7 +65,7 @@ function DefaultAppBar({ role, handleResetRoles }) {
                         ))}
                       </Menu>
                     </Box>
-                    <IconButton disableRipple onClick={() => { navigate("/=") }}>
+                    <IconButton disableRipple onClick={() => { navigate("/") }}>
                       <img src="/l2pm_logo.png" width="150px" />
                     </IconButton>
 

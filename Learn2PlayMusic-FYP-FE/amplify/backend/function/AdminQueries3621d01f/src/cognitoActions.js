@@ -359,7 +359,7 @@ module.exports = {
   listGroupsForUser,
   listUsersInGroup,
   signUserOut,
-  createUser,
   listGroups,
+  createUser,
   deleteUser,
 };

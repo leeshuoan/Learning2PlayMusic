@@ -294,6 +294,7 @@ app.post("/signUserOut", async (req, res, next) => {
     next(err);
   }
 });
+
 // custom apis
 app.post("/createUser", async (req, res, next) => {
   if (!req.body.username) {

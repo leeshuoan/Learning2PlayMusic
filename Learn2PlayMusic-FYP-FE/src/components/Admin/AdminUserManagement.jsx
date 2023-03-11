@@ -13,8 +13,10 @@ const AdminUserManagement = () => {
   const [reloadData, setReloadData] = useState(false);
   const [openCreateUser, setOpenCreateUser] = useState(false);
   const [openDisableUser, setOpenDisableUser] = useState(false);
+  const [openEnableUser, setOpenEnableUser] = useState(false);
   const [openDeleteUser, setOpenDeleteUser] = useState(false);
   const [toDisableUser, setToDisableUser] = useState("");
+  const [toEnableUser, setToEnableUser] = useState("");
   const [toDeleteUser, setToDeleteUser] = useState("");
   const [roles, setRoles] = useState([]);
 
@@ -112,6 +114,37 @@ const AdminUserManagement = () => {
     }
   }
 
+  const enableUser = async (user) => {
+    setOpenEnableUser(true)
+    setToEnableUser(user)
+    console.log(toEnableUser)
+  }
+
+  const confirmEnableUser = async () => {
+    let apiName = "AdminQueries";
+    let path = "/enableUser";
+    let myInit = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${(await Auth.currentSession())
+          .getAccessToken()
+          .getJwtToken()}`,
+      },
+      body: {
+        username: toEnableUser.Username,
+      }
+    };
+    let success = await API.post(apiName, path, myInit);
+    console.log(success)
+    if (success.message) {
+      toast.success("User enabled successfully", {
+        position: toast.POSITION.TOP_CENTER,
+      })
+      setReloadData(!reloadData)
+      setOpenEnableUser(false)
+    }
+  }
+
   const deleteUser = async (user) => {
     setOpenDeleteUser(true)
     setToDeleteUser(user)
@@ -194,7 +227,7 @@ const AdminUserManagement = () => {
             }}>
             <Button variant="contained">Enroll</Button>
             <Button variant="contained" sx={{ display: row.original.Enabled == "Enabled" ? "block" : "none" }} onClick={() => { disableUser(row.original) }}>Disable</Button>
-            <Button variant="contained" sx={{ display: row.original.Enabled == "Enabled" ? "none" : "block" }} onClick={() => { disableUser(row.original) }}>Enable</Button>
+            <Button variant="contained" sx={{ display: row.original.Enabled == "Enabled" ? "none" : "block" }} onClick={() => { enableUser(row.original) }}>Enable</Button>
             <Button variant="contained" color="error" disabled={ row.original.Enabled == "Enabled" ? true : false } onClick={() => { deleteUser(row.original) }}>Delete</Button>
           </Box>
         ),
@@ -256,6 +289,41 @@ const AdminUserManagement = () => {
             <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
               <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmDeleteUser()}>Delete</Button>
               <Button variant="contained" sx={{ backgroundColor: "lightgrey", color: 'black', boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }} onClick={() => { setOpenDeleteUser(false) }}>Cancel</Button>
+            </Grid>
+          </Grid>
+        </>
+      </TransitionModal>
+      <TransitionModal
+        open={openEnableUser}
+        handleClose={() => setOpenEnableUser(false)}
+        style={{
+          position: "relative",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "50%",
+          bgcolor: "background.paper",
+          border: "1px solid #000",
+          borderRadius: 2,
+          p: 4,
+        }}>
+        <>
+          <Grid container spacing={2}>
+            <Grid item xs={1}>
+              <CloseIcon sx={{ "&:hover": { cursor: "pointer" } }} onClick={() => { setOpenEnableUser(false) }} />
+            </Grid>
+            <Grid item xs={10}>
+              <Typography align="center" variant="h5">
+                Enable User?
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sx={{ display: "flex", alignItems: "center", flexDirection:  "column" }}>
+              <Box>Name: {toEnableUser && toEnableUser.Attributes.Name}</Box>
+              <Box>Email: {toEnableUser && toEnableUser.Attributes.Email}</Box>
+            </Grid>
+            <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+              <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmEnableUser()}>Enable</Button>
+              <Button variant="contained" sx={{ backgroundColor: "lightgrey", color: 'black', boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }} onClick={() => { setOpenEnableUser(false) }}>Cancel</Button>
             </Grid>
           </Grid>
         </>
