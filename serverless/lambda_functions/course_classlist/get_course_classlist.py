@@ -54,7 +54,7 @@ def lambda_handler(event, context):
                 quiz_score = float(quiz['QuizScore'])
                 total_quiz_score += quiz_score
 
-            student['QuizScore'] = total_quiz_score
+            student['TotalQuizScore'] = total_quiz_score
 
             ###########################
             ### GET HOMEWORK SCORES ###
@@ -74,7 +74,14 @@ def lambda_handler(event, context):
                 homework_score = float(homework['HomeworkScore'])
                 total_homework_score += homework_score
 
-            student['HomeworkScore'] = total_homework_score
+            student['TotalHomeworkScore'] = total_homework_score
+
+            ######################################
+            ### CALCULATE PARTICIPATION POINTS ###
+            ######################################
+
+            participation_points = total_quiz_score + total_homework_score
+            student['ParticipationPoints'] = participation_points
 
             ###########################
             ### GET PROGRESS REPORT ###
