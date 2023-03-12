@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { Box, Button, Breadcrumbs, Card, Container, Typography, TextField, Link, Alert, Snackbar } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
@@ -6,13 +6,14 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { useState } from "react";
 
 export default function CourseAnnouncementForm() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [alert, setAlert] = useState(false);
   const navigate = useNavigate();
   const { state } = useLocation();
+  const [title, setTitle] = useState(state.title);
+  const [content, setContent] = useState(state.content);
+  const [alert, setAlert] = useState(false);
   var course = state.course;
   const endpoint = `${import.meta.env.VITE_API_URL}/course/announcement`;
+  const { announcementId } = useParams();
 
   const closeAlert = () => {
     setAlert(false);
@@ -22,49 +23,61 @@ export default function CourseAnnouncementForm() {
   };
 
   async function handleAddAnnouncement(title, content) {
+    const body = JSON.stringify({
+      courseId: course.id,
+      content: content,
+      title: title,
+    });
     // add API Call here
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: {
-        courseId: course.id,
-        content: content,
-        title: title,
-      },
+      body: body,
     });
+
     return response;
   }
   async function handleEditAnnouncement(title, content) {
+    const body = JSON.stringify({
+      courseId: course.id,
+      content: content,
+      title: title,
+      announcementId: announcementId,
+    });
     const response = await fetch(endpoint, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: {
-        courseId: course.id,
-        content: content,
-        title: title,
-      },
+      body: body,
     });
     return response;
   }
 
   async function handleSubmit() {
+    console.log(title);
     if (title == "" || content == "") {
       openAlert();
       return;
     }
     if (state.title == "") {
-      var response = await Promise(handleAddAnnouncement(title, content));
+      var response = handleAddAnnouncement(title, content)
+        .then((response) => response.json())
+        .then((res) => {
+          console.log(res);
+        });
     } else {
-      var response = await Promise(handleEditAnnouncement(title, content));
+      var response = handleEditAnnouncement(title, content)
+        .then((response) => response.json())
+        .then((res) => {
+          console.log(res);
+        });
     }
-    setTitle("");
-    setContent("");
-
     if (response.status == 200) {
+      setTitle("");
+      setContent("");
       navigate(`/teacher/course/${course.id}`);
     }
   }
@@ -123,9 +136,9 @@ export default function CourseAnnouncementForm() {
               id="title"
               label="Title"
               variant="outlined"
-              defaultValue={state.title}
-              onChange={() => {
-                setTitle(event.target.value);
+              defaultValue={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
               }}
               sx={{ mt: 3 }}
             />
@@ -133,13 +146,13 @@ export default function CourseAnnouncementForm() {
             <TextField
               required
               fullWidth
-              id="description"
+              id="content"
               label="Description"
               variant="outlined"
-              defaultValue={state.description}
+              defaultValue={content}
               multiline
               rows={10}
-              onChange={() => {
+              onChange={(event) => {
                 setContent(event.target.value);
               }}
               sx={{ mt: 3 }}

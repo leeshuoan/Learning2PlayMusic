@@ -455,7 +455,7 @@ const TeacherCourse = (userInfo) => {
                   <Button
                     variant="contained"
                     onClick={() => {
-                      navigate("announcement/new", { state: { course: course, title: "", description: "" } });
+                      navigate("announcement/new", { state: { course: course, title: "", content: "" } });
                     }}>
                     +&nbsp;New
                   </Button>
@@ -475,7 +475,7 @@ const TeacherCourse = (userInfo) => {
                         <Typography
                           variant="button"
                           onClick={() => {
-                            navigate("announcement/edit", { state: { course: course, title: announcement.Title, description: announcement.Content } });
+                            navigate(`announcement/edit/${announcement.id}` , { state: { course: course, title: announcement.Title, content: announcement.Content } });
                           }}>
                           <Link underline="hover">Edit</Link>
                         </Typography>
@@ -499,7 +499,7 @@ const TeacherCourse = (userInfo) => {
             </Card>
             {/* course materials ========================================================================================================================*/}
             <Box>
-              <Card sx={{ py: 3, px: 5, mt: 2, display: category == "material" ? "block" : category === undefined ? "block" : "none" }}>
+              <Card sx={{ py: 3, px: 5, mt: 2, display: category == "material" ? "block" : category === undefined ? "none" : "none" }}>
                 {/* header */}
                 <Grid container>
                   <Grid item xs={10} md={11}>
@@ -588,7 +588,7 @@ const TeacherCourse = (userInfo) => {
                     <Button
                       variant="contained"
                       onClick={() => {
-                        navigate("announcement/new", { state: { course: course, title: "", description: "" } });
+                        navigate("announcement/new", { state: { course: course, title: "", content: "" } });
                       }}>
                       +&nbsp;New
                     </Button>
