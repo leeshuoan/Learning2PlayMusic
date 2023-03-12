@@ -106,7 +106,7 @@ export default function CourseMaterialsForm() {
           color="inherit"
           sx={{ display: "flex", alignItems: "center" }}
           onClick={() => {
-            navigate(`/teacher/course/${courseid}`);
+            navigate(`/teacher/course/${courseid}/material`);
           }}>
           <Typography color="text.primary">{course.name}</Typography>
         </Link>
@@ -116,7 +116,7 @@ export default function CourseMaterialsForm() {
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box>
             <Typography variant="h5" sx={{ color: "primary.main" }}>
-              {material.MaterialTitle}
+              {course.name}
             </Typography>
             <Typography variant="subtitle2" sx={{ mb: 1 }}>
               Timeslot: {course.timeslot}

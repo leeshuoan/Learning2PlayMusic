@@ -497,7 +497,7 @@ const TeacherCourse = (userInfo) => {
                     <Button
                       variant="contained"
                       onClick={() => {
-                        navigate("material/new", { state: { material: {}, course: course } });
+                        navigate("new", { state: { material: {}, course: course } });
                       }}>
                       +&nbsp;New
                     </Button>
