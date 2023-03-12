@@ -50,6 +50,15 @@ class CourseStack(Stack):
         )
         L2PMA_homework_submission_bucket.add_to_resource_policy(L2PMA_homework_submission_bucket_policy_statement)
 
+        L2PMA_material_attachment_bucket = s3.Bucket(self, "L2MPMAMaterialAttachmentBucket")
+        L2PMA_material_attachment_bucket_policy_statement = aws_iam.PolicyStatement(
+            effect=aws_iam.Effect.ALLOW,
+            actions=["s3:GetObject", "s3:PutObject", ],
+            resources=[L2PMA_material_attachment_bucket.arn_for_objects("*")],
+            principals=[aws_iam.ServicePrincipal('lambda.amazonaws.com')]
+        )
+        L2PMA_material_attachment_bucket.add_to_resource_policy(L2PMA_material_attachment_bucket_policy_statement)
+
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
         general_role = iam.get_role(RoleName="lambda-general-role")
