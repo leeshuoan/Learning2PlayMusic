@@ -126,7 +126,7 @@ const CourseHomeworkForm = () => {
                   console.log(newValue);
                   setValue(newValue);
                 }}
-                renderInput={(params) => <TextField {...params} fullWidth />}
+                component={(params) => <TextField {...params} fullWidth />}
               />
             </LocalizationProvider>
             <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
