@@ -88,7 +88,7 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table, i
         elif file_extension == "png" or file_extension == "jpg" or file_extension == "jpeg":
             content_type = f'image/{file_extension}'
         else:
-            raise ("Attachment must a .pdf, .png, .jpg or .jpeg file")
+            raise Exception("Attachment must a .pdf, .png, .jpg or .jpeg file")
 
         s3_params = {
             'Bucket': bucket_name,
