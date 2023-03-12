@@ -45,7 +45,7 @@ def lambda_handler(event, context):
         # check if <studentId> exists in database
         studentId = json.loads(event['body'])['studentId']
         if not combination_id_exists("Course", courseId, "Student", studentId):
-            return response_404("studentId does not exist in database")
+            return response_404("studentId is not registered with the course. To do so, please use /user/student/course to register")
 
         # check that evaluation_list is present in the request body
         if 'evaluationList' not in json.loads(event['body']):
