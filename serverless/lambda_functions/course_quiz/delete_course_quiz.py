@@ -1,19 +1,14 @@
 import boto3
 import json
-import decimal
-
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
 
-class Encoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, decimal.Decimal): return float(obj)
 
 def lambda_handler(event, context):
     res = {}
     try:
-        request_body = event['body']
+        request_body = json.loads(event['body'])
         
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
