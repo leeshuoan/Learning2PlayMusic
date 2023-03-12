@@ -33,7 +33,7 @@ def lambda_handler(event, context):
             return response_404("courseId does not exist in database")
 
         # check if <announcementId> exists in database
-        announcementId = json.loads(event['body'])['courseId']
+        announcementId = json.loads(event['body'])['announcementId']
         if not combination_id_exists("Course", courseId, "Announcement", announcementId):
             return response_404("announcementId does not exist in database")
 
