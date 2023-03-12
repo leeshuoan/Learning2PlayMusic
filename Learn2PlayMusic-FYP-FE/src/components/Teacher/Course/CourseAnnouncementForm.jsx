@@ -58,11 +58,12 @@ export default function CourseAnnouncementForm() {
       var response = handleAddAnnouncement(title, content)
         .then((response) => response.json())
         .then((res) => {
-          console.log(res.status);
-          if (response.status == 200) {
-            setTitle("");
-            setContent("");
-            navigate(`/teacher/course/${course.id}`);
+          console.log(res);
+          if (res.message.includes("SUCCESS")) {
+            toast.success("Announcement added successfully!");
+            navigate(`/teacher/course/${course.id}/announcement`);
+          } else {
+            toast.error(res.message);
           }
         });
     } else {
@@ -70,12 +71,13 @@ export default function CourseAnnouncementForm() {
         .then((response) => response.json())
         .then((res) => {
           console.log(res);
+          if (res.message.includes("SUCCESS")) {
+            toast.success("Announcement updated successfully!");
+            navigate(`/teacher/course/${course.id}/announcement`);
+          } else {
+            toast.error(res.message);
+          }
         });
-    }
-    if (response.status == 200) {
-      setTitle("");
-      setContent("");
-      navigate(`/teacher/course/${course.id}`);
     }
   }
 
