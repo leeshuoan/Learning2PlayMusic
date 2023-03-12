@@ -43,6 +43,7 @@ const UserHomework = (userInfo) => {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
         timeslot: data1[0].CourseSlot,
+        teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
 

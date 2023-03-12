@@ -4,6 +4,7 @@ import { Auth } from 'aws-amplify';
 import { toast } from "react-toastify";
 import { useTheme, Card, Button, CssBaseline, TextField, Link, Grid, Box, Typography, Container, Backdrop, CircularProgress } from "@mui/material";
 import homebg from '../assets/homebg.png'
+import useAppBarHeight from "./utils/AppBarHeight";
 
 export default function SignIn({ userInfo, handleSetUserInfo }) {
   const theme = useTheme();
@@ -83,15 +84,15 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
   }
 
   return (
-    <div style={{ background: `linear-gradient(45deg, rgba(76,204,212,0.3) 0%, rgba(120,194,236,1) 50%, rgba(76,204,212,0.303046218487395) 100%)`, height: '100vh' }}> 
+    <div style={{ background: `linear-gradient(45deg, rgba(76,204,212,0.3) 0%, rgba(120,194,236,1) 50%, rgba(76,204,212,0.303046218487395) 100%)`, height: `calc(100vh - ${useAppBarHeight()}px)` }}> 
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
         <Grid container justifyContent="flex-end">
-          <Grid item xs={12} md={8}  sx={{ mt: 15, pr: 10, display: {xs: "none", md: "block"} }}>
+          <Grid item xs={12} md={8}  sx={{ mt: 12, pr: 10, display: {xs: "none", md: "block"} }}>
             <Typography variant="h3" color="white" sx={{textAlign: { xs: 'center', sm: 'left'} }}>Learn2Play Beyond Classroom</Typography>
             <Typography variant="body1" color="white" sx={{textAlign: { xs: 'center', sm: 'left'} }}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut distinctio fuga officia incidunt doloribus sed asperiores vitae dignissimos perspiciatis animi eaque, necessitatibus placeat laboriosam harum minima voluptate enim rem saepe.</Typography>
             <img src={homebg} alt="" />
           </Grid>
-          <Grid item xs={12} md={4} sx={{ mt: 15 }}>
+          <Grid item xs={12} md={4} sx={{ mt: 12 }}>
             <Card variant='contained'>
               <Box
                 sx={{
