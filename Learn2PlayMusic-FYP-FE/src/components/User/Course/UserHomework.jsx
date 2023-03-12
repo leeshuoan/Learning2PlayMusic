@@ -24,9 +24,9 @@ const UserHomework = (userInfo) => {
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
     return response.json();
@@ -54,7 +54,7 @@ const UserHomework = (userInfo) => {
         name: data2.HomeworkName,
         description: data2.HomeworkDescription,
         dueDate: formattedDueDate,
-        assignedDate: formattedAssignedDate
+        assignedDate: formattedAssignedDate,
       };
       setHomework(homeworkData);
     }
@@ -71,7 +71,7 @@ const UserHomework = (userInfo) => {
   var isButtonDisabled = textFieldValue === "" && file === null;
 
   const submit = () => {
-    console.log(file)
+    console.log(file);
 
     let homeworkAttachment = "";
 
@@ -80,8 +80,8 @@ const UserHomework = (userInfo) => {
       reader.readAsBinaryString(file);
 
       reader.onload = (event) => {
-        homeworkAttachment = `data:${file.type};base64,${btoa(event.target.result)}`
-      }
+        homeworkAttachment = `data:${file.type};base64,${btoa(event.target.result)}`;
+      };
     }
 
     fetch(`${import.meta.env.VITE_API_URL}/course/homework/submit`, {
@@ -96,15 +96,16 @@ const UserHomework = (userInfo) => {
         homeworkAttachment: homeworkAttachment,
         homeworkContent: textFieldValue,
       }),
-    }).then((response) => {
-      console.log(response)
-      setSubmitted(true);
-      setOpen(false);
-    }).catch((error) => {
-      console.log(error);
-      console.log(error.message);
-    });
-
+    })
+      .then((response) => {
+        console.log(response);
+        setSubmitted(true);
+        setOpen(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(error.message);
+      });
   };
 
   const fileUploaded = (e) => {
@@ -146,10 +147,7 @@ const UserHomework = (userInfo) => {
       </TransitionModal>
 
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <Breadcrumbs
-          aria-label="breadcrumb"
-          separator={<NavigateNextIcon fontSize="small" />}
-          sx={{ mt: 3 }}>
+        <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
           <Link
             underline="hover"
             color="inherit"
@@ -171,8 +169,7 @@ const UserHomework = (userInfo) => {
           <Typography color="text.primary">{homework.name}</Typography>
         </Breadcrumbs>
 
-        <Card
-          sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
+        <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
               <Typography variant="h5" sx={{ color: "primary.main" }}>
@@ -200,9 +197,7 @@ const UserHomework = (userInfo) => {
             <Typography variant="h6" sx={{ mb: 1 }}>
               {homework.name}
             </Typography>
-            <Typography variant="body2">
-              {homework.description}
-            </Typography>
+            <Typography variant="body2">{homework.description}</Typography>
             <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-start" }}>
               <Box>
                 <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
@@ -232,13 +227,7 @@ const UserHomework = (userInfo) => {
                 }}
                 component="label">
                 ADD A FILE
-                <input
-                  hidden
-                  accept="application/pdf, image/*"
-                  multiple
-                  type="file"
-                  onChange={fileUploaded}
-                />
+                <input hidden accept="application/pdf, image/*" multiple type="file" onChange={fileUploaded} />
               </Button>
             ) : (
               // remove button to upload after uploading one file
@@ -247,9 +236,7 @@ const UserHomework = (userInfo) => {
 
             {file ? (
               <div>
-                <Typography
-                  variant="body2"
-                  style={{ textDecoration: "underline" }}>
+                <Typography variant="body2" style={{ textDecoration: "underline" }}>
                   <IconButton onClick={handleRemoveFile}>
                     <ClearIcon />
                   </IconButton>
@@ -262,21 +249,8 @@ const UserHomework = (userInfo) => {
             )}
 
             <br />
-            <TextField
-              label="Add Text"
-              variant="outlined"
-              rows={7}
-              multiline
-              fullWidth
-              sx={{ mt: 1 }}
-              value={textFieldValue}
-              onChange={handleTextFieldChange}
-            />
-            <Button
-              variant="contained"
-              sx={{ mt: 2 }}
-              onClick={() => setOpen(true)}
-              disabled={isButtonDisabled}>
+            <TextField label="Add Text" variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1 }} value={textFieldValue} onChange={handleTextFieldChange} />
+            <Button variant="contained" sx={{ mt: 2 }} onClick={() => setOpen(true)} disabled={isButtonDisabled}>
               <UploadIcon />
               SUBMIT
             </Button>
@@ -295,9 +269,7 @@ const UserHomework = (userInfo) => {
               Submission Successful!
             </Typography>
             <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
-              <Button
-                variant="contained"
-                onClick={() => navigate("/home/course/1/homework")}>
+              <Button variant="contained" onClick={() => navigate("/home/course/1/homework")}>
                 Back to Homework
               </Button>
             </Box>
@@ -307,8 +279,9 @@ const UserHomework = (userInfo) => {
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={isLoading}
-          onClick={() => { setOpen(false) }}
-        >
+          onClick={() => {
+            setOpen(false);
+          }}>
           <CircularProgress color="inherit" />
         </Backdrop>
       </Container>

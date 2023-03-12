@@ -281,19 +281,20 @@ const TeacherCourse = (userInfo) => {
         const formattedDueDate = `${dueDate.toLocaleDateString()} `;
         const assignedDate = new Date(homework.HomeworkDueDate);
         const formattedAssignedDate = `${assignedDate.toLocaleDateString()} ${assignedDate.toLocaleTimeString()}`;
-        const homeowrkName = homework.HomeworkName;
+        const homeworkName = homework.HomeworkName;
         const homeworkDescription = homework.HomeworkDescription;
         return { ...homework, id, HomeworkDueDate: formattedDueDate, HomeworkAssignedDate: formattedAssignedDate };
       });
       setCourseHomework(homeworkData);
 
       const materialData = data3.map((material) => {
-        const id = material.SK.split("Material#")[1].substr(0, 1);
+        const id = material.SK.split("Material#")[1];
         const date = new Date(material.MaterialLessonDate);
         const formattedDate = `${date.toLocaleDateString()}`;
         return { ...material, id, MaterialLessonDate: formattedDate };
       });
       setCourseMaterial(materialData);
+      console.log(materialData);
 
       // const quizData = data4.map((quiz) => {
       //   const id = quiz.SK.split("Quiz#")[1].substr(0, 1);
