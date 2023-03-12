@@ -33,6 +33,7 @@ import TeacherHome from "./components/Teacher/TeacherHome";
 import TeacherCourse from "./components/Teacher/TeacherCourse";
 import CourseAnnouncementForm from "./components/Teacher/Course/CourseAnnouncementForm";
 import CourseMaterialsForm from "./components/Teacher/Course/CourseMaterialsForm";
+import CourseHomeworkForm from "./components/Teacher/Course/CourseHomeworkForm";
 import TeacherHomeworkOverview from "./components/Teacher/Course/TeacherHomeworkOverview";
 
 Amplify.configure(aws_exports);
@@ -117,6 +118,7 @@ function App() {
               <Route path="announcement/:type/:announcementId?" element={<CourseAnnouncementForm />} />
               <Route path="material/:type/:materialid?" element={<CourseMaterialsForm />} />
               <Route path="homework/:homeworkId" element={<TeacherHomeworkOverview />} />
+              <Route path="homework/new" element={<CourseHomeworkForm />} />
             </Route>
           </Route>
 
