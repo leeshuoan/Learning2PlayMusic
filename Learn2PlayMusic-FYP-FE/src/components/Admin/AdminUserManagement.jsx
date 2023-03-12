@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { useTheme, Box, Button, Typography, Grid } from "@mui/material";
+import { useTheme, Box, Button, Typography, Grid, Backdrop, CircularProgress } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import { Auth, API } from "aws-amplify";
 import CreateUserForm from "./CreateUserForm";
@@ -11,6 +11,7 @@ const AdminUserManagement = () => {
   const theme = useTheme()
   const [data, setData] = useState([]);
   const [reloadData, setReloadData] = useState(false);
+  const [open, setOpen] = useState(true);
   const [openCreateUser, setOpenCreateUser] = useState(false);
   const [openDisableUser, setOpenDisableUser] = useState(false);
   const [openEnableUser, setOpenEnableUser] = useState(false);
@@ -185,7 +186,7 @@ const AdminUserManagement = () => {
   useEffect(() => {
     listUsers();
     listGroups();
-    console.log(data);
+    setOpen(false)
     return () => { };
   }, [reloadData]);
 
@@ -235,7 +236,6 @@ const AdminUserManagement = () => {
               alignItems: "center",
               gap: "1rem",
             }}>
-            <Button variant="contained">Enroll</Button>
             <Button variant="contained" sx={{ display: row.original.Enabled == "Enabled" ? "block" : "none" }} onClick={() => { disableUser(row.original) }}>Disable</Button>
             <Button variant="contained" sx={{ display: row.original.Enabled == "Enabled" ? "none" : "block" }} onClick={() => { enableUser(row.original) }}>Enable</Button>
             <Button variant="contained" color="error" disabled={ row.original.Enabled == "Enabled" ? true : false } onClick={() => { deleteUser(row.original) }}>Delete</Button>
@@ -394,6 +394,12 @@ const AdminUserManagement = () => {
             </Box>
           );
         }}></MaterialReactTable>
+        <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 };
