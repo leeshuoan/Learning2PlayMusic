@@ -31,7 +31,6 @@ def lambda_handler(event, context):
             ':quizMaxAttempts': quiz_max_attempts,
             ':quizDescription': quiz_description,
             ':visibility': visibility,
-
             }
 
         table.update_item(

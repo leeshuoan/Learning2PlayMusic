@@ -1,8 +1,6 @@
-import base64
 import boto3
 import json
 import uuid
-import os
 
 from global_functions.responses import *
 

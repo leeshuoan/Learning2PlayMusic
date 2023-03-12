@@ -121,6 +121,9 @@ class CourseStack(Stack):
         
         put_course_quiz = _lambda.Function(self, "putCourseQuiz", runtime=_lambda.Runtime.PYTHON_3_9,
                                               handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.put_course_quiz.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+        delete_course_quiz = _lambda.Function(self, "deleteCourseQuiz", runtime=_lambda.Runtime.PYTHON_3_9,
+                                              handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.delete_course_quiz.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         # /course/quiz/submit
         post_course_quiz_submit = _lambda.Function(self, "postCourseQuizSubmit", runtime=_lambda.Runtime.NODEJS_16_X,
                                                    handler="post_course_quiz_submit.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=S3_DYNAMODB_ROLE)
@@ -293,6 +296,20 @@ class CourseStack(Stack):
                     "visibility": apigw.JsonSchema(type=apigw.JsonSchemaType.BOOLEAN)
                 },
                 required=["courseId", "quizId"]))
+        
+        delete_course_quiz_model = main_api.add_model(
+            "DeleteCourseQuizModel",
+            content_type="application/json",
+            model_name="DeleteCourseQuizModel",
+            schema=apigw.JsonSchema(
+                title="DeleteCourseQuizModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                },
+                required=["courseId", "quizId"]))
 
         
         course_quiz_resource.add_method("POST", apigw.LambdaIntegration(post_course_quiz), request_models={
@@ -301,7 +318,9 @@ class CourseStack(Stack):
         course_quiz_resource.add_method("PUT", apigw.LambdaIntegration(put_course_quiz), request_models={
           "application/json": put_course_quiz_model
         })
-
+        course_quiz_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_quiz), request_models={
+          "application/json": delete_course_quiz_model
+        })
         course_quiz_resource.add_method("GET", apigw.LambdaIntegration(get_course_quiz), request_parameters={
           'method.request.querystring.courseId': True,
           'method.request.querystring.studentId': False,
