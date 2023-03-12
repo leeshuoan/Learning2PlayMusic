@@ -27,7 +27,9 @@ def lambda_handler(event, context):
             "SK": f"Quiz#{quiz_id}",
             "QuizTitle": quiz_title,
             "QuizMaxAttempts": quiz_max_attempts,
-            "QuizDescription": quiz_description
+            "QuizDescription": quiz_description,
+            "NumberOfStudentsAttempted": 0,
+            "AverageScore": 0
         }
 
         table.put_item(Item = item)
