@@ -1,4 +1,3 @@
-import sys
 import boto3
 import json
 
@@ -7,7 +6,7 @@ from global_functions.exists_in_db import *
 
 
 def lambda_handler(event, context):
-
+    res = {}
     try:
         request_body = json.loads(event['body'])
         
@@ -15,9 +14,8 @@ def lambda_handler(event, context):
         table = dynamodb.Table("LMS")
 
         course_id = request_body['courseId']
-
-        # check if <quizId> exists in database
         quiz_id = request_body['quizId']
+        
         if not combination_id_exists("Course", course_id, "Quiz", quiz_id):
             return response_404("quizId does not exist in database")
         
@@ -33,8 +31,8 @@ def lambda_handler(event, context):
         for item in items:
             table.delete_item(
                 Key={
-                    'PK': {'S': item['PK']},
-                    'SK': {'S': item['SK']}
+                    'PK': item["PK"],
+                    'SK': item["SK"]
                 }
             )
 
