@@ -9,14 +9,15 @@ from global_functions.exists_in_db import *
 def lambda_handler(event, context):
 
     try:
-        queryStringParameters: dict = event["queryStringParameters"]
+        request_body = json.loads(event['body'])
+        
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
-        course_id = queryStringParameters['courseId']
+        course_id = request_body['courseId']
 
         # check if <quizId> exists in database
-        quiz_id = queryStringParameters['quizId']
+        quiz_id = request_body['quizId']
         if not combination_id_exists("Course", course_id, "Quiz", quiz_id):
             return response_404("quizId does not exist in database")
         
