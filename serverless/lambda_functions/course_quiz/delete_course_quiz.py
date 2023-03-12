@@ -30,11 +30,8 @@ def lambda_handler(event, context):
         )
         items = response["Items"]
 
-        return response_200_items(items)
-
         for item in items:
             table.delete_item(
-                TableName='your-table-name',
                 Key={
                     'PK': {'S': item['PK']},
                     'SK': {'S': item['SK']}
