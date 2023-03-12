@@ -90,7 +90,7 @@ class CourseStack(Stack):
         get_course_announcement = _lambda.Function(self, "getCourseAnnouncement",  runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.get_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_course_announcement = _lambda.Function(self, "postCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.post_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_course_announcement = _lambda.Function(self, "deleteCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        put_course_announcement = _lambda.Function(self, "putCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        put_course_announcement = _lambda.Function(self, "putCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.put_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /course Functions
         get_course = _lambda.Function(self, "getCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_FUNCTIONS_FOLDER}.get_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -118,6 +118,9 @@ class CourseStack(Stack):
 
         post_course_quiz = _lambda.Function(self, "postCourseQuiz", runtime=_lambda.Runtime.PYTHON_3_9,
                                               handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.post_course_quiz.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        
+        put_course_quiz = _lambda.Function(self, "putCourseQuiz", runtime=_lambda.Runtime.PYTHON_3_9,
+                                              handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.put_course_quiz.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         # /course/quiz/submit
         post_course_quiz_submit = _lambda.Function(self, "postCourseQuizSubmit", runtime=_lambda.Runtime.NODEJS_16_X,
                                                    handler="post_course_quiz_submit.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=S3_DYNAMODB_ROLE)
@@ -273,8 +276,30 @@ class CourseStack(Stack):
                 },
                 required=["courseId", "quizTitle", "quizMaxAttempts", "visibility"]))
         
+        put_course_quiz_model = main_api.add_model(
+            "PutCourseQuizModel",
+            content_type="application/json",
+            model_name="PutCourseQuizModel",
+            schema=apigw.JsonSchema(
+                title="PutCourseQuizModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "quizTitle": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "quizMaxAttempts": apigw.JsonSchema(type=apigw.JsonSchemaType.INTEGER),
+                    "quizDescription": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "visibility": apigw.JsonSchema(type=apigw.JsonSchemaType.BOOLEAN)
+                },
+                required=["courseId", "quizId"]))
+
+        
         course_quiz_resource.add_method("POST", apigw.LambdaIntegration(post_course_quiz), request_models={
           "application/json": post_course_quiz_model
+        })
+        course_quiz_resource.add_method("PUT", apigw.LambdaIntegration(put_course_quiz), request_models={
+          "application/json": put_course_quiz_model
         })
 
         course_quiz_resource.add_method("GET", apigw.LambdaIntegration(get_course_quiz), request_parameters={
@@ -409,10 +434,11 @@ class CourseStack(Stack):
                 type=apigw.JsonSchemaType.OBJECT,
                 properties={
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "announcementId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "content": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "title": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
-                required=["content"]))
+                required=["courseId", "announcementId", "title", "content"]))
 
         course_announcement_resource.add_method("GET", apigw.LambdaIntegration(get_course_announcement), request_parameters={
             'method.request.querystring.courseId': True,
