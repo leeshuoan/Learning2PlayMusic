@@ -45,7 +45,7 @@ def lambda_handler(event, context):
                 "Content": json.loads(event['body'])['content'],
                 "Date": str(date)
             }
-        response = table.put_item(item)
+        response = table.put_item(Item=item)
 
         # response = table.update_item(
         #     Key={"PK": f"Course#{json.loads(event['body'])['courseId']}",
