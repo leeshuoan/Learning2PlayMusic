@@ -19,7 +19,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom";
 
-const Announcements = ({ userInfo }) => {
+const Announcements = (userInfo) => {
   const [announcements, setAnnouncements] = useState([]);
   const [open, setOpen] = useState(true);
   const getGeneralAnnouncements = fetch(
@@ -50,7 +50,17 @@ const Announcements = ({ userInfo }) => {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+    }, []);
+
+    const back = () => {
+      if (userInfo.userInfo.role == "Teacher")
+        navigate('/teacher')
+      else if (userInfo.userInfo.role == "Admin")
+        navigate('/admin')
+      else
+        navigate('/home')
+      return;
+    }
 
   return (
     <>
@@ -59,25 +69,14 @@ const Announcements = ({ userInfo }) => {
           aria-label="breadcrumb"
           separator={<NavigateNextIcon fontSize="small" />}
           sx={{ mt: 3 }}>
-          {userInfo.role == "Teacher" ? (
-            <Link
-              underline="hover"
-              color="inherit"
-              sx={{ display: "flex", alignItems: "center" }}
-              onClick={() => navigate("/teacher")}>
-              {" "}
-              <HomeIcon sx={{ mr: 0.5 }} />
-            </Link>
-          ) : (
-            <Link
-              underline="hover"
-              color="inherit"
-              sx={{ display: "flex", alignItems: "center" }}
-              onClick={() => navigate("/home")}>
-              {" "}
-              <HomeIcon sx={{ mr: 0.5 }} />
-            </Link>
-          )}
+          <Link
+            underline="hover"
+            color="inherit"
+            sx={{ display: "flex", alignItems: "center" }}
+            onClick={() => back()}>
+            <HomeIcon sx={{ mr: 0.5 }} />
+            Home
+          </Link>
 
           <Typography color="text.primary">General Announcements</Typography>
         </Breadcrumbs>

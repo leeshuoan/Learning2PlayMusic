@@ -577,7 +577,7 @@ const TeacherCourse = (userInfo) => {
                     <Button
                       variant="contained"
                       onClick={() => {
-                        navigate("announcement/new", { state: { course: course, title: "", content: "" } });
+                        navigate(`new`, { state: { course: course, title: "", content: "" } });
                       }}>
                       +&nbsp;New
                     </Button>

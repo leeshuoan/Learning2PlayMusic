@@ -29,6 +29,7 @@ class CourseStack(Stack):
         COURSE_QUIZ_FUNCTIONS_FOLDER = "course_quiz"
         COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER = "course_announcement"
         COURSE_CLASSLIST_FUNCTIONS_FOLDER = "course_classlist"
+        COURSE_REPORT_FUNCTIONS_FOLDERS = "course_report"
 
         
         # Create S3 bucket with read/write allowed
@@ -121,6 +122,9 @@ class CourseStack(Stack):
         
         put_course_quiz = _lambda.Function(self, "putCourseQuiz", runtime=_lambda.Runtime.PYTHON_3_9,
                                               handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.put_course_quiz.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+        delete_course_quiz = _lambda.Function(self, "deleteCourseQuiz", runtime=_lambda.Runtime.PYTHON_3_9,
+                                              handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.delete_course_quiz.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         # /course/quiz/submit
         post_course_quiz_submit = _lambda.Function(self, "postCourseQuizSubmit", runtime=_lambda.Runtime.NODEJS_16_X,
                                                    handler="post_course_quiz_submit.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=S3_DYNAMODB_ROLE)
@@ -137,6 +141,13 @@ class CourseStack(Stack):
                                                     })
         delete_course_quiz_question = _lambda.Function(self, "deleteCourseQuizQuestion", runtime=_lambda.Runtime.NODEJS_16_X,
                                                        handler=f"delete_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=S3_DYNAMODB_ROLE)
+        # /course/report Functions
+        get_course_report = _lambda.Function(self, "getCourseReport", runtime=_lambda.Runtime.PYTHON_3_9,
+                                                     handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.get_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE,
+                                                     )
+        post_course_report = _lambda.Function(self, "postCourseReport", runtime=_lambda.Runtime.PYTHON_3_9,
+                                                     handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.post_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE,
+                                                     )
         # Create Amazon API Gateway REST API
         main_api = apigw.RestApi(self, "main", description="All LMS APIs")
         self.main_api = main_api
@@ -152,6 +163,7 @@ class CourseStack(Stack):
         course_announcement_resource = course_resource.add_resource("announcement")
         course_material_resource = course_resource.add_resource("material")
         course_classlist_resource = course_resource.add_resource("classlist")
+        course_report_resource = course_resource.add_resource("report")
 
         # Create sub-sub-resources under the parent resource
         course_quiz_question_resource = course_quiz_resource.add_resource(
@@ -293,6 +305,20 @@ class CourseStack(Stack):
                     "visibility": apigw.JsonSchema(type=apigw.JsonSchemaType.BOOLEAN)
                 },
                 required=["courseId", "quizId"]))
+        
+        delete_course_quiz_model = main_api.add_model(
+            "DeleteCourseQuizModel",
+            content_type="application/json",
+            model_name="DeleteCourseQuizModel",
+            schema=apigw.JsonSchema(
+                title="DeleteCourseQuizModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                },
+                required=["courseId", "quizId"]))
 
         
         course_quiz_resource.add_method("POST", apigw.LambdaIntegration(post_course_quiz), request_models={
@@ -301,7 +327,9 @@ class CourseStack(Stack):
         course_quiz_resource.add_method("PUT", apigw.LambdaIntegration(put_course_quiz), request_models={
           "application/json": put_course_quiz_model
         })
-
+        course_quiz_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_quiz), request_models={
+          "application/json": delete_course_quiz_model
+        })
         course_quiz_resource.add_method("GET", apigw.LambdaIntegration(get_course_quiz), request_parameters={
           'method.request.querystring.courseId': True,
           'method.request.querystring.studentId': False,
@@ -450,6 +478,49 @@ class CourseStack(Stack):
             'application/json': post_course_announcement_model})
         course_announcement_resource.add_method("PUT", apigw.LambdaIntegration(put_course_announcement), request_models={
             'application/json': put_course_announcement_model})
+        
+        # /course/report
+        # Define a JSON Schema to accept Request Body in JSON format for POST Method
+        post_course_report_model = main_api.add_model(
+            "PostCourseReportModel",
+            content_type="application/json",
+            model_name="PostCourseReportModel",
+            schema=apigw.JsonSchema(
+                title="PostCourseReportModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "additionalComments": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "goalsForNewTerm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "evaluationList": {
+                        "attendance": {"type:": "string"},
+                        "dynamics control": {"type:": "string"},
+                        "punctuality": {"type:": "string"},
+                        "tone quality": {"type:": "string"},
+                        "theory": {"type:": "string"},
+                        "enthusiasm in music learning": {"type:": "string"},
+                        "rhythm": {"type:": "string"},
+                        "scales & arpeggios": {"type:": "string"},
+                        "posture": {"type:": "string"},
+                        "articulation": {"type:": "string"},
+                        "musicality & artistry": {"type:": "string"},
+                        "sight-reading": {"type:": "string"},
+                        "practice and lesson participation": {"type:": "string"},
+                        "aural skills": {"type:": "string"},
+                        "performing": {"type:": "string"}
+                    }
+                },
+                required=["content"]))
+
+        course_report_resource.add_method("GET", apigw.LambdaIntegration(get_course_report), request_parameters={
+            'method.request.querystring.courseId': True,
+            'method.request.querystring.studentId': True,
+            'method.request.querystring.reportId': False})
+        course_report_resource.add_method("POST", apigw.LambdaIntegration(post_course_report), request_models={
+            'application/json': post_course_report_model})
+
 
         # Enable CORS for each resource/sub-resource etc.
         course_resource.add_cors_preflight(
@@ -475,6 +546,8 @@ class CourseStack(Stack):
         course_announcement_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         course_classlist_resource.add_cors_preflight(
+            allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        course_report_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
 
 

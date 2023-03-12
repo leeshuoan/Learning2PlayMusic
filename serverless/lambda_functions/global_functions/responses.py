@@ -1,6 +1,16 @@
 import json
 
 ##########################
+######## Helper #########
+##########################
+
+class SetEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        return json.JSONEncoder.default(self, obj)
+
+##########################
 ######## SUCCESS #########
 ##########################
 
@@ -13,7 +23,7 @@ def response_200_items(items):
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "POST,GET,DELETE,PUT"
         },
-        "body": json.dumps(items)
+        "body": json.dumps(items, cls=SetEncoder)
     }
 
 # For responses that accept but don't act upon
