@@ -268,9 +268,10 @@ class CourseStack(Stack):
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "quizTitle": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "quizMaxAttempts": apigw.JsonSchema(type=apigw.JsonSchemaType.INTEGER),
-                    "quizDescription": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    "quizDescription": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "visibility": apigw.JsonSchema(type=apigw.JsonSchemaType.BOOLEAN)
                 },
-                required=["courseId", "quizTitle", "quizMaxAttempts"]))
+                required=["courseId", "quizTitle", "quizMaxAttempts", "visibility"]))
         
         course_quiz_resource.add_method("POST", apigw.LambdaIntegration(post_course_quiz), request_models={
           "application/json": post_course_quiz_model
