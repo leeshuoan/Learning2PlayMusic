@@ -14,7 +14,6 @@ def lambda_handler(event, context):
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
-        announcementId = str(uuid.uuid4().hex)[:8]
 
         sgTimezone = dateutil.tz.gettz('Asia/Singapore')
         date = datetime.now(tz=sgTimezone).strftime("%Y-%m-%dT%H:%M:%S")
@@ -24,28 +23,36 @@ def lambda_handler(event, context):
         if json.loads(event['body'])['courseId']=="":
             return response_400("courseId is missing")
         
-        if json.loads(event['body'])['title']=="":
-            return response_400("Announcement title is missing")
+        # checks that announcementId passed in is not an empty string
+        if json.loads(event['body'])['announcementId']=="":
+            return response_400("announcementId is missing")
         
-        if json.loads(event['body'])['content']=="":
-            return response_400("Announcement description is missing")
-
         # check if <courseId> exists in database
         courseId = json.loads(event['body'])['courseId']
         if not id_exists("Course", "Course", courseId):
             return response_404("courseId does not exist in database")
 
+        # check if <announcementId> exists in database
+        announcementId = json.loads(event['body'])['courseId']
+        if not combination_id_exists("Course", courseId, "Announcement", announcementId):
+            return response_404("announcementId does not exist in database")
+
+
         item = {
-                "PK": f"Course#{json.loads(event['body'])['courseId']}",
+                "PK": f"Course#{courseId}",
                 "SK": f"Announcement#{announcementId}",
                 "Title": json.loads(event['body'])['title'],
                 "Content": json.loads(event['body'])['content'],
                 "Date": str(date)
             }
-        response = table.update_item(Key={"PK": f"Course#{json.loads(event['body'])['courseId']}",
-                "SK": f"Announcement#{announcementId}",}, UpdateExpression="set Title = :t, Content = :c, Date = :d",
-                ExpressionAttributeValues={":t": json.loads(event['body'])['title'], ":c": json.loads(event['body'])['content'], ":d": str(date)
-                }, ReturnValues="UPDATED_NEW")
+        response = table.update_item(
+            Key={"PK": f"Course#{json.loads(event['body'])['courseId']}",
+                "SK": f"Announcement#{announcementId}"},
+            UpdateExpression="set Title = :t, Content = :c, Date = :d",
+            ExpressionAttributeValues={":t": json.loads(event['body'])['title'],
+                                       ":c": json.loads(event['body'])['content'],
+                                       ":d": str(date)},
+            ReturnValues="UPDATED_NEW")
 
         return response_200_msg_items("updated", item)
 
