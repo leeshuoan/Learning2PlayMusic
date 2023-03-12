@@ -323,7 +323,7 @@ app.post("/createUser", async (req, res, next) => {
     );
     res.status(200).json(response);
   } catch (err) {
-    throw err;
+    next(err);
   }
 });
 
@@ -335,7 +335,7 @@ app.post("/deleteUser", async (req, res, next) => {
     return next(err);
   }
   try {
-    const response = await deleteUser(req.body.username, req.body.userPoolId);
+    const response = await deleteUser(req.body.username);
     res.status(200).json(response);
   } catch (err) {
     next(err);

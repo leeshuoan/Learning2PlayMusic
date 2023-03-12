@@ -307,7 +307,7 @@ async function createUser(username, password, email, name, role) {
     Username: username /* required */,
   };
   const addUserToGroupParams = {
-    GroupName: role /* required */,
+    GroupName: role + "s" /* required */,
     UserPoolId: userPoolId /* required */,
     Username: username /* required */,
   };
@@ -334,7 +334,7 @@ async function createUser(username, password, email, name, role) {
 }
 
 // delete user as an administrator
-async function deleteUser(username, userPoolId) {
+async function deleteUser(username) {
   var params = {
     UserPoolId: userPoolId /* required */,
     Username: username /* required */,
@@ -344,7 +344,14 @@ async function deleteUser(username, userPoolId) {
     const result = await cognitoIdentityServiceProvider
       .adminDeleteUser(params)
       .promise();
-  } catch (error) {}
+    console.log(`${username} successfully deleted`); 
+    return {
+      message: `${username} successfully deleted`,
+    };
+  } catch (err) {
+    console.log(err)
+    throw err;
+  }
 }
 
 module.exports = {
