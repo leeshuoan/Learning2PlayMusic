@@ -482,11 +482,11 @@ class CourseStack(Stack):
         # /course/report
         # Define a JSON Schema to accept Request Body in JSON format for POST Method
         post_course_report_model = main_api.add_model(
-            "PostCourseAnnouncementModel",
+            "PostCourseReportModel",
             content_type="application/json",
-            model_name="PostCourseAnnouncementModel",
+            model_name="PostCourseReportModel",
             schema=apigw.JsonSchema(
-                title="PostCourseAnnouncementModel",
+                title="PostCourseReportModel",
                 schema=apigw.JsonSchemaVersion.DRAFT4,
                 type=apigw.JsonSchemaType.OBJECT,
                 properties={
