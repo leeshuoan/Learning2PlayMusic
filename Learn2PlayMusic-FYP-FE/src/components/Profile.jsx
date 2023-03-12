@@ -16,8 +16,14 @@ const Profile = (userInfo) => {
   const [image, setImage] = useState(null)
   const navigate = useNavigate()
 
+  console.log(userInfo)
   const back = () => {
-    navigate('/home')
+    if (userInfo.userInfo.role == "Teacher")
+      navigate('/teacher')
+    else if (userInfo.userInfo.role == "Admin")
+      navigate('/admin')
+    else
+      navigate('/home')
     return;
   }
 

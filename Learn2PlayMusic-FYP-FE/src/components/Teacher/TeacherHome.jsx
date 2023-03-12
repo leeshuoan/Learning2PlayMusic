@@ -1,17 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Typography,
-  Container,
-  Grid,
-  Card,
-  Box,
-  Link,
-  Button,
-} from "@mui/material";
+import { Typography, Container, Grid, Card, Box, Link, Button, Backdrop,  CircularProgress } from "@mui/material";
 
 const TeacherHome = ({ userInfo }) => {
-
+  const [open, setOpen] = useState(true);
   const [myCourses, setMyCourses] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const navigate = useNavigate();
@@ -51,6 +43,7 @@ const TeacherHome = ({ userInfo }) => {
           setMyCourses(courses);
         }
         console.log(courses);
+        setOpen(false)
       } catch (error) {
         console.error(error);
       }
@@ -142,6 +135,12 @@ const TeacherHome = ({ userInfo }) => {
             </Card>
           </Grid> */}
         </Grid>
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={open}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Container>
     </>
   );
