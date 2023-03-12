@@ -441,7 +441,8 @@ const TeacherCourse = (userInfo) => {
                   <Button
                     variant="contained"
                     onClick={() => {
-                      navigate("announcement/new", { state: { course: course, title: "", content: "" } });
+                      var endpt = category == "announcement" ? "new" : "announcement/new";
+                      navigate(endpt, { state: { course: course, title: "", content: "" } });
                     }}>
                     +&nbsp;New
                   </Button>
@@ -461,7 +462,8 @@ const TeacherCourse = (userInfo) => {
                         <Typography
                           variant="button"
                           onClick={() => {
-                            navigate(`announcement/edit/${announcement.id}`, { state: { course: course, title: announcement.Title, content: announcement.Content } });
+                            var endpt = category == "announcement" ? `edit/${announcement.id}` : `announcement/edit/${announcement.id}`;
+                            navigate(endpt, { state: { course: course, title: announcement.Title, content: announcement.Content } });
                           }}>
                           <Link underline="hover">Edit</Link>
                         </Typography>

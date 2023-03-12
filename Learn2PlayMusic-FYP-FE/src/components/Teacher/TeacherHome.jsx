@@ -91,7 +91,7 @@ const TeacherHome = ({ userInfo }) => {
                     "&:hover": { backgroundColor: "lightgrey" },
                   }}
                   onClick={() => {
-                    navigate(`course/${myCourse.SK.split("Course#")[1]}`);
+                    navigate(`course/${myCourse.SK.split("Course#")[1]}/announcement`);
                   }}>
                   GO TO COURSE PAGE
                 </Button>
