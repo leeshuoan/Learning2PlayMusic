@@ -6,7 +6,9 @@
     "body": {
       "courseId": 1,
       "quizTitle": "Sample Course Title",
-      "quizMaxAttempts": 1
+      "quizMaxAttempts": 1,
+      "quiz_description": "quizDescription",
+      "visibility": false
     },
     "path": "/course/quiz/question"
   }
