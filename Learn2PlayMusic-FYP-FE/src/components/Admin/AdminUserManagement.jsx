@@ -36,7 +36,9 @@ const AdminUserManagement = () => {
     let groups = await API.get(apiName, path, myInit);
     var rs = [];
     for (let idx in groups.Groups) {
-      rs.push(groups.Groups[idx].GroupName);
+      let groupName = groups.Groups[idx].GroupName;
+      console.log(groupName)
+      rs.push(groupName.substr(0, groupName.length - 1));
     }
     setRoles(rs);
     console.log(rs);
@@ -75,6 +77,7 @@ const AdminUserManagement = () => {
         }
       }
       userData[idx]["Enabled"] = userData[idx]["Enabled"] ? "Enabled" : "Disabled";
+      userData[idx]["UserStatus"] = userData[idx]["UserStatus"] == "FORCE_CHANGE_PASSWORD" ? "Change Password" : "Confirmed";
 
       let date = new Date(userData[idx]["UserCreateDate"]);
       let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
@@ -165,7 +168,6 @@ const AdminUserManagement = () => {
       }
     };
     let success = await API.post(apiName, path, myInit);
-    console.log(success)
     if (success.message) {
       toast.success("User deleted successfully", {
         position: toast.POSITION.TOP_CENTER,
@@ -208,11 +210,19 @@ const AdminUserManagement = () => {
         accessorKey: "Attributes.Role",
         id: "role",
         header: "Role",
+        size: 30
+      },
+      {
+        accessorKey: "UserStatus",
+        id: "status",
+        header: "Status",
+        size: 40
       },
       {
         accessorKey: "Enabled",
         id: "enabled",
         header: "Enabled",
+        size: 30
       },
       {
         accessorKey: "",

@@ -34,7 +34,6 @@ export default function CreateUserForm({ roles, handleClose }) {
     var email = data.get("email");
     var name = data.get("name");
     var role = data.get("role");
-    role = data.get("role").substring(0, role.length - 1);
 
     if (email === "" || name === "" || role === "") {
       console.log("Please fill in all fields");
