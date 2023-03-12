@@ -15,7 +15,6 @@ const TeacherHomeworkOverview = () => {
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const handleClose = () => setOpen(false);
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
@@ -38,6 +37,7 @@ const TeacherHomeworkOverview = () => {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
         timeslot: data1[0].CourseSlot,
+        teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
 
@@ -97,7 +97,7 @@ const TeacherHomeworkOverview = () => {
             color="inherit"
             sx={{ display: "flex", alignItems: "center" }}
             onClick={() => {
-              navigate("/home");
+              navigate("/teacher");
             }}>
             <HomeIcon sx={{ mr: 0.5 }} />
             Home
@@ -106,7 +106,7 @@ const TeacherHomeworkOverview = () => {
             underline="hover"
             color="inherit"
             onClick={() => {
-              navigate(`/home/course/${courseid}/homework`);
+              navigate(`/teacher/course/${courseid}/homework`);
             }}>
             {course.name}
           </Link>
@@ -173,7 +173,6 @@ const TeacherHomeworkOverview = () => {
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={isLoading}
-          onClick={() => { setOpen(false) }}
         >
           <CircularProgress color="inherit" />
         </Backdrop>
