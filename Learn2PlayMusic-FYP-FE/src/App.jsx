@@ -124,7 +124,7 @@ function App() {
 
           <Route path="home" element={<PrivateRoutes userType="User"></PrivateRoutes>}>
             <Route index element={<UserHome userInfo={userInfo} />} />
-            <Route path="announcements" element={<Announcements />} />
+            <Route path="announcements" element={<Announcements userInfo={userInfo}/>} />
             <Route path="course/:courseid">
               <Route index element={<UserCourse userInfo={userInfo} />} />
               <Route path=":category" element={<UserCourse userInfo={userInfo} />} />
