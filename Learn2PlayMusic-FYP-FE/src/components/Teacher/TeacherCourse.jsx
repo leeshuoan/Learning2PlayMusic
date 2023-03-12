@@ -1,6 +1,6 @@
 import { useMemo, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Divider, Breadcrumbs, Backdrop, Stack, CircularProgress, Snackbar, Alert, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Divider, Breadcrumbs, Backdrop, Stack, CircularProgress, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
@@ -9,6 +9,7 @@ import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import TransitionModal from "../utils/TransitionModal";
+import { toast } from "react-toastify";
 
 const TeacherCourse = (userInfo) => {
   const [open, setOpen] = useState(true);
@@ -19,13 +20,7 @@ const TeacherCourse = (userInfo) => {
   const [courseAnnouncements, setCourseAnnouncements] = useState([]);
   const [deleteAnnouncementModal, setDeleteAnnouncementModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
-  const [alert, setAlert] = useState(false);
-  const [severity, setSeverity] = useState("error");
-  const [alertMessage, setAlertMessage] = useState("");
 
-  const closeAlert = () => {
-    setAlert(false);
-  };
   // dummy data
   const courseProgressReports = [
     {
@@ -192,13 +187,9 @@ const TeacherCourse = (userInfo) => {
         setCourseAnnouncements(refreshedAnnouncement);
         // alert
         if (response.status === 200) {
-          setSeverity("success");
-          setAlert(true);
-          setAlertMessage("Announcement deleted successfully!");
+          toast.success("Announcement deleted successfully");
         } else {
-          setSeverity("error");
-          setAlert(true);
-          setAlertMessage("An unexpected error occured");
+          toast.error("An unexpected error occured");
         }
       });
     return;
@@ -339,11 +330,6 @@ const TeacherCourse = (userInfo) => {
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       {/* Delete announement modal ========================================================================================================================*/}
-      <Snackbar open={alert} autoHideDuration={6000} onClose={closeAlert}>
-        <Alert severity={severity} sx={{ mt: 3 }} onClose={closeAlert}>
-          <strong>{alertMessage}</strong>
-        </Alert>
-      </Snackbar>
       <TransitionModal
         open={deleteAnnouncementModal}
         handleClose={() => {
@@ -455,7 +441,7 @@ const TeacherCourse = (userInfo) => {
                   <Button
                     variant="contained"
                     onClick={() => {
-                      navigate("announcement/new", { state: { course: course, title: "", description: "" } });
+                      navigate("announcement/new", { state: { course: course, title: "", content: "" } });
                     }}>
                     +&nbsp;New
                   </Button>
@@ -475,7 +461,7 @@ const TeacherCourse = (userInfo) => {
                         <Typography
                           variant="button"
                           onClick={() => {
-                            navigate("announcement/edit", { state: { course: course, title: announcement.Title, description: announcement.Content } });
+                            navigate(`announcement/edit/${announcement.id}`, { state: { course: course, title: announcement.Title, content: announcement.Content } });
                           }}>
                           <Link underline="hover">Edit</Link>
                         </Typography>
@@ -499,7 +485,7 @@ const TeacherCourse = (userInfo) => {
             </Card>
             {/* course materials ========================================================================================================================*/}
             <Box>
-              <Card sx={{ py: 3, px: 5, mt: 2, display: category == "material" ? "block" : category === undefined ? "block" : "none" }}>
+              <Card sx={{ py: 3, px: 5, mt: 2, display: category == "material" ? "block" : category === undefined ? "none" : "none" }}>
                 {/* header */}
                 <Grid container>
                   <Grid item xs={10} md={11}>
@@ -509,7 +495,7 @@ const TeacherCourse = (userInfo) => {
                     <Button
                       variant="contained"
                       onClick={() => {
-                        navigate("material/new", { state: { material: {}, course: {} } });
+                        navigate("material/new", { state: { material: {}, course: course } });
                       }}>
                       +&nbsp;New
                     </Button>
@@ -588,7 +574,7 @@ const TeacherCourse = (userInfo) => {
                     <Button
                       variant="contained"
                       onClick={() => {
-                        navigate("announcement/new", { state: { course: course, title: "", description: "" } });
+                        navigate("announcement/new", { state: { course: course, title: "", content: "" } });
                       }}>
                       +&nbsp;New
                     </Button>

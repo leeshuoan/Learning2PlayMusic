@@ -1,81 +1,86 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { Box, Button, Breadcrumbs, Card, Container, Typography, TextField, Link, Alert, Snackbar } from "@mui/material";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { Box, Button, Breadcrumbs, Card, Container, Typography, TextField, Link } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-
+import { toast } from "react-toastify";
 import { useState } from "react";
 
 export default function CourseAnnouncementForm() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [alert, setAlert] = useState(false);
   const navigate = useNavigate();
   const { state } = useLocation();
+  const [title, setTitle] = useState(state.title);
+  const [content, setContent] = useState(state.content);
   var course = state.course;
   const endpoint = `${import.meta.env.VITE_API_URL}/course/announcement`;
-
-  const closeAlert = () => {
-    setAlert(false);
-  };
-  const openAlert = () => {
-    setAlert(true);
-  };
+  const { announcementId } = useParams();
 
   async function handleAddAnnouncement(title, content) {
+    const body = JSON.stringify({
+      courseId: course.id,
+      content: content,
+      title: title,
+    });
     // add API Call here
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: {
-        courseId: course.id,
-        content: content,
-        title: title,
-      },
+      body: body,
     });
+
     return response;
   }
   async function handleEditAnnouncement(title, content) {
+    const body = JSON.stringify({
+      courseId: course.id,
+      content: content,
+      title: title,
+      announcementId: announcementId,
+    });
     const response = await fetch(endpoint, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: {
-        courseId: course.id,
-        content: content,
-        title: title,
-      },
+      body: body,
     });
     return response;
   }
 
   async function handleSubmit() {
+    console.log(title);
     if (title == "" || content == "") {
-      openAlert();
+      toast.error("Please fill in all the fields!");
       return;
     }
     if (state.title == "") {
-      var response = await Promise(handleAddAnnouncement(title, content));
+      var response = handleAddAnnouncement(title, content)
+        .then((response) => response.json())
+        .then((res) => {
+          console.log(res.status);
+          if (response.status == 200) {
+            setTitle("");
+            setContent("");
+            navigate(`/teacher/course/${course.id}`);
+          }
+        });
     } else {
-      var response = await Promise(handleEditAnnouncement(title, content));
+      var response = handleEditAnnouncement(title, content)
+        .then((response) => response.json())
+        .then((res) => {
+          console.log(res);
+        });
     }
-    setTitle("");
-    setContent("");
-
     if (response.status == 200) {
+      setTitle("");
+      setContent("");
       navigate(`/teacher/course/${course.id}`);
     }
   }
 
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-      <Snackbar open={alert} autoHideDuration={6000} onClose={closeAlert}>
-        <Alert severity="error" sx={{ mt: 3 }} onClose={closeAlert}>
-          <strong>Please fill in all the fields!</strong>
-        </Alert>
-      </Snackbar>
       <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
         <Link
           underline="hover"
@@ -123,9 +128,9 @@ export default function CourseAnnouncementForm() {
               id="title"
               label="Title"
               variant="outlined"
-              defaultValue={state.title}
-              onChange={() => {
-                setTitle(event.target.value);
+              defaultValue={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
               }}
               sx={{ mt: 3 }}
             />
@@ -133,13 +138,13 @@ export default function CourseAnnouncementForm() {
             <TextField
               required
               fullWidth
-              id="description"
+              id="content"
               label="Description"
               variant="outlined"
-              defaultValue={state.description}
+              defaultValue={content}
               multiline
               rows={10}
-              onChange={() => {
+              onChange={(event) => {
                 setContent(event.target.value);
               }}
               sx={{ mt: 3 }}
