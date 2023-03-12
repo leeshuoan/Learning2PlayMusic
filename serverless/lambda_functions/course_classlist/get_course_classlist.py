@@ -4,6 +4,8 @@ import json
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
+from global_functions.cognito import *
+
 
 def lambda_handler(event, context):
 
@@ -19,22 +21,15 @@ def lambda_handler(event, context):
         if not id_exists("Course", "Course", courseId):
             return response_404("courseId does not exist in database")
 
-        ####################################
-        ### GET STUDENT'S ID (not names) ###
-        ####################################
-        response = table.query(
-            IndexName="SK-PK-index",
-            KeyConditionExpression="SK = :SK AND begins_with(PK, :PK)",
-            ExpressionAttributeValues={
-                ":SK": f"Course#{courseId}",
-                ":PK": "Student#"
-            })
+        ##################################
+        ### READING USERS FROM COGNITO ###
+        ##################################
 
-        student_items = response["Items"]
+        students = get_users('Users')
 
-        for student in student_items:
+        for student in students:
 
-            studentId = student['PK'].split("#")[1]
+            studentId = student['studentId']
 
             #######################
             ### GET QUIZ SCORES ###
@@ -44,7 +39,7 @@ def lambda_handler(event, context):
                 KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
                 ExpressionAttributeValues={
                     ":PK": f"Course#{courseId}",
-                    ":SK": f"Student#{studentId}Quiz"
+                    ":SK": f"Student#{student}Quiz"
                 })
 
             quiz_items = quiz_response['Items']
@@ -87,7 +82,7 @@ def lambda_handler(event, context):
             ### GET PROGRESS REPORT ###
             ###########################
 
-        return response_200_items(student_items)
+        return response_200_items(students)
 
 
     except Exception as e:
