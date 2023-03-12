@@ -1,12 +1,13 @@
 import { useMemo, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Divider, Breadcrumbs, Backdrop, Stack, CircularProgress, Snackbar, Alert } from "@mui/material";
+import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Divider, Breadcrumbs, Backdrop, Stack, CircularProgress, Snackbar, Alert, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import FileOpenIcon from "@mui/icons-material/FileOpen";
 import TransitionModal from "../utils/TransitionModal";
 
 const TeacherCourse = (userInfo) => {
@@ -25,7 +26,7 @@ const TeacherCourse = (userInfo) => {
   const closeAlert = () => {
     setAlert(false);
   };
-
+  // dummy data
   const courseProgressReports = [
     {
       id: 1,
@@ -38,17 +39,31 @@ const TeacherCourse = (userInfo) => {
       uploadDate: "31 Jun 2023",
     },
   ];
+  const classListDummyData = [
+    {
+      studentId: 1,
+      StudentName: "John Doe",
+      ParticipationPoints: "2",
+      progresReport: "",
+    },
+    {
+      studentId: 2,
+      StudentName: "Jane Doe",
+      ParticipationPoints: "11",
+      progresReport: "",
+    },
+  ];
   // navigate pages
   const navigate = useNavigate();
   const { category } = useParams();
   const { courseid } = useParams();
-  const menuOptions = ["Announcements", "Class Materials", "Quizzes", "Homework", "My Progress Report"];
+  const menuOptions = ["Announcements", "Class Materials", "Quizzes", "Homework", "Class List"];
   const routeMenuMapping = {
     announcement: "Announcements",
     material: "Class Materials",
     quiz: "Quizzes",
     homework: "Homework",
-    report: "My Progress Report",
+    classList: "Class List",
   };
   // api calls
   async function request(endpoint) {
@@ -63,9 +78,10 @@ const TeacherCourse = (userInfo) => {
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
   const getCourseAnnouncementsAPI = request(`/course/announcement?courseId=${courseid}`);
-  const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
   const getMaterialAPI = request(`/course/material?courseId=${courseid}`);
-  const getQuizAPI = request(`/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
+  const getHomeworkAPI = request(`/course/homework?courseId=${courseid}`);
+  const getQuizAPI = request(`/course/quiz?courseId=${courseid}/studentId=${userInfo.userInfo.id}`);
+  const getClassListAPI = request(`/course/classlist?courseId=${courseid}`);
   // material table configs
   const courseMaterialsColumns = useMemo(
     () => [
@@ -109,6 +125,43 @@ const TeacherCourse = (userInfo) => {
     ],
     [course]
   );
+
+  const classListColumns = useMemo(
+    () => [
+      {
+        accessorKey: "StudentName",
+        id: "studentName",
+        header: "Student Name",
+        Cell: ({ cell, row }) => {
+          row.original.StudentName;
+        },
+      },
+      {
+        accessorKey: "ParticipationPoints",
+        id: "participationPoints",
+        header: "Participation Points",
+        Cell: ({ cell, row }) => {
+          row.original.ParticipationPoints;
+        },
+      },
+      {
+        accessorKey: "ProgressReport",
+        id: "progressReport",
+        header: "Progress Report",
+        Cell: ({ cell, row }) => (
+          // todo
+          <Link underline="hover" onClick={() => navigate()} sx={{ justifyContent: "center", alignItems: "center" }}>
+            <Typography variant="button">
+              <FileOpenIcon fontSize="inherit" />
+              &nbsp;OPEN
+            </Typography>
+          </Link>
+        ),
+      },
+    ],
+    []
+  );
+
   // announcement delete announcement
   async function deleteAnnouncement() {
     console.log(selectedAnnouncement);
@@ -150,7 +203,24 @@ const TeacherCourse = (userInfo) => {
       });
     return;
   }
-
+  // [
+  //   {
+  //     HomeworkDescription: "This is your first homework for this course",
+  //     HomeworkName: "Piano homework 1",
+  //     SK: "Homework#1",
+  //     PK: "Course#1",
+  //     HomeworkAssignedDate: "2022-12-31T00:00:01Z",
+  //     HomeworkDueDate: "2023-12-31T00:00:01Z",
+  //   },
+  //   {
+  //     HomeworkDescription: "This is your second homework for this course",
+  //     HomeworkName: "Homework the second",
+  //     SK: "Homework#2",
+  //     PK: "Course#1",
+  //     HomeworkAssignedDate: "2022-01-31T00:00:01Z",
+  //     HomeworkDueDate: "2023-05-31T00:00:01Z",
+  //   },
+  // ];
   useEffect(() => {
     async function fetchData() {
       const [data1, data2, data3, data4, data5] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI]);
@@ -207,6 +277,25 @@ const TeacherCourse = (userInfo) => {
       //   setCourseHomework(data);
       // });
 
+      //     HomeworkDescription: "This is your first homework for this course",
+      //     HomeworkName: "Piano homework 1",
+      //     SK: "Homework#1",
+      //     PK: "Course#1",
+      //     HomeworkAssignedDate: "2022-12-31T00:00:01Z",
+      //     HomeworkDueDate: "2023-12-31T00:00:01Z",
+
+      const homeworkData = data2.map((homework) => {
+        const id = homework.SK.split("Homework#")[1].substr(0, 1);
+        const dueDate = new Date(homework.HomeworkAssignedDate);
+        const formattedDueDate = `${dueDate.toLocaleDateString()} `;
+        const assignedDate = new Date(homework.HomeworkDueDate);
+        const formattedAssignedDate = `${assignedDate.toLocaleDateString()} ${assignedDate.toLocaleTimeString()}`;
+        const homeowrkName = homework.HomeworkName;
+        const homeworkDescription = homework.HomeworkDescription;
+        return { ...homework, id, HomeworkDueDate: formattedDueDate, HomeworkAssignedDate: formattedAssignedDate };
+      });
+      setCourseHomework(homeworkData);
+
       const materialData = data3.map((material) => {
         const id = material.SK.split("Material#")[1].substr(0, 1);
         const date = new Date(material.MaterialLessonDate);
@@ -215,13 +304,13 @@ const TeacherCourse = (userInfo) => {
       });
       setCourseMaterial(materialData);
 
-      const quizData = data4.map((quiz) => {
-        const id = quiz.SK.split("Quiz#")[1].substr(0, 1);
-        const date = new Date(quiz.QuizDueDate);
-        const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-        return { ...quiz, id, QuizDueDate: formattedDate };
-      });
-      setCourseQuiz(quizData);
+      // const quizData = data4.map((quiz) => {
+      //   const id = quiz.SK.split("Quiz#")[1].substr(0, 1);
+      //   const date = new Date(quiz.QuizDueDate);
+      //   const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+      //   return { ...quiz, id, QuizDueDate: formattedDate };
+      // });
+      // setCourseQuiz(quizData);
 
       const announcementsData = data5.map((announcement) => {
         console.log(announcement);
@@ -244,7 +333,7 @@ const TeacherCourse = (userInfo) => {
     if (option == "Class Materials") navigate(`/teacher/course/${course.id}/material`);
     if (option == "Quizzes") navigate(`/teacher/course/${course.id}/quiz`);
     if (option == "Homework") navigate(`/teacher/course/${course.id}/homework`);
-    if (option == "My Progress Report") navigate(`/teacher/course/${course.id}/report`);
+    if (option == "Class List") navigate(`/teacher/course/${course.id}/classList`);
   };
 
   return (
@@ -357,6 +446,7 @@ const TeacherCourse = (userInfo) => {
         <Grid item xs={12} md={9}>
           <Box>
             <Card sx={{ py: 3, px: 5, mt: 2, display: category == "announcement" ? "block" : category === undefined ? "block" : "none" }}>
+              {/* header */}
               <Grid container>
                 <Grid item xs={10} md={11}>
                   <Typography variant="h5">Class Announcements</Typography>
@@ -371,6 +461,7 @@ const TeacherCourse = (userInfo) => {
                   </Button>
                 </Grid>
               </Grid>
+              {/* end header */}
               {courseAnnouncements.map((announcement, key) => (
                 <Card key={key} variant="outlined" sx={{ boxShadow: "none", mt: 2, p: 2 }}>
                   <Grid container>
@@ -407,8 +498,9 @@ const TeacherCourse = (userInfo) => {
               ))}
             </Card>
             {/* course materials ========================================================================================================================*/}
-            <Box sx={{ display: category == "material" ? "block" : "none" }}>
+            <Box>
               <Card sx={{ py: 3, px: 5, mt: 2, display: category == "material" ? "block" : category === undefined ? "block" : "none" }}>
+                {/* header */}
                 <Grid container>
                   <Grid item xs={10} md={11}>
                     <Typography variant="h5">Class Materials</Typography>
@@ -422,6 +514,8 @@ const TeacherCourse = (userInfo) => {
                       +&nbsp;New
                     </Button>
                   </Grid>
+                  {/* end header */}
+
                   <Grid item xs={12} sx={{ mt: 3 }}>
                     <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
                   </Grid>
@@ -484,99 +578,89 @@ const TeacherCourse = (userInfo) => {
             </Box>
             {/* homework ==================================================================================================== */}
             <Box sx={{ display: category == "homework" ? "block" : "none" }}>
-              <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
-                <Grid item xs={3}>
-                  <Typography variant="subtitle2">HOMEWORK TITLE</Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
-                    DUE DATE
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
-                    SUBMISSIONS
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
-                    EVALUATION STATUS
-                  </Typography>
-                </Grid>
-              </Grid>
-              {courseHomework.map((homework, key) => (
-                <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={3}>
-                      <Typography variant="body1" sx={{ color: "primary.main" }}>
-                        <Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkName}</Link>
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
-                        {homework.HomeworkDueDate}
-                      </Typography>
-
-                      <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
-                        Due Date: {homework.HomeworkDueDate}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? "grey" : "" }}>
-                        {homework.NumAttempts}
-                      </Typography>
-
-                      <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? "grey" : "" }}>
-                        Submissions: {homework.NumAttempts}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
-                        <Link onClick={() => navigate(homework.id + "/feedback")}>{homework.Marked ? "Marked" : ""}</Link>
-                      </Typography>
-                      <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
-                        Evaluation Status: <Link onClick={() => navigate(homework.id + "/feedback")}>{homework.Marked ? "Marked" : ""}</Link>
-                      </Typography>
-                    </Grid>
+              <Card sx={{ py: 3, px: 5, mt: 2, display: category == "homework" ? "block" : category === undefined ? "block" : "none" }}>
+                {/* header */}
+                <Grid container>
+                  <Grid item xs={10} md={11}>
+                    <Typography variant="h5">Homework</Typography>
                   </Grid>
-                </Card>
-              ))}
-            </Box>
-            {/* report ==================================================================================================== */}
-            <Box sx={{ display: category == "report" ? "block" : "none" }}>
-              <Card sx={{ py: 3, px: 4, mt: 2 }}>
-                <Typography variant="subtitle1" sx={{ textAlign: "center" }}>
-                  Your Points
-                </Typography>
-                <Box sx={{ display: "flex", justifyContent: "center" }}>
-                  <EmojiEventsIcon fontSize="large" sx={{ color: "#FFB118" }} />
-                  <Typography variant="h4">203</Typography>
-                </Box>
-              </Card>
-              <Card sx={{ py: 3, px: 5, mt: 2 }}>
-                <Typography variant="h6" sx={{ textAlign: "center" }}>
-                  My Progress Report
-                </Typography>
-                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Typography variant="subtitle1" sx={{ textAlign: "center", ml: 2 }}>
-                    TITLE
-                  </Typography>
-                  <Typography variant="subtitle1" sx={{ textAlign: "center", mr: 2 }}>
-                    DATE AVAILABLE
-                  </Typography>
-                </Box>
-                {courseProgressReports.map((report, key) => (
-                  <Card key={key} variant="outlined" sx={{ py: 2, px: 2, mt: 2, boxShadow: "none" }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                      <Typography variant="subtitle1" color="primary.main">
-                        <Link onClick={() => navigate("" + report.id)}>{report.title}</Link>
-                      </Typography>
-                      <Typography variant="subttile1" color="lightgrey">
-                        {report.uploadDate}
-                      </Typography>
-                    </Box>
+                  <Grid item xs={2} md={1}>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        navigate("announcement/new", { state: { course: course, title: "", description: "" } });
+                      }}>
+                      +&nbsp;New
+                    </Button>
+                  </Grid>
+                </Grid>
+                {/* end header */}
+                <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
+                  <Grid item xs={4}>
+                    <Typography variant="subtitle2">HOMEWORK TITLE</Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
+                      DUE DATE
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
+                      ACTIONS
+                    </Typography>
+                  </Grid>
+                </Grid>
+                {courseHomework.map((homework, key) => (
+                  <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
+                    <Grid container>
+                      <Grid item xs={12} sm={4}>
+                        <Typography variant="body1" sx={{ color: "primary.main" }}>
+                          <Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkName}</Link>
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
+                          {homework.HomeworkDueDate}
+                        </Typography>
+
+                        <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
+                          Due Date: {homework.HomeworkDueDate}
+                        </Typography>
+                      </Grid>
+
+                      <Grid item xs={12} sm={4}>
+                        <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2} sx={{ justifyContent: "center", alignItems: "center" }}>
+                          <Typography
+                            variant="button"
+                            // onClick={() => {
+                          >
+                            <Link underline="hover">Edit</Link>
+                          </Typography>
+                          <Typography
+                            variant="button"
+                            // onclick={() => {
+                          >
+                            <Link underline="hover">Delete</Link>
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    </Grid>
                   </Card>
                 ))}
+              </Card>
+            </Box>
+            {/* class list ==================================================================================================== */}
+            <Box sx={{ display: category == "classList" ? "block" : "none" }}>
+              <Card sx={{ py: 3, px: 4, mt: 2 }}>
+                {/* mui table*/}
+                <Grid container>
+                  <Grid item xs={10} md={11}>
+                    <Typography variant="h5">Class List</Typography>
+                  </Grid>
+                </Grid>
+                {/* end header */}
+
+                <MaterialReactTable columns={classListColumns} data={classListDummyData} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
               </Card>
             </Box>
           </Box>

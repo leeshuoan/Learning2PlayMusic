@@ -19,13 +19,19 @@ def lambda_handler(event, context):
         course_id = request_body['courseId']
         quiz_title = request_body['quizTitle']
         quiz_max_attempts = request_body['quizMaxAttempts']
+        quiz_description = request_body['quizDescription']
+        visibility = request_body['visibility']
         quiz_id = random_uuid
 
         item = {
             "PK": f"Course#{course_id}",
             "SK": f"Quiz#{quiz_id}",
             "QuizTitle": quiz_title,
-            "QuizMaxAttempts": quiz_max_attempts
+            "QuizMaxAttempts": quiz_max_attempts,
+            "QuizDescription": quiz_description,
+            "NumberOfStudentsAttempted": 0,
+            "AverageScore": 0,
+            "Visibility": visibility 
         }
 
         table.put_item(Item = item)
