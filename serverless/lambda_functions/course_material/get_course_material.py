@@ -25,7 +25,8 @@ def lambda_handler(event, context):
                     "SK": f"Material#{materialId}"
                 })
             items = response["Item"]
-            get_presigned_url(items, "MaterialAttachment")
+            if items["MaterialAttachment"] != "":
+                get_presigned_url(items, "MaterialAttachment")
         else:
             response = table.query(
                 KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
@@ -35,7 +36,8 @@ def lambda_handler(event, context):
                 })
             items = response["Items"]
             for item in items:
-                get_presigned_url(item, "MaterialAttachment")
+                if item["MaterialAttachment"] != "":
+                    get_presigned_url(item, "MaterialAttachment")
 
         return response_200_items(items)
 
