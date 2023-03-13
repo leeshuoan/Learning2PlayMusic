@@ -1,19 +1,24 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useTheme, Typography, Container, Card, Box, Divider, Link, Button, Breadcrumbs, Backdrop, IconButton, CircularProgress } from "@mui/material";
+import { useTheme, Typography, Container, Card, Box, FormControl, Link, InputLabel, Breadcrumbs, Backdrop, Select, MenuItem, CircularProgress } from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 import MaterialReactTable from "material-react-table";
 
-const TeacherHomeworkOverview = () => {
+const StudentProgressReport = () => {
+  const progressReports = [
+    "Student Progress Report Jan to Jun 2023",
+    "Student Progress Report Jul to Dec 2023"
+  ]
+
   const theme = useTheme();
   const navigate = useNavigate();
   const { courseid } = useParams();
-  const { homeworkId } = useParams();
+  const { userId } = useParams();
+  const { reportId } = useParams();
   const [course, setCourse] = useState({});
-  const [homework, setHomework] = useState({});
-  const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selected, setSelected] = useState(progressReports[0]);
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
@@ -26,11 +31,10 @@ const TeacherHomeworkOverview = () => {
   }
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
-  const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&homeworkId=${homeworkId}`);
 
   useEffect(() => {
     async function fetchData() {
-      const [data1, data2] = await Promise.all([getCourseAPI, getHomeworkAPI]);
+      const [data1] = await Promise.all([getCourseAPI]);
 
       let courseData = {
         id: data1[0].SK.split("#")[1],
@@ -39,18 +43,6 @@ const TeacherHomeworkOverview = () => {
         teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
-
-      let formattedDueDate = new Date(data2.HomeworkDueDate).toLocaleDateString() + " " + new Date(data2.HomeworkDueDate).toLocaleTimeString();
-      let formattedAssignedDate = new Date(data2.HomeworkAssignedDate).toLocaleDateString() + " " + new Date(data2.HomeworkAssignedDate).toLocaleTimeString();
-
-      let homeworkData = {
-        id: data2.SK.split("#")[1],
-        name: data2.HomeworkName,
-        description: data2.HomeworkDescription,
-        dueDate: formattedDueDate,
-        assignedDate: formattedAssignedDate
-      };
-      setHomework(homeworkData);
     }
 
     fetchData().then(() => {
@@ -84,6 +76,10 @@ const TeacherHomeworkOverview = () => {
     [course]
   );
 
+  const handleChange = (event) => {
+    setSelected(event.target.value);
+  }
+
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
@@ -109,7 +105,7 @@ const TeacherHomeworkOverview = () => {
             }}>
             {course.name}
           </Link>
-          <Typography color="text.primary">{homework.name}</Typography>
+          <Typography color="text.primary">Progress Report</Typography>
         </Breadcrumbs>
 
         <Card
@@ -139,32 +135,28 @@ const TeacherHomeworkOverview = () => {
         <Box>
           <Card sx={{ py: 3, px: 5, mt: 2 }}>
             <Typography variant="h6" sx={{ mb: 1 }}>
-              {homework.name} - Overview
+              Progress Report
             </Typography>
-            <Typography variant="body2">
-              {homework.description}
+            <Typography variant="subsubtitle" sx={{ mb: 0.5 }}>
+              STUDENT NAME
             </Typography>
-            <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-start" }}>
-              <Box>
-                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                  ASSIGNED DATE
-                </Typography>
-                <Typography variant="body2">{homework.assignedDate}</Typography>
-              </Box>
-              <Box sx={{ ml: 4 }}>
-                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                  DUE DATE
-                </Typography>
-                <Typography variant="body2">{homework.dueDate}</Typography>
-              </Box>
-            </Box>
-            <Typography variant="subtitle2" sx={{ mt: 2, mb: 0.5 }}>
-              NUMBER OF SUBMISSIONS
-            </Typography>
-            <Typography variant="body2">0/1000 (0%)</Typography>
-            <Divider sx={{ my: 3 }}></Divider>
-
-            <MaterialReactTable columns={columns} data={data} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
+            <Typography variant="body2">TOM</Typography>
+            <FormControl sx={{ mt: 3, mb: 3 }}>
+              <InputLabel id="progress-report">Progress Report</InputLabel>
+              <Select
+                labelId="progress-report"
+                id="progress-report"
+                value={selected}
+                label="progress-report"
+                onChange={handleChange}
+              >
+                {progressReports.map((report) => {
+                  return (
+                    <MenuItem value={report}>{report}</MenuItem>
+                  )
+                })}
+              </Select>
+            </FormControl>
           </Card>
         </Box>
 
@@ -180,4 +172,4 @@ const TeacherHomeworkOverview = () => {
   );
 };
 
-export default TeacherHomeworkOverview;
+export default StudentProgressReport;
