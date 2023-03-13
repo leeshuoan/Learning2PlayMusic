@@ -1,9 +1,14 @@
 import sys
 import boto3
 import json
+import os
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
+
+
+s3 = boto3.client('s3')
+bucket_name = os.environ['MATERIAL_ATTACHMENT_BUCKET_NAME']
 
 def lambda_handler(event, context):
 
@@ -27,8 +32,14 @@ def lambda_handler(event, context):
             Key= {
                 "PK": f"Course#{course_id}",
                 "SK": f"Material#{material_id}"
-            }
+            },
+            ReturnValues="ALL_OLD"
             )
+        
+        deleted_item = response.get('Attributes', {})
+        material_attachment = deleted_item.get('MaterialAttachment', '')
+        if material_attachment:
+            s3.delete_object(Bucket=bucket_name, Key=material_attachment)
 
         return response_200_msg("successfully deleted item")
 
