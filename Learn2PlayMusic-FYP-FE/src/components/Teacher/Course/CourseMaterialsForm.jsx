@@ -101,6 +101,7 @@ export default function CourseMaterialsForm() {
       materialId: materialid,
     });
     // api calls
+    console.log(body);
     if (type == "new") {
       fetch(`${import.meta.env.VITE_API_URL}/course/material`, {
         method: "POST",
