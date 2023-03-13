@@ -366,7 +366,7 @@ class CourseStack(Stack):
                     "options": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY),
                     "answer": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
-                required=["courseId", "quizId", "materialType", "question", "options","answer"]))
+                required=["courseId", "quizId", "question", "options","answer"]))
 
         delete_course_quiz_question_model = main_api.add_model(
             "DeleteCourseQuizQuestionModel",
