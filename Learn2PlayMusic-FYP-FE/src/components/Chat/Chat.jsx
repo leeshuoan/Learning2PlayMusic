@@ -11,7 +11,6 @@ import useAppBarHeight from "../utils/AppBarHeight";
 const drawerWidth = 240;
 
 function Chat(userInfo) {
-  console.log(userInfo)
   let contacts = [
     {
       id: "Chat#1",
@@ -88,9 +87,7 @@ function Chat(userInfo) {
     // if (invalidMessage(newMsg)) {
     //   return; //show some message?
     // }
-    var chatMsg = newMsg
-      .replace(/[6|8|9]\d{7}|\+65[6|8|9]\d{7}|\+65\s[6|8|9]\d{7}/g, "*********")
-      .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/, "*********");
+    var chatMsg = newMsg.replace(/[6|8|9]\d{7}|\+65[6|8|9]\d{7}|\+65\s[6|8|9]\d{7}/g, "*********").replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/, "*********");
     console.log(chatMsg);
     await addDoc(messagesRef, {
       text: chatMsg,
@@ -103,28 +100,16 @@ function Chat(userInfo) {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: drawerWidth,
-          flexShrink: 1,
-          [`& .MuiDrawer-paper`]: {
-            width: drawerWidth,
-            boxSizing: "border-box",
-          },
-        }}>
+      <Drawer variant="permanent" sx={{ width: drawerWidth, flexShrink: 1, [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" } }}>
         <Toolbar />
         <Box sx={{ overflow: "auto" }}>
-          <Breadcrumbs
-            aria-label="breadcrumb"
-            separator={<NavigateNextIcon fontSize="small" />}
-            sx={{ ml: 1, mt: 2 }}>
+          <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ ml: 1, mt: 2 }}>
             <Link
               underline="hover"
               color="inherit"
               sx={{ display: "flex", alignItems: "center" }}
               onClick={() => {
-                navigate("/home");
+                userInfo.userInfo.role == "Teacher" ? navigate("/teacher") : navigate("/home");
               }}>
               <HomeIcon sx={{ mr: 0.5 }} />
               Home
@@ -146,13 +131,7 @@ function Chat(userInfo) {
           </List>
         </Box>
       </Drawer>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          pb: 10,
-        }}>
+      <Box component="main" sx={{ flexGrow: 1, width: { sm: `calc(100% - ${drawerWidth}px)` }, pb: 10 }}>
         <Box
           sx={{
             p: 3,
@@ -163,39 +142,14 @@ function Chat(userInfo) {
             overflow: "hidden",
             overflowY: "scroll",
           }}>
-          <Typography variant="h6" sx={{ textAlign: "center" }}>{selectedChat.name}</Typography>
-          {messages &&
-            messages.map((msg) => (
-              <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />
-            ))}
+          <Typography variant="h6" sx={{ textAlign: "center" }}>
+            {selectedChat.name}
+          </Typography>
+          {messages && messages.map((msg) => <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />)}
           <div ref={messagesEndRef} />
-          <Box
-            sx={{
-              display: "flex",
-              position: "fixed",
-              bottom: 0,
-              width: { sm: `calc(100% - ${drawerWidth + 40}px)` },
-              p: 3,
-              pl: 0
-            }}>
-            <Card
-              variant="contained"
-              sx={{
-                flexGrow: 1,
-                display: "flex",
-                alignItems: "center",
-                p: 1,
-                mr: 3,
-                border: "black",
-              }}>
-              <InputBase
-                sx={{ width: "100%" }}
-                className="inputBase"
-                placeholder="Type your message"
-                value={newMsg}
-                onChange={(e) => setNewMsg(e.target.value)}
-                onKeyDown={handleKeyPress}
-              />
+          <Box sx={{ display: "flex", position: "fixed", bottom: 0, width: { sm: `calc(100% - ${drawerWidth + 40}px)` }, p: 3, pl: 0 }}>
+            <Card variant="contained" sx={{ flexGrow: 1, display: "flex", alignItems: "center", p: 1, mr: 3, border: "black" }}>
+              <InputBase sx={{ width: "100%" }} className="inputBase" placeholder="Type your message" value={newMsg} onChange={(e) => setNewMsg(e.target.value)} onKeyDown={handleKeyPress} />
             </Card>
             <Button
               variant="contained"
