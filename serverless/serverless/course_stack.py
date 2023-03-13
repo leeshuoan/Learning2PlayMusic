@@ -156,12 +156,9 @@ class CourseStack(Stack):
         delete_course_quiz_question = _lambda.Function(self, "deleteCourseQuizQuestion", runtime=_lambda.Runtime.NODEJS_16_X,
                                                        handler=f"delete_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=S3_DYNAMODB_ROLE)
         # /course/report Functions
-        get_course_report = _lambda.Function(self, "getCourseReport", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                     handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.get_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE,
-                                                     )
-        post_course_report = _lambda.Function(self, "postCourseReport", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                     handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.post_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE,
-                                                     )
+        get_course_report = _lambda.Function(self, "getCourseReport", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.get_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE)
+        post_course_report = _lambda.Function(self, "postCourseReport", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.post_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE)
+
         # Create Amazon API Gateway REST API
         main_api = apigw.RestApi(self, "main", description="All LMS APIs")
         self.main_api = main_api
@@ -493,7 +490,6 @@ class CourseStack(Stack):
             'application/json': put_course_announcement_model})
         
         # /course/report
-        # Define a JSON Schema to accept Request Body in JSON format for POST Method
         post_course_report_model = main_api.add_model(
             "PostCourseReportModel",
             content_type="application/json",
@@ -507,25 +503,28 @@ class CourseStack(Stack):
                     "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "additionalComments": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "goalsForNewTerm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "evaluationList": {
-                        "attendance": {"type:": "string"},
-                        "dynamics control": {"type:": "string"},
-                        "punctuality": {"type:": "string"},
-                        "tone quality": {"type:": "string"},
-                        "theory": {"type:": "string"},
-                        "enthusiasm in music learning": {"type:": "string"},
-                        "rhythm": {"type:": "string"},
-                        "scales & arpeggios": {"type:": "string"},
-                        "posture": {"type:": "string"},
-                        "articulation": {"type:": "string"},
-                        "musicality & artistry": {"type:": "string"},
-                        "sight-reading": {"type:": "string"},
-                        "practice and lesson participation": {"type:": "string"},
-                        "aural skills": {"type:": "string"},
-                        "performing": {"type:": "string"}
-                    }
+                    "evaluationList": apigw.JsonSchema(
+                        type=apigw.JsonSchemaType.OBJECT,
+                        properties = {
+                          "attendance": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "dynamicsControl": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "punctuality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "toneQuality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "theory": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "enthusiasmInMusicLearning": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "rhythm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "scalesAndArpeggios": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "posture": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "articulation": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "musicalityAndArtistry": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "sightReading": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "practiceAndLessonParticipation": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Poor | Weak | Satisfactory | Good | Excellent | N.A']),
+                          "auralSkills": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "performing": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good'])
+                        }
+                      )
                 },
-                required=["content"]))
+                required=["courseId", "studentId", "evaluationList"]))
 
         course_report_resource.add_method("GET", apigw.LambdaIntegration(get_course_report), request_parameters={
             'method.request.querystring.courseId': True,
