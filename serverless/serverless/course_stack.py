@@ -76,7 +76,9 @@ class CourseStack(Stack):
         S3_DYNAMODB_ROLE.add_to_policy(dynamodb_policy)
 
         s3_policy = aws_iam.PolicyStatement(effect = aws_iam.Effect.ALLOW,
-          resources = [f'{L2PMA_question_image_bucket.bucket_arn}/*', f'{L2PMA_homework_submission_bucket.bucket_arn}/*', f'{L2PMA_material_attachment_bucket.bucket_arn}/*'],
+          resources = [f'{L2PMA_question_image_bucket.bucket_arn}/*',
+                        f'{L2PMA_homework_submission_bucket.bucket_arn}/*',
+                        f'{L2PMA_material_attachment_bucket.bucket_arn}/*'],
           actions = ['s3:GetObject', 's3:PutObject'])
         S3_DYNAMODB_ROLE.add_to_policy(s3_policy)
 
@@ -119,7 +121,8 @@ class CourseStack(Stack):
         post_course_material = _lambda.Function(self, "post_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.post_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE,
                                                 environment={"MATERIAL_ATTACHMENT_BUCKET_NAME": L2PMA_material_attachment_bucket.bucket_name})
         delete_course_material = _lambda.Function(self, "delete_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.delete_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        put_course_material = _lambda.Function(self, "put_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.put_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        put_course_material = _lambda.Function(self, "put_course_material", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_MATERIAL_FUNCTIONS_FOLDER}.put_course_material.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE,
+                                               environment={"MATERIAL_ATTACHMENT_BUCKET_NAME": L2PMA_material_attachment_bucket.bucket_name})
 
         # /course/classlist
         get_course_classlist = _lambda.Function(self, "get_course_classlist", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_CLASSLIST_FUNCTIONS_FOLDER}.get_course_classlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)

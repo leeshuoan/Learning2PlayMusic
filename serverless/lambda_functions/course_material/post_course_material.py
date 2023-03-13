@@ -40,7 +40,7 @@ def lambda_handler(event, context):
         
         material_attachment = ""
         if request_body['materialAttachment'] != "":
-            base64data = json.loads(event['body'])['materialAttachment']
+            base64data = request_body['materialAttachment']
             material_attachment= handle_attachment(base64data, course_id, material_id, material_title)
 
         item = {
