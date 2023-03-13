@@ -241,7 +241,6 @@ class CourseStack(Stack):
                     "materialType": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "materialLessonDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "materialLink": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "materialS3Link": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
                 required=["courseId", "materialTitle", "materialType", "materialLessonDate"]))
 

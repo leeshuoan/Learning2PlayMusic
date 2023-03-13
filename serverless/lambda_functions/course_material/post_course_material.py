@@ -19,33 +19,38 @@ def lambda_handler(event, context):
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
-        short_uuid = str(uuid.uuid4().hex)[:8]
+        material_id = str(uuid.uuid4().hex)[:8]
+
+        request_body = json.loads(event('body'))
+        course_id = request_body['courseId']
+        material_title = request_body['materialTitle']
+        material_lesson_date = request_body['materialLessonDate']
+        material_link = request_body['materialLink']
+        material_type = request_body['materialType']
 
         # VALIDATION
         # checks that courseId passed in is not an empty string
-        if json.loads(event['body'])['courseId']=="":
+        if course_id=="":
             return response_400("courseId is missing")
 
         # check if <courseId> exists in database
-        course_id = json.loads(event['body'])['courseId']
 
         if not id_exists("Course", "Course", course_id):
             return response_404("courseId does not exist in database")
         
-        material_title = json.loads(event['body'])['materialTitle']
         material_attachment = ""
-        if json.loads(event['body'])['materialAttachment'] != "":
+        if request_body['materialAttachment'] != "":
             base64data = json.loads(event['body'])['materialAttachment']
-            material_attachment= handle_attachment(base64data, course_id, short_uuid, material_title)
+            material_attachment= handle_attachment(base64data, course_id, material_id, material_title)
 
         item = {
-                "PK": f"Course#{json.loads(event['body'])['courseId']}",
-                "SK": f"Material#{short_uuid}",
-                "MaterialLessonDate": json.loads(event['body'])['materialLessonDate'],
-                "MaterialLink": json.loads(event['body'])['materialLink'],
+                "PK": f"Course#{course_id}",
+                "SK": f"Material#{material_id}",
+                "MaterialLessonDate": material_lesson_date,
+                "MaterialLink": material_link,
                 "MaterialAttachment": material_attachment,
                 "MaterialTitle": material_title,
-                "MaterialType": json.loads(event['body'])['materialType']
+                "MaterialType": material_type
 
             }
 
