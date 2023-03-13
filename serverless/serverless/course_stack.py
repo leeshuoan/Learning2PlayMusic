@@ -76,7 +76,7 @@ class CourseStack(Stack):
         S3_DYNAMODB_ROLE.add_to_policy(dynamodb_policy)
 
         s3_policy = aws_iam.PolicyStatement(effect = aws_iam.Effect.ALLOW,
-          resources = [f'{L2PMA_question_image_bucket.bucket_arn}/*', f'{L2PMA_homework_submission_bucket.bucket_arn}/*', f'{L2PMA_material_attachment_bucket_policy_statement}/*'],
+          resources = [f'{L2PMA_question_image_bucket.bucket_arn}/*', f'{L2PMA_homework_submission_bucket.bucket_arn}/*', f'{L2PMA_material_attachment_bucket.bucket_arn}/*'],
           actions = ['s3:GetObject', 's3:PutObject'])
         S3_DYNAMODB_ROLE.add_to_policy(s3_policy)
 
