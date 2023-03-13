@@ -2,6 +2,7 @@ import sys
 import boto3
 import json
 
+from global_functions.get_presigned_url import *
 from global_functions.responses import *
 from global_functions.exists_in_db import *
 
@@ -10,33 +11,31 @@ def lambda_handler(event, context):
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
+        queryStringParameters: dict = event["queryStringParameters"]
+
 
         courseId = event['queryStringParameters']['courseId']
 
-        # VALIDATION
-        # check if <courseId> exists in database
-        if not id_exists("Course", "Course", courseId):
-            return response_404("courseId does not exist in database")
-
-
-        if 'materialId' not in event['queryStringParameters']:
-            sortKey = "Material#"
+        # if specific materialId is specified
+        if "materialId" in queryStringParameters.keys():
+            materialId = queryStringParameters["materialId"]
+            response = table.get_item(
+                Key={
+                    "PK": f"Course#{courseId}",
+                    "SK": f"Material#{materialId}"
+                })
+            items = response["Item"]
+            get_presigned_url(items, "MaterialAttachment")
         else:
-            materialId = event['queryStringParameters']['materialId']
-            sortKey = "Material#" + materialId
-
-            # check if <courseId><materialId> exists in database
-            if not combination_id_exists("Course", courseId, "Material", materialId):
-                return response_404("materialId does not exist in database")
-
-        response = table.query(
-            KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
-            ExpressionAttributeValues={
-                ":PK": f"Course#{courseId}",
-                ":SK": sortKey
-            })
-
-        items = response["Items"]
+            response = table.query(
+                KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+                ExpressionAttributeValues={
+                    ":PK": f"Course#{courseId}",
+                    ":SK": f"Material#"
+                })
+            items = response["Items"]
+            for item in items:
+                get_presigned_url(item, "MaterialAttachment")
 
         return response_200_items(items)
 
