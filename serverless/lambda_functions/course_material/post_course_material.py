@@ -21,7 +21,7 @@ def lambda_handler(event, context):
         table = dynamodb.Table("LMS")
         material_id = str(uuid.uuid4().hex)[:8]
 
-        request_body = json.loads(event('body'))
+        request_body: dict = json.loads(event['body'])
         course_id = request_body['courseId']
         material_title = request_body['materialTitle']
         material_lesson_date = request_body['materialLessonDate']
