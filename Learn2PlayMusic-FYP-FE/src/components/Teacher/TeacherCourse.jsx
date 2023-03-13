@@ -4,6 +4,7 @@ import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionS
 import MaterialReactTable from "material-react-table";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
@@ -18,8 +19,11 @@ const TeacherCourse = (userInfo) => {
   const [courseMaterial, setCourseMaterial] = useState([]);
   const [courseQuiz, setCourseQuiz] = useState([]);
   const [courseAnnouncements, setCourseAnnouncements] = useState([]);
+  // for deletion modal
   const [deleteAnnouncementModal, setDeleteAnnouncementModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+  const [deleteMaterialModal, setDeleteMaterialModal] = useState(false);
+  const [selectedMaterial, setSelectedMaterial] = useState(null);
 
   // dummy data
   const courseProgressReports = [
@@ -75,7 +79,7 @@ const TeacherCourse = (userInfo) => {
   const getCourseAnnouncementsAPI = request(`/course/announcement?courseId=${courseid}`);
   const getMaterialAPI = request(`/course/material?courseId=${courseid}`);
   const getHomeworkAPI = request(`/course/homework?courseId=${courseid}`);
-  const getQuizAPI = request(`/course/quiz?courseId=${courseid}/studentId=${userInfo.userInfo.id}`);
+  const getQuizAPI = request(`/course/quiz?courseId=${courseid}`);
   const getClassListAPI = request(`/course/classlist?courseId=${courseid}`);
   // material table configs
   const courseMaterialsColumns = useMemo(
@@ -111,7 +115,12 @@ const TeacherCourse = (userInfo) => {
               }}>
               <Link underline="hover">Edit</Link>
             </Typography>
-            <Typography variant="button" onClick={request}>
+            <Typography
+              variant="button"
+              onClick={() => {
+                setSelectedMaterial(row.original.id);
+                setDeleteMaterialModal(true);
+              }}>
               <Link underline="hover">Delete</Link>
             </Typography>
           </Stack>
@@ -194,6 +203,23 @@ const TeacherCourse = (userInfo) => {
       });
     return;
   }
+  async function deleteMaterial() {
+    console.log(selectedMaterial);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/course/announcement?courseId=${courseid}&materialId=${selectedMaterial}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log(response);
+    // reset
+    setSelectedMaterial(null);
+    setDeleteMaterialModal(false);
+    toast.success("Material deleted successfully");
+    // window.location.reload(false);
+    return;
+  }
+
   // [
   //   {
   //     HomeworkDescription: "This is your first homework for this course",
@@ -296,13 +322,14 @@ const TeacherCourse = (userInfo) => {
       setCourseMaterial(materialData);
       console.log(materialData);
 
-      // const quizData = data4.map((quiz) => {
-      //   const id = quiz.SK.split("Quiz#")[1].substr(0, 1);
-      //   const date = new Date(quiz.QuizDueDate);
-      //   const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-      //   return { ...quiz, id, QuizDueDate: formattedDate };
-      // });
-      // setCourseQuiz(quizData);
+      const quizData = data4.map((quiz) => {
+        const id = quiz.SK.split("Quiz#")[1].substr(0, 1);
+        const date = new Date(quiz.QuizDueDate);
+        const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        return { ...quiz, id, QuizDueDate: formattedDate };
+      });
+      setCourseQuiz(quizData);
+      console.log(quizData);
 
       const announcementsData = data5.map((announcement) => {
         console.log(announcement);
@@ -355,6 +382,35 @@ const TeacherCourse = (userInfo) => {
             Cancel
           </Button>
           <Button fullWidth variant="contained" color="error" onClick={deleteAnnouncement}>
+            Delete
+          </Button>
+        </Box>
+      </TransitionModal>
+      {/* Delete material modal ========================================================================================================================*/}
+      <TransitionModal
+        open={deleteMaterialModal}
+        handleClose={() => {
+          setDeleteMaterialModal(false);
+        }}>
+        <Box sx={{ p: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Delete Material
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Are you sure you want to delete this material?
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mx: 2 }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mr: 1, color: "primary.main" }}
+            onClick={() => {
+              setDeleteMaterialModal(false);
+            }}>
+            Cancel
+          </Button>
+          <Button fullWidth variant="contained" color="error" onClick={deleteMaterial}>
             Delete
           </Button>
         </Box>
@@ -512,58 +568,61 @@ const TeacherCourse = (userInfo) => {
               </Card>
             </Box>
             {/* quiz ==================================================================================================== */}
-
             <Box sx={{ display: category == "quiz" ? "block" : "none" }}>
-              {courseQuiz.map((quiz, key) => (
-                <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
-                  <Typography variant="h6" sx={{ mb: 1 }}>
-                    {quiz.QuizTitle}
-                  </Typography>
-                  <Grid container spacing={2} sx={{ alignItems: "center" }}>
-                    <Grid item xs={12} sm={6}>
-                      <Button
-                        variant="contained"
-                        disabled={quiz.QuizAttempt >= quiz.QuizMaxAttempt}
-                        onClick={() => {
-                          navigate(`${quiz.id}`);
-                        }}>
-                        <PlayCircleFilledIcon sx={{ mr: 1 }} />
-                        Start Quiz
-                      </Button>
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                      {" "}
-                      <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: "primary.main" }}>
-                        Score
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          textAlign: "center",
-                          display: { xs: "none", sm: "block" },
-                        }}>
-                        {quiz.QuizScore * 100}%
-                      </Typography>
-                      <Typography variant="body1" sx={{ display: { xs: "flex", sm: "none" } }}>
-                        <span sx={{ color: "primary.main", mr: 0.5 }}>Score:</span>
-                        {quiz.QuizScore * 100}%
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={3}>
-                      <Typography variant="body1" sx={{ textAlign: "center", color: "primary.main", display: { xs: "none", sm: "block" } }}>
-                        Attempts
-                      </Typography>
-                      <Typography variant="body1" sx={{ textAlign: "center", color: quiz.attempts == 0 ? "grey" : "", display: { xs: "none", sm: "block" } }}>
-                        {quiz.QuizAttempt}/{quiz.QuizMaxAttempt}
-                      </Typography>
-                      <Typography variant="body1" sx={{ color: quiz.attempts == 0 ? "grey" : "", display: { xs: "flex", sm: "none" } }}>
-                        <span sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</span>
-                        {quiz.QuizAttempt}/{quiz.QuizMaxAttempt}
-                      </Typography>
-                    </Grid>
+              <Card sx={{ py: 3, px: 5, mt: 2, display: category == "quiz" ? "block" : category === undefined ? "none" : "none" }}>
+                {/* header */}
+                <Grid container>
+                  <Grid item xs={10} md={11}>
+                    <Typography variant="h5">Quizzes</Typography>
                   </Grid>
-                </Card>
-              ))}
+                  <Grid item xs={2} md={1}>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        navigate("new", { state: { material: {}, course: course } });
+                      }}>
+                      +&nbsp;New
+                    </Button>
+                  </Grid>
+                </Grid>
+                {/* end header */}
+                {courseQuiz.map((quiz, key) => (
+                  <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={9}>
+                        <Typography variant="h6" sx={{ mb: 1 }}>
+                          {quiz.QuizTitle}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={3}>
+                        <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
+                          {/*  todo visibile, edit, delete */}
+                          <Typography variant="button">
+                            <Link underline="hover">
+                              <VisibilityIcon fontSize="inherit" /> &nbsp; Showing
+                            </Link>
+                          </Typography>
+                          <Typography variant="button">
+                            <Link underline="hover">Edit</Link>
+                          </Typography>
+                          <Typography variant="button">
+                            <Link underline="hover">Delete</Link>
+                          </Typography>
+                        </Stack>
+                      </Grid>
+                    </Grid>
+                    <Grid container spacing={2} sx={{ alignItems: "center" }}>
+                      <Grid item xs={12} sm={12}>
+                        <Typography variant="body1" sx={{mt:2}}>{quiz.QuizDescription}</Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={12}>
+                      {/* todo :view quiz summary */}
+                        <Button variant="contained">View Quiz Summary</Button>
+                      </Grid>
+                    </Grid>
+                  </Card>
+                ))}
+              </Card>
             </Box>
             {/* homework ==================================================================================================== */}
             <Box sx={{ display: category == "homework" ? "block" : "none" }}>
