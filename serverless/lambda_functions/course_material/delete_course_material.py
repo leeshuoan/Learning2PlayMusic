@@ -10,22 +10,23 @@ def lambda_handler(event, context):
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
+        request_body: dict = json.loads(event['body'])
 
         # VALIDATION
         # check if <courseId> exists in database
-        courseId = event['queryStringParameters']['courseId']
-        if not id_exists("Course", "Course", courseId):
+        course_id = request_body['courseId']
+        if not id_exists("Course", "Course", course_id):
             return response_404("courseId does not exist in database")
 
         # check if <materialId> exists in database
-        materialId = event['queryStringParameters']['materialId']
-        if not combination_id_exists("Course", courseId, "Material", materialId):
+        material_id = request_body['materialId']
+        if not combination_id_exists("Course", course_id, "Material", material_id):
             return response_404("materialId does not exist in database")
 
         response = table.delete_item(
             Key= {
-                "PK": f"Course#{event['queryStringParameters']['courseId']}",
-                "SK": f"Material#{event['queryStringParameters']['materialId']}"
+                "PK": f"Course#{course_id}",
+                "SK": f"Material#{material_id}"
             }
             )
 
