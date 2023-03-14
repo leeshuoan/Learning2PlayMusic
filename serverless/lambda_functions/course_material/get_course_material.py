@@ -25,7 +25,7 @@ def lambda_handler(event, context):
                     "SK": f"Material#{materialId}"
                 })
             items = response["Item"]
-            if items["MaterialAttachment"] != "":
+            if  "MaterialAttachment" in items and items["MaterialAttachment"] != "":
                 get_presigned_url(items, "MaterialAttachment")
         else:
             response = table.query(
