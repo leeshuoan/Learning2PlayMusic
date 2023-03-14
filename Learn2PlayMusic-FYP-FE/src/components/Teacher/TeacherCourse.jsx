@@ -169,11 +169,19 @@ const TeacherCourse = (userInfo) => {
   // announcement delete announcement
   async function deleteAnnouncement() {
     console.log(selectedAnnouncement);
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/course/announcement?courseId=${courseid}&announcementId=${selectedAnnouncement}`, {
+    var ok = false;
+    fetch(`${import.meta.env.VITE_API_URL}/course/announcement?courseId=${courseid}&announcementId=${selectedAnnouncement}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
+    }).then((response) => {
+      if (response.status === 200) {
+        ok = true;
+      } else {
+        toast.error("An unexpected error occured");
+        return;
+      }
     });
     // reset
     setSelectedAnnouncement(null);
@@ -194,29 +202,45 @@ const TeacherCourse = (userInfo) => {
           return { ...announcement, id, Date: formattedDate };
         });
         setCourseAnnouncements(refreshedAnnouncement);
-        // alert
-        if (response.status === 200) {
-          toast.success("Announcement deleted successfully");
-        } else {
-          toast.error("An unexpected error occured");
-        }
+        toast.success("Announcement deleted successfully");
       });
     return;
   }
   async function deleteMaterial() {
-    console.log(selectedMaterial);
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/course/announcement?courseId=${courseid}&materialId=${selectedMaterial}`, {
+    let ok = false;
+    fetch(`${import.meta.env.VITE_API_URL}/course/announcement?courseId=${courseid}&materialId=${selectedMaterial}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
+    }).then((response) => {
+      if (response.status === 200) {
+        ok = true;
+      } else {
+        toast.error("An unexpected error occured");
+        return;
+      }
     });
-    console.log(response);
     // reset
     setSelectedMaterial(null);
     setDeleteMaterialModal(false);
-    toast.success("Material deleted successfully");
-    // window.location.reload(false);
+    fetch(`${import.meta.env.VITE_API_URL}/material?courseId=${courseid}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        const materialData = res.map((material) => {
+          const id = material.SK.split("Material#")[1];
+          const date = new Date(material.MaterialLessonDate);
+          const formattedDate = `${date.toLocaleDateString()}`;
+          return { ...material, id, MaterialLessonDate: formattedDate };
+        });
+        setCourseMaterial(materialData);
+        toast.success("Material deleted successfully");
+      });
     return;
   }
 
@@ -613,10 +637,12 @@ const TeacherCourse = (userInfo) => {
                     </Grid>
                     <Grid container spacing={2} sx={{ alignItems: "center" }}>
                       <Grid item xs={12} sm={12}>
-                        <Typography variant="body1" sx={{mt:2}}>{quiz.QuizDescription}</Typography>
+                        <Typography variant="body1" sx={{ mt: 2 }}>
+                          {quiz.QuizDescription}
+                        </Typography>
                       </Grid>
                       <Grid item xs={12} sm={12}>
-                      {/* todo :view quiz summary */}
+                        {/* todo :view quiz summary */}
                         <Button variant="contained">View Quiz Summary</Button>
                       </Grid>
                     </Grid>
