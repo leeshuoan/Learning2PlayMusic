@@ -1,7 +1,9 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useTheme, Typography, Container, Card, Box, FormControl, Link, InputLabel, Breadcrumbs, Backdrop, Select, MenuItem, CircularProgress, 
-              Divider, RadioGroup, FormControlLabel, Radio, FormLabel, TextField, Button } from "@mui/material";
+import {
+  useTheme, Typography, Container, Card, Box, FormControl, Link, InputLabel, Breadcrumbs, Backdrop, Select, MenuItem, CircularProgress,
+  Divider, RadioGroup, FormControlLabel, Radio, FormLabel, TextField, Button
+} from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 
@@ -206,9 +208,9 @@ const StudentProgressReport = () => {
               <InputLabel id="goals-for-the-new-term" sx={{ mt: 2 }}>Goals for the New Term</InputLabel>
               <TextField variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1, mb: 2 }} value={goals} onChange={handleGoalsChange} />
               <InputLabel id="additional-comments">Additional Comments</InputLabel>
-              <TextField variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1}} value={comments} onChange={handleCommentsChange} />
+              <TextField variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1 }} value={comments} onChange={handleCommentsChange} />
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <Button variant="contained" sx={{ mt: 2 }}>Submit</Button>
+                <Button variant="contained" sx={{ mt: 2 }}>Submit</Button>
               </Box>
             </Box>
           </Card>

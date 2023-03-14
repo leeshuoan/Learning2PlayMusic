@@ -130,7 +130,7 @@ const CourseHomeworkForm = () => {
               />
             </LocalizationProvider>
             <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
-              <Button variant="outlined" sx={{ color: "primary.main" }}>
+              <Button variant="outlined" sx={{ color: "primary.main" }} onClick={() => {navigate(`/teacher/course/${courseid}/homework`)}}>
                 Cancel
               </Button>
               <Button variant="contained" >
