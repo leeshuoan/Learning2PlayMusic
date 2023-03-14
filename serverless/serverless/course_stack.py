@@ -508,17 +508,17 @@ class CourseStack(Stack):
                         properties = {
                           "attendance": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
                           "dynamicsControl": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "punctuality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "punctuality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Excellent']),
                           "toneQuality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
                           "theory": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
                           "enthusiasmInMusicLearning": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "rhythm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
+                          "rhythm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['N.A']),
                           "scalesAndArpeggios": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
                           "posture": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
                           "articulation": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
                           "musicalityAndArtistry": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
                           "sightReading": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "practiceAndLessonParticipation": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Poor | Weak | Satisfactory | Good | Excellent | N.A']),
+                          "practiceAndLessonParticipation": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Satisfactory']),
                           "auralSkills": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
                           "performing": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good'])
                         }
