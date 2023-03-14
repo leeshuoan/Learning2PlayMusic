@@ -145,7 +145,7 @@ const EditHomeworkForm = () => {
                 Cancel
               </Button>
               <Button variant="contained" >
-                Create
+                Update
               </Button>
             </Box>
           </form>

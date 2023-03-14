@@ -377,6 +377,9 @@ const AdminUserManagement = () => {
         User Management
       </Typography>
       <MaterialReactTable
+        enableHiding={false} 
+        enableFullScreenToggle={false} 
+        enableDensityToggle={false}
         columns={columns}
         data={data}
         initialState={{ density: "compact" }}
