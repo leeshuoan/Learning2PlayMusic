@@ -156,21 +156,9 @@ class CourseStack(Stack):
         delete_course_quiz_question = _lambda.Function(self, "deleteCourseQuizQuestion", runtime=_lambda.Runtime.NODEJS_16_X,
                                                        handler=f"delete_course_quiz_question.lambda_handler", code=_lambda.Code.from_asset(f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"), role=S3_DYNAMODB_ROLE)
         # /course/report Functions
-<<<<<<< Updated upstream
         get_course_report = _lambda.Function(self, "getCourseReport", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.get_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE)
         post_course_report = _lambda.Function(self, "postCourseReport", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.post_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE)
-
-=======
-        get_course_report = _lambda.Function(self, "getCourseReport", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                     handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.get_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE,
-                                                     )
-        post_course_report = _lambda.Function(self, "postCourseReport", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                     handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.post_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE,
-                                                     )
-        delete_course_report = _lambda.Function(self, "deleteCourseReport", runtime=_lambda.Runtime.PYTHON_3_9,
-                                                     handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.delete_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE,
-                                                     )
->>>>>>> Stashed changes
+        delete_course_report = _lambda.Function(self, "deleteCourseReport", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.delete_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE)
         # Create Amazon API Gateway REST API
         main_api = apigw.RestApi(self, "main", description="All LMS APIs")
         self.main_api = main_api
