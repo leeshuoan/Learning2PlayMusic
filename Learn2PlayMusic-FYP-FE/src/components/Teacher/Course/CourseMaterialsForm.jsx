@@ -214,9 +214,10 @@ export default function CourseMaterialsForm() {
                   <IconButton onClick={handleRemoveFile}>
                     <ClearIcon />
                   </IconButton>
-                  <Link href={uploadedFileURL} _target="blank" download={file.name}>
+									{/* todo: link to download */}
+                  {/* <Link href={uploadedFileURL} _target="blank" download={file.name}> */}
                     {file.name}
-                  </Link>
+                  {/* </Link> */}
                 </Typography>
               </div>
             ) : (
