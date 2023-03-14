@@ -36,7 +36,7 @@ def lambda_handler(event, context):
                 })
             items = response["Items"]
             for item in items:
-                if item["MaterialAttachment"] != "":
+                if "MaterialAttachment" in item and item["MaterialAttachment"] != "":
                     get_presigned_url(item, "MaterialAttachment")
 
         return response_200_items(items)
