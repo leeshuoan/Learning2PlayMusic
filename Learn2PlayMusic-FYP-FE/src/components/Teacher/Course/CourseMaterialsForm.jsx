@@ -70,16 +70,15 @@ export default function CourseMaterialsForm() {
     }
     // processsing file
     if (file) {
-			console.log(file)
+      console.log(file);
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = (event) => {
         setClassMaterialAttachment(event.target.result);
-				console.log(URL.createObjectURL(b64toBlob(event.target.result)));
-        setUploadedFileURL(URL.createObjectURL(b64toBlob(event.target.result)));
+        // console.log(URL.createObjectURL(b64toBlob(event.target.result)));
+        // setUploadedFileURL(URL.createObjectURL(b64toBlob(event.target.result)));
       };
     }
-    console.log(classMaterialAttachment);
     let materialTypeStr = file ? file.type.split("/")[1].toUpperCase() : "Link";
     var postBody = JSON.stringify({
       courseId: courseid,
@@ -89,6 +88,7 @@ export default function CourseMaterialsForm() {
       materialType: materialTypeStr,
       materialAttachment: classMaterialAttachment,
     });
+    console.log(postBody);
     var putBody = JSON.stringify({
       courseId: courseid,
       materialTitle: userTitle,
@@ -214,9 +214,9 @@ export default function CourseMaterialsForm() {
                   <IconButton onClick={handleRemoveFile}>
                     <ClearIcon />
                   </IconButton>
-									{/* todo: link to download */}
+                  {/* todo: link to download */}
                   {/* <Link href={uploadedFileURL} _target="blank" download={file.name}> */}
-                    {file.name}
+                  {file.name}
                   {/* </Link> */}
                 </Typography>
               </div>
