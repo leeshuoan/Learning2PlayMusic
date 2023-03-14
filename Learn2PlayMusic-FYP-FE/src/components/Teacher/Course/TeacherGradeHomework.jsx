@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTheme, Typography, Container, Card, Box, Divider, Link, RadioGroup, Breadcrumbs, Backdrop, FormLabel, CircularProgress, FormControlLabel, Radio, InputLabel, TextField, Button } from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
-import MaterialReactTable from "material-react-table";
 
 const TeacherHomeworkOverview = () => {
   const theme = useTheme();

@@ -662,7 +662,7 @@ const TeacherCourse = (userInfo) => {
                     <Button
                       variant="contained"
                       onClick={() => {
-                        navigate(`new`, { state: { course: course, title: "", content: "" } });
+                        navigate(`new`);
                       }}>
                       +&nbsp;New
                     </Button>
@@ -706,7 +706,7 @@ const TeacherCourse = (userInfo) => {
                         <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2} sx={{ justifyContent: "center", alignItems: "center" }}>
                           <Typography
                             variant="button"
-                            // onClick={() => {
+                            onClick={() => {navigate(`${homework.id}/edit`)}}
                           >
                             <Link underline="hover">Edit</Link>
                           </Typography>

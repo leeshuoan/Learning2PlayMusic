@@ -9,7 +9,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-const CourseHomeworkForm = () => {
+const NewHomeworkForm = () => {
   const navigate = useNavigate();
   const { courseid } = useParams();
   const [course, setCourse] = useState({});
@@ -151,4 +151,4 @@ const CourseHomeworkForm = () => {
   )
 }
 
-export default CourseHomeworkForm
+export default NewHomeworkForm
