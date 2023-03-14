@@ -6,14 +6,13 @@ from global_functions.get_presigned_url import *
 from global_functions.responses import *
 from global_functions.exists_in_db import *
 
+
 def lambda_handler(event, context):
 
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
         queryStringParameters: dict = event["queryStringParameters"]
-
-
         courseId = event['queryStringParameters']['courseId']
 
         # if specific materialId is specified
@@ -25,7 +24,7 @@ def lambda_handler(event, context):
                     "SK": f"Material#{materialId}"
                 })
             items = response["Item"]
-            if  "MaterialAttachment" in items and items["MaterialAttachment"] != "":
+            if "MaterialAttachment" in items and items["MaterialAttachment"] != "":
                 get_presigned_url(items, "MaterialAttachment")
         else:
             response = table.query(
@@ -36,7 +35,7 @@ def lambda_handler(event, context):
                 })
             items = response["Items"]
             for item in items:
-                if "MaterialAttachment" in item and item["MaterialAttachment"] != "":
+                if "MaterialAttachment" in items and items["MaterialAttachment"] != "":
                     get_presigned_url(item, "MaterialAttachment")
 
         return response_200_items(items)

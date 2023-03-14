@@ -9,13 +9,16 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-const CourseHomeworkForm = () => {
+const EditHomeworkForm = () => {
   const navigate = useNavigate();
   const { courseid } = useParams();
+  const { homeworkId } = useParams();
   const [course, setCourse] = useState({});
   const [open, setOpen] = useState(true);
-  dayjs.extend(customParseFormat);
   const [value, setValue] = useState(null);
+  const [homeworkTitle, setHomeworkTitle] = useState("");
+  const [homeworkDescription, setHomeworkDescription] = useState("");
+  dayjs.extend(customParseFormat);
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
@@ -28,11 +31,11 @@ const CourseHomeworkForm = () => {
   }
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
+  const getHomeworkFeedbackAPI = request(`/course/homework?courseId=${courseid}&homeworkId=${homeworkId}`)
 
   useEffect(() => {
     async function fetchData() {
-      const [data1] = await Promise.all([getCourseAPI]);
-
+      const [data1, data2] = await Promise.all([getCourseAPI, getHomeworkFeedbackAPI]);
       let courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
@@ -40,6 +43,11 @@ const CourseHomeworkForm = () => {
         teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
+      setHomeworkTitle(data2.HomeworkName)
+      setHomeworkDescription(data2.HomeworkDescription)
+      dayjs.extend(customParseFormat);
+      console.log(data2.HomeworkDueDate)
+      setValue(dayjs(data2.HomeworkDueDate))
     }
     fetchData()
     setOpen(false)
@@ -108,25 +116,28 @@ const CourseHomeworkForm = () => {
               id="title"
               label="Title"
               variant="outlined"
+              value={homeworkTitle}
+              onChange = {(e) => setHomeworkTitle(e.target.value)}
               sx={{ mt: 2 }}
             />
             <TextField
               label="Add Text"
               variant="outlined"
               rows={7}
+              value={homeworkDescription}
+              onChange = {(e) => setHomeworkDescription(e.target.value)}
               multiline
               fullWidth
               sx={{ mt: 2, mb: 2 }}
             />
             <LocalizationProvider dateAdapter={AdapterDayjs} >
               <DatePicker
-                label="Due Date"
+                label="Due Date *"
                 value={value}
                 onChange={(newValue) => {
-                  console.log(newValue);
                   setValue(newValue);
                 }}
-                component={(params) => <TextField {...params} fullWidth />}
+                component={(params) => <TextField {...params} required fullWidth />}
               />
             </LocalizationProvider>
             <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
@@ -134,7 +145,7 @@ const CourseHomeworkForm = () => {
                 Cancel
               </Button>
               <Button variant="contained" >
-                Create
+                Update
               </Button>
             </Box>
           </form>
@@ -151,4 +162,4 @@ const CourseHomeworkForm = () => {
   )
 }
 
-export default CourseHomeworkForm
+export default EditHomeworkForm
