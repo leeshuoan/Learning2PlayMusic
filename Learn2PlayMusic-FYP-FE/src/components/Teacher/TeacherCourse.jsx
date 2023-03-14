@@ -6,8 +6,6 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import TransitionModal from "../utils/TransitionModal";
 import { toast } from "react-toastify";
@@ -207,12 +205,22 @@ const TeacherCourse = (userInfo) => {
     return;
   }
   async function deleteMaterial() {
+    console.log(
+      JSON.stringify({
+        courseId: courseid,
+        materialId: selectedMaterial,
+      })
+    );
     let ok = false;
-    fetch(`${import.meta.env.VITE_API_URL}/course/announcement?courseId=${courseid}&materialId=${selectedMaterial}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/course/material`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        courseId: courseid,
+        materialId: selectedMaterial,
+      }),
     }).then((response) => {
       if (response.status === 200) {
         ok = true;
@@ -224,13 +232,12 @@ const TeacherCourse = (userInfo) => {
     // reset
     setSelectedMaterial(null);
     setDeleteMaterialModal(false);
-    fetch(`${import.meta.env.VITE_API_URL}/material?courseId=${courseid}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/course/material?courseId=${courseid}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-    })
-      .then((response) => response.json())
+    }).then((response) => response.json())
       .then((res) => {
         const materialData = res.map((material) => {
           const id = material.SK.split("Material#")[1];
@@ -239,6 +246,7 @@ const TeacherCourse = (userInfo) => {
           return { ...material, id, MaterialLessonDate: formattedDate };
         });
         setCourseMaterial(materialData);
+        console.log(materialData)
         toast.success("Material deleted successfully");
       });
     return;

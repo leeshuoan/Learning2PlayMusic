@@ -104,11 +104,11 @@ export default function CourseMaterialsForm() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          body: postBody,
         },
+        body: postBody,
       }).then((response) => {
         if (response.status == 200) {
-          // navigate(`/teacher/course/${courseid}/material`);
+          toast.success("Material added successfully!");
           navigate(`/teacher/course/${courseid}/material`);
         } else {
           toast.error("Failed to add material!");
@@ -117,10 +117,12 @@ export default function CourseMaterialsForm() {
       });
     }
     if (type == "edit") {
-      fetch(`${import.meta.env.VITE_API_URL}/course/material/${materialid}`, {
+      fetch(`${import.meta.env.VITE_API_URL}/course/material`, {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: putBody,
-        "Content-Type": "application/json",
       }).then((response) => {
         if (response.status == 200) {
           toast.success("Material edited successfully!");
