@@ -56,6 +56,7 @@ const UserCourse = (userInfo) => {
   const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
   const getMaterialAPI = request(`/course/material?courseId=${courseid}`);
   const getQuizAPI = request(`/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
+  const getProgressReportAPI = request(`/course/report?courseId=${courseid}&studentId=${userInfo.userInfo.id}`)
 
   const columns = useMemo(() => [
     {
@@ -82,9 +83,9 @@ const UserCourse = (userInfo) => {
 
   useEffect(() => {
     async function fetchData() {
-      const [data1, data2, data3, data4, data5] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI]);
+      const [data1, data2, data3, data4, data5, data6] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI, getProgressReportAPI]);
 
-      console.log(data1)
+      console.log(data6)
       const courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
@@ -93,7 +94,6 @@ const UserCourse = (userInfo) => {
       };
       setCourse(courseData);
 
-      console.log(data2)
       async function fetchHomeworkData() {
         try {
           const homeworkData = await Promise.all(
@@ -103,7 +103,6 @@ const UserCourse = (userInfo) => {
               const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
       
               const homeworkFeedback = await fetchHomeworkFeedback(id);
-              console.log(homeworkFeedback);
       
               return {
                 ...homework,
@@ -122,7 +121,6 @@ const UserCourse = (userInfo) => {
       
       async function fetchHomeworkFeedback(id) {
         const data = await request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${id}&studentId=${userInfo.userInfo.id}`);
-        console.log(data)
         const homeworkFeedback = {
           Marked: data.Marked,
           NumAttempts: data.NumAttempts != 0 ? data.NumAttempts : "",
