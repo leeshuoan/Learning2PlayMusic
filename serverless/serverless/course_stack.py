@@ -54,7 +54,7 @@ class CourseStack(Stack):
         L2PMA_material_attachment_bucket = s3.Bucket(self, "L2MPMAMaterialAttachmentBucket")
         L2PMA_material_attachment_bucket_policy_statement = aws_iam.PolicyStatement(
             effect=aws_iam.Effect.ALLOW,
-            actions=["s3:GetObject", "s3:PutObject", ],
+            actions=["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
             resources=[L2PMA_material_attachment_bucket.arn_for_objects("*")],
             principals=[aws_iam.ServicePrincipal('lambda.amazonaws.com')]
         )
@@ -71,7 +71,7 @@ class CourseStack(Stack):
         # IAM policies for dynamodb readwrite + s3 readwrite
         dynamodb_policy = aws_iam.PolicyStatement(effect = aws_iam.Effect.ALLOW,
           resources = ['arn:aws:dynamodb:*:*:table/*'],
-          actions = ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query', 'dynamodb:UpdateItem']
+          actions = ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query', 'dynamodb:UpdateItem', 'dynamodb:DeleteItem']
         )
         S3_DYNAMODB_ROLE.add_to_policy(dynamodb_policy)
 
@@ -79,7 +79,7 @@ class CourseStack(Stack):
           resources = [f'{L2PMA_question_image_bucket.bucket_arn}/*',
                         f'{L2PMA_homework_submission_bucket.bucket_arn}/*',
                         f'{L2PMA_material_attachment_bucket.bucket_arn}/*'],
-          actions = ['s3:GetObject', 's3:PutObject'])
+          actions = ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'])
         S3_DYNAMODB_ROLE.add_to_policy(s3_policy)
 
         AWSLambdaBasicExecutionRole = aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AWSLambdaBasicExecutionRole')
