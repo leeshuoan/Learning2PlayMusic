@@ -14,20 +14,8 @@ const UserCourse = (userInfo) => {
   const [courseHomework, setCourseHomework] = useState([])
   const [courseMaterial, setCourseMaterial] = useState([])
   const [courseQuiz, setCourseQuiz] = useState([])
-  const [courseAnnouncements, setCourseAnnouncements] = useState([])
-
-  const courseProgressReports = [
-    {
-      id: 1,
-      title: "Progress Report 1",
-      uploadDate: "31 Jun 2023",
-    },
-    {
-      id: 2,
-      title: "Progress Report 1",
-      uploadDate: "31 Jun 2023",
-    }
-  ]
+  const [courseAnnouncement, setCourseAnnouncement] = useState([])
+  const [courseProgressReport, setCourseProgressReport] = useState([])
 
   const navigate = useNavigate()
   const { category } = useParams()
@@ -85,7 +73,6 @@ const UserCourse = (userInfo) => {
     async function fetchData() {
       const [data1, data2, data3, data4, data5, data6] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI, getProgressReportAPI]);
 
-      console.log(data6)
       const courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
@@ -101,9 +88,9 @@ const UserCourse = (userInfo) => {
               const id = homework.SK.split("Homework#")[1].substr(0, 1);
               const date = new Date(homework.HomeworkDueDate);
               const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-      
+
               const homeworkFeedback = await fetchHomeworkFeedback(id);
-      
+
               return {
                 ...homework,
                 id,
@@ -118,7 +105,7 @@ const UserCourse = (userInfo) => {
           console.log(error);
         }
       }
-      
+
       async function fetchHomeworkFeedback(id) {
         const data = await request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${id}&studentId=${userInfo.userInfo.id}`);
         const homeworkFeedback = {
@@ -127,10 +114,9 @@ const UserCourse = (userInfo) => {
         }
         return homeworkFeedback
       }
-      
       fetchHomeworkData().then((data) => {
         setCourseHomework(data);
-      });      
+      });
 
       const materialData = data3.map((material) => {
         const id = material.SK.split("Material#")[1].substr(0, 1);
@@ -154,7 +140,21 @@ const UserCourse = (userInfo) => {
         const formattedDate = date.toLocaleDateString();
         return { ...announcement, id, Date: formattedDate };
       });
-      setCourseAnnouncements(announcementsData);
+      setCourseAnnouncement(announcementsData);
+
+      const progressReportData = data6.map((report) => {
+        const id = report.SK.split("Report#")[1].substr(0, 1);
+        const date = new Date(report["AvailableDate"]);
+        const nowDate = new Date();
+        if (nowDate > date) {
+          report["Available"] = true;
+        } else {
+          report["Available"] = false;
+        }
+        const formattedDate = date.toLocaleDateString();
+        return { ...report, id, availableDate: formattedDate };
+      });
+      setCourseProgressReport(progressReportData);
     }
 
     fetchData().then(() => {
@@ -235,7 +235,7 @@ const UserCourse = (userInfo) => {
           <Box>
             <Card sx={{ py: 3, px: 5, mt: 2, display: category == "announcement" ? "block" : category === undefined ? "block" : "none" }}>
               <Typography variant='h5'>Class Announcements</Typography>
-              {courseAnnouncements.map((announcement, key) => (
+              {courseAnnouncement.map((announcement, key) => (
                 <Card key={key} variant='outlined' sx={{ boxShadow: "none", mt: 2, p: 2 }}>
                   <Typography variant='subtitle1' sx={{}}>{announcement.Title}</Typography>
                   <Typography variant='subsubtitle' sx={{ mb: 1 }}>Posted {announcement.Date}</Typography>
@@ -339,11 +339,11 @@ const UserCourse = (userInfo) => {
                   <Typography variant='subtitle1' sx={{ textAlign: "center", ml: 2 }}>TITLE</Typography>
                   <Typography variant='subtitle1' sx={{ textAlign: "center", mr: 2 }}>DATE AVAILABLE</Typography>
                 </Box>
-                {courseProgressReports.map((report, key) => (
+                {courseProgressReport.map((report, key) => (
                   <Card key={key} variant='outlined' sx={{ py: 2, px: 2, mt: 2, boxShadow: "none" }}>
                     <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                      <Typography variant='subtitle1' color="primary.main"><Link onClick={() => navigate("" + report.id)}>{report.title}</Link></Typography>
-                      <Typography variant='subttile1' color="lightgrey">{report.uploadDate}</Typography>
+                      <Typography variant='subtitle1' color="primary.main"><Link onClick={() => navigate("" + report.id)}>{report.Title}</Link></Typography>
+                      <Typography variant='subttile1' color={report.Available ? "black" : "lightgrey"}>{report.availableDate}</Typography>
                     </Box>
                   </Card>
                 ))}

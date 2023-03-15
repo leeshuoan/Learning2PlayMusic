@@ -140,7 +140,7 @@ function App() {
               <Route path="material/:materialId" element={<UserClassMaterials />} />
               <Route path="homework/:homeworkId" element={<UserHomework userInfo={userInfo} />} />
               <Route path="homework/:homeworkId/feedback" element={<UserHomeworkFeedback userInfo={userInfo} />} />
-              <Route path="report/:reportId" element={<UserReport />} />
+              <Route path="report/:reportId" element={<UserReport userInfo={userInfo}/>} />
               <Route path="quiz/:quizId" element={<UserQuiz userInfo={userInfo} />} />
             </Route>
           </Route>

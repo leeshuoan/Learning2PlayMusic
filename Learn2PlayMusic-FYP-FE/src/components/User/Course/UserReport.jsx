@@ -4,32 +4,7 @@ import { useTheme, Typography, Container, Card, Box, Grid, Link, Button, Breadcr
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import HomeIcon from '@mui/icons-material/Home';
 
-const UserReport = () => {
-  const report = {
-    id: 1,
-    title: "Progress Report 1",
-    uploadDate: "31 Jun 2023",
-    metrics: {
-      posture: "Good",
-      rhythm: "Good",
-      toneQuality: "Good",
-      dynamicsControl: "Good",
-      articulation: "Good",
-      sightReading: "Good",
-      practice: "Good",
-      theory: "Good",
-      scales: "Good",
-      aural: "Good",
-      musicality: "Good",
-      performing: "Good",
-      enthusiasm: "Good",
-      punctuality: "Good",
-      attendance: "Good",
-    },
-    goals: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.",
-    additionalComments: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod."
-  }
-
+const UserReport = (userInfo) => {
   const metricMapping = {
     posture: "Posture",
     rhythm: "Rhythm",
@@ -53,7 +28,8 @@ const UserReport = () => {
   const { courseid } = useParams()
   const { reportId } = useParams()
   const [open, setOpen] = useState(true);
-  const [course, setCourse] = useState({})
+  const [course, setCourse] = useState({ })
+  const [report, setReport] = useState({ EvaluationList: {}})
   const [submitted, setSubmitted] = useState(false);
   const handleClose = () => setOpen(false);
 
@@ -64,11 +40,18 @@ const UserReport = () => {
     },
   })
 
+  const getReportAPI = fetch(`${import.meta.env.VITE_API_URL}/course/report?courseId=${courseid}&studentId=${userInfo.userInfo.id}&reportId=${reportId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
   useEffect(() => {
-    Promise.all([getCourseAPI])
-      .then(async ([res1]) => {
-        const [data1] = await Promise.all([
-          res1.json(),
+    Promise.all([getCourseAPI, getReportAPI])
+      .then(async ([res1, res2]) => {
+        const [data1, data2] = await Promise.all([
+          res1.json(), res2.json()
         ]);
 
         let courseData = {
@@ -78,6 +61,7 @@ const UserReport = () => {
           teacher: data1[0].TeacherName,
         };
         setCourse(courseData);
+        setReport(data2[0]);
         setOpen(false)
       })
       .catch((error) => {
@@ -117,22 +101,21 @@ const UserReport = () => {
 
         <Box sx={{ display: submitted ? 'none' : 'block' }}>
           <Card sx={{ py: 3, px: 5, mt: 2 }}>
-            <Typography variant='h6' sx={{ mb: 1 }}>{report.title}</Typography>
-            <Typography variant='body2' sx={{ mb: 1 }}>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sed delectus nostrum non rerum ut temporibus maiores totam molestias, quas unde eius officiis repellat, illum repudiandae earum, consectetur dicta facere ipsam.</Typography>
+            <Typography variant='h6' sx={{ mb: 1 }}>{report.Title}</Typography>
             <Grid container sx={{ mb: 1 }}>
-              {Object.keys(report.metrics).map((key, index) => {
+              {Object.keys(report.EvaluationList).map((key, index) => {
                 return (
-                  <Grid item xs={6} sm={4} md={3}>
+                  <Grid item xs={6} sm={4} md={3} key={key}>
                     <Typography variant='subsubtitle' sx={{ mt: 1.5 }}>{metricMapping[key]}</Typography>
-                    <Typography variant='body2'>{report.metrics[key]}</Typography>
+                    <Typography variant='body2'>{report.EvaluationList[key]}</Typography>
                   </Grid>
                 )
               })}
             </Grid>
             <Typography variant='subsubtitle'>Goals</Typography>
-            <Typography variant='body2' sx={{ mb: 0.5 }}>{report.goals}</Typography>
+            <Typography variant='body2' sx={{ mb: 0.5 }}>{report.GoalsForNewTerm}</Typography>
             <Typography variant='subsubtitle'>Additional Comments</Typography>
-            <Typography variant='body2' sx={{ mb: 1 }}>{report.additionalComments}</Typography>
+            <Typography variant='body2' sx={{ mb: 1 }}>{report.AdditionalComments}</Typography>
           </Card>
         </Box>
       </Container>
