@@ -56,13 +56,13 @@ def lambda_handler(event, context):
             return response_400("title is missing from request body")
         
         # check that dateAvailable is present in the request body
-        if 'dateAvailable' not in json.loads(event['body']):
-            return response_400("dateAvailable is missing from request body")
+        if 'availableDate' not in json.loads(event['body']):
+            return response_400("availableDate is missing from request body")
 
         # check that all evaluation metrics are present in the evaluation_list
-        valid_metrics = set(['posture', 'rhythm', 'tone quality', 'dynamics control', 'articulation', 'sight-reading', 
-                            'practice and lesson participation', 'theory', 'scales & arpeggios', 'aural skills', 
-                            'musicality & artistry', 'performing', 'enthusiasm in music learning', 'punctuality', 'attendance'])
+        valid_metrics = set(['posture', 'rhythm', 'toneQuality', 'dynamicsControl', 'articulation', 'sightReading', 
+                            'practice', 'theory', 'scales', 'aural', 
+                            'musicality', 'performing', 'enthusiasm', 'punctuality', 'attendance'])
         metrics_set = set(json.loads(event['body'])['evaluationList'].keys())
         if not valid_metrics.issubset(metrics_set):
             return response_400("evaluationList is missing one or more evaluation metrics")
@@ -72,7 +72,7 @@ def lambda_handler(event, context):
                 "SK": f"Student#{json.loads(event['body'])['studentId']}Report#{reportId}",
                 "EvaluationList": json.loads(event['body'])['evaluationList'],
                 "Title": json.loads(event['body'])['title'],
-                'Date Available': json.loads(event['body'])['dateAvailable'],
+                'AvailableDate': json.loads(event['body'])['availableDate'],
                 "GoalsForNewTerm": json.loads(event['body'])['goalsForNewTerm'],
                 "AdditionalComments": json.loads(event['body'])['additionalComments'],
             }

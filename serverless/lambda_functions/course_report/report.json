@@ -1,24 +1,25 @@
 {
-    "studentId": "81c2ca2f-6a04-4e79-a41c-97aa85cf9edb",
-    "additionalComments": "Your singing could be better",
-    "courseId": "2",
-    "evaluationList": {
-      "attendance": ["Good"],
-      "dynamics control": ["Weak"],
-      "punctuality": ["Satisfactory"],
-      "tone quality": ["Excellent"],
-      "theory": ["Good"],
-      "enthusiasm in music learning": ["Good"],
-      "rhythm": ["Satisfactory"],
-      "scales & arpeggios": ["Excellent"],
-      "posture": ["Good"],
-      "articulation": ["Satisfactory"],
-      "musicality & artistry": ["Good"],
-      "sight-reading": ["N.A."],
-      "practice and lesson participation": ["Good"],
-      "aural skills": ["Satisfactory"],
-      "performing": ["Excellent"]
-    },
-    "goalsForNewTerm": "Do better"
-  }
-  
+  "studentId": "81c2ca2f-6a04-4e79-a41c-97aa85cf9edb",
+  "additionalComments": "Your singing could be better",
+  "title": "Progress Report 1",
+  "availableDate": "2023-06-30T00:00:00Z",
+  "courseId": "1",
+  "evaluationList": {
+    "attendance": "Good",
+    "dynamicsControl": "Weak",
+    "punctuality": "Satisfactory",
+    "tone quality": "Excellent",
+    "theory": "Good",
+    "enthusiasm": "Good",
+    "rhythm": "Satisfactory",
+    "scales": "Excellent",
+    "posture": "Good",
+    "articulation": "Satisfactory",
+    "musicality": "Good",
+    "sightReading": "N.A.",
+    "practice": "Good",
+    "aural": "Satisfactory",
+    "performing": "Excellent"
+  },
+  "goalsForNewTerm": "Do better"
+}
