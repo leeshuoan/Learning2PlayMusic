@@ -1,17 +1,10 @@
-import { useMemo, useState, useEffect } from "react";
+import { Backdrop, Box, Button, Card, CircularProgress, Container, Divider, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography, useTheme } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  useTheme, Typography, Container, Card, Box, FormControl, Link, InputLabel, Breadcrumbs, Backdrop, Select, MenuItem, CircularProgress,
-  Divider, RadioGroup, FormControlLabel, Radio, FormLabel, TextField, Button
-} from "@mui/material";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import HomeIcon from "@mui/icons-material/Home";
+import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
 
 const StudentProgressReport = () => {
-  const progressReports = [
-    "Student Progress Report Jan to Jun 2023",
-    "Student Progress Report Jul to Dec 2023"
-  ]
+  const progressReports = ["Student Progress Report Jan to Jun 2023", "Student Progress Report Jul to Dec 2023"];
 
   const metrics = {
     posture: "Posture",
@@ -29,8 +22,8 @@ const StudentProgressReport = () => {
     enthusiasm: "Enthusiasm",
     punctuality: "Punctuality",
     attendance: "Attendance",
-  }
-  const performance = ["Poor", "Weak", "Satisfactory", "Good", "Excellent", "N.A"]
+  };
+  const performance = ["Poor", "Weak", "Satisfactory", "Good", "Excellent", "N.A"];
 
   const theme = useTheme();
   const navigate = useNavigate();
@@ -44,18 +37,18 @@ const StudentProgressReport = () => {
   const [comments, setComments] = useState();
 
   const handleGoalsChange = (event) => {
-    setGoals(event.target.value)
-  }
+    setGoals(event.target.value);
+  };
 
   const handleCommentsChange = (event) => {
-    setComments(event.target.value)
-  }
+    setComments(event.target.value);
+  };
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
     return response.json();
@@ -109,38 +102,13 @@ const StudentProgressReport = () => {
 
   const handleChange = (event) => {
     setSelected(event.target.value);
-  }
+  };
 
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <Breadcrumbs
-          aria-label="breadcrumb"
-          separator={<NavigateNextIcon fontSize="small" />}
-          sx={{ mt: 3 }}>
-          <Link
-            underline="hover"
-            color="inherit"
-            sx={{ display: "flex", alignItems: "center" }}
-            onClick={() => {
-              navigate("/teacher");
-            }}>
-            <HomeIcon sx={{ mr: 0.5 }} />
-            Home
-          </Link>
-          <Link
-            underline="hover"
-            color="inherit"
-            onClick={() => {
-              navigate(`/teacher/course/${courseid}/homework`);
-            }}>
-            {course.name}
-          </Link>
-          <Typography color="text.primary">Progress Report</Typography>
-        </Breadcrumbs>
-
-        <Card
-          sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
+        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/homework` }]} breadcrumbEnding="Progress Report" />
+        <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
               <Typography variant="h5" sx={{ color: "primary.main" }}>
@@ -174,20 +142,14 @@ const StudentProgressReport = () => {
             <Typography variant="body2">TOM</Typography>
             <FormControl sx={{ mt: 3, mb: 1 }}>
               <InputLabel id="progress-report">Progress Report</InputLabel>
-              <Select
-                labelId="progress-report"
-                id="progress-report"
-                value={selected}
-                label="progress-report"
-                onChange={handleChange}
-              >
-                {selected === 'none' && <MenuItem value="none" disabled>
-                  Select Progress Report
-                </MenuItem>}
+              <Select labelId="progress-report" id="progress-report" value={selected} label="progress-report" onChange={handleChange}>
+                {selected === "none" && (
+                  <MenuItem value="none" disabled>
+                    Select Progress Report
+                  </MenuItem>
+                )}
                 {progressReports.map((report) => {
-                  return (
-                    <MenuItem value={report}>{report}</MenuItem>
-                  )
+                  return <MenuItem value={report}>{report}</MenuItem>;
                 })}
               </Select>
             </FormControl>
@@ -195,9 +157,7 @@ const StudentProgressReport = () => {
               <Divider sx={{ my: 2 }} />
               {Object.keys(metrics).map((metric, key) => (
                 <Box key={key}>
-                  <FormLabel>
-                    {metrics[metric]}
-                  </FormLabel>
+                  <FormLabel>{metrics[metric]}</FormLabel>
                   <RadioGroup name={metric} sx={{ mb: 1 }} row>
                     {performance.map((performance) => (
                       <FormControlLabel value={performance} control={<Radio size="small" />} label={performance} />
@@ -205,25 +165,26 @@ const StudentProgressReport = () => {
                   </RadioGroup>
                 </Box>
               ))}
-              <InputLabel id="goals-for-the-new-term" sx={{ mt: 2 }}>Goals for the New Term</InputLabel>
+              <InputLabel id="goals-for-the-new-term" sx={{ mt: 2 }}>
+                Goals for the New Term
+              </InputLabel>
               <TextField variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1, mb: 2 }} value={goals} onChange={handleGoalsChange} />
               <InputLabel id="additional-comments">Additional Comments</InputLabel>
               <TextField variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1 }} value={comments} onChange={handleCommentsChange} />
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" sx={{ mt: 2 }}>Submit</Button>
+                <Button variant="contained" sx={{ mt: 2 }}>
+                  Submit
+                </Button>
               </Box>
             </Box>
           </Card>
         </Box>
         <br />
 
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={isLoading}
-        >
+        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
           <CircularProgress color="inherit" />
         </Backdrop>
-      </Container >
+      </Container>
     </>
   );
 };

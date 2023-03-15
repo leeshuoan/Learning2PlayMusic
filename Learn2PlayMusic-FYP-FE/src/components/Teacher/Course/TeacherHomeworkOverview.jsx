@@ -1,9 +1,8 @@
-import { useMemo, useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useTheme, Typography, Container, Card, Box, Divider, Link, Button, Breadcrumbs, Backdrop, IconButton, CircularProgress } from "@mui/material";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import HomeIcon from "@mui/icons-material/Home";
+import { Backdrop, Box, Card, CircularProgress, Container, Divider, Typography, useTheme } from "@mui/material";
 import MaterialReactTable from "material-react-table";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
 
 const TeacherHomeworkOverview = () => {
   const theme = useTheme();
@@ -17,9 +16,9 @@ const TeacherHomeworkOverview = () => {
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
     return response.json();
@@ -48,7 +47,7 @@ const TeacherHomeworkOverview = () => {
         name: data2.HomeworkName,
         description: data2.HomeworkDescription,
         dueDate: formattedDueDate,
-        assignedDate: formattedAssignedDate
+        assignedDate: formattedAssignedDate,
       };
       setHomework(homeworkData);
     }
@@ -87,33 +86,9 @@ const TeacherHomeworkOverview = () => {
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <Breadcrumbs
-          aria-label="breadcrumb"
-          separator={<NavigateNextIcon fontSize="small" />}
-          sx={{ mt: 3 }}>
-          <Link
-            underline="hover"
-            color="inherit"
-            sx={{ display: "flex", alignItems: "center" }}
-            onClick={() => {
-              navigate("/teacher");
-            }}>
-            <HomeIcon sx={{ mr: 0.5 }} />
-            Home
-          </Link>
-          <Link
-            underline="hover"
-            color="inherit"
-            onClick={() => {
-              navigate(`/teacher/course/${courseid}/homework`);
-            }}>
-            {course.name}
-          </Link>
-          <Typography color="text.primary">{homework.name}</Typography>
-        </Breadcrumbs>
+        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/homework` }]} breadcrumbEnding={homework.name} />
 
-        <Card
-          sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
+        <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
               <Typography variant="h5" sx={{ color: "primary.main" }}>
@@ -141,9 +116,7 @@ const TeacherHomeworkOverview = () => {
             <Typography variant="h6" sx={{ mb: 1 }}>
               {homework.name} - Overview
             </Typography>
-            <Typography variant="body2">
-              {homework.description}
-            </Typography>
+            <Typography variant="body2">{homework.description}</Typography>
             <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-start" }}>
               <Box>
                 <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
@@ -168,11 +141,7 @@ const TeacherHomeworkOverview = () => {
           </Card>
         </Box>
 
-
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={isLoading}
-        >
+        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
           <CircularProgress color="inherit" />
         </Backdrop>
       </Container>

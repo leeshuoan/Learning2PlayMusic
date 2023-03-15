@@ -1,8 +1,7 @@
-import { useMemo, useState, useEffect } from "react";
+import { Backdrop, Box, Button, Card, CircularProgress, Container, Divider, FormControlLabel, FormLabel, InputLabel, Link, Radio, RadioGroup, TextField, Typography, useTheme } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useTheme, Typography, Container, Card, Box, Divider, Link, RadioGroup, Breadcrumbs, Backdrop, FormLabel, CircularProgress, FormControlLabel, Radio, InputLabel, TextField, Button } from "@mui/material";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import HomeIcon from "@mui/icons-material/Home";
+import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
 
 const TeacherHomeworkOverview = () => {
   const theme = useTheme();
@@ -20,9 +19,9 @@ const TeacherHomeworkOverview = () => {
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
     return response.json();
@@ -51,7 +50,7 @@ const TeacherHomeworkOverview = () => {
         name: data2.HomeworkName,
         description: data2.HomeworkDescription,
         dueDate: formattedDueDate,
-        assignedDate: formattedAssignedDate
+        assignedDate: formattedAssignedDate,
       };
       setHomework(homeworkData);
     }
@@ -90,41 +89,16 @@ const TeacherHomeworkOverview = () => {
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <Breadcrumbs
-          aria-label="breadcrumb"
-          separator={<NavigateNextIcon fontSize="small" />}
-          sx={{ mt: 3 }}>
-          <Link
-            underline="hover"
-            color="inherit"
-            sx={{ display: "flex", alignItems: "center" }}
-            onClick={() => {
-              navigate("/teacher");
-            }}>
-            <HomeIcon sx={{ mr: 0.5 }} />
-            Home
-          </Link>
-          <Link
-            underline="hover"
-            color="inherit"
-            onClick={() => {
-              navigate(`/teacher/course/${courseid}/homework`);
-            }}>
-            {course.name}
-          </Link>
-          <Link
-            underline="hover"
-            color="inherit"
-            onClick={() => {
-              navigate(`/teacher/course/${courseid}/homework/${homeworkId}`);
-            }}>
-            {homework.name}
-          </Link>
-          <Typography color="text.primary">Grade</Typography>
-        </Breadcrumbs>
+        <CustomBreadcrumbs
+          root="/teacher"
+          links={[
+            { name: course.name, path: `/teacher/course/${courseid}/homework` },
+            { name: homework.name, path: `/teacher/course/${courseid}/homework/${homeworkId}` },
+          ]}
+          breadcrumbEnding="Grade"
+        />
 
-        <Card
-          sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
+        <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
               <Typography variant="h5" sx={{ color: "primary.main" }}>
@@ -155,44 +129,40 @@ const TeacherHomeworkOverview = () => {
             <Typography variant="subtitle2" sx={{ mb: 2 }}>
               TOM
             </Typography>
-            <Typography variant="subsubtitle">
-              FILE SUBMISSION
-            </Typography>
+            <Typography variant="subsubtitle">FILE SUBMISSION</Typography>
             <Typography variant="subtitle2" sx={{ mb: 2 }}>
               <Link>file_submission.jpeg</Link>
             </Typography>
-            <Typography variant="body">
-              I think the answer is Piano. Piano has white keys
-            </Typography>
+            <Typography variant="body">I think the answer is Piano. Piano has white keys</Typography>
             <Divider sx={{ my: 3 }} />
-            <FormLabel>
-              HOMEWORK SCORE
-            </FormLabel>
-            <RadioGroup name="score" row >
+            <FormLabel>HOMEWORK SCORE</FormLabel>
+            <RadioGroup name="score" row>
               <FormControlLabel value="bad" control={<Radio size="small" />} label="1 - Bad" />
               <FormControlLabel value="poor" control={<Radio size="small" />} label="2 - Poor" />
               <FormControlLabel value="good" control={<Radio size="small" />} label="3 - Good" />
               <FormControlLabel value="very good" control={<Radio size="small" />} label="4 - Very Good" />
               <FormControlLabel value="excellent" control={<Radio size="small" />} label="5 - Excellent" />
             </RadioGroup>
-            <InputLabel id="additional-comments"sx={{ mt: 1 }}>ADDITIONAL COMMENTS</InputLabel>
+            <InputLabel id="additional-comments" sx={{ mt: 1 }}>
+              ADDITIONAL COMMENTS
+            </InputLabel>
             <TextField variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1 }} value={comments} onChange={handleCommentsChange} />
             <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
-              <Button variant="outlined" sx={{ color: "primary.main" }} onClick={() => {navigate(`/teacher/course/${courseid}/homework/${homeworkId}`);}}>
+              <Button
+                variant="outlined"
+                sx={{ color: "primary.main" }}
+                onClick={() => {
+                  navigate(`/teacher/course/${courseid}/homework/${homeworkId}`);
+                }}>
                 Cancel
               </Button>
-              <Button variant="contained" >
-                Grade
-              </Button>
+              <Button variant="contained">Grade</Button>
             </Box>
           </Card>
         </Box>
         <br />
 
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={isLoading}
-        >
+        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
           <CircularProgress color="inherit" />
         </Backdrop>
       </Container>

@@ -1,13 +1,12 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useTheme, Typography, Container, Card, Box, TextField, Link, Button, Breadcrumbs, Backdrop, IconButton, CircularProgress } from "@mui/material";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import HomeIcon from "@mui/icons-material/Home";
+import { Backdrop, Box, Button, Card, CircularProgress, Container, TextField, Typography } from "@mui/material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
 
 const EditHomeworkForm = () => {
   const navigate = useNavigate();
@@ -22,16 +21,16 @@ const EditHomeworkForm = () => {
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
     return response.json();
   }
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
-  const getHomeworkFeedbackAPI = request(`/course/homework?courseId=${courseid}&homeworkId=${homeworkId}`)
+  const getHomeworkFeedbackAPI = request(`/course/homework?courseId=${courseid}&homeworkId=${homeworkId}`);
 
   useEffect(() => {
     async function fetchData() {
@@ -43,46 +42,21 @@ const EditHomeworkForm = () => {
         teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
-      setHomeworkTitle(data2.HomeworkName)
-      setHomeworkDescription(data2.HomeworkDescription)
+      setHomeworkTitle(data2.HomeworkName);
+      setHomeworkDescription(data2.HomeworkDescription);
       dayjs.extend(customParseFormat);
-      console.log(data2.HomeworkDueDate)
-      setValue(dayjs(data2.HomeworkDueDate))
+      console.log(data2.HomeworkDueDate);
+      setValue(dayjs(data2.HomeworkDueDate));
     }
-    fetchData()
-    setOpen(false)
+    fetchData();
+    setOpen(false);
   }, []);
 
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <Breadcrumbs
-          aria-label="breadcrumb"
-          separator={<NavigateNextIcon fontSize="small" />}
-          sx={{ mt: 3 }}>
-          <Link
-            underline="hover"
-            color="inherit"
-            sx={{ display: "flex", alignItems: "center" }}
-            onClick={() => {
-              navigate("/teacher");
-            }}>
-            <HomeIcon sx={{ mr: 0.5 }} />
-            Home
-          </Link>
-          <Link
-            underline="hover"
-            color="inherit"
-            onClick={() => {
-              navigate(`/teacher/course/${courseid}/homework`);
-            }}>
-            {course.name}
-          </Link>
-          <Typography color="text.primary">New Homework</Typography>
-        </Breadcrumbs>
-
-        <Card
-          sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
+        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/homework` }]} breadcrumbEnding="New Homework" />
+        <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
               <Typography variant="h5" sx={{ color: "primary.main" }}>
@@ -110,27 +84,9 @@ const EditHomeworkForm = () => {
             New Homework
           </Typography>
           <form noValidate>
-            <TextField
-              required
-              fullWidth
-              id="title"
-              label="Title"
-              variant="outlined"
-              value={homeworkTitle}
-              onChange = {(e) => setHomeworkTitle(e.target.value)}
-              sx={{ mt: 2 }}
-            />
-            <TextField
-              label="Add Text"
-              variant="outlined"
-              rows={7}
-              value={homeworkDescription}
-              onChange = {(e) => setHomeworkDescription(e.target.value)}
-              multiline
-              fullWidth
-              sx={{ mt: 2, mb: 2 }}
-            />
-            <LocalizationProvider dateAdapter={AdapterDayjs} >
+            <TextField required fullWidth id="title" label="Title" variant="outlined" value={homeworkTitle} onChange={(e) => setHomeworkTitle(e.target.value)} sx={{ mt: 2 }} />
+            <TextField label="Add Text" variant="outlined" rows={7} value={homeworkDescription} onChange={(e) => setHomeworkDescription(e.target.value)} multiline fullWidth sx={{ mt: 2, mb: 2 }} />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Due Date *"
                 value={value}
@@ -141,25 +97,25 @@ const EditHomeworkForm = () => {
               />
             </LocalizationProvider>
             <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
-              <Button variant="outlined" sx={{ color: "primary.main" }} onClick={() => {navigate(`/teacher/course/${courseid}/homework`)}}>
+              <Button
+                variant="outlined"
+                sx={{ color: "primary.main" }}
+                onClick={() => {
+                  navigate(`/teacher/course/${courseid}/homework`);
+                }}>
                 Cancel
               </Button>
-              <Button variant="contained" >
-                Update
-              </Button>
+              <Button variant="contained">Update</Button>
             </Box>
           </form>
         </Card>
       </Container>
 
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-      >
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </>
-  )
-}
+  );
+};
 
-export default EditHomeworkForm
+export default EditHomeworkForm;

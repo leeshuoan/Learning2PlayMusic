@@ -1,14 +1,13 @@
-import { useMemo, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Typography, Container, Grid, Card, Box, MenuItem, Accordion, AccordionSummary, AccordionDetails, Link, Button, Divider, Breadcrumbs, Backdrop, Stack, CircularProgress, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-import MaterialReactTable from "material-react-table";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import HomeIcon from "@mui/icons-material/Home";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
-import TransitionModal from "../utils/TransitionModal";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Accordion, AccordionDetails, AccordionSummary, Backdrop, Box, Button, Card, CircularProgress, Container, Divider, Grid, Link, MenuItem, Stack, Typography } from "@mui/material";
+import MaterialReactTable from "material-react-table";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import CustomBreadcrumbs from "../utils/CustomBreadcrumbs";
+import TransitionModal from "../utils/TransitionModal";
 
 const TeacherCourse = (userInfo) => {
   const [open, setOpen] = useState(true);
@@ -453,19 +452,8 @@ const TeacherCourse = (userInfo) => {
         </Box>
       </TransitionModal>
       {/* breadcrumbs ======================================================================================================================== */}
-      <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
-        <Link
-          underline="hover"
-          color="inherit"
-          sx={{ display: "flex", alignItems: "center" }}
-          onClick={() => {
-            navigate("/teacher");
-          }}>
-          <HomeIcon sx={{ mr: 0.5 }} />
-          Home
-        </Link>
-        <Typography color="text.primary">{course.name}</Typography>
-      </Breadcrumbs>
+      <CustomBreadcrumbs root="/teacher" links={null} breadcrumbEnding={course.name} />
+      {/* header ======================================================================================================================== */}
       <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box>

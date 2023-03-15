@@ -1,17 +1,16 @@
-import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { Box, Button, Breadcrumbs, Card, Container, Typography, TextField, Link, IconButton, InputAdornment } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import ClearIcon from "@mui/icons-material/Clear";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import InsertLinkIcon from "@mui/icons-material/InsertLink";
+import { Box, Button, Card, Container, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useEffect, useState } from "react";
-import InsertLinkIcon from "@mui/icons-material/InsertLink";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
-import ClearIcon from "@mui/icons-material/Clear";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
 import ViewCourseMaterialComponent from "./ViewCourseMaterialComponent";
 
 export default function CourseMaterialsForm() {
@@ -54,7 +53,7 @@ export default function CourseMaterialsForm() {
     const blob = new Blob(byteArrays, { type: contentType });
     return blob;
   }
-
+  // helper functions
   function buildRequestBody(materialTypeStr, userTitle, userLink) {
     const requestBodyObject = {
       courseId: courseid,
@@ -64,13 +63,30 @@ export default function CourseMaterialsForm() {
       materialType: materialTypeStr,
       materialAttachment: classMaterialAttachment,
     };
-
     if (type === "edit") {
       requestBodyObject.materialId = materialid;
     }
-
     return JSON.stringify(requestBodyObject);
   }
+  function validateInput(userLink, userTitle) {
+    if (userLink !== "" && file !== null) {
+      return {
+        error: true,
+        message: "Please only upload one file or link!",
+      };
+    }
+    if (userTitle === "" || (userLink === "" && file === null) || date.$d === "Invalid Date") {
+      return {
+        error: true,
+        message: "Please fill in all the fields!",
+      };
+    }
+    return {
+      error: false,
+    };
+  }
+  // end helper functions
+  // submit
   async function handleSubmit(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -105,24 +121,6 @@ export default function CourseMaterialsForm() {
     }
   }
 
-  function validateInput(userLink, userTitle) {
-    if (userLink !== "" && file !== null) {
-      return {
-        error: true,
-        message: "Please only upload one file or link!",
-      };
-    }
-    if (userTitle === "" || (userLink === "" && file === null) || date.$d === "Invalid Date") {
-      return {
-        error: true,
-        message: "Please fill in all the fields!",
-      };
-    }
-    return {
-      error: false,
-    };
-  }
-
   useEffect(() => {
     console.log(course);
     console.log(state);
@@ -131,31 +129,11 @@ export default function CourseMaterialsForm() {
       setDate(dayjs(new Date(ary[2], ary[1], ary[0])));
     }
   }, [course, state]);
+
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       {/* breadcrumbs */}
-      <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
-        <Link
-          underline="hover"
-          color="inherit"
-          sx={{ display: "flex", alignItems: "center" }}
-          onClick={() => {
-            navigate("/teacher");
-          }}>
-          <HomeIcon sx={{ mr: 0.5 }} />
-          Home
-        </Link>
-        <Link
-          underline="hover"
-          color="inherit"
-          sx={{ display: "flex", alignItems: "center" }}
-          onClick={() => {
-            navigate(`/teacher/course/${courseid}/material`);
-          }}>
-          <Typography color="text.primary">{course.name}</Typography>
-        </Link>
-        <Typography color="text.primary">Class Material</Typography>
-      </Breadcrumbs>
+      <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/material` }]} breadcrumbEnding="Class Materials" />
       {/* body */}
       <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
