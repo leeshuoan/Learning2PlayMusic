@@ -12,6 +12,7 @@ import InsertLinkIcon from "@mui/icons-material/InsertLink";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import ClearIcon from "@mui/icons-material/Clear";
 import { toast } from "react-toastify";
+import ViewCourseMaterialComponent from "./ViewCourseMaterialComponent";
 
 export default function CourseMaterialsForm() {
   const { courseid } = useParams();
@@ -54,85 +55,74 @@ export default function CourseMaterialsForm() {
     return blob;
   }
 
+  function buildRequestBody(materialTypeStr, userTitle, userLink) {
+    const requestBodyObject = {
+      courseId: courseid,
+      materialTitle: userTitle,
+      materialLessonDate: date.toISOString(),
+      materialLink: userLink,
+      materialType: materialTypeStr,
+      materialAttachment: classMaterialAttachment,
+    };
+
+    if (type === "edit") {
+      requestBodyObject.materialId = materialid;
+    }
+
+    return JSON.stringify(requestBodyObject);
+  }
   async function handleSubmit(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    var userTitle = data.get("title");
-    var userLink = data.get("link");
-    // input validation
-    if (userLink != "" && file != null) {
-      toast.error("Please only upload one file or link!");
+    const userTitle = data.get("title");
+    const userLink = data.get("link");
+
+    const validationResult = validateInput(userLink, userTitle);
+    if (validationResult.error) {
+      toast.error(validationResult.message);
       return;
     }
-    if (userTitle == "" || (userLink == "" && file == null) || date.$d == "Invalid Date") {
-      toast.error("Please fill in all the fields!");
-      return;
-    }
-    // processsing file
-    if (file) {
-      console.log(file);
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        setClassMaterialAttachment(event.target.result);
-        // console.log(URL.createObjectURL(b64toBlob(event.target.result)));
-        // setUploadedFileURL(URL.createObjectURL(b64toBlob(event.target.result)));
-      };
-    }
-    let materialTypeStr = file ? file.type.split("/")[1].toUpperCase() : "Link";
-    var postBody = JSON.stringify({
-      courseId: courseid,
-      materialTitle: userTitle,
-      materialLessonDate: date.toISOString(),
-      materialLink: userLink,
-      materialType: materialTypeStr,
-      materialAttachment: classMaterialAttachment,
+    const materialTypeStr = file ? file.type.split("/")[1].toUpperCase() : "Link";
+    const requestBody = buildRequestBody(materialTypeStr, userTitle, userLink);
+    const apiUrl = type === "new" ? `${import.meta.env.VITE_API_URL}/course/material` : `${import.meta.env.VITE_API_URL}/course/material`;
+    const method = type === "new" ? "POST" : "PUT";
+
+    const response = await fetch(apiUrl, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: requestBody,
     });
-    console.log(postBody);
-    var putBody = JSON.stringify({
-      courseId: courseid,
-      materialTitle: userTitle,
-      materialId: materialid,
-      materialLessonDate: date.toISOString(),
-      materialLink: userLink,
-      materialType: materialTypeStr,
-      materialAttachment: classMaterialAttachment,
-    });
-    // api calls
-    if (type == "new") {
-      fetch(`${import.meta.env.VITE_API_URL}/course/material`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: postBody,
-      }).then((response) => {
-        if (response.status == 200) {
-          toast.success("Material added successfully!");
-          navigate(`/teacher/course/${courseid}/material`);
-        } else {
-          toast.error("Failed to add material!");
-        }
-        console.log(putBody);
-      });
-    }
-    if (type == "edit") {
-      fetch(`${import.meta.env.VITE_API_URL}/course/material`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: putBody,
-      }).then((response) => {
-        if (response.status == 200) {
-          toast.success("Material edited successfully!");
-          navigate(`/teacher/course/${courseid}/material`);
-        } else {
-          toast.error("Failed to edit material!");
-        }
-      });
+
+    if (response.status === 200) {
+      const successMessage = type === "new" ? "Material added successfully!" : "Material edited successfully!";
+      toast.success(successMessage);
+      navigate(`/teacher/course/${courseid}/material`);
+    } else {
+      const errorMessage = type === "new" ? "Failed to add material!" : "Failed to edit material!";
+      toast.error(errorMessage);
     }
   }
+
+  function validateInput(userLink, userTitle) {
+    if (userLink !== "" && file !== null) {
+      return {
+        error: true,
+        message: "Please only upload one file or link!",
+      };
+    }
+    if (userTitle === "" || (userLink === "" && file === null) || date.$d === "Invalid Date") {
+      return {
+        error: true,
+        message: "Please fill in all the fields!",
+      };
+    }
+    return {
+      error: false,
+    };
+  }
+
   useEffect(() => {
     console.log(course);
     console.log(state);
@@ -188,51 +178,7 @@ export default function CourseMaterialsForm() {
 
             {/* view */}
             {type == "view" ? (
-              <Box>
-                <Typography variant="h6" sx={{ mt: 2 }}>
-                  Title
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  {title}
-                </Typography>
-                <Typography variant="h6" sx={{ mt: 2 }}>
-                  Date
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  {date.toISOString().split("T")[0]}
-                </Typography>
-                <Typography variant="h6" sx={{ mt: 2 }}>
-                  Attachment
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  {file == null ? (
-                    <a href={"//" + link} target="_blank">
-                      {link}
-                    </a>
-                  ) : (
-                    <a href={file} target="_blank">
-                      {file}
-                    </a>
-                  )}
-                </Typography>
-                <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3, mb: 1 }}>
-                  <Button
-                    variant="outlined"
-                    sx={{ color: "primary.main" }}
-                    onClick={() => {
-                      navigate(`/teacher/course/${courseid}/material`);
-                    }}>
-                    Back
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      navigate(`/teacher/course/${courseid}/material/edit/${materialid}`, { state: { material: material, course: course } });
-                    }}>
-                    Edit
-                  </Button>
-                </Box>
-              </Box>
+              <ViewCourseMaterialComponent material={material} course={course} title={title} date={date} link={link} file={file} />
             ) : (
               // edit or delete ========================================================
               <>
