@@ -29,9 +29,22 @@ export default function CourseMaterialsForm() {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState(material.MaterialTitle);
   const [uploadedFileURL, setUploadedFileURL] = useState("");
-
+  // todo : handle when there is already an s3 link for the material
+  
+  // file handling
+  const fileToBase64 = (file, callback) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => callback(null, reader.result);
+    reader.onerror = (error) => callback(error, null);
+  };
   const fileUploaded = (e) => {
     setFile(e.target.files[0]);
+    fileToBase64(e.target.files[0], (err, result) => {
+      if (result) {
+        setClassMaterialAttachment(result);
+      }
+    });
   };
   const handleRemoveFile = () => {
     setFile(null);
@@ -102,7 +115,7 @@ export default function CourseMaterialsForm() {
     const requestBody = buildRequestBody(materialTypeStr, userTitle, userLink);
     const apiUrl = type === "new" ? `${import.meta.env.VITE_API_URL}/course/material` : `${import.meta.env.VITE_API_URL}/course/material`;
     const method = type === "new" ? "POST" : "PUT";
-
+    console.log(requestBody);
     const response = await fetch(apiUrl, {
       method: method,
       headers: {
@@ -123,12 +136,13 @@ export default function CourseMaterialsForm() {
 
   useEffect(() => {
     console.log(course);
+    console.log(material);
     console.log(state);
     if (type == "edit") {
       var ary = material.MaterialLessonDate.split("/");
       setDate(dayjs(new Date(ary[2], ary[1], ary[0])));
     }
-  }, [course, state]);
+  }, [course, material, state]);
 
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>

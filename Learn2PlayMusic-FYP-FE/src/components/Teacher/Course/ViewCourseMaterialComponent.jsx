@@ -1,18 +1,25 @@
-import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
 
 function ViewCourseMaterialComponent({ material, course, title, date, link, file }) {
   const { courseid } = useParams();
   const { materialid } = useParams();
   const navigate = useNavigate();
-  if (link.startsWith("http://") ) {
-    link = link.substring(7);
+  if (link != "") {
+    if (link.startsWith("http://")) {
+      link = link.substring(7);
+    } else if (link.startsWith("https://")) {
+      link = link.substring(8);
+    }
   }
-  else if (link.startsWith("https://")) {
-    link = link.substring(8);
+
+  if (material.MaterialAttachement!="") {
+    // todo:show this when there is a
+    // e.g. material.MaterialAttachement = coursestack-l2mpmamaterialattachmentbucket28de1f4-61f6iq91o3e1/Course1/upload PDF test again.._8e20422b.pdf
+    //
   }
   return (
-    <Box sx={{mt:5}}>
+    <Box sx={{ mt: 5 }}>
       <Typography variant="h6" sx={{ mt: 2 }}>
         Title
       </Typography>
