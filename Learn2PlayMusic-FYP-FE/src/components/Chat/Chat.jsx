@@ -187,8 +187,8 @@ function Chat(userInfo) {
             overflow: "hidden",
             overflowY: "scroll",
           }}>
-          <Grid container spacing={0} sx={{ display: { sm: "none" } }}>
-            <Grid item xs={2}>
+          <Grid container spacing={0} sx={{ display: { md: "none" } }}>
+            <Grid item xs={1}>
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
@@ -198,13 +198,13 @@ function Chat(userInfo) {
                 <MenuIcon />
               </IconButton>
             </Grid>
-            <Grid item xs={10}>
+            <Grid item xs={11}>
               <Typography variant="h6" sx={{ textAlign: "center" }}>
                 {selectedChat.name}
               </Typography>
             </Grid>
           </Grid>
-          <Typography variant="h6" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
+          <Typography variant="h6" sx={{ textAlign: "center", display: { xs: "none", md: "block" } }}>
             {selectedChat.name}
           </Typography>
           {messages && messages.map((msg) => <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />)}
