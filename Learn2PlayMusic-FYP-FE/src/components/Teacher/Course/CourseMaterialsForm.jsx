@@ -185,81 +185,128 @@ export default function CourseMaterialsForm() {
             <Typography variant="h5" sx={{ color: "primary", mt: 3 }}>
               {type == "view" ? "View" : type == "edit" ? "Edit" : "New"} Class Material
             </Typography>
-            <TextField required fullWidth id="title" name="title" label="Title" variant="outlined" defaultValue={title} sx={{ mt: 3 }} />
-            <LocalizationProvider required dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Lesson Date*"
-                sx={{ mt: 3 }}
-                defaultValue={date}
-                value={date}
-                onChange={(newValue) => {
-                  setDate(newValue);
-                }}
-                component={(params) => <TextField {...params} fullWidth />}
-              />
-            </LocalizationProvider>
-            <Typography variant="h6" sx={{ mt: 3 }}>
-              Upload File or Embed Link
-            </Typography>
-            {/* todo! handle file */}
-            {file == null ? (
-              <Button variant="outlined" sx={{ color: "text.primary", mt: 3 }} size="large" startIcon={<FileUploadIcon />} component="label">
-                Upload File
-                <input hidden accept="application/pdf" multiple type="file" onChange={fileUploaded} />{" "}
-              </Button>
-            ) : (
-              <></>
-            )}
-            {file ? (
-              <div>
-                <Typography variant="body2" style={{ textDecoration: "underline" }}>
-                  <IconButton onClick={handleRemoveFile}>
-                    <ClearIcon />
-                  </IconButton>
-                  {/* todo: link to download */}
-                  {/* <Link href={uploadedFileURL} _target="blank" download={file.name}> */}
-                  {file.name}
-                  {/* </Link> */}
-                </Typography>
-              </div>
-            ) : (
-              <Typography variant="body2">No file uploaded yet</Typography>
-            )}
-            {/* handle link */}
-            <TextField
-              id="link"
-              name="link"
-              label="Embed Link"
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <InsertLinkIcon />
-                  </InputAdornment>
-                ),
-              }}
-              variant="outlined"
-              sx={{ mt: 3 }}
-              defaultValue={link}
-            />
 
-            {/* buttons */}
-            {type != "view" ? (
-              <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3, mb: 1 }}>
-                <Button
-                  variant="outlined"
-                  sx={{ color: "primary.main" }}
-                  onClick={() => {
-                    navigate(`/teacher/course/${courseid}/material`);
-                  }}>
-                  Cancel
-                </Button>
-                <Button variant="contained" type="submit">
-                  {type == "new" ? "Post" : "Update"}
-                </Button>
+            {/* view */}
+            {type == "view" ? (
+              <Box>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                  Title
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  {title}
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                  Date
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  {date.toISOString().split("T")[0]}
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                  Attachment
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  {file == null ? (
+                    <a href={"//" + link} target="_blank">
+                      {link}
+                    </a>
+                  ) : (
+                    <a href={file} target="_blank">
+                      {file}
+                    </a>
+                  )}
+                </Typography>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3, mb: 1 }}>
+                  <Button
+                    variant="outlined"
+                    sx={{ color: "primary.main" }}
+                    onClick={() => {
+                      navigate(`/teacher/course/${courseid}/material`);
+                    }}>
+                    Back
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      navigate(`/teacher/course/${courseid}/material/edit/${materialid}`, { state: { material: material, course: course } });
+                    }}>
+                    Edit
+                  </Button>
+                </Box>
               </Box>
             ) : (
-              ""
+              // edit or delete ========================================================
+              <>
+                <TextField required fullWidth id="title" name="title" label="Title" variant="outlined" defaultValue={title} sx={{ mt: 3 }} />
+                <LocalizationProvider required dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Lesson Date*"
+                    sx={{ mt: 3 }}
+                    defaultValue={date}
+                    value={date}
+                    onChange={(newValue) => {
+                      setDate(newValue);
+                    }}
+                    component={(params) => <TextField {...params} fullWidth />}
+                  />
+                </LocalizationProvider>
+                <Typography variant="h6" sx={{ mt: 3 }}>
+                  Upload File or Embed Link
+                </Typography>
+                {/* todo! handle file */}
+                {file == null ? (
+                  <Button variant="outlined" sx={{ color: "text.primary", mt: 3 }} size="large" startIcon={<FileUploadIcon />} component="label">
+                    Upload File
+                    <input hidden accept="application/pdf" multiple type="file" onChange={fileUploaded} />
+                  </Button>
+                ) : (
+                  <></>
+                )}
+                {file ? (
+                  <div>
+                    <Typography variant="body2" style={{ textDecoration: "underline" }}>
+                      <IconButton onClick={handleRemoveFile}>
+                        <ClearIcon />
+                      </IconButton>
+                      {/* todo: link to download */}
+                      {/* <Link href={uploadedFileURL} _target="blank" download={file.name}> */}
+                      {file.name}
+                      {/* </Link> */}
+                    </Typography>
+                  </div>
+                ) : (
+                  <Typography variant="body2">No file uploaded yet</Typography>
+                )}
+                {/* handle link */}
+                <TextField
+                  id="link"
+                  name="link"
+                  label="Embed Link"
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <InsertLinkIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  variant="outlined"
+                  sx={{ mt: 3 }}
+                  defaultValue={link}
+                />
+                <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3, mb: 1 }}>
+                  <Button
+                    variant="outlined"
+                    sx={{ color: "primary.main" }}
+                    onClick={() => {
+                      navigate(`/teacher/course/${courseid}/material`);
+                    }}>
+                    Cancel
+                  </Button>
+                  <Button variant="contained" type="submit">
+                    {type == "new" ? "Post" : "Update"}
+                  </Button>
+                </Box>
+              </>
             )}
           </Container>
         </Box>

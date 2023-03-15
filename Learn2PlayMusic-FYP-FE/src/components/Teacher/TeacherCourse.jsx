@@ -230,25 +230,30 @@ const TeacherCourse = (userInfo) => {
       }
     });
     // reset
+    setOpen(true);
     setSelectedMaterial(null);
     setDeleteMaterialModal(false);
-    fetch(`${import.meta.env.VITE_API_URL}/course/material?courseId=${courseid}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((response) => response.json())
-      .then((res) => {
-        const materialData = res.map((material) => {
-          const id = material.SK.split("Material#")[1];
-          const date = new Date(material.MaterialLessonDate);
-          const formattedDate = `${date.toLocaleDateString()}`;
-          return { ...material, id, MaterialLessonDate: formattedDate };
+    setTimeout(() => {
+      fetch(`${import.meta.env.VITE_API_URL}/course/material?courseId=${courseid}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((res) => {
+          const refreshMaterialData = res.map((material) => {
+            const id = material.SK.split("Material#")[1];
+            const date = new Date(material.MaterialLessonDate);
+            const formattedDate = `${date.toLocaleDateString()}`;
+            return { ...material, id, MaterialLessonDate: formattedDate };
+          });
+          console.log(refreshMaterialData);
+          setCourseMaterial(refreshMaterialData);
+          setOpen(false);
+          toast.success("Material deleted successfully");
         });
-        setCourseMaterial(materialData);
-        console.log(materialData)
-        toast.success("Material deleted successfully");
-      });
+    }, 2000);
     return;
   }
 
@@ -714,8 +719,9 @@ const TeacherCourse = (userInfo) => {
                         <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2} sx={{ justifyContent: "center", alignItems: "center" }}>
                           <Typography
                             variant="button"
-                            onClick={() => {navigate(`${homework.id}/edit`)}}
-                          >
+                            onClick={() => {
+                              navigate(`${homework.id}/edit`);
+                            }}>
                             <Link underline="hover">Edit</Link>
                           </Typography>
                           <Typography
