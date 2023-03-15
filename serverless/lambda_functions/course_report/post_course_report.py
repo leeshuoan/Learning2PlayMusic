@@ -50,6 +50,14 @@ def lambda_handler(event, context):
         # check that evaluation_list is present in the request body
         if 'evaluationList' not in json.loads(event['body']):
             return response_400("evaluationList is missing from request body")
+        
+        # check that title is present in the request body
+        if 'title' not in json.loads(event['body']):
+            return response_400("title is missing from request body")
+        
+        # check that dateAvailable is present in the request body
+        if 'dateAvailable' not in json.loads(event['body']):
+            return response_400("dateAvailable is missing from request body")
 
         # check that all evaluation metrics are present in the evaluation_list
         valid_metrics = set(['posture', 'rhythm', 'tone quality', 'dynamics control', 'articulation', 'sight-reading', 
@@ -63,8 +71,10 @@ def lambda_handler(event, context):
                 "PK": f"Course#{json.loads(event['body'])['courseId']}",
                 "SK": f"Student#{json.loads(event['body'])['studentId']}Report#{reportId}",
                 "EvaluationList": json.loads(event['body'])['evaluationList'],
+                "Title": json.loads(event['body'])['title'],
+                'Date Available': json.loads(event['body'])['dateAvailable'],
                 "GoalsForNewTerm": json.loads(event['body'])['goalsForNewTerm'],
-                "AdditionalComments": json.loads(event['body'])['additionalComments']
+                "AdditionalComments": json.loads(event['body'])['additionalComments'],
             }
         response = table.put_item(Item=item)
 
