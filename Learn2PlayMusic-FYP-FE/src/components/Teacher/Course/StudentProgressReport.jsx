@@ -1,6 +1,6 @@
 import { Backdrop, Box, Button, Card, CircularProgress, Container, Divider, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography, useTheme } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
 
 const StudentProgressReport = () => {
@@ -23,18 +23,19 @@ const StudentProgressReport = () => {
   };
   const performance = ["Poor", "Weak", "Satisfactory", "Good", "Excellent", "N.A"];
 
-  const theme = useTheme();
+  const theme = useTheme(); 
   const navigate = useNavigate();
   const { courseid } = useParams();
   const { userId } = useParams();
   const { reportId } = useParams();
   const [course, setCourse] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [selected, setSelected] = useState("none");
+  const [selected, setSelected] = useState(reportId == undefined ? "none" : reportId);
   const [goals, setGoals] = useState();
   const [comments, setComments] = useState();
   const [progressReports, setProgressReports] = useState([]);
   const [studentName, setStudentName] = useState();
+  const [selectedReport, setSelectedReport] = useState({});
 
   const handleGoalsChange = (event) => {
     setGoals(event.target.value);
@@ -83,7 +84,11 @@ const StudentProgressReport = () => {
 
       const reportData = data2.map((report) => {
         const ReportId = report.SK.split("Report#")[1]
-        return { ...report, ReportId };
+        const Available = new Date(report.AvailableDate) > new Date() ? false : true;
+        if (reportId == ReportId) {
+          setSelectedReport(report);
+        }
+        return { ...report, ReportId, Available };
       })
       setProgressReports(reportData)
 
@@ -126,8 +131,14 @@ const StudentProgressReport = () => {
     setSelected(event.target.value);
   };
 
+  const selectReport  = (report) => {
+    setSelectedReport(report);
+    navigate(`/teacher/course/${courseid}/report/${userId}/${report.ReportId}`)
+  }
+
   return (
     <>
+      {console.log(selectedReport)}
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
         <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/classlist` }]} breadcrumbEnding="Progress Report" />
         <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
@@ -171,11 +182,11 @@ const StudentProgressReport = () => {
                   </MenuItem>
                 )}
                 {progressReports.map((report, key) => {
-                  return <MenuItem value={report.Title} key={key} onClick={() => { navigate(`/teacher/course/${courseid}/report/${userId}/${report.ReportId}`, { state: {studentName: studentName} }) }}>{report.Title}</MenuItem>;
+                  return <MenuItem selected={report.ReportId == reportId} value={report.ReportId} key={key} onClick={() => selectReport(report)}>{report.Title}</MenuItem>;
                 })}
               </Select>
             </FormControl>
-            <Box display={reportId == undefined ? "none" : "block"}>
+            <Box display={ selectedReport.Available && reportId != undefined ? "block" : "none"}>
               <Divider sx={{ my: 2 }} />
               {Object.keys(metrics).map((metric, key) => (
                 <Box key={key}>
@@ -198,6 +209,12 @@ const StudentProgressReport = () => {
                   Submit
                 </Button>
               </Box>
+            </Box>
+            <Box display={ (Object.keys(selectedReport).length !== 0) && !selectedReport.Available && reportId != undefined ? "block" : "none"}>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" sx={{ mb: 1, color: "grey" }}>
+                Not Available Yet
+              </Typography>
             </Box>
           </Card>
         </Box>

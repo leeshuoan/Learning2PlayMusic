@@ -118,7 +118,7 @@ const TeacherCourse = (userInfo) => {
         id: "progressReport",
         header: "Progress Report",
         Cell: ({ cell, row }) => (
-          <Link underline="hover" onClick={() => navigate(`/teacher/course/${courseid}/report/${row.original.studentId}`, { state: {studentName: row.original.studentName} })} sx={{ justifyContent: "center", alignItems: "center" }}>
+          <Link underline="hover" onClick={() => navigate(`/teacher/course/${courseid}/report/${row.original.studentId}`)} sx={{ justifyContent: "center", alignItems: "center" }}>
             <Typography variant="button">
               <FileOpenIcon fontSize="inherit" />
               &nbsp;OPEN
