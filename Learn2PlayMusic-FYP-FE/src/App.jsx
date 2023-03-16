@@ -126,8 +126,8 @@ function App() {
                 <Route path="edit" element={<EditHomeworkForm />} />
                 <Route path="grade/:userId" element={<TeacherGradeHomework />} />
               </Route>
-              <Route path="progress-report/:userId" element={<StudentProgressReport />} />
-              <Route path="progress-report/:userId/:reportId" element={<StudentProgressReport />} />
+              <Route path="report/:userId" element={<StudentProgressReport />} />
+              <Route path="report/:userId/:reportId" element={<StudentProgressReport />} />
             </Route>
           </Route>
 

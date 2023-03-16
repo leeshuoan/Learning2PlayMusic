@@ -21,34 +21,8 @@ const TeacherCourse = (userInfo) => {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [deleteMaterialModal, setDeleteMaterialModal] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
+  const [classList, setClassList] = useState([]);  
 
-  // dummy data
-  const courseProgressReports = [
-    {
-      id: 1,
-      title: "Progress Report 1",
-      uploadDate: "31 Jun 2023",
-    },
-    {
-      id: 2,
-      title: "Progress Report 1",
-      uploadDate: "31 Jun 2023",
-    },
-  ];
-  const classListDummyData = [
-    {
-      studentId: 1,
-      StudentName: "John Doe",
-      ParticipationPoints: "2",
-      progresReport: "",
-    },
-    {
-      studentId: 2,
-      StudentName: "Jane Doe",
-      ParticipationPoints: "11",
-      progresReport: "",
-    },
-  ];
   // navigate pages
   const navigate = useNavigate();
   const { category } = useParams();
@@ -59,7 +33,7 @@ const TeacherCourse = (userInfo) => {
     material: "Class Materials",
     quiz: "Quizzes",
     homework: "Homework",
-    classList: "Class List",
+    classlist: "Class List",
   };
   // api calls
   async function request(endpoint) {
@@ -77,7 +51,7 @@ const TeacherCourse = (userInfo) => {
   const getMaterialAPI = request(`/course/material?courseId=${courseid}`);
   const getHomeworkAPI = request(`/course/homework?courseId=${courseid}`);
   const getQuizAPI = request(`/course/quiz?courseId=${courseid}`);
-  const getClassListAPI = request(`/course/classlist?courseId=${courseid}`);
+  const getClassListAPI = request(`/course/student?courseId=${courseid}`);
   // material table configs
   const courseMaterialsColumns = useMemo(
     () => [
@@ -151,7 +125,7 @@ const TeacherCourse = (userInfo) => {
         header: "Progress Report",
         Cell: ({ cell, row }) => (
           // todo
-          <Link underline="hover" onClick={() => navigate()} sx={{ justifyContent: "center", alignItems: "center" }}>
+          <Link underline="hover" onClick={() => navigate(`/teacher/course/${courseid}/report/${row.original.StudentId}`)} sx={{ justifyContent: "center", alignItems: "center" }}>
             <Typography variant="button">
               <FileOpenIcon fontSize="inherit" />
               &nbsp;OPEN
@@ -192,7 +166,6 @@ const TeacherCourse = (userInfo) => {
       .then((response) => response.json())
       .then((res) => {
         var refreshedAnnouncement = res.map((announcement) => {
-          console.log(announcement);
           const id = announcement.SK.split("Announcement#")[1];
           const date = new Date(announcement.Date);
           const formattedDate = date.toLocaleDateString();
@@ -256,29 +229,11 @@ const TeacherCourse = (userInfo) => {
     return;
   }
 
-  // [
-  //   {
-  //     HomeworkDescription: "This is your first homework for this course",
-  //     HomeworkName: "Piano homework 1",
-  //     SK: "Homework#1",
-  //     PK: "Course#1",
-  //     HomeworkAssignedDate: "2022-12-31T00:00:01Z",
-  //     HomeworkDueDate: "2023-12-31T00:00:01Z",
-  //   },
-  //   {
-  //     HomeworkDescription: "This is your second homework for this course",
-  //     HomeworkName: "Homework the second",
-  //     SK: "Homework#2",
-  //     PK: "Course#1",
-  //     HomeworkAssignedDate: "2022-01-31T00:00:01Z",
-  //     HomeworkDueDate: "2023-05-31T00:00:01Z",
-  //   },
-  // ];
   useEffect(() => {
     async function fetchData() {
-      const [data1, data2, data3, data4, data5] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI]);
+      const [data1, data2, data3, data4, data5, data6] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI, getClassListAPI]);
 
-      console.log(data1);
+      console.log(data6);
       const courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
@@ -286,56 +241,6 @@ const TeacherCourse = (userInfo) => {
         teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
-
-      console.log(data2);
-      // async function fetchHomeworkData() {
-      //   try {
-      //     const homeworkData = await Promise.all(
-      //       data2.map(async (homework) => {
-      //         const id = homework.SK.split("Homework#")[1].substr(0, 1);
-      //         const date = new Date(homework.HomeworkDueDate);
-      // const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-
-      // const homeworkFeedback = await fetchHomeworkFeedback(id);
-      // console.log(homeworkFeedback);
-
-      // return {
-      //           ...homework,
-      //           id,
-      //           HomeworkDueDate: formattedDate,
-      //           Marked: homeworkFeedback.Marked,
-      //           NumAttempts: homeworkFeedback.NumAttempts,
-      //         };
-      //       })
-      //     );
-      //     return homeworkData;
-      //   } catch (error) {
-      //     console.log(error);
-      //   }
-      // }
-
-      // async function fetchHomeworkFeedback(id) {
-      //   const data = await request(
-      //     `/course/homework/feedback?courseId=${courseid}&homeworkId=${id}&studentId=${userInfo.userInfo.id}`
-      //   );
-      //   console.log(data);
-      //   const homeworkFeedback = {
-      //     Marked: data.Marked,
-      //     NumAttempts: data.NumAttempts != 0 ? data.NumAttempts : "",
-      //   };
-      //   return homeworkFeedback;
-      // }
-
-      // fetchHomeworkData().then((data) => {
-      //   setCourseHomework(data);
-      // });
-
-      //     HomeworkDescription: "This is your first homework for this course",
-      //     HomeworkName: "Piano homework 1",
-      //     SK: "Homework#1",
-      //     PK: "Course#1",
-      //     HomeworkAssignedDate: "2022-12-31T00:00:01Z",
-      //     HomeworkDueDate: "2023-12-31T00:00:01Z",
 
       const homeworkData = data2.map((homework) => {
         const id = homework.SK.split("Homework#")[1].substr(0, 1);
@@ -356,7 +261,6 @@ const TeacherCourse = (userInfo) => {
         return { ...material, id, MaterialLessonDate: formattedDate };
       });
       setCourseMaterial(materialData);
-      console.log(materialData);
 
       const quizData = data4.map((quiz) => {
         const id = quiz.SK.split("Quiz#")[1].substr(0, 1);
@@ -365,17 +269,22 @@ const TeacherCourse = (userInfo) => {
         return { ...quiz, id, QuizDueDate: formattedDate };
       });
       setCourseQuiz(quizData);
-      console.log(quizData);
 
       const announcementsData = data5.map((announcement) => {
-        console.log(announcement);
         const id = announcement.SK.split("Announcement#")[1];
         const date = new Date(announcement.Date);
         const formattedDate = date.toLocaleDateString();
         return { ...announcement, id, Date: formattedDate };
       });
       setCourseAnnouncements(announcementsData);
-      console.log(announcementsData);
+
+      const classListData = data6.map((student) => {
+        const StudentId = student.PK.split("Student#")[1];
+        const StudentName = " "
+        const ParticipationPoints = " "
+        return { ...student, StudentId, StudentName, ParticipationPoints };
+      })
+      setClassList(classListData);
     }
 
     fetchData().then(() => {
@@ -726,7 +635,7 @@ const TeacherCourse = (userInfo) => {
               </Card>
             </Box>
             {/* class list ==================================================================================================== */}
-            <Box sx={{ display: category == "classList" ? "block" : "none" }}>
+            <Box sx={{ display: category == "classlist" ? "block" : "none" }}>
               <Card sx={{ py: 3, px: 4, mt: 2 }}>
                 {/* mui table*/}
                 <Grid container>
@@ -736,7 +645,7 @@ const TeacherCourse = (userInfo) => {
                 </Grid>
                 {/* end header */}
 
-                <MaterialReactTable columns={classListColumns} data={classListDummyData} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
+                <MaterialReactTable columns={classListColumns} data={classList} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
               </Card>
             </Box>
           </Box>

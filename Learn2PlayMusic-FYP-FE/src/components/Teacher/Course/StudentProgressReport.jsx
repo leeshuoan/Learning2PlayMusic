@@ -107,7 +107,7 @@ const StudentProgressReport = () => {
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/homework` }]} breadcrumbEnding="Progress Report" />
+        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/classList` }]} breadcrumbEnding="Progress Report" />
         <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
