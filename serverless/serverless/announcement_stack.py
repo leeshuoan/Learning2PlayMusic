@@ -44,9 +44,8 @@ class AnnouncementStack(Stack):
         EMAIL_RECEIVER = 'aiwei.testt@gmail.com'
 
         # Initialize an SES email receiver
-        ses_identity = ses.EmailIdentity(AnnouncementStack, "AnnouncementStackIdentity",
-                                        identity=EMAIL_RECEIVER
-                                        )
+        cfn_email_identity = ses.CfnEmailIdentity(self, f"{EMAIL_RECEIVER}-CfnEmailIdentity",
+                                                  email_identity=EMAIL_RECEIVER)
 
 
         ########################
