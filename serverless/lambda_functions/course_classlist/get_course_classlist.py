@@ -29,10 +29,10 @@ def lambda_handler(event, context):
 
         for student in students:
 
+            studentId = student['studentId']
+
             if not combination_id_exists("Course", courseId, "Student", studentId):
                 students.remove(student)
-
-            studentId = student['studentId']
 
             #######################
             ### GET QUIZ SCORES ###
