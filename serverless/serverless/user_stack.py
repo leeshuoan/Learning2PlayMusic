@@ -56,9 +56,9 @@ class UserStack(Stack):
         post_teacher_course = _lambda.Function(self, "postTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.post_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_teacher_course = _lambda.Function(self, "deleteTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.delete_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
-        ###########
-        ### API ###
-        ###########
+        ##############
+        ### API GW ###
+        ##############
 
         # define the attributes of the existing REST API
         rest_api_id = Fn.import_value("mainApiId")
@@ -69,9 +69,9 @@ class UserStack(Stack):
             self, "main", rest_api_id=rest_api_id, root_resource_id=root_resource_id)
 
 
-        #####################
-        ### API RESOURCES ###
-        #####################
+        ########################
+        ### API GW RESOURCES ###
+        ########################
 
         # Create resources for the API
         user_resource = main_api.root.add_resource("user")
@@ -81,9 +81,9 @@ class UserStack(Stack):
         teacher_course_resource = teacher_resource.add_resource("course")
 
 
-        ########################################
-        ### API RESOURCES METHODS - STUDENTS ###
-        ########################################
+        ###########################################
+        ### API GW RESOURCES METHODS - STUDENTS ###
+        ###########################################
 
         # Create methods in the required resources
         # /user/student
@@ -149,9 +149,9 @@ class UserStack(Stack):
           'method.request.querystring.courseId': True})
 
 
-        ########################################
-        ### API RESOURCES METHODS - TEACHERS ###
-        ########################################
+        ###########################################
+        ### API GW RESOURCES METHODS - TEACHERS ###
+        ###########################################
 
         # /user/teacher
         post_user_teacher_model = apigw.Model(

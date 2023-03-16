@@ -1,3 +1,4 @@
+import os
 import sys
 import boto3
 import json
@@ -24,6 +25,16 @@ def lambda_handler(event, context):
             }
 
         response = table.put_item(Item= item)
+        print("🐳 item has been added to dynamodb 🐳")
+
+        # Publish a message to the SNS topic
+        sns_client = boto3.client('sns')
+        sns_client.publish(
+            TopicArn = os.environ['SNS_TOPIC_ARN'],
+            Message='A general announcement has been created' # note: this message is NOT the sns topic's body, it is simply a message to *trigger* the sns
+        )
+
+        print("✅ message has been published ✅")
 
         return response_200_msg_items("inserted", item)
 
