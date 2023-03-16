@@ -1,11 +1,9 @@
 import { Backdrop, Box, Button, Card, CircularProgress, Container, Divider, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography, useTheme } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
 
 const StudentProgressReport = () => {
-  const progressReports = ["Student Progress Report Jan to Jun 2023", "Student Progress Report Jul to Dec 2023"];
-
   const metrics = {
     posture: "Posture",
     rhythm: "Rhythm",
@@ -35,6 +33,8 @@ const StudentProgressReport = () => {
   const [selected, setSelected] = useState("none");
   const [goals, setGoals] = useState();
   const [comments, setComments] = useState();
+  const [progressReports, setProgressReports] = useState([]);
+  const [studentName, setStudentName] = useState();
 
   const handleGoalsChange = (event) => {
     setGoals(event.target.value);
@@ -51,14 +51,27 @@ const StudentProgressReport = () => {
         "Content-Type": "application/json",
       },
     });
+
+    if (!response.ok) { // handle non-2xx HTTP status codes
+      console.log(response)
+      throw new Error(`${response}`);
+    }
+
     return response.json();
   }
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
+  const getReportAPI = request(`/course/report?courseId=${courseid}&studentId=${userId}`);
+  const getClassListAPI = request(`/course/classlist?courseId=${courseid}`);
 
   useEffect(() => {
     async function fetchData() {
-      const [data1] = await Promise.all([getCourseAPI]);
+      let data1 = [], data2 = [], data3 = [];
+      try {
+        [data1, data2, data3] = await Promise.all([getCourseAPI, getReportAPI, getClassListAPI]);
+      } catch (error) {
+        console.log(error);
+      }
 
       let courseData = {
         id: data1[0].SK.split("#")[1],
@@ -67,6 +80,15 @@ const StudentProgressReport = () => {
         teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
+
+      const reportData = data2.map((report) => {
+        const ReportId = report.SK.split("Report#")[1]
+        return { ...report, ReportId };
+      })
+      setProgressReports(reportData)
+
+      const studentData = data3.filter((student) => student.studentId == userId);
+      setStudentName(studentData[0].studentName);
     }
 
     fetchData().then(() => {
@@ -107,7 +129,7 @@ const StudentProgressReport = () => {
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/classList` }]} breadcrumbEnding="Progress Report" />
+        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/classlist` }]} breadcrumbEnding="Progress Report" />
         <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
@@ -139,7 +161,7 @@ const StudentProgressReport = () => {
             <Typography variant="subsubtitle" sx={{ mb: 0.5 }}>
               STUDENT NAME
             </Typography>
-            <Typography variant="body2">TOM</Typography>
+            <Typography variant="body2">{ studentName }</Typography>
             <FormControl sx={{ mt: 3, mb: 1 }}>
               <InputLabel id="progress-report">Progress Report</InputLabel>
               <Select labelId="progress-report" id="progress-report" value={selected} label="progress-report" onChange={handleChange}>
@@ -148,8 +170,8 @@ const StudentProgressReport = () => {
                     Select Progress Report
                   </MenuItem>
                 )}
-                {progressReports.map((report) => {
-                  return <MenuItem value={report}>{report}</MenuItem>;
+                {progressReports.map((report, key) => {
+                  return <MenuItem value={report.Title} key={key} onClick={() => { navigate(`/teacher/course/${courseid}/report/${userId}/${report.ReportId}`, { state: {studentName: studentName} }) }}>{report.Title}</MenuItem>;
                 })}
               </Select>
             </FormControl>
@@ -159,8 +181,8 @@ const StudentProgressReport = () => {
                 <Box key={key}>
                   <FormLabel>{metrics[metric]}</FormLabel>
                   <RadioGroup name={metric} sx={{ mb: 1 }} row>
-                    {performance.map((performance) => (
-                      <FormControlLabel value={performance} control={<Radio size="small" />} label={performance} />
+                    {performance.map((performance, key) => (
+                      <FormControlLabel value={performance} key={key} control={<Radio size="small" />} label={performance} />
                     ))}
                   </RadioGroup>
                 </Box>

@@ -51,7 +51,7 @@ const TeacherCourse = (userInfo) => {
   const getMaterialAPI = request(`/course/material?courseId=${courseid}`);
   const getHomeworkAPI = request(`/course/homework?courseId=${courseid}`);
   const getQuizAPI = request(`/course/quiz?courseId=${courseid}`);
-  const getClassListAPI = request(`/course/student?courseId=${courseid}`);
+  const getClassListAPI = request(`/course/classlist?courseId=${courseid}`);
   // material table configs
   const courseMaterialsColumns = useMemo(
     () => [
@@ -104,28 +104,21 @@ const TeacherCourse = (userInfo) => {
   const classListColumns = useMemo(
     () => [
       {
-        accessorKey: "StudentName",
+        accessorKey: "studentName",
         id: "studentName",
         header: "Student Name",
-        Cell: ({ cell, row }) => {
-          row.original.StudentName;
-        },
       },
       {
         accessorKey: "ParticipationPoints",
         id: "participationPoints",
         header: "Participation Points",
-        Cell: ({ cell, row }) => {
-          row.original.ParticipationPoints;
-        },
       },
       {
         accessorKey: "ProgressReport",
         id: "progressReport",
         header: "Progress Report",
         Cell: ({ cell, row }) => (
-          // todo
-          <Link underline="hover" onClick={() => navigate(`/teacher/course/${courseid}/report/${row.original.StudentId}`)} sx={{ justifyContent: "center", alignItems: "center" }}>
+          <Link underline="hover" onClick={() => navigate(`/teacher/course/${courseid}/report/${row.original.studentId}`, { state: {studentName: row.original.studentName} })} sx={{ justifyContent: "center", alignItems: "center" }}>
             <Typography variant="button">
               <FileOpenIcon fontSize="inherit" />
               &nbsp;OPEN
@@ -278,13 +271,13 @@ const TeacherCourse = (userInfo) => {
       });
       setCourseAnnouncements(announcementsData);
 
-      const classListData = data6.map((student) => {
-        const StudentId = student.PK.split("Student#")[1];
-        const StudentName = " "
-        const ParticipationPoints = " "
-        return { ...student, StudentId, StudentName, ParticipationPoints };
-      })
-      setClassList(classListData);
+      // const classListData = data6.map((student) => {
+      //   const ParticipationPoints = " "
+      //   return { ...student };
+      // })
+      console.log(data6)
+      setClassList(data6);
+      console.log(classList)
     }
 
     fetchData().then(() => {
@@ -297,7 +290,7 @@ const TeacherCourse = (userInfo) => {
     if (option == "Class Materials") navigate(`/teacher/course/${course.id}/material`);
     if (option == "Quizzes") navigate(`/teacher/course/${course.id}/quiz`);
     if (option == "Homework") navigate(`/teacher/course/${course.id}/homework`);
-    if (option == "Class List") navigate(`/teacher/course/${course.id}/classList`);
+    if (option == "Class List") navigate(`/teacher/course/${course.id}/classlist`);
   };
 
   return (
