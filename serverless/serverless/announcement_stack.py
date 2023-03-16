@@ -3,7 +3,7 @@ import boto3
 from aws_cdk import (
     aws_lambda as _lambda,
     aws_apigateway as apigw,
-    aws_sns as sns,
+    aws_ses as ses,
     aws_iam,
     Stack,
     Fn
@@ -38,20 +38,15 @@ class AnnouncementStack(Stack):
 
 
         ###########
-        ### SNS ###
+        ### SES ###
         ###########
 
-        # Create SNS topic
-        generalannouncement_sns_topic = sns.Topic(self, "L2PMA General Announcement")
+        EMAIL_RECEIVER = 'aiwei.testt@gmail.com'
 
-        # Create an email subscription for the topic
-        sns.Subscription(self, "GeneralAnnouncementEmailSubscription",
-                        topic=generalannouncement_sns_topic,
-                        endpoint="aiwei.testt@gmail.com",
-                        protocol=sns.SubscriptionProtocol.EMAIL
-                        )
-
-        # REMINDER: TO EXPLORE RAW_MESSAGE_DELIVERY ATTRIBUTE FOR EMAIL FORMATTING
+        # Initialize an SES email receiver
+        ses_identity = ses.EmailIdentity(AnnouncementStack, "AnnouncementStackIdentity",
+                                        identity=EMAIL_RECEIVER
+                                        )
 
 
         ########################
@@ -59,7 +54,7 @@ class AnnouncementStack(Stack):
         ########################
 
         get_generalannouncement = _lambda.Function( self, "getGeneralAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.get_generalannouncement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
-        post_generalannouncement = _lambda.Function( self, "postGeneralAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.post_generalannouncement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE, environment={'SNS_TOPIC_ARN':generalannouncement_sns_topic.topic_arn} )
+        post_generalannouncement = _lambda.Function( self, "postGeneralAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.post_generalannouncement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
         delete_generalannouncement = _lambda.Function( self, "deleteGeneralAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_generalannouncement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
 
 
