@@ -93,6 +93,7 @@ const NewCourseMaterialsForm = () => {
     const validationResult = validateInput();
     if (validationResult.error) {
       toast.error(validationResult.message);
+      setOpen(false);
       return;
     }
     const materialTypeStr = file ? file.type.split("/")[1].toUpperCase() : "Link";

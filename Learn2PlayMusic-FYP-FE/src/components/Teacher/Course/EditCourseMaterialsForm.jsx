@@ -110,10 +110,11 @@ const EditCourseMaterialsForm = () => {
   }
   // submit ==============================================================================================================================================
   async function handleSubmit() {
-    // setOpen(true);
+    setOpen(true);
     const validationResult = validateInput();
     if (validationResult.error) {
       toast.error(validationResult.message);
+      setOpen(false);
       return;
     }
     var requestBody;
