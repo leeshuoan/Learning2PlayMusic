@@ -24,9 +24,10 @@ def lambda_handler(event, context):
         material_id = request_body['materialId']
         material_title = request_body['materialTitle']
         material_lesson_date = request_body['materialLessonDate']
-        material_link = request_body['materialLink']
-        material_type = request_body['materialType']
-        material_attachment_file_name = request_body['materialAttachmentFileName']
+        # optional params
+        material_link = request_body['materialLink'] if request_body['materialLink'] else ""
+        material_type = request_body['materialType'] if request_body['materialType'] else ""
+        material_attachment_file_name = request_body['materialAttachmentFileName'] if request_body['materialAttachmentFileName'] else ""
 
 
         if not course_id or not material_id:
