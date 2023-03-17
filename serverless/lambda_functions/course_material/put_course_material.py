@@ -51,6 +51,13 @@ def lambda_handler(event, context):
                     ":d": material_lesson_date,
                 },
             )
+            item = {
+                "PK": f"Course#{course_id}",
+                "SK": f"Material#{material_id}",
+                "MaterialLessonDate": material_lesson_date,
+                "MaterialTitle": material_title,
+            }
+            
         else:
             material_attachment = ""
             if request_body['materialAttachment'] != "":
