@@ -37,7 +37,7 @@ import NewHomeworkForm from "./components/Teacher/Course/NewHomeworkForm";
 import EditHomeworkForm from "./components/Teacher/Course/EditHomeworkForm";
 import TeacherHomeworkOverview from "./components/Teacher/Course/TeacherHomeworkOverview";
 import TeacherGradeHomework from "./components/Teacher/Course/TeacherGradeHomework";
-import StudentProgressReport from "./components/Teacher/Course/StudentProgressReport";
+import BaseProgressReport from "./components/Teacher/Course/BaseProgressReport";
 
 Amplify.configure(aws_exports);
 
@@ -126,8 +126,8 @@ function App() {
                 <Route path="edit" element={<EditHomeworkForm />} />
                 <Route path="grade/:userId" element={<TeacherGradeHomework />} />
               </Route>
-              <Route path="report/:userId" element={<StudentProgressReport />} />
-              <Route path="report/:userId/:reportId" element={<StudentProgressReport />} />
+              <Route path="report/:userId" element={<BaseProgressReport />} />
+              <Route path="report/:userId/:reportId" element={<BaseProgressReport />} />
             </Route>
           </Route>
 
