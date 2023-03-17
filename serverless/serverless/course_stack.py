@@ -88,6 +88,10 @@ class CourseStack(Stack):
         # Create /course/homework/ AWS Lambda function
         get_course_homework = _lambda.Function(self, "getCourseHomework", runtime=_lambda.Runtime.PYTHON_3_9,
                                                handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.get_course_homework.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        post_course_homework = _lambda.Function(self, "postCourseHomework", runtime=_lambda.Runtime.PYTHON_3_9,
+                                               handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.post_course_homework.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        delete_course_homework = _lambda.Function(self, "deleteCourseHomework", runtime=_lambda.Runtime.PYTHON_3_9,
+                                               handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.delete_course_homework.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # Create /course/homework/feedback AWS Lambda function
         get_course_homework_feedback = _lambda.Function(self, "getCourseHomeworkFeedback", runtime=_lambda.Runtime.PYTHON_3_9,
@@ -414,9 +418,47 @@ class CourseStack(Stack):
         } )
 
         # /course/homework
+        post_course_homework_resource_model = main_api.add_model(
+            "PostCourseHomeworkModel",
+            content_type="application/json",
+            model_name="PostCourseHomeworkModel",
+            schema=apigw.JsonSchema(
+                title="PostCourseHomeworkModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "quizTitle": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "quizMaxAttempts": apigw.JsonSchema(type=apigw.JsonSchemaType.INTEGER),
+                    "quizDescription": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "visibility": apigw.JsonSchema(type=apigw.JsonSchemaType.BOOLEAN),
+                },
+                required=["courseId", "quizTitle", "quizMaxAttempts", "quizDescription", "visibility"]))
+        
+        delete_course_homework_resource_model = main_api.add_model(
+            "DeleteCourseHomeworkModel",
+            content_type="application/json",
+            model_name="DeleteCourseQuizQuestionModel",
+            schema=apigw.JsonSchema(
+                title="DeleteCourseQuizQuestionModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "homeworkId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    },
+                required=["courseId", "homeworkId"]))
+
+        course_homework_resource.add_method("POST", apigw.LambdaIntegration(post_course_homework), request_models={
+            "application/json": post_course_homework_resource_model
+                })
         course_homework_resource.add_method("GET", apigw.LambdaIntegration(get_course_homework), request_parameters={
           'method.request.querystring.courseId': True,
           'method.request.querystring.homeworkId': False
+        })
+
+        course_homework_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_homework), request_models={
+            "application/json": delete_course_homework_resource_model
         })
 
         # /course/homework/feedback
