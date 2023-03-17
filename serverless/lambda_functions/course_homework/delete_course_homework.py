@@ -8,7 +8,6 @@ from global_functions.exists_in_db import *
 
 
 s3 = boto3.client('s3')
-bucket_name = os.environ['MATERIAL_ATTACHMENT_BUCKET_NAME']
 
 def lambda_handler(event, context):
 
@@ -17,16 +16,8 @@ def lambda_handler(event, context):
         table = dynamodb.Table("LMS")
         request_body: dict = json.loads(event['body'])
 
-        # VALIDATION
-        # check if <courseId> exists in database
         course_id = request_body['courseId']
-        if not id_exists("Course", "Course", course_id):
-            return response_404("courseId does not exist in database")
-
-        # check if <homeworkId> exists in database
         homework_id = request_body['homeworkId']
-        if not combination_id_exists("Course", course_id, "Homework", homework_id):
-            return response_404("homeworkId does not exist in database")
 
         table.delete_item(
             Key= {
