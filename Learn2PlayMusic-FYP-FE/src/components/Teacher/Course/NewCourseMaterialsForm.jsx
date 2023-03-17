@@ -112,6 +112,9 @@ const NewCourseMaterialsForm = () => {
       navigate(`/teacher/course/${courseid}/material`);
     } else {
       toast.error("Failed to add material!");
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     }
   }
   // ========================================================================================================================

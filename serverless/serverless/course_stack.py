@@ -265,7 +265,7 @@ class CourseStack(Stack):
                     "materialS3Link": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "MaterialAttachmentFileName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
-                required=["courseId", "materialId", "materialTitle", "materialType", "materialLessonDate"]))
+                required=["courseId", "materialId", "materialTitle", "materialLessonDate"]))
 
         course_material_resource.add_method("GET", apigw.LambdaIntegration(get_course_material), request_parameters={
             'method.request.querystring.courseId': True,

@@ -112,7 +112,7 @@ const EditCourseMaterialsForm = () => {
     if (file != "notChangingPDF") {
       const materialTypeStr = file ? file.type.split("/")[1].toUpperCase() : "Link";
       requestBody = buildRequestBody(materialTypeStr);
-    }else{
+    } else {
       requestBody = buildRequestBodyWOChangeInOriginalFile();
     }
     console.log(requestBody);
@@ -129,6 +129,9 @@ const EditCourseMaterialsForm = () => {
       navigate(`/teacher/course/${courseid}/material`);
     } else {
       toast.error("Failed to edit material!");
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     }
   }
   // ========================================================================================================================

@@ -37,7 +37,7 @@ def lambda_handler(event, context):
 
         if not combination_id_exists("Course", course_id, "Material", material_id):
             return response_404("materialId does not exist in database")
-        
+        print(request_body)
         if (len(request_body) == 4):
             response = table.update_item(
                 Key={
