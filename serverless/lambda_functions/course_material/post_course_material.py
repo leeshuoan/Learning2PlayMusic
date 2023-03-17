@@ -27,6 +27,7 @@ def lambda_handler(event, context):
         material_lesson_date = request_body['materialLessonDate']
         material_link = request_body['materialLink']
         material_type = request_body['materialType']
+        material_attachment_file_name = request_body['materialAttachmentFileName']
 
         # VALIDATION
         # checks that courseId passed in is not an empty string
@@ -50,8 +51,8 @@ def lambda_handler(event, context):
                 "MaterialLink": material_link,
                 "MaterialAttachment": material_attachment,
                 "MaterialTitle": material_title,
-                "MaterialType": material_type
-
+                "MaterialType": material_type,
+                "MaterialAttachmentFileName": material_attachment_file_name,
             }
 
         table.put_item(Item= item)

@@ -4,6 +4,7 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_apigateway as apigw,
     aws_ses as ses,
+    aws_sns as sns,
     aws_iam,
     Stack,
     Fn
@@ -49,25 +50,42 @@ class AnnouncementStack(Stack):
         # cfn_email_identity = ses.CfnEmailIdentity(self, f"{EMAIL_SENDER}-CfnEmailIdentity", email_identity=EMAIL_SENDER)
         # cfn_email_identity = ses.CfnEmailIdentity(self, f"{EMAIL_RECEIVER}-CfnEmailIdentity",email_identity=EMAIL_RECEIVER)
 
-        # cfn_contact_list = ses.CfnContactList(self, "GeneralAnnouncementContactListCfnContactList",
-        #     contact_list_name="GeneralAnnouncementContactList",
-        #     description="Contains all identities that subscribed to General Announcements (Both senders and receivers)",
-        #     # tags=[CfnTag(
-        #     #     key="key",
-        #     #     value="value"
-        #     # )],
-        #     topics=[ses.CfnContactList.TopicProperty(
-        #         default_subscription_status="OPT_IN", # can opt for "NO_CONFIRMATION"
-        #         display_name="L2PMAGeneralAnnouncement",
-        #         topic_name="GeneralAnnouncementTopic",
+        # Create an SNS Topic
+        topic = sns.Topic(self, "GeneralAnnouncementTopic")
 
-        #         # the properties below are optional
-        #         description="A topic created for general announcements"
-        #     )]
-        # )
+        # Add subscriptions to the topic
+        sns.Subscription(self, "testSubscription",
+            topic=topic,
+            endpoint='aiwei.testt@gmail.com',
+            protocol=sns.SubscriptionProtocol.EMAIL_JSON
+        )
 
-        # print("cfn_contact_list")
-        # print(cfn_contact_list)
+        # Add subscriptions to the topic
+        sns.Subscription(self, "testSubscription",
+            topic=topic,
+            endpoint='l2pma.student@gmail.com',
+            protocol=sns.SubscriptionProtocol.EMAIL_JSON
+        )
+
+        cfn_contact_list = ses.CfnContactList(self, "GeneralAnnouncementContactListCfnContactList",
+            contact_list_name="GeneralAnnouncementContactList",
+            description="A contact list that contains all identities subscribed to General Announcement",
+            # tags=[CfnTag(
+            #     key="key",
+            #     value="value"
+            # )],
+            topics=[ses.CfnContactList.TopicProperty(
+                default_subscription_status="OPT_IN", # can opt for "NO_CONFIRMATION"
+                display_name="L2PMAGeneralAnnouncement",
+                topic_name=topic.topic_name,
+
+                # the properties below are optional
+                description=f"A topic that contains all subscribers of to {topic.topic_name}"
+            )]
+        )
+
+        print("cfn_contact_list")
+        print(cfn_contact_list)
 
 
         ########################
