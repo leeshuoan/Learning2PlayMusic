@@ -1,14 +1,9 @@
 import boto3
-
-from aws_cdk import (
-    aws_lambda as _lambda,
-    aws_apigateway as apigw,
-    aws_s3 as s3,
-    aws_iam,
-    Stack,
-    CfnOutput
-)
-
+from aws_cdk import CfnOutput, Stack
+from aws_cdk import aws_apigateway as apigw
+from aws_cdk import aws_iam
+from aws_cdk import aws_lambda as _lambda
+from aws_cdk import aws_s3 as s3
 from constructs import Construct
 
 
@@ -243,6 +238,7 @@ class CourseStack(Stack):
                     "materialType": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "materialLessonDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "materialLink": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "MaterialAttachmentFileName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
                 required=["courseId", "materialTitle", "materialType", "materialLessonDate"]))
 
@@ -261,7 +257,8 @@ class CourseStack(Stack):
                     "materialType": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "materialLessonDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "materialLink": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "materialS3Link": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    "materialS3Link": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "MaterialAttachmentFileName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
                 required=["courseId", "materialId", "materialTitle", "materialType", "materialLessonDate"]))
 

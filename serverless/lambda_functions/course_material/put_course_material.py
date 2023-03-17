@@ -1,11 +1,11 @@
-import sys
-import boto3
+import base64
 import json
 import os
-import base64
+import sys
 
-from global_functions.responses import *
+import boto3
 from global_functions.exists_in_db import *
+from global_functions.responses import *
 
 dynamodb = boto3.resource('dynamodb')
 table_name = "LMS"
@@ -26,6 +26,8 @@ def lambda_handler(event, context):
         material_lesson_date = request_body['materialLessonDate']
         material_link = request_body['materialLink']
         material_type = request_body['materialType']
+        material_attachment_file_name = request_body['materialAttachmentFileName']
+
 
         if not course_id or not material_id:
             return response_400("courseId or materialId is missing")
@@ -39,7 +41,7 @@ def lambda_handler(event, context):
         material_attachment = ""
         if request_body['materialAttachment'] != "":
             base64data = request_body['materialAttachment']
-            material_attachment= handle_attachment(base64data, course_id, material_id, material_title)
+            material_attachment= handle_attachment(base64data, course_id, material_id, material_attachment_file_name)
 
         item = {
             "PK": f"Course#{course_id}",
@@ -48,7 +50,8 @@ def lambda_handler(event, context):
             "MaterialLink": material_link,
             "MaterialAttachment": material_attachment,
             "MaterialTitle": material_title,
-            "MaterialType": material_type
+            "MaterialType": material_type,
+            "MaterialAttachmentFileName": material_attachment_file_name
         }
 
         response = table.put_item(Item= item)
