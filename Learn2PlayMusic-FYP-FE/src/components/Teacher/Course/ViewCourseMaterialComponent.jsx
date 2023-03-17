@@ -2,6 +2,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 
 function ViewCourseMaterialComponent({ material, course, title, date, link, file }) {
+  console.log({ material, course, title, date, link, file });
   const { courseid } = useParams();
   const { materialid } = useParams();
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ function ViewCourseMaterialComponent({ material, course, title, date, link, file
     }
   }
 
-  if (material.MaterialAttachement!="") {
+  if (material.MaterialAttachement != "") {
     // todo:show this when there is a
     // e.g. material.MaterialAttachement = coursestack-l2mpmamaterialattachmentbucket28de1f4-61f6iq91o3e1/Course1/upload PDF test again.._8e20422b.pdf
     //

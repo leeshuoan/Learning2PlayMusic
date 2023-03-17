@@ -1,7 +1,7 @@
 import ClearIcon from "@mui/icons-material/Clear";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
-import { Box, Button, Card, Container, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, Container, IconButton, InputAdornment, Link, TextField, Typography } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
-import ViewCourseMaterialComponent from "./ViewCourseMaterialComponent";
 
 export default function CourseMaterialsForm() {
   const { courseid } = useParams();
@@ -22,7 +21,6 @@ export default function CourseMaterialsForm() {
   var material = state.material;
   dayjs.extend(customParseFormat);
   const navigate = useNavigate();
-
   const [classMaterialAttachment, setClassMaterialAttachment] = useState("");
   const [date, setDate] = useState(dayjs(material.MaterialLessonDate, "DD/MM/YYYY") || null);
   const [link, setLink] = useState(material.MaterialLink);
@@ -30,7 +28,7 @@ export default function CourseMaterialsForm() {
   const [title, setTitle] = useState(material.MaterialTitle);
   const [uploadedFileURL, setUploadedFileURL] = useState("");
   // todo : handle when there is already an s3 link for the material
-  
+
   // file handling
   const fileToBase64 = (file, callback) => {
     const reader = new FileReader();
@@ -49,23 +47,7 @@ export default function CourseMaterialsForm() {
   const handleRemoveFile = () => {
     setFile(null);
   };
-  function b64toBlob(base64Data, contentType = "application/pdf", sliceSize = 512) {
-    const byteCharacters = atob(base64Data.replace(/^data:image\/(png|jpeg|jpg|gif);base64,/, ""));
-    const byteArrays = [];
 
-    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-      const slice = byteCharacters.slice(offset, offset + sliceSize);
-      const byteNumbers = new Array(slice.length);
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
-    }
-
-    const blob = new Blob(byteArrays, { type: contentType });
-    return blob;
-  }
   // helper functions
   function buildRequestBody(materialTypeStr, userTitle, userLink) {
     const requestBodyObject = {
@@ -141,9 +123,24 @@ export default function CourseMaterialsForm() {
     if (type == "edit") {
       var ary = material.MaterialLessonDate.split("/");
       setDate(dayjs(new Date(ary[2], ary[1], ary[0])));
+      // uploadedFileURL;
+      async function getSingleMaterial() {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/course/material?courseId=${courseid}&materialId=${materialid}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        return data;
+      }
+      getSingleMaterial().then((data) => {
+        console.log(data);
+        setUploadedFileURL(data.MaterialAttachment);
+      });
+      setFile("placeholder");
     }
-  }, [course, material, state]);
-
+  }, [course, material, state, uploadedFileURL]);
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       {/* breadcrumbs */}
@@ -170,7 +167,51 @@ export default function CourseMaterialsForm() {
 
             {/* view */}
             {type == "view" ? (
-              <ViewCourseMaterialComponent material={material} course={course} title={title} date={date} link={link} file={file} />
+              <Box sx={{ mt: 5 }}>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                  Title
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  {title}
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                  Date
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  {date.toISOString().split("T")[0]}
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                  Attachment
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  {link != "" ? (
+                    <a href={"//" + link} target="_blank">
+                      {link}
+                    </a>
+                  ) : (
+                    <a href={uploadedFileURL} target="_blank">
+                      {uploadedFileURL}
+                    </a>
+                  )}
+                </Typography>
+                <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3, mb: 1 }}>
+                  <Button
+                    variant="outlined"
+                    sx={{ color: "primary.main" }}
+                    onClick={() => {
+                      navigate(`/teacher/course/${courseid}/material`);
+                    }}>
+                    Back
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      navigate(`/teacher/course/${courseid}/material/edit/${materialid}`, { state: { material: material, course: course } });
+                    }}>
+                    Edit
+                  </Button>
+                </Box>
+              </Box>
             ) : (
               // edit or delete ========================================================
               <>
@@ -206,9 +247,9 @@ export default function CourseMaterialsForm() {
                         <ClearIcon />
                       </IconButton>
                       {/* todo: link to download */}
-                      {/* <Link href={uploadedFileURL} _target="blank" download={file.name}> */}
-                      {file.name}
-                      {/* </Link> */}
+                      <Link href={uploadedFileURL} _target="blank" download={file}>
+                        {file}
+                      </Link>
                     </Typography>
                   </div>
                 ) : (
