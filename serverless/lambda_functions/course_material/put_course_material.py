@@ -38,23 +38,37 @@ def lambda_handler(event, context):
         if not combination_id_exists("Course", course_id, "Material", material_id):
             return response_404("materialId does not exist in database")
         
-        material_attachment = ""
-        if request_body['materialAttachment'] != "":
-            base64data = request_body['materialAttachment']
-            material_attachment= handle_attachment(base64data, course_id, material_id, material_attachment_file_name)
+        if (len(request_body) == 4):
+            response = table.update_item(
+                Key={
+                    "PK": f"Course#{course_id}",
+                    "SK": f"Material#{material_id}",
+                },
+                UpdateExpression="set MaterialTitle = :t, MaterialLessonDate = :d",
+                ExpressionAttributeValues={
+                    ":t": material_title,
+                    ":d": material_lesson_date,
+                },
+            )
+        else:
+            material_attachment = ""
+            if request_body['materialAttachment'] != "":
+                base64data = request_body['materialAttachment']
+                material_attachment= handle_attachment(base64data, course_id, material_id, material_attachment_file_name)
 
-        item = {
-            "PK": f"Course#{course_id}",
-            "SK": f"Material#{material_id}",
-            "MaterialLessonDate": material_lesson_date,
-            "MaterialLink": material_link,
-            "MaterialAttachment": material_attachment,
-            "MaterialTitle": material_title,
-            "MaterialType": material_type,
-            "MaterialAttachmentFileName": material_attachment_file_name
-        }
+            item = {
+                "PK": f"Course#{course_id}",
+                "SK": f"Material#{material_id}",
+                "MaterialLessonDate": material_lesson_date,
+                "MaterialLink": material_link,
+                "MaterialAttachment": material_attachment,
+                "MaterialTitle": material_title,
+                "MaterialType": material_type,
+                "MaterialAttachmentFileName": material_attachment_file_name
+            }
 
-        response = table.put_item(Item= item)
+            response = table.put_item(Item= item)
+
 
         return response_200_msg_items("updated", item)
 

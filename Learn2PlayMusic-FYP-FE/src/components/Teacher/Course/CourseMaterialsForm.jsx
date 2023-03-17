@@ -1,32 +1,33 @@
 import ClearIcon from "@mui/icons-material/Clear";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
-import { Box, Button, Card, Container, IconButton, InputAdornment, Link, TextField, Typography } from "@mui/material";
+import { Backdrop, Box, Button, Card, CircularProgress, Container, IconButton, InputAdornment, Link, TextField, Typography } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
 
-export default function CourseMaterialsForm() {
+const CourseMaterialsForm = () => {
+  dayjs.extend(customParseFormat);
+  const navigate = useNavigate();
   const { courseid } = useParams();
   const { materialid } = useParams();
   const { type } = useParams();
-  const { state } = useLocation();
-  var course = state.course;
-  var material = state.material;
-  dayjs.extend(customParseFormat);
-  const navigate = useNavigate();
-  const [classMaterialAttachment, setClassMaterialAttachment] = useState("");
-  const [date, setDate] = useState(dayjs(material.MaterialLessonDate, "DD/MM/YYYY") || null);
-  const [link, setLink] = useState(material.MaterialLink);
-  const [file, setFile] = useState(null);
-  const [title, setTitle] = useState(material.MaterialTitle);
-  const [uploadedFileURL, setUploadedFileURL] = useState("");
+
+  const [open, setOpen] = useState(true);
+  const [course, setCourse] = useState({});
+  const [date, setDate] = useState(null);
+  const [embeddedLink, setEmbeddedLink] = useState("");
+  const [file, setFile] = useState("");
+  const [fileName, setFileName] = useState("");
+  const [title, setTitle] = useState("");
+  const [base64Attachment, setBase64Attachment] = useState(""); // base 64 file
+  const [s3Url, setS3Url] = useState(""); // s3 link
   // todo : handle when there is already an s3 link for the material
 
   // file handling
@@ -38,39 +39,44 @@ export default function CourseMaterialsForm() {
   };
   const fileUploaded = (e) => {
     setFile(e.target.files[0]);
+    setFileName(e.target.files[0].name);
     fileToBase64(e.target.files[0], (err, result) => {
       if (result) {
-        setClassMaterialAttachment(result);
+        setBase64Attachment(result);
       }
     });
   };
   const handleRemoveFile = () => {
     setFile(null);
+    setFileName(null);
+    setBase64Attachment("");
+    setS3Url("");
   };
 
   // helper functions
-  function buildRequestBody(materialTypeStr, userTitle, userLink) {
+  function buildRequestBody(materialTypeStr) {
     const requestBodyObject = {
       courseId: courseid,
-      materialTitle: userTitle,
+      materialTitle: title,
       materialLessonDate: date.toISOString(),
-      materialLink: userLink,
+      materialLink: embeddedLink,
       materialType: materialTypeStr,
-      materialAttachment: classMaterialAttachment,
+      materialAttachment: base64Attachment,
+      materialAttachmentFileName: fileName,
     };
     if (type === "edit") {
       requestBodyObject.materialId = materialid;
     }
     return JSON.stringify(requestBodyObject);
   }
-  function validateInput(userLink, userTitle) {
-    if (userLink !== "" && file !== null) {
+  function validateInput() {
+    if (embeddedLink !== "" && file !== null) {
       return {
         error: true,
         message: "Please only upload one file or link!",
       };
     }
-    if (userTitle === "" || (userLink === "" && file === null) || date.$d === "Invalid Date") {
+    if (title === "" || (embeddedLink === "" && file === null) || date.$d === "Invalid Date") {
       return {
         error: true,
         message: "Please fill in all the fields!",
@@ -80,21 +86,15 @@ export default function CourseMaterialsForm() {
       error: false,
     };
   }
-  // end helper functions
-  // submit
-  async function handleSubmit(event) {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const userTitle = data.get("title");
-    const userLink = data.get("link");
-
-    const validationResult = validateInput(userLink, userTitle);
+  // submit ==============================================================================================================================================
+  async function handleSubmit() {
+    const validationResult = validateInput();
     if (validationResult.error) {
       toast.error(validationResult.message);
       return;
     }
     const materialTypeStr = file ? file.type.split("/")[1].toUpperCase() : "Link";
-    const requestBody = buildRequestBody(materialTypeStr, userTitle, userLink);
+    const requestBody = buildRequestBody(materialTypeStr);
     const apiUrl = type === "new" ? `${import.meta.env.VITE_API_URL}/course/material` : `${import.meta.env.VITE_API_URL}/course/material`;
     const method = type === "new" ? "POST" : "PUT";
     console.log(requestBody);
@@ -115,32 +115,69 @@ export default function CourseMaterialsForm() {
       toast.error(errorMessage);
     }
   }
+  // ========================================================================================================================
+  async function request(endpoint) {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.json();
+  }
+  const getCourseAPI = request(`/course?courseId=${courseid}`);
+  const getMaterialAPI = request(`/course/material?courseId=${courseid}&materialId=${materialid}`);
 
   useEffect(() => {
-    console.log(course);
-    console.log(material);
-    console.log(state);
-    if (type == "edit") {
-      var ary = material.MaterialLessonDate.split("/");
-      setDate(dayjs(new Date(ary[2], ary[1], ary[0])));
-      // uploadedFileURL;
-      async function getSingleMaterial() {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/course/material?courseId=${courseid}&materialId=${materialid}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
-        return data;
+    //  the page is not rendering properly when the data is fetched in the useEffect, help me fix this
+
+    async function fetchData() {
+      var data1 = {}
+      var data2 = {}
+      if (type == "new") {
+        data1 = await getCourseAPI;
+      } else {
+        [data1, data2] = await Promise.all([getCourseAPI, getMaterialAPI]);
       }
-      getSingleMaterial().then((data) => {
-        console.log(data);
-        setUploadedFileURL(data.MaterialAttachment);
-      });
-      setFile("placeholder");
+      console.log(data1[0]);
+      console.log(data2);
+      let courseData = {
+        id: data1[0].SK.split("#")[1],
+        name: data1[0].CourseName,
+        timeslot: data1[0].CourseSlot,
+        teacher: data1[0].TeacherName,
+      };
+      setCourse(courseData);
+
+      if (type != "new") {
+        let fetchedDate = type == "view" ? data2.MaterialLessonDate.split("T")[0] : dayjs(data2.MaterialLessonDate, "YYYY-MM-DD");
+        setTitle(data2.MaterialTitle);
+        setEmbeddedLink(data2.MaterialLink);
+        console.log(data2.MaterialLink);
+        setS3Url(data2.MaterialAttachment);
+
+        if (type == "edit" && data2.MaterialLink == "") {
+          setFile("cloudFile");
+          setFileName("cloudFile");
+          // setFile(data2.MaterialAttachmentFileName);
+        }
+        setDate(fetchedDate);
+        console.log(fetchedDate);
+      }
     }
-  }, [course, material, state, uploadedFileURL]);
+    fetchData().then(() => {
+      setOpen(false);
+    });
+    // setDate(dayjs(new Date(ary[2], ary[1], ary[0])));
+    //       setS3Url(data.MaterialAttachment);
+    //     });
+    //     setFile("placeholder");
+    //   }
+    //   setOpen(false);
+    // });
+  }, []);
+
+  // ========================================================================================================================
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       {/* breadcrumbs */}
@@ -159,7 +196,7 @@ export default function CourseMaterialsForm() {
         </Box>
       </Card>
       <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
-        <Box sx={{ display: "flex", width: "100%" }} component="form" noValidate onSubmit={handleSubmit}>
+        <Box sx={{ display: "flex", width: "100%" }}>
           <Container maxWidth="xl">
             <Typography variant="h5" sx={{ color: "primary", mt: 3 }}>
               {type == "view" ? "View" : type == "edit" ? "Edit" : "New"} Class Material
@@ -178,19 +215,19 @@ export default function CourseMaterialsForm() {
                   Date
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  {date.toISOString().split("T")[0]}
+                  {date}
                 </Typography>
                 <Typography variant="h6" sx={{ mt: 2 }}>
                   Attachment
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  {link != "" ? (
-                    <a href={"//" + link} target="_blank">
-                      {link}
+                  {embeddedLink != "" ? (
+                    <a href={"//" + embeddedLink} target="_blank">
+                      {embeddedLink}
                     </a>
                   ) : (
-                    <a href={uploadedFileURL} target="_blank">
-                      {uploadedFileURL}
+                    <a href={s3Url} target="_blank">
+                      {s3Url}
                     </a>
                   )}
                 </Typography>
@@ -206,7 +243,7 @@ export default function CourseMaterialsForm() {
                   <Button
                     variant="contained"
                     onClick={() => {
-                      navigate(`/teacher/course/${courseid}/material/edit/${materialid}`, { state: { material: material, course: course } });
+                      navigate(`/teacher/course/${courseid}/material/edit/${materialid}`);
                     }}>
                     Edit
                   </Button>
@@ -215,12 +252,21 @@ export default function CourseMaterialsForm() {
             ) : (
               // edit or delete ========================================================
               <>
-                <TextField required fullWidth id="title" name="title" label="Title" variant="outlined" defaultValue={title} sx={{ mt: 3 }} />
+                <TextField
+                  required
+                  fullWidth
+                  label="Title"
+                  variant="outlined"
+                  value={title}
+                  onChange={(newValue) => {
+                    setTitle(newValue);
+                  }}
+                  sx={{ mt: 3 }}
+                />
                 <LocalizationProvider required dateAdapter={AdapterDayjs}>
                   <DatePicker
                     label="Lesson Date*"
                     sx={{ mt: 3 }}
-                    defaultValue={date}
                     value={date}
                     onChange={(newValue) => {
                       setDate(newValue);
@@ -246,9 +292,8 @@ export default function CourseMaterialsForm() {
                       <IconButton onClick={handleRemoveFile}>
                         <ClearIcon />
                       </IconButton>
-                      {/* todo: link to download */}
-                      <Link href={uploadedFileURL} _target="blank" download={file}>
-                        {file}
+                      <Link href={s3Url} _target="blank">
+                        {fileName}
                       </Link>
                     </Typography>
                   </div>
@@ -257,9 +302,7 @@ export default function CourseMaterialsForm() {
                 )}
                 {/* handle link */}
                 <TextField
-                  id="link"
-                  name="link"
-                  label="Embed Link"
+                  label="Embedded Link"
                   fullWidth
                   InputProps={{
                     startAdornment: (
@@ -267,10 +310,23 @@ export default function CourseMaterialsForm() {
                         <InsertLinkIcon />
                       </InputAdornment>
                     ),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => {
+                            setEmbeddedLink("");
+                          }}>
+                          <ClearIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
                   }}
                   variant="outlined"
                   sx={{ mt: 3 }}
-                  defaultValue={link}
+                  value={embeddedLink}
+                  onChange={(newValue) => {
+                    setEmbeddedLink(newValue);
+                  }}
                 />
                 <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3, mb: 1 }}>
                   <Button
@@ -281,7 +337,7 @@ export default function CourseMaterialsForm() {
                     }}>
                     Cancel
                   </Button>
-                  <Button variant="contained" type="submit">
+                  <Button variant="contained" onClick={handleSubmit}>
                     {type == "new" ? "Post" : "Update"}
                   </Button>
                 </Box>
@@ -290,6 +346,11 @@ export default function CourseMaterialsForm() {
           </Container>
         </Box>
       </Card>
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Container>
   );
-}
+};
+
+export default CourseMaterialsForm;
