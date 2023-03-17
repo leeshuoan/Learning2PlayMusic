@@ -438,9 +438,9 @@ class CourseStack(Stack):
         delete_course_homework_resource_model = main_api.add_model(
             "DeleteCourseHomeworkModel",
             content_type="application/json",
-            model_name="DeleteCourseQuizQuestionModel",
+            model_name="DeleteCourseHomeworkModel",
             schema=apigw.JsonSchema(
-                title="DeleteCourseQuizQuestionModel",
+                title="DeleteCourseHomeworkModel",
                 schema=apigw.JsonSchemaVersion.DRAFT4,
                 type=apigw.JsonSchemaType.OBJECT,
                 properties={
