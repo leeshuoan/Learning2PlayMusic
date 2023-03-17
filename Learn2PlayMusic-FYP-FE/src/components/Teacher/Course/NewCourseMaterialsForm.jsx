@@ -62,7 +62,7 @@ const NewCourseMaterialsForm = () => {
     const requestBodyObject = {
       courseId: courseid,
       materialTitle: title,
-      materialLessonDate: date.toISOString(),
+      materialLessonDate: date.add(1, "day").toISOString(),
       materialLink: embeddedLink,
       materialType: materialTypeStr,
       materialAttachment: base64Attachment,

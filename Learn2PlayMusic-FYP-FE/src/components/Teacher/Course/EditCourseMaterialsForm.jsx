@@ -20,6 +20,7 @@ const EditCourseMaterialsForm = () => {
 
   const [open, setOpen] = useState(true);
   const [course, setCourse] = useState({});
+  const [material, setMaterial] = useState({});
   const [date, setDate] = useState(null);
   const [embeddedLink, setEmbeddedLink] = useState("");
   const [file, setFile] = useState(null);
@@ -65,7 +66,7 @@ const EditCourseMaterialsForm = () => {
     const requestBodyObject = {
       courseId: courseid,
       materialTitle: title,
-      materialLessonDate: date.toISOString(),
+      materialLessonDate: date.add(1, "day").toISOString(),
       materialLink: embeddedLink,
       materialType: materialTypeStr,
       materialAttachment: base64Attachment,
@@ -78,7 +79,7 @@ const EditCourseMaterialsForm = () => {
     const requestBodyObject = {
       courseId: courseid,
       materialTitle: title,
-      materialLessonDate: date.toISOString(),
+      materialLessonDate: date.add(1, "day").toISOString(),
       materialId: materialid,
     };
     return JSON.stringify(requestBodyObject);
@@ -96,13 +97,20 @@ const EditCourseMaterialsForm = () => {
         message: "Please fill in all the fields!",
       };
     }
+    // make sure there are changes
+    if (title == material.MaterialTitle && date.add(1, "day").toISOString() == material.MaterialLessonDate && fileName == material.MaterialAttachmentFileName) {
+      return {
+        error: true,
+        message: "Please make changes to the material!",
+      };
+    }
     return {
       error: false,
     };
   }
   // submit ==============================================================================================================================================
   async function handleSubmit() {
-    setOpen(true);
+    // setOpen(true);
     const validationResult = validateInput();
     if (validationResult.error) {
       toast.error(validationResult.message);
@@ -161,7 +169,10 @@ const EditCourseMaterialsForm = () => {
       };
       setCourse(courseData);
 
-      let fetchedDate = dayjs(data2.MaterialLessonDate, "YYYY-MM-DD");
+      let ary = data2.MaterialLessonDate.split("T")[0].split("-");
+      let fetchedDate = dayjs(data2.MaterialLessonDate.split("T")[0]);
+      setDate(fetchedDate);
+
       setTitle(data2.MaterialTitle);
       setEmbeddedLink(data2.MaterialLink);
       console.log(data2.MaterialLink);
@@ -171,7 +182,7 @@ const EditCourseMaterialsForm = () => {
         setFile("notChangingPDF"); // placeholder
         setFileName(data2.MaterialAttachmentFileName);
       }
-      setDate(fetchedDate);
+      setMaterial(data2);
     }
     fetchData().then(() => {
       setOpen(false);
