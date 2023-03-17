@@ -20,13 +20,7 @@ def lambda_handler(event, context):
         # VALIDATION
         # check if <courseId> exists in database
         course_id = request_body['courseId']
-        if not id_exists("Course", "Course", course_id):
-            return response_404("courseId does not exist in database")
-
-        # check if <homeworkId> exists in database
         homework_id = request_body['homeworkId']
-        if not combination_id_exists("Course", course_id, "Homework", homework_id):
-            return response_404("homeworkId does not exist in database")
 
         table.delete_item(
             Key= {
