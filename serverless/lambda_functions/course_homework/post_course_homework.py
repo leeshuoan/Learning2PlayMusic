@@ -9,7 +9,7 @@ def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
     table_name = "LMS"
     table = dynamodb.Table(table_name)
-    random_uuid = str(uuid.uuid4().int)[:8]
+    random_uuid = str(uuid.uuid4())[:8]
 
     try:
         request_body = json.loads(event['body'])
