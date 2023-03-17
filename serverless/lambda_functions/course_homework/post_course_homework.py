@@ -15,26 +15,20 @@ def lambda_handler(event, context):
         request_body = json.loads(event['body'])
 
         course_id = request_body['courseId']
-        quiz_title = request_body['quizTitle']
-        quiz_max_attempts = request_body['quizMaxAttempts']
-        quiz_description = request_body['quizDescription']
-        visibility = request_body['visibility']
-        quiz_id = random_uuid
+        homework_title = request_body['homeworkTitle']
+        homework_due_date = request_body['homeworkDueDate']
+        homework_id = random_uuid
 
         item = {
             "PK": f"Course#{course_id}",
-            "SK": f"Quiz#{quiz_id}",
-            "QuizTitle": quiz_title,
-            "QuizMaxAttempts": quiz_max_attempts,
-            "QuizDescription": quiz_description,
-            "NumberOfStudentsAttempted": 0,
-            "AverageScore": 0,
-            "Visibility": visibility 
+            "SK": f"Homework#{homework_id}",
+            "HomeworkTitle": homework_title,
+            "HomeworkDueDate": homework_due_date
         }
 
         table.put_item(Item = item)
 
-        return response_202_msg(f"Quiz successfully created with id {quiz_id}")
+        return response_202_msg(f"Homework successfully created with id {homework_id}")
 
     except Exception as e:
         return response_400(str(e))

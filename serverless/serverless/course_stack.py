@@ -425,12 +425,10 @@ class CourseStack(Stack):
                 type=apigw.JsonSchemaType.OBJECT,
                 properties={
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "quizTitle": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "quizMaxAttempts": apigw.JsonSchema(type=apigw.JsonSchemaType.INTEGER),
-                    "quizDescription": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "visibility": apigw.JsonSchema(type=apigw.JsonSchemaType.BOOLEAN),
+                    "homeworkTitle": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "homeworkDueDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
-                required=["courseId", "quizTitle", "quizMaxAttempts", "quizDescription", "visibility"]))
+                required=["courseId", "homeworkTitle", "homeworkDueDate"]))
         
         delete_course_homework_resource_model = main_api.add_model(
             "DeleteCourseHomeworkModel",
