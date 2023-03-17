@@ -5,6 +5,8 @@ from aws_cdk import (
     aws_apigateway as apigw,
     aws_ses as ses,
     aws_sns as sns,
+    aws_sns_subscriptions as sns_subs,
+    CfnParameter,
     aws_iam,
     Stack,
     Fn
@@ -50,22 +52,24 @@ class AnnouncementStack(Stack):
         # cfn_email_identity = ses.CfnEmailIdentity(self, f"{EMAIL_SENDER}-CfnEmailIdentity", email_identity=EMAIL_SENDER)
         # cfn_email_identity = ses.CfnEmailIdentity(self, f"{EMAIL_RECEIVER}-CfnEmailIdentity",email_identity=EMAIL_RECEIVER)
 
+        # my_topic = sns.Topic(self, "Topic")
+        # email_address = CfnParameter(self, "email-param")
+
+        # my_topic.add_subscription(sns_subs.EmailSubscription(email_address.value_as_string))
+
         # Create an SNS Topic
         topic = sns.Topic(self, "GeneralAnnouncementTopic")
 
         # Add subscriptions to the topic
-        sns.Subscription(self, "testSubscription",
-            topic=topic,
-            endpoint='aiwei.testt@gmail.com',
-            protocol=sns.SubscriptionProtocol.EMAIL_JSON
-        )
+        topic.add_subscription(sns_subs.EmailSubscription(email_address='aiwei.testt@gmail.com', json=True))
+        topic.add_subscription(sns_subs.EmailSubscription(email_address='l2pma.student@gmail.com', json=True))
 
-        # Add subscriptions to the topic
-        sns.Subscription(self, "testSubscription",
-            topic=topic,
-            endpoint='l2pma.student@gmail.com',
-            protocol=sns.SubscriptionProtocol.EMAIL_JSON
-        )
+        print("################ finishing adding subscribers to the topic ################ ")
+        # sns.Subscription(self, "GeneralAnnouncementSubscription",
+        #     topic=topic,
+        #     endpoint=['aiwei.testt@gmail.com', 'l2pma.student@gmail.com'],
+        #     protocol=sns.SubscriptionProtocol.EMAIL_JSON
+        # )
 
         cfn_contact_list = ses.CfnContactList(self, "GeneralAnnouncementContactListCfnContactList",
             contact_list_name="GeneralAnnouncementContactList",
@@ -84,7 +88,7 @@ class AnnouncementStack(Stack):
             )]
         )
 
-        print("cfn_contact_list")
+        print(" ################# cfn_contact_list ######################")
         print(cfn_contact_list)
 
 
