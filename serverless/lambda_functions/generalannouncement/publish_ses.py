@@ -1,28 +1,30 @@
+import os
 import boto3
 from botocore.exceptions import ClientError
 
-def publish_email():
+def publish_general_announcement(email_subject, email_content):
 
     client = boto3.client('ses')
 
-    subject = 'Test email'
-    body_text = 'Hello from Amazon SES!'
-    body_html = '<p>Hello from <b>Amazon SES!</b></p>'
-    to_address = 'aiwei.testt@gmail.com'
+    subject = email_subject
+    body_text = email_content
+    # body_html = '<p>Hello from <b>Amazon SES!</b></p>'
+    EMAIL_SENDER = os.environ['SES_SENDER_EMAIL']
+    EMAIL_RECEIVER = os.environ['SES_RECEIVER_EMAIL']
 
     try:
         response = client.send_email(
             Destination={
                 'ToAddresses': [
-                    to_address
+                    EMAIL_RECEIVER
                 ]
             },
             Message={
                 'Body': {
-                    'Html': {
-                        'Charset': 'UTF-8',
-                        'Data': body_html
-                    },
+                    # 'Html': {
+                    #     'Charset': 'UTF-8',
+                    #     'Data': body_html
+                    # },
                     'Text': {
                         'Charset': 'UTF-8',
                         'Data': body_text
@@ -33,7 +35,7 @@ def publish_email():
                     'Data': subject
                 }
             },
-            Source='sender@example.com'
+            Source=EMAIL_SENDER
         )
         print("Email sent! Message ID:"),
         print(response['MessageId'])

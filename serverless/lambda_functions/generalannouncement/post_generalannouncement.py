@@ -7,7 +7,7 @@ import dateutil.tz
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
-from publish_ses import *
+from .publish_ses import *
 
 def lambda_handler(event, context):
 
@@ -18,17 +18,20 @@ def lambda_handler(event, context):
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
+        content = json.loads(event['body'])['content']
+        announcementTitle = json.loads(event['body'])['announcementTitle']
+
         item = {
                 "PK": f"GeneralAnnouncements",
                 "SK": f"Date#{dateId}",
-                "Content": json.loads(event['body'])['content'],
-                "AnnouncementTitle": json.loads(event['body'])['announcementTitle']
+                "Content": content,
+                "AnnouncementTitle": announcementTitle
             }
 
         response = table.put_item(Item= item)
         print("🐳 item has been added to dynamodb 🐳")
 
-        publish_email()
+        publish_general_announcement(announcementTitle, content)
         print("✅ message has been published ✅")
 
         return response_200_msg_items("inserted", item)

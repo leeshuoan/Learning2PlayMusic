@@ -41,11 +41,33 @@ class AnnouncementStack(Stack):
         ### SES ###
         ###########
 
-        EMAIL_RECEIVER = 'aiwei.testt@gmail.com'
+        # EMAIL_SENDER = 'g3fyp2023@gmail.com'
+        # EMAIL_RECEIVER = 'aiwei.testt@gmail.com'
+        # EMAIL_RECEIVER = 'l2pma.student@gmail.com'
 
-        # Initialize an SES email receiver
-        cfn_email_identity = ses.CfnEmailIdentity(self, f"{EMAIL_RECEIVER}-CfnEmailIdentity",
-                                                  email_identity=EMAIL_RECEIVER)
+        # # Initialize an SES email sender and receiver
+        # cfn_email_identity = ses.CfnEmailIdentity(self, f"{EMAIL_SENDER}-CfnEmailIdentity", email_identity=EMAIL_SENDER)
+        # cfn_email_identity = ses.CfnEmailIdentity(self, f"{EMAIL_RECEIVER}-CfnEmailIdentity",email_identity=EMAIL_RECEIVER)
+
+        # cfn_contact_list = ses.CfnContactList(self, "GeneralAnnouncementContactListCfnContactList",
+        #     contact_list_name="GeneralAnnouncementContactList",
+        #     description="Contains all identities that subscribed to General Announcements (Both senders and receivers)",
+        #     # tags=[CfnTag(
+        #     #     key="key",
+        #     #     value="value"
+        #     # )],
+        #     topics=[ses.CfnContactList.TopicProperty(
+        #         default_subscription_status="OPT_IN", # can opt for "NO_CONFIRMATION"
+        #         display_name="L2PMAGeneralAnnouncement",
+        #         topic_name="GeneralAnnouncementTopic",
+
+        #         # the properties below are optional
+        #         description="A topic created for general announcements"
+        #     )]
+        # )
+
+        # print("cfn_contact_list")
+        # print(cfn_contact_list)
 
 
         ########################
@@ -53,7 +75,11 @@ class AnnouncementStack(Stack):
         ########################
 
         get_generalannouncement = _lambda.Function( self, "getGeneralAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.get_generalannouncement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
-        post_generalannouncement = _lambda.Function( self, "postGeneralAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.post_generalannouncement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
+        post_generalannouncement = _lambda.Function( self, "postGeneralAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.post_generalannouncement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE,
+                                                    environment={
+                                                      'SES_SENDER_EMAIL': 'g3fyp2023@gmail.com',
+                                                      'SES_RECEIVER_EMAIL': 'aiwei.testt@gmail.com'
+                                                    })
         delete_generalannouncement = _lambda.Function( self, "deleteGeneralAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_generalannouncement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
 
 
