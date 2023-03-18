@@ -62,34 +62,6 @@ class AnnouncementStack(Stack):
 
         # Add subscriptions to the topic
         topic.add_subscription(sns_subs.EmailSubscription(email_address='aiwei.testt@gmail.com', json=True))
-        topic.add_subscription(sns_subs.EmailSubscription(email_address='l2pma.student@gmail.com', json=True))
-
-        print("################ finishing adding subscribers to the topic ################ ")
-        # sns.Subscription(self, "GeneralAnnouncementSubscription",
-        #     topic=topic,
-        #     endpoint=['aiwei.testt@gmail.com', 'l2pma.student@gmail.com'],
-        #     protocol=sns.SubscriptionProtocol.EMAIL_JSON
-        # )
-
-        cfn_contact_list = ses.CfnContactList(self, "GeneralAnnouncementContactListCfnContactList",
-            contact_list_name="GeneralAnnouncementContactList",
-            description="A contact list that contains all identities subscribed to General Announcement",
-            # tags=[CfnTag(
-            #     key="key",
-            #     value="value"
-            # )],
-            topics=[ses.CfnContactList.TopicProperty(
-                default_subscription_status="OPT_IN", # can opt for "NO_CONFIRMATION"
-                display_name="L2PMAGeneralAnnouncement",
-                topic_name=topic.topic_name,
-
-                # the properties below are optional
-                description=f"A topic that contains all subscribers of to {topic.topic_name}"
-            )]
-        )
-
-        print(" ################# cfn_contact_list ######################")
-        print(cfn_contact_list)
 
 
         ########################
@@ -99,8 +71,7 @@ class AnnouncementStack(Stack):
         get_generalannouncement = _lambda.Function( self, "getGeneralAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.get_generalannouncement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
         post_generalannouncement = _lambda.Function( self, "postGeneralAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.post_generalannouncement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE,
                                                     environment={
-                                                      'SES_SENDER_EMAIL': 'g3fyp2023@gmail.com',
-                                                      'SES_RECEIVER_EMAIL': 'aiwei.testt@gmail.com'
+                                                      'SNS_TOPIC_ARN': topic.topic_arn
                                                     })
         delete_generalannouncement = _lambda.Function( self, "deleteGeneralAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_generalannouncement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE )
 
