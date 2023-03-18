@@ -9,15 +9,14 @@ def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
     table_name = "LMS"
     table = dynamodb.Table(table_name)
-    random_uuid = str(uuid.uuid4())[:8]
 
     try:
         request_body = json.loads(event['body'])
 
         course_id = request_body['courseId']
         homework_title = request_body['homeworkTitle']
+        homework_id = request_body['homeworkId']
         homework_due_date = request_body['homeworkDueDate']
-        homework_id = random_uuid
 
         item = {
             "PK": f"Course#{course_id}",

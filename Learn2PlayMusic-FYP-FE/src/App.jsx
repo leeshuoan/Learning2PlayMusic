@@ -1,43 +1,45 @@
-import "./App.css";
-import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ThemeProvider from "./theme/index";
+import "./App.css";
 import PrivateRoutes from "./components/utils/PrivateRoutes";
+import ThemeProvider from "./theme/index";
 // Amplify setup
+import { Amplify, Auth } from "aws-amplify";
 import aws_exports from "./aws-exports";
-import { Amplify } from "aws-amplify";
-import { Auth, Storage } from "aws-amplify";
 // App components
 // general
-import Chat from "./components/Chat/Chat";
 import Announcements from "./components/Announcements";
 import DefaultAppBar from "./components/AppBar/DefaultAppBar";
-import SignIn from "./components/SignIn";
+import Chat from "./components/Chat/Chat";
 import ForgotPassword from "./components/ForgotPassword";
 import NotFound from "./components/NotFound";
 import Profile from "./components/Profile";
+import SignIn from "./components/SignIn";
 // user
-import UserHome from "./components/User/UserHome";
-import UserCourse from "./components/User/UserCourse";
 import UserClassMaterials from "./components/User/Course/UserClassMaterials";
 import UserHomework from "./components/User/Course/UserHomework";
-import UserReport from "./components/User/Course/UserReport";
-import UserQuiz from "./components/User/Course/UserQuiz";
 import UserHomeworkFeedback from "./components/User/Course/UserHomeworkFeedback";
+import UserQuiz from "./components/User/Course/UserQuiz";
+import UserReport from "./components/User/Course/UserReport";
+import UserCourse from "./components/User/UserCourse";
+import UserHome from "./components/User/UserHome";
 // admin
 import AdminHome from "./components/Admin/AdminHome";
 // teacher
-import TeacherHome from "./components/Teacher/TeacherHome";
-import TeacherCourse from "./components/Teacher/TeacherCourse";
+import BaseProgressReport from "./components/Teacher/Course/BaseProgressReport";
 import CourseAnnouncementForm from "./components/Teacher/Course/CourseAnnouncementForm";
 import CourseMaterialsForm from "./components/Teacher/Course/CourseMaterialsForm";
-import NewHomeworkForm from "./components/Teacher/Course/NewHomeworkForm";
+import EditCourseMaterialsForm from "./components/Teacher/Course/EditCourseMaterialsForm";
 import EditHomeworkForm from "./components/Teacher/Course/EditHomeworkForm";
-import TeacherHomeworkOverview from "./components/Teacher/Course/TeacherHomeworkOverview";
+import NewCourseMaterialsForm from "./components/Teacher/Course/NewCourseMaterialsForm";
+import NewHomeworkForm from "./components/Teacher/Course/NewHomeworkForm";
 import TeacherGradeHomework from "./components/Teacher/Course/TeacherGradeHomework";
-import BaseProgressReport from "./components/Teacher/Course/BaseProgressReport";
+import TeacherHomeworkOverview from "./components/Teacher/Course/TeacherHomeworkOverview";
+import ViewCourseMaterialsForm from "./components/Teacher/Course/ViewCourseMaterialsForm";
+import TeacherCourse from "./components/Teacher/TeacherCourse";
+import TeacherHome from "./components/Teacher/TeacherHome";
 
 Amplify.configure(aws_exports);
 
@@ -120,6 +122,9 @@ function App() {
               <Route path=":category" element={<TeacherCourse userInfo={userInfo} />} />
               <Route path="announcement/:type/:announcementId?" element={<CourseAnnouncementForm />} />
               <Route path="material/:type/:materialid?" element={<CourseMaterialsForm />} />
+              <Route path="material/view/:materialid?" element={<ViewCourseMaterialsForm />} />
+              <Route path="material/new" element={<NewCourseMaterialsForm />} />
+              <Route path="material/edit/:materialid?" element={<EditCourseMaterialsForm />} />
               <Route path="homework/new" element={<NewHomeworkForm />} />
               <Route path="homework/:homeworkId">
                 <Route index element={<TeacherHomeworkOverview />} />
@@ -140,7 +145,7 @@ function App() {
               <Route path="material/:materialId" element={<UserClassMaterials />} />
               <Route path="homework/:homeworkId" element={<UserHomework userInfo={userInfo} />} />
               <Route path="homework/:homeworkId/feedback" element={<UserHomeworkFeedback userInfo={userInfo} />} />
-              <Route path="report/:reportId" element={<UserReport userInfo={userInfo}/>} />
+              <Route path="report/:reportId" element={<UserReport userInfo={userInfo} />} />
               <Route path="quiz/:quizId" element={<UserQuiz userInfo={userInfo} />} />
             </Route>
           </Route>

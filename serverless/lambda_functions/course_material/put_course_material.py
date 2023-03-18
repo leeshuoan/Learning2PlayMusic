@@ -1,11 +1,11 @@
-import sys
-import boto3
+import base64
 import json
 import os
-import base64
+import sys
 
-from global_functions.responses import *
+import boto3
 from global_functions.exists_in_db import *
+from global_functions.responses import *
 
 dynamodb = boto3.resource('dynamodb')
 table_name = "LMS"
@@ -24,8 +24,11 @@ def lambda_handler(event, context):
         material_id = request_body['materialId']
         material_title = request_body['materialTitle']
         material_lesson_date = request_body['materialLessonDate']
-        material_link = request_body['materialLink']
-        material_type = request_body['materialType']
+        # optional params
+        material_link = request_body['materialLink'] if 'materialLink' in request_body else ""
+        material_type = request_body['materialType'] if 'materialType' in request_body else ""
+        material_attachment_file_name = request_body['materialAttachmentFileName'] if 'materialAttachmentFileName' in request_body else ""
+
 
         if not course_id or not material_id:
             return response_400("courseId or materialId is missing")
@@ -35,23 +38,45 @@ def lambda_handler(event, context):
 
         if not combination_id_exists("Course", course_id, "Material", material_id):
             return response_404("materialId does not exist in database")
-        
-        material_attachment = ""
-        if request_body['materialAttachment'] != "":
-            base64data = request_body['materialAttachment']
-            material_attachment= handle_attachment(base64data, course_id, material_id, material_title)
+        print(request_body)
+        if (len(request_body) == 4):
+            response = table.update_item(
+                Key={
+                    "PK": f"Course#{course_id}",
+                    "SK": f"Material#{material_id}",
+                },
+                UpdateExpression="set MaterialTitle = :t, MaterialLessonDate = :d",
+                ExpressionAttributeValues={
+                    ":t": material_title,
+                    ":d": material_lesson_date,
+                },
+            )
+            item = {
+                "PK": f"Course#{course_id}",
+                "SK": f"Material#{material_id}",
+                "MaterialLessonDate": material_lesson_date,
+                "MaterialTitle": material_title,
+            }
+            
+        else:
+            material_attachment = ""
+            if request_body['materialAttachment'] != "":
+                base64data = request_body['materialAttachment']
+                material_attachment= handle_attachment(base64data, course_id, material_id, material_attachment_file_name)
 
-        item = {
-            "PK": f"Course#{course_id}",
-            "SK": f"Material#{material_id}",
-            "MaterialLessonDate": material_lesson_date,
-            "MaterialLink": material_link,
-            "MaterialAttachment": material_attachment,
-            "MaterialTitle": material_title,
-            "MaterialType": material_type
-        }
+            item = {
+                "PK": f"Course#{course_id}",
+                "SK": f"Material#{material_id}",
+                "MaterialLessonDate": material_lesson_date,
+                "MaterialLink": material_link,
+                "MaterialAttachment": material_attachment,
+                "MaterialTitle": material_title,
+                "MaterialType": material_type,
+                "MaterialAttachmentFileName": material_attachment_file_name
+            }
 
-        response = table.put_item(Item= item)
+            response = table.put_item(Item= item)
+
 
         return response_200_msg_items("updated", item)
 

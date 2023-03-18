@@ -80,7 +80,7 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table, i
         base64_value = base64data.split(',')[1]
         homework_attachment = base64.b64decode(base64_value)
 
-        random_uuid = str(uuid.uuid4().int)[:8]
+        random_uuid = str(uuid.uuid4())[:8]
         # Upload the image data to S3
         s3key = f'Course{course_id}/Student{student_id}/Homework{homework_id}_{random_uuid}.{file_extension}'
         if file_extension == "pdf":

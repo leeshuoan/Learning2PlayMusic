@@ -1,14 +1,9 @@
 import boto3
-
-from aws_cdk import (
-    aws_lambda as _lambda,
-    aws_apigateway as apigw,
-    aws_s3 as s3,
-    aws_iam,
-    Stack,
-    CfnOutput
-)
-
+from aws_cdk import CfnOutput, Stack
+from aws_cdk import aws_apigateway as apigw
+from aws_cdk import aws_iam
+from aws_cdk import aws_lambda as _lambda
+from aws_cdk import aws_s3 as s3
 from constructs import Construct
 
 
@@ -88,7 +83,12 @@ class CourseStack(Stack):
         # Create /course/homework/ AWS Lambda function
         get_course_homework = _lambda.Function(self, "getCourseHomework", runtime=_lambda.Runtime.PYTHON_3_9,
                                                handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.get_course_homework.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-
+        post_course_homework = _lambda.Function(self, "postCourseHomework", runtime=_lambda.Runtime.PYTHON_3_9,
+                                               handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.post_course_homework.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        delete_course_homework = _lambda.Function(self, "deleteCourseHomework", runtime=_lambda.Runtime.PYTHON_3_9,
+                                               handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.delete_course_homework.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        put_course_homework = _lambda.Function(self, "putCourseHomework", runtime=_lambda.Runtime.PYTHON_3_9,
+                                               handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.put_course_homework.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         # Create /course/homework/feedback AWS Lambda function
         get_course_homework_feedback = _lambda.Function(self, "getCourseHomeworkFeedback", runtime=_lambda.Runtime.PYTHON_3_9,
                                                handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.get_course_homework_feedback.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE,
@@ -244,6 +244,7 @@ class CourseStack(Stack):
                     "materialType": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "materialLessonDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "materialLink": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "materialAttachmentFileName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
                 required=["courseId", "materialTitle", "materialType", "materialLessonDate"]))
 
@@ -262,9 +263,10 @@ class CourseStack(Stack):
                     "materialType": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "materialLessonDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "materialLink": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "materialS3Link": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    "materialS3Link": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "materialAttachmentFileName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
-                required=["courseId", "materialId", "materialTitle", "materialType", "materialLessonDate"]))
+                required=["courseId", "materialId", "materialTitle", "materialLessonDate"]))
 
         course_material_resource.add_method("GET", apigw.LambdaIntegration(get_course_material), request_parameters={
             'method.request.querystring.courseId': True,
@@ -415,9 +417,60 @@ class CourseStack(Stack):
         } )
 
         # /course/homework
+        post_course_homework_resource_model = main_api.add_model(
+            "PostCourseHomeworkModel",
+            content_type="application/json",
+            model_name="PostCourseHomeworkModel",
+            schema=apigw.JsonSchema(
+                title="PostCourseHomeworkModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "homeworkTitle": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "homeworkDueDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                },
+                required=["courseId", "homeworkTitle", "homeworkDueDate"]))
+        
+        delete_course_homework_resource_model = main_api.add_model(
+            "DeleteCourseHomeworkModel",
+            content_type="application/json",
+            model_name="DeleteCourseHomeworkModel",
+            schema=apigw.JsonSchema(
+                title="DeleteCourseHomeworkModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "homeworkId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    },
+                required=["courseId", "homeworkId"]))
+        put_course_homework_resource_model = main_api.add_model(
+            "PutCourseHomeworkModel",
+            content_type="application/json",
+            model_name="PutCourseHomeworkModel",
+            schema=apigw.JsonSchema(
+                title="PutCourseHomeworkModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "homeworkId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    },
+                required=["courseId", "homeworkId", "homeworkTitle", "homeworkDueDate"]))
+
+        course_homework_resource.add_method("POST", apigw.LambdaIntegration(post_course_homework), request_models={
+            "application/json": post_course_homework_resource_model
+                })
         course_homework_resource.add_method("GET", apigw.LambdaIntegration(get_course_homework), request_parameters={
           'method.request.querystring.courseId': True,
           'method.request.querystring.homeworkId': False
+        })
+        course_homework_resource.add_method("PUT", apigw.LambdaIntegration(put_course_homework), request_models={
+            "application/json": put_course_homework_resource_model
+        })
+        course_homework_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_homework), request_models={
+            "application/json": delete_course_homework_resource_model
         })
 
         # /course/homework/feedback
