@@ -29,14 +29,28 @@ def lambda_handler(event, context):
         else:
             dynamodb = boto3.resource("dynamodb")
             table = dynamodb.Table("LMS")
-            short_uuid = str(uuid.uuid4().hex)[:8]
+            short_uuid = str(uuid.uuid4().hex)[:4]
 
             item = {
                     "PK": f"Student#{studentId}",
                     "SK": f"Course#{courseId}"
                 }
+            
+            course_info = table.get_item(
+                Key={
+                    "PK": "Course",
+                    "SK": f"Course#{courseId}"
+                }
+            )
+            teacher_id = course_info["Item"]["TeacherId"]
+            chat_item = {
+                    "PK": f"Student#{studentId}",
+                    "SK": f"Teacher#{teacher_id}",
+                    "ChatId": short_uuid
+            }
 
             response = table.put_item(Item=item)
+            table.put_item(Item=chat_item)
 
             return response_200_msg_items("inserted", item)
 

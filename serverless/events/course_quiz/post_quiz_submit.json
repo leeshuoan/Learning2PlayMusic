@@ -1,0 +1,16 @@
+{
+  "httpMethod": "POST",
+  "queryStringParameters": {
+    "foo": "bar"
+  },
+  "body": {
+    "courseId": 1,
+    "studentId": "81c2ca2f-6a04-4e79-a41c-97aa85cf9edb",
+    "quizId": 1,
+    "submissions": {
+        "Question#24d690e0": "Flute",
+        "Question#62a1bb2d": "Pianono"
+    }
+  },
+  "path": "/course/quiz/question"
+}

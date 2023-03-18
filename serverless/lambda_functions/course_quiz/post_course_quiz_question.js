@@ -88,6 +88,8 @@ async function lambda_handler(event, context) {
         Question: question,
         Options: options,
         Answer: answer,
+        Attempts: 0,
+        Correct: 0
       },
     };
 
