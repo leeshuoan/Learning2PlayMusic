@@ -21,7 +21,6 @@ const StudentProgressReport = (report) => {
   };
   const performance = ["Poor", "Weak", "Satisfactory", "Good", "Excellent", "N.A."];
 
-  console.log(report)
   const [goals, setGoals] = useState(report.report.GoalsForNewTerm);
   const [comments, setComments] = useState(report.report.AdditionalComments);
 
@@ -33,7 +32,6 @@ const StudentProgressReport = (report) => {
     setComments(event.target.value);
   };
 
-  console.log(report)
   return (
     <>
       <Box sx={{ display: report.report.Available ? "block" : "none" }}>
