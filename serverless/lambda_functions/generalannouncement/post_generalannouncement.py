@@ -29,10 +29,7 @@ def lambda_handler(event, context):
             }
 
         response = table.put_item(Item= item)
-        print("🐳 item has been added to dynamodb 🐳")
-
-        publish_announcement(announcementTitle, content)
-        print("✅ message has been published ✅")
+        publish_general_announcement(announcementTitle, content)
 
         return response_200_msg_items("inserted", item)
 

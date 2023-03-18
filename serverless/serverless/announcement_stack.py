@@ -43,30 +43,17 @@ class AnnouncementStack(Stack):
         LAMBDA_ROLE = aws_iam.Role.from_role_arn(
             self, "lambda-general-role", role_arn)
 
-
         ###########
-        ### SES ###
+        ### SNS ###
         ###########
 
-        # EMAIL_SENDER = 'g3fyp2023@gmail.com'
-        # EMAIL_RECEIVER = 'aiwei.testt@gmail.com'
-        # EMAIL_RECEIVER = 'l2pma.student@gmail.com'
+        # 1. Create an SNS Topic
+        topic = sns.Topic(self, "GeneralAnnouncementTopic", display_name="GeneralAnnouncementTopic")
 
-        # # Initialize an SES email sender and receiver
-        # cfn_email_identity = ses.CfnEmailIdentity(self, f"{EMAIL_SENDER}-CfnEmailIdentity", email_identity=EMAIL_SENDER)
-        # cfn_email_identity = ses.CfnEmailIdentity(self, f"{EMAIL_RECEIVER}-CfnEmailIdentity",email_identity=EMAIL_RECEIVER)
-
-        # my_topic = sns.Topic(self, "Topic")
-        # email_address = CfnParameter(self, "email-param")
-
-        # my_topic.add_subscription(sns_subs.EmailSubscription(email_address.value_as_string))
-
-        # Create an SNS Topic
-        topic = sns.Topic(self, "GeneralAnnouncementTopic", display_name="GeneralAnnouncementTopicName")
-
-        # Add subscriptions to the topic
-        topic.add_subscription(sns_subs.EmailSubscription(email_address='aiwei.testt@gmail.com', json=True))
-        topic.add_subscription(sns_subs.EmailSubscription(email_address='l2pma.student@gmail.com', json=True))
+        ''' Creating the following resources in console because email addresses in Cognito are fake,
+        and it will be easier/not messed up when we need to delete them from console for testing purposes'''
+        # 2. (in SES console) Create verified identities, then confirm email verification
+        # 3. (in SNS console) Link these verified email addresses to the topic <GeneralAnnouncementTopic>
 
         ########################
         ### LAMBDA FUNCTIONS ###

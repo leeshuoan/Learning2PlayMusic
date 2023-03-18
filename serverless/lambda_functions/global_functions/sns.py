@@ -18,15 +18,15 @@ def list_subscribers(topicArn):
     return subscribers
 
 
-def publish_announcement(email_subject, email_content):
+def publish_general_announcement(subject, content):
 
     topicArn = os.environ['SNS_TOPIC_ARN']
     subscribers = list_subscribers(topicArn)
 
-    subject = email_subject
-    body_text = email_content
+    subject = subject
+    body_text = content
     # body_html = '<p>Hello from <b>Amazon SES!</b></p>'
-    EMAIL_SENDER = 'g3fyp2023@gmail.com' # will never change, similar to admin@gmail.com
+    email_sender = 'g3fyp2023@gmail.com' # will never change, similar to admin@gmail.com
 
     for subscriber in subscribers:
         try:
@@ -52,7 +52,7 @@ def publish_announcement(email_subject, email_content):
                         'Data': subject
                     }
                 },
-                Source=EMAIL_SENDER
+                Source=email_sender
             )
             print("Email sent! Message ID:"),
             print(response['MessageId'])
