@@ -29,8 +29,6 @@ def lambda_handler(event, context):
         reportNum = str(response['Count']+1)
 
         reportId = reportNum + "-" + year
-        
-        
 
         # VALIDATION
         # checks that courseId passed in is not an empty string
@@ -55,9 +53,13 @@ def lambda_handler(event, context):
         if 'title' not in json.loads(event['body']):
             return response_400("title is missing from request body")
         
-        # check that dateAvailable is present in the request body
+        # check that availableDate is present in the request body
         if 'availableDate' not in json.loads(event['body']):
             return response_400("availableDate is missing from request body")
+
+        # check that updatedDate is present in the request body
+        if 'updatedDate' not in json.loads(event['body']):
+            return response_400("updatedDate is missing from request body")
 
         # check that all evaluation metrics are present in the evaluation_list
         valid_metrics = set(['posture', 'rhythm', 'toneQuality', 'dynamicsControl', 'articulation', 'sightReading', 
@@ -73,6 +75,7 @@ def lambda_handler(event, context):
                 "EvaluationList": json.loads(event['body'])['evaluationList'],
                 "Title": json.loads(event['body'])['title'],
                 'AvailableDate': json.loads(event['body'])['availableDate'],
+                'UpdatedDate': "",
                 "GoalsForNewTerm": json.loads(event['body'])['goalsForNewTerm'],
                 "AdditionalComments": json.loads(event['body'])['additionalComments'],
             }
