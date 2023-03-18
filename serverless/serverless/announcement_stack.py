@@ -58,7 +58,7 @@ class AnnouncementStack(Stack):
         # my_topic.add_subscription(sns_subs.EmailSubscription(email_address.value_as_string))
 
         # Create an SNS Topic
-        topic = sns.Topic(self, "GeneralAnnouncementTopic")
+        topic = sns.Topic(self, "GeneralAnnouncementTopic", display_name="GeneralAnnouncementTopicName")
 
         # Add subscriptions to the topic
         topic.add_subscription(sns_subs.EmailSubscription(email_address='aiwei.testt@gmail.com', json=True))
