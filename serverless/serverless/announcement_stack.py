@@ -1,4 +1,5 @@
 import boto3
+import logging
 
 from aws_cdk import (
     aws_lambda as _lambda,
@@ -19,6 +20,9 @@ class AnnouncementStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        LOG = logging.getLogger(__name__)
+        LOG.setLevel(logging.INFO)
 
         #################
         ### CONSTANTS ###
@@ -62,7 +66,7 @@ class AnnouncementStack(Stack):
 
         # Add subscriptions to the topic
         topic.add_subscription(sns_subs.EmailSubscription(email_address='aiwei.testt@gmail.com', json=True))
-
+        topic.add_subscription(sns_subs.EmailSubscription(email_address='l2pma.student@gmail.com', json=True))
 
         ########################
         ### LAMBDA FUNCTIONS ###

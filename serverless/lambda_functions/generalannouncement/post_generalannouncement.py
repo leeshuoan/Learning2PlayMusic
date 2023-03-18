@@ -7,7 +7,7 @@ import dateutil.tz
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
-from ..global_functions.sns import *
+from global_functions.sns import *
 
 def lambda_handler(event, context):
 
