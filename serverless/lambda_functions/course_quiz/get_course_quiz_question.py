@@ -1,15 +1,20 @@
 import sys
 import boto3
 import json
+import decimal
 
 # Get all questions by courseid and quizid
 from global_functions.get_presigned_url import *
 from global_functions.responses import *
 from global_functions.exists_in_db import *
 
+class Encoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal): return float(obj)
 
 def lambda_handler(event, context):
 
+    res = {}
     queryStringParameters: dict = event["queryStringParameters"]
 
     try:
@@ -40,7 +45,15 @@ def lambda_handler(event, context):
             for item in items:
                 get_presigned_url(item, "QuestionImage")
 
-        return response_200_items(items)
+        res["statusCode"] = 200
+        res["headers"] = {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST,GET,PUT"
+        }
+        res["body"] = json.dumps(items, cls = Encoder)
+
+        return res
 
     except Exception as e:
         exception_type, exception_object, exception_traceback = sys.exc_info()
