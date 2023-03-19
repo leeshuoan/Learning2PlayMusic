@@ -28,7 +28,6 @@ const EditCourseMaterialsForm = () => {
   const [title, setTitle] = useState("");
   const [base64Attachment, setBase64Attachment] = useState(""); // base 64 file
   const [s3Url, setS3Url] = useState(""); // s3 link
-  // todo : handle when there is already an s3 link for the material
 
   // file handling
   const fileToBase64 = (file, callback) => {

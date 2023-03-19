@@ -1,26 +1,29 @@
-import { useState, useEffect } from "react";
-import { AppBar, Box, Toolbar, IconButton, Menu, Container, MenuItem, useTheme, Avatar, Divider, ListItemIcon, Tooltip } from "@mui/material";
-import Logout from "@mui/icons-material/Logout";
 import ChatIcon from "@mui/icons-material/Chat";
+import Logout from "@mui/icons-material/Logout";
+import { AppBar, Avatar, Box, Button, Container, IconButton, ListItemIcon, Menu, MenuItem, Toolbar, Tooltip, useTheme } from "@mui/material";
 import { Auth, Storage } from "aws-amplify";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
-  const theme = useTheme()
-  const navigate = useNavigate()
+  const theme = useTheme();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [image, setImage] = useState(null)
+  const [image, setImage] = useState(null);
+  const pages = ["User Management", "Course Management", "Announcement Management"];
 
   useEffect(() => {
     if (userInfo.profileImage != "none") {
-      Storage.get(userInfo.profileImage, { level: "protected" }).then((res) => {
-        setImage(res)
-      }).catch((err) => {
-        console.log(err)
-      })
+      Storage.get(userInfo.profileImage, { level: "protected" })
+        .then((res) => {
+          setImage(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-  }, [userInfo])
+  }, [userInfo]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -31,23 +34,21 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
   };
 
   const handleLogout = () => {
-    handleResetUserInfo()
-    Auth.signOut().then(() => {
-      console.log("Signed out")
-      navigate('/')
-    }).catch((err) => console.log(err))
+    handleResetUserInfo();
+    Auth.signOut()
+      .then(() => {
+        console.log("Signed out");
+        navigate("/");
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
     <>
       {
-        <AppBar
-          position="sticky"
-          sx={{ bgcolor: theme.palette.background.paper, zIndex: 9999 }}>
+        <AppBar position="sticky" sx={{ bgcolor: theme.palette.background.paper, zIndex: 9999 }}>
           <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-            <Toolbar
-              disableGutters
-              sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Toolbar disableGutters sx={{ display: "flex", justifyContent: "space-between" }}>
               {/* MOBILE NAV */}
               <Box sx={{ display: { xs: "flex", md: "none" } }}>
                 <Avatar
@@ -57,16 +58,19 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
                     width: 32,
                     height: 32,
                     bgcolor: "grey[100]",
-                    "&:hover": { cursor: "pointer" }
+                    "&:hover": { cursor: "pointer" },
                   }}>
                   <ChatIcon onClick={() => navigate("/chat")} />
                 </Avatar>
               </Box>
 
-              <IconButton disableRipple onClick={() => { navigate("/admin") }}>
+              <IconButton
+                disableRipple
+                onClick={() => {
+                  navigate("/admin");
+                }}>
                 <img src="/l2pm_logo.png" width="150px" />
               </IconButton>
-
               {/* USER MENU */}
               <Box>
                 <Box
@@ -82,18 +86,12 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
                       width: 32,
                       height: 32,
                       bgcolor: "grey[100]",
-                      "&:hover": { cursor: "pointer" }
+                      "&:hover": { cursor: "pointer" },
                     }}>
                     <ChatIcon onClick={() => navigate("/chat")} />
                   </Avatar>
                   <Tooltip title="Account settings">
-                    <IconButton
-                      onClick={handleClick}
-                      size="small"
-                      sx={{ ml: 1 }}
-                      aria-controls={open ? "account-menu" : undefined}
-                      aria-haspopup="true"
-                      aria-expanded={open ? "true" : undefined}>
+                    <IconButton onClick={handleClick} size="small" sx={{ ml: 1 }} aria-controls={open ? "account-menu" : undefined} aria-haspopup="true" aria-expanded={open ? "true" : undefined}>
                       <Avatar sx={{ width: 32, height: 32 }} src={image}></Avatar>
                     </IconButton>
                   </Tooltip>
@@ -132,8 +130,12 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
                   }}
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
-                  <MenuItem onClick={() => { navigate("/profile") }}>
-                    <Avatar src={image} />My Profile
+                  <MenuItem
+                    onClick={() => {
+                      navigate("/profile");
+                    }}>
+                    <Avatar src={image} />
+                    My Profile
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
