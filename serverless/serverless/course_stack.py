@@ -651,7 +651,7 @@ class CourseStack(Stack):
                           "toneQuality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
                           "theory": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
                           "enthusiasm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "rhythm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['N.A']),
+                          "rhythm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['N.A.']),
                           "scales": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
                           "posture": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
                           "articulation": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
