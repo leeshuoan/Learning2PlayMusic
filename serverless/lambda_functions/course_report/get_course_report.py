@@ -19,7 +19,13 @@ def lambda_handler(event, context):
             sortKey = "Student#" + studentId + "Report#"
         else:
             reportId = event['queryStringParameters']['reportId']
+            # check of <reportId> exists in database
+            sk_name = "Student#" + studentId + "Report"
+            if not combination_id_exists("Course", courseId, sk_name, reportId):
+                return response_404("reportId is not registered with the course.")
+            
             sortKey = "Student#" + studentId + "Report#" + reportId
+
         
         # VALIDATION
         # check if <courseId> exists in database
@@ -29,11 +35,7 @@ def lambda_handler(event, context):
         # check if <studentId> exists in database
         if not combination_id_exists("Course", courseId, "Student", studentId):
             return response_404("studentId is not registered with the course. To do so, please use /user/student/course to register")
-        
-        # check of <reportId> exists in database
-        sk_name = "Student#" + studentId + "Report"
-        if not combination_id_exists("Course", courseId, sk_name, reportId):
-            return response_404("reportId is not registered with the course.")
+
 
         # get report(s) with evaluations for student 
         response = table.query(
