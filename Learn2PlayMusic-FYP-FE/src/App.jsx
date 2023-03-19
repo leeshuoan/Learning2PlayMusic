@@ -111,6 +111,7 @@ function App() {
 
           <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}>
             <Route index element={<AdminHome userInfo={userInfo} />} />
+            <Route path=":category" element={<AdminHome userInfo={userInfo} />} />
           </Route>
 
           <Route path="teacher" element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>

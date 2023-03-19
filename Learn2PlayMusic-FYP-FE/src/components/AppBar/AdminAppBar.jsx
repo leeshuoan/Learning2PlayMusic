@@ -1,17 +1,18 @@
 import ChatIcon from "@mui/icons-material/Chat";
 import Logout from "@mui/icons-material/Logout";
-import { AppBar, Avatar, Box, Button, Container, IconButton, ListItemIcon, Menu, MenuItem, Toolbar, Tooltip, useTheme } from "@mui/material";
+import { AppBar, Avatar, Box, Container, IconButton, ListItemIcon, Menu, MenuItem, Toolbar, Tooltip, Typography, useTheme } from "@mui/material";
 import { Auth, Storage } from "aws-amplify";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
+  const pages = ["Announcements", "Courses", "Users"];
+  const { category } = useParams();
   const theme = useTheme();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [image, setImage] = useState(null);
-  const pages = ["User Management", "Course Management", "Announcement Management"];
 
   useEffect(() => {
     if (userInfo.profileImage != "none") {
@@ -64,13 +65,36 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
                 </Avatar>
               </Box>
 
-              <IconButton
-                disableRipple
-                onClick={() => {
-                  navigate("/admin");
-                }}>
-                <img src="/l2pm_logo.png" width="150px" />
-              </IconButton>
+              {/* left part of Nav bar */}
+              {/* normal */}
+              <Box sx={{ display: { xs: "none", md: "flex" } }}>
+                <IconButton
+                  disableRipple
+                  onClick={() => {
+                    navigate("/admin");
+                  }}>
+                  <img src="/l2pm_logo.png" width="150px" />
+                </IconButton>
+                {pages.map((page) => (
+                  <MenuItem key={page} onClick={() => navigate(`/admin/${page.toLowerCase()}`)}>
+                    <Typography textAlign="center" variant="body2">
+                      {page}
+                    </Typography>
+                  </MenuItem>
+                ))}
+              </Box>
+              {/* mobile */}
+              <Box sx={{ display: { xs: "flex", md: "none" } }}>
+                <IconButton
+                  disableRipple
+                  onClick={() => {
+                    navigate("/admin");
+                  }}>
+                  <img src="/l2pm_logo.png" width="150px" />
+                </IconButton>
+              </Box>
+              {/* end left part of Nav bar */}
+
               {/* USER MENU */}
               <Box>
                 <Box
@@ -130,6 +154,14 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
                   }}
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
+                  {pages.map((page) => (
+                    <MenuItem key={page} onClick={() => navigate(`/admin/${page.toLowerCase()}`)}>
+                      <Typography textAlign="center" variant="body2">
+                        {page}
+                      </Typography>
+                    </MenuItem>
+                  ))}
+
                   <MenuItem
                     onClick={() => {
                       navigate("/profile");
