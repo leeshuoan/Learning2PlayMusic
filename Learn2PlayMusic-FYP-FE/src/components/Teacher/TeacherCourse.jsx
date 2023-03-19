@@ -515,18 +515,17 @@ const TeacherCourse = (userInfo) => {
                 {/* end header */}
                 {courseQuiz.map((quiz, key) => (
                   <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} sm={9}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: {xs: "column", sm: "row"} }}>
                         <Typography variant="h6" sx={{ mb: 1 }}>
                           {quiz.QuizTitle}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={3}>
-                        <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
+                        <Stack direction="row"divider={<Divider orientation="vertical" flexItem />} spacing={{ xs: 1, sm: 2 }}>
                           {/*  todo visibile, edit, delete */}
                           <Typography variant="button">
                             <Link underline="hover">
+                              <Box sx={{ display: "flex", alignItems: "center" }}>
                               <VisibilityIcon fontSize="inherit" /> &nbsp; Showing
+                              </Box>
                             </Link>
                           </Typography>
                           <Typography variant="button">
@@ -536,19 +535,12 @@ const TeacherCourse = (userInfo) => {
                             <Link underline="hover">Delete</Link>
                           </Typography>
                         </Stack>
-                      </Grid>
-                    </Grid>
-                    <Grid container spacing={2} sx={{ alignItems: "center" }}>
-                      <Grid item xs={12} sm={12}>
-                        <Typography variant="body1" sx={{ mt: 2 }}>
+                    </Box>
+                        <Typography variant="body1" sx={{  mt: 1, mb: 2 }}>
                           {quiz.QuizDescription}
                         </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={12}>
                         {/* todo :view quiz summary */}
                         <Button variant="contained">View Quiz Summary</Button>
-                      </Grid>
-                    </Grid>
                   </Card>
                 ))}
               </Card>

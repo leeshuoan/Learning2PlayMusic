@@ -64,7 +64,6 @@ function App() {
   useEffect(() => {
     Auth.currentAuthenticatedUser()
       .then((user) => {
-        console.log(user);
         user.getSession((err, session) => {
           if (err) {
             console.log(err);

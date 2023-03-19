@@ -15,7 +15,6 @@ const BaseProgressReport = () => {
   const [selected, setSelected] = useState(reportId == undefined ? "none" : reportId);
   const [progressReports, setProgressReports] = useState([]);
   const [studentName, setStudentName] = useState();
-  const [selectedReport, setSelectedReport] = useState({});
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
@@ -54,16 +53,13 @@ const BaseProgressReport = () => {
       };
       setCourse(courseData);
 
+      console.log(data2)
       const reportData = data2.map((report) => {
         const ReportId = report.SK.split("Report#")[1]
         const date = new Date(report.AvailableDate);
         const Available = date > new Date() ? false : true;
         const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
-        console.log(formattedDate)
         report.AvailableDate = formattedDate
-        if (reportId == ReportId) {
-          setSelectedReport(report);
-        }
         return { ...report, ReportId, Available };
       })
       setProgressReports(reportData)
@@ -80,11 +76,6 @@ const BaseProgressReport = () => {
   const handleChange = (event) => {
     setSelected(event.target.value);
   };
-
-  const selectReport  = (report) => {
-    setSelectedReport(report);
-    navigate(`/teacher/course/${courseid}/report/${userId}/${report.ReportId}`)
-  }
 
   return (
     <>
@@ -131,15 +122,15 @@ const BaseProgressReport = () => {
                   </MenuItem>
                 )}
                 {progressReports.map((report, key) => {
-                  return <MenuItem selected={report.ReportId == reportId} value={report.ReportId} key={key} onClick={() => selectReport(report)}>{report.Title}</MenuItem>;
+                  return <MenuItem selected={report.ReportId == reportId} value={report.ReportId} key={key} onClick={() => navigate(`/teacher/course/${courseid}/report/${userId}/${report.ReportId}`) }>{report.Title}</MenuItem>;
                 })}
               </Select>
             </FormControl>
 
             {progressReports.map((report, key) => {
               return (
-                <Box sx={{ display: report.ReportId == reportId ? "block": "none" }}>
-                  <StudentProgressReport report={report} key={key} />
+                <Box sx={{ display: report.ReportId == reportId ? "block": "none" }} key={key}>
+                  <StudentProgressReport report={report} />
                 </Box>
               )
             })}
