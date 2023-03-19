@@ -4,6 +4,7 @@ from aws_cdk import aws_apigateway as apigw
 from aws_cdk import aws_iam
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_s3 as s3
+from aws_cdk import aws_sns as sns
 from constructs import Construct
 
 
@@ -14,7 +15,10 @@ class CourseStack(Stack):
 
         # The code that defines your stack goes here
 
-        # Define Constants Here
+        #################
+        ### CONSTANTS ###
+        #################
+
         FUNCTIONS_FOLDER = "./lambda_functions/"
         COURSE_FUNCTIONS_FOLDER = "course"
         COURSE_STUDENT_FUNCTIONS_FOLDER = "course.student"
@@ -27,6 +31,10 @@ class CourseStack(Stack):
         COURSE_REPORT_FUNCTIONS_FOLDERS = "course_report"
 
         
+        ##########
+        ### S3 ###
+        ##########
+
         # Create S3 bucket with read/write allowed
         L2PMA_question_image_bucket = s3.Bucket(self, "L2PMAQuestionImageBucket")
         L2PMA_question_image_bucket_policy_statement = aws_iam.PolicyStatement(
@@ -55,6 +63,11 @@ class CourseStack(Stack):
         )
         L2PMA_material_attachment_bucket.add_to_resource_policy(L2PMA_material_attachment_bucket_policy_statement)
 
+
+        ###########
+        ### IAM ###
+        ###########
+
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
         general_role = iam.get_role(RoleName="lambda-general-role")
@@ -80,6 +93,18 @@ class CourseStack(Stack):
         AWSLambdaBasicExecutionRole = aws_iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AWSLambdaBasicExecutionRole')
         S3_DYNAMODB_ROLE.add_managed_policy(AWSLambdaBasicExecutionRole)
 
+        ###########
+        ### SNS ###
+        ###########
+
+        # Create an SNS Topic
+        topic = sns.Topic(self, "CourseAnnouncementTopic", display_name="CourseAnnouncementTopic")
+
+
+        ########################
+        ### LAMBDA FUNCTIONS ###
+        ########################
+
         # Create /course/homework/ AWS Lambda function
         get_course_homework = _lambda.Function(self, "getCourseHomework", runtime=_lambda.Runtime.PYTHON_3_9,
                                                handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.get_course_homework.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -101,7 +126,8 @@ class CourseStack(Stack):
 
         # /course/announcement Functions
         get_course_announcement = _lambda.Function(self, "getCourseAnnouncement",  runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.get_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        post_course_announcement = _lambda.Function(self, "postCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.post_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        post_course_announcement = _lambda.Function(self, "postCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.post_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE,
+                                                    environment={'SNS_TOPIC_ARN': topic.topic_arn})
         delete_course_announcement = _lambda.Function(self, "deleteCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         put_course_announcement = _lambda.Function(self, "putCourseAnnouncement", runtime=_lambda.Runtime.PYTHON_3_9,handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.put_course_announcement.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
@@ -161,9 +187,20 @@ class CourseStack(Stack):
         post_course_report = _lambda.Function(self, "postCourseReport", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.post_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE)
         put_course_report = _lambda.Function(self, "putCourseReport", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.put_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE)
         delete_course_report = _lambda.Function(self, "deleteCourseReport", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.delete_course_report.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=S3_DYNAMODB_ROLE)
+
+
+        ##############
+        ### API GW ###
+        ##############
+
         # Create Amazon API Gateway REST API
         main_api = apigw.RestApi(self, "main", description="All LMS APIs")
         self.main_api = main_api
+
+
+        ##########################
+        ### API GW - RESOURCES ###
+        ##########################
 
         # Create resources for the API
         course_resource = main_api.root.add_resource("course")
@@ -188,6 +225,10 @@ class CourseStack(Stack):
         course_homework_submit_resource = course_homework_resource.add_resource(
             "submit")
         
+
+        ########################
+        ### API GW - METHODS ###
+        ########################
 
         # Create methods in the required resources
 
@@ -637,6 +678,10 @@ class CourseStack(Stack):
             'method.request.querystring.reportId': False})
 
 
+        ############
+        ### CORS ###
+        ############
+
         # Enable CORS for each resource/sub-resource etc.
         course_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
@@ -665,6 +710,10 @@ class CourseStack(Stack):
         course_report_resource.add_cors_preflight(
             allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
 
+
+        ######################
+        ### EXPORT OUTPUTS ###
+        ######################
 
         # Export API gateway to use in other Stacks
         CfnOutput(
