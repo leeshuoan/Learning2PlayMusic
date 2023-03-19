@@ -119,7 +119,7 @@ const TeacherCourse = (userInfo) => {
         header: "Progress Report",
         Cell: ({ cell, row }) => (
           <Link underline="hover" onClick={() => navigate(`/teacher/course/${courseid}/report/${row.original.studentId}`)} sx={{ justifyContent: "center", alignItems: "center" }}>
-            <Typography variant="button">
+            <Typography variant="button" sx={{ display: "flex", alignItems: "center" }}>
               <FileOpenIcon fontSize="inherit" />
               &nbsp;OPEN
             </Typography>
@@ -435,13 +435,10 @@ const TeacherCourse = (userInfo) => {
               {/* end header */}
               {courseAnnouncements.map((announcement, key) => (
                 <Card key={key} variant="outlined" sx={{ boxShadow: "none", mt: 2, p: 2 }}>
-                  <Grid container>
-                    <Grid item xs={8} sm={8} md={10}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: {xs: "column", sm: "row"} }}>
                       <Typography variant="subtitle1" sx={{}}>
                         {announcement.Title}
                       </Typography>
-                    </Grid>
-                    <Grid item xs={4} sm={4} md={2}>
                       <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
                         <Typography
                           variant="button"
@@ -460,8 +457,7 @@ const TeacherCourse = (userInfo) => {
                           <Link underline="hover">Delete</Link>
                         </Typography>
                       </Stack>
-                    </Grid>
-                  </Grid>
+                    </Box>
                   <Typography variant="subsubtitle" sx={{ mb: 1 }}>
                     Posted {announcement.Date}
                   </Typography>

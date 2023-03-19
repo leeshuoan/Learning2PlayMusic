@@ -56,11 +56,13 @@ const BaseProgressReport = () => {
       console.log(data2)
       const reportData = data2.map((report) => {
         const ReportId = report.SK.split("Report#")[1]
-        const date = new Date(report.AvailableDate);
-        const Available = date > new Date() ? false : true;
-        const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
-        report.AvailableDate = formattedDate
-        return { ...report, ReportId, Available };
+        const availableDate = new Date(report.AvailableDate);
+        const updatedDate = new Date(report.UpdatedDate);
+        const Available = availableDate > new Date() ? false : true;
+        const formattedAvailableDate = `${availableDate.toLocaleDateString()} ${availableDate.toLocaleTimeString()}`
+        const formattedUpdatedDate = `${updatedDate.toLocaleDateString()} ${updatedDate.toLocaleTimeString()}`
+        report.AvailableDate = formattedAvailableDate
+        return { ...report, ReportId, Available, UpdatedDate: formattedUpdatedDate };
       })
       setProgressReports(reportData)
 

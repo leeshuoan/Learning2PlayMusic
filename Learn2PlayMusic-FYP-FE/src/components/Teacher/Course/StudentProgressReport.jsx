@@ -36,15 +36,18 @@ const StudentProgressReport = (report) => {
     <>
       <Box sx={{ display: report.report.Available ? "block" : "none" }}>
         <Divider sx={{ my: 2 }} />
-        <Typography variant="subtitle1" sx={{ mb: 1 }}>
+        <Typography variant="subtitle1" >
           Available on: {report.report.AvailableDate}
+        </Typography>
+        <Typography variant="subtitle1" sx={{ mt: 1, mb: 2 }}>
+          Last updated: {report.report.UpdatedDate}
         </Typography>
         {Object.keys(metrics).map((metric, key) => (
           <Box key={key}>
             <FormLabel>{metrics[metric]}</FormLabel>
-            <RadioGroup name={metric} sx={{ mb: 1 }} row>
+            <RadioGroup name={metric} defaultValue={report.report.EvaluationList[metric]} sx={{ mb: 1 }} row>
               {performance.map((performance, key) => (
-                <FormControlLabel checked={report.report.EvaluationList[metric] == performance} value={performance} key={key} control={<Radio size="small" />} label={performance} />
+                <FormControlLabel value={performance} key={key} control={<Radio size="small" />} label={performance} />
               ))}
             </RadioGroup>
           </Box>
@@ -67,7 +70,7 @@ const StudentProgressReport = (report) => {
         <Typography variant="h6" sx={{ mb: 1, color: "grey" }}>
           Not Available Yet
         </Typography>
-        <Typography variant="subtitle1" sx={{ mb: 1 }}>
+        <Typography variant="subtitle1" >
           Available on: {report.report.AvailableDate}
         </Typography>
       </Box>
