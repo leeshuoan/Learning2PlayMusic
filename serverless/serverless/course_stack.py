@@ -586,7 +586,7 @@ class CourseStack(Stack):
             'application/json': put_course_announcement_model})
         
         # /course/report
-        REPORT_EVALUATIONLIST_ENUM = ['Good', 'Excellent', 'Satisfactory', 'N.A.', 'Weak']
+        REPORT_EVALUATIONLIST_ENUM = ['Good', 'Excellent', 'Satisfactory', 'N.A.', 'Weak', 'Poor']
         post_course_report_model = main_api.add_model(
             "PostCourseReportModel",
             content_type="application/json",
