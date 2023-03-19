@@ -45,8 +45,8 @@ def lambda_handler(event, context):
 
 
         key = {
-            ":PK": f"Course#{course_id}",
-            ":SK": f"Student#{student_id}Report#{report_id}"
+            "PK": f"Course#{course_id}",
+            "SK": f"Student#{student_id}Report#{report_id}"
         }
         update_expression = 'SET EvaluationList = :evaluationList, Title = :title, AvailableDate = :availableDate, UpdatedDate= :updatedDate'
         expression_attribute_values = {
