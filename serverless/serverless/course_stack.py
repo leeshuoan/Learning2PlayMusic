@@ -645,21 +645,21 @@ class CourseStack(Stack):
                     "evaluationList": apigw.JsonSchema(
                         type=apigw.JsonSchemaType.OBJECT,
                         properties = {
-                          "attendance": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "dynamicsControl": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "punctuality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Excellent']),
-                          "toneQuality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "theory": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "enthusiasm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "rhythm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['N.A.']),
-                          "scales": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "posture": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "articulation": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "musicality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "sightReading": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "practice": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Satisfactory']),
-                          "aural": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good']),
-                          "performing": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=['Good'])
+                          "attendance": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "dynamicsControl": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "punctuality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "toneQuality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "theory": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "enthusiasm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "rhythm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "scales": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "posture": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "articulation": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "musicality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "sightReading": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "practice": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "aural": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
+                          "performing": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM)
                         }
                       )
                 },
