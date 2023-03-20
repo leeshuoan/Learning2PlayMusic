@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Button, Divider, Typography, FormControlLabel, FormLabel, InputLabel, Radio, RadioGroup, TextField } from '@mui/material'
+import { Box, Button, Divider, Typography, FormControl, FormControlLabel, FormLabel, InputLabel, Radio, RadioGroup, TextField } from '@mui/material'
 
 const StudentProgressReport = (report) => {
   const metrics = {
@@ -23,6 +23,7 @@ const StudentProgressReport = (report) => {
 
   const [goals, setGoals] = useState(report.report.GoalsForNewTerm);
   const [comments, setComments] = useState(report.report.AdditionalComments);
+  const [evaluation, setEvaluation] = useState(report.report.EvaluationList);
 
   const handleGoalsChange = (event) => {
     setGoals(event.target.value);
@@ -32,37 +33,61 @@ const StudentProgressReport = (report) => {
     setComments(event.target.value);
   };
 
+  const handleEvaluationChange = (event) => {
+    setEvaluation(...evaluation, { [event.target.name]: event.target.value });
+  };
+
+  const submitReport = (e) => {
+    e.preventDefault();
+    const bodyParams = {
+      studentId: report.userId,
+      evaluationList: evaluation,
+      goalsForNewTerm: goals,
+      additionalComments: comments,
+      reportId: report.report.ReportId,
+      title: report.report.Title,
+      availableDate: report.report.AvailableDate,
+      updatedDate: report.report.UpdatedDate,
+      courseId: report.courseId
+    }
+    console.log(bodyParams)
+    report.submitReport
+  };
+
   return (
     <>
+      {console.log(report)}
       <Box sx={{ display: report.report.Available ? "block" : "none" }}>
         <Divider sx={{ my: 2 }} />
         <Typography variant="subtitle1" >
-          Available on: {report.report.AvailableDate}
+          Available on: {new Date(report.report.AvailableDate).toLocaleDateString()} {new Date(report.report.AvailableDate).toLocaleTimeString()}
         </Typography>
         <Typography variant="subtitle1" sx={{ mt: 1, mb: 2 }}>
-          Last updated: {report.report.UpdatedDate}
+          Last updated: {new Date(report.report.UpdatedDate).toLocaleDateString()} {new Date(report.report.UpdatedDate).toLocaleTimeString()}
         </Typography>
-        {Object.keys(metrics).map((metric, key) => (
-          <Box key={key}>
-            <FormLabel>{metrics[metric]}</FormLabel>
-            <RadioGroup name={metric} defaultValue={report.report.EvaluationList[metric]} sx={{ mb: 1 }} row>
-              {performance.map((performance, key) => (
-                <FormControlLabel value={performance} key={key} control={<Radio size="small" />} label={performance} />
-              ))}
-            </RadioGroup>
+        <form onSubmit={submitReport}>
+          {Object.keys(metrics).map((metric, key) => (
+            <Box key={key}>
+              <FormLabel>{metrics[metric]}</FormLabel>
+              <RadioGroup name={metric} defaultValue={report.report.EvaluationList[metric]} onChange={handleEvaluationChange} sx={{ mb: 1 }} row>
+                {performance.map((performance, key) => (
+                  <FormControlLabel value={performance} key={key} control={<Radio size="small" />} label={performance} />
+                ))}
+              </RadioGroup>
+            </Box>
+          ))}
+          <FormLabel id="goals-for-the-new-term" sx={{ mt: 2 }}>
+            Goals for the New Term
+          </FormLabel>
+          <TextField variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1, mb: 2 }} value={goals} onChange={handleGoalsChange} />
+          <FormLabel id="additional-comments">Additional Comments</FormLabel>
+          <TextField variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1 }} value={comments} onChange={handleCommentsChange} />
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <Button variant="contained" sx={{ mt: 2 }} type="submit">
+              Submit
+            </Button>
           </Box>
-        ))}
-        <InputLabel id="goals-for-the-new-term" sx={{ mt: 2 }}>
-          Goals for the New Term
-        </InputLabel>
-        <TextField variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1, mb: 2 }} value={goals} onChange={handleGoalsChange} />
-        <InputLabel id="additional-comments">Additional Comments</InputLabel>
-        <TextField variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1 }} value={comments} onChange={handleCommentsChange} />
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button variant="contained" sx={{ mt: 2 }}>
-            Submit
-          </Button>
-        </Box>
+        </form>
       </Box>
 
       <Box sx={{ display: report.report.Available ? "none" : "block" }}>
