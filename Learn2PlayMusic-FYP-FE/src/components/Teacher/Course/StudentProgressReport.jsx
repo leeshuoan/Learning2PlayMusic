@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Box, Button, Divider, Typography, FormControl, FormControlLabel, FormLabel, InputLabel, Radio, RadioGroup, TextField } from '@mui/material'
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const StudentProgressReport = (report) => {
   const metrics = {
@@ -20,10 +22,19 @@ const StudentProgressReport = (report) => {
     attendance: "Attendance",
   };
   const performance = ["Poor", "Weak", "Satisfactory", "Good", "Excellent", "N.A."];
-
+  const navigate = useNavigate()
   const [goals, setGoals] = useState(report.report.GoalsForNewTerm);
   const [comments, setComments] = useState(report.report.AdditionalComments);
   const [evaluation, setEvaluation] = useState(report.report.EvaluationList);
+
+  async function request(endpoint) {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+  }
 
   const handleGoalsChange = (event) => {
     setGoals(event.target.value);
@@ -34,12 +45,14 @@ const StudentProgressReport = (report) => {
   };
 
   const handleEvaluationChange = (event) => {
-    setEvaluation(...evaluation, { [event.target.name]: event.target.value });
+    console.log(event.target)
+    console.log(evaluation)
+    setEvaluation({...evaluation, [event.target.name]: event.target.value});
   };
 
-  const submitReport = (e) => {
+  async function submitReport(e) {
     e.preventDefault();
-    const bodyParams = {
+    const bodyParams = JSON.stringify({
       studentId: report.userId,
       evaluationList: evaluation,
       goalsForNewTerm: goals,
@@ -49,9 +62,20 @@ const StudentProgressReport = (report) => {
       availableDate: report.report.AvailableDate,
       updatedDate: report.report.UpdatedDate,
       courseId: report.courseId
+    })
+
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/course/report`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: bodyParams
+    })
+
+    if (response) {
+      navigate(`/teacher/course/${report.courseId}/classlist`)
+      toast.success("Report updated successfully");
     }
-    console.log(bodyParams)
-    report.submitReport
   };
 
   return (
