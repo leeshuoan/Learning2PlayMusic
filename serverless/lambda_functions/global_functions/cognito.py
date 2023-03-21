@@ -23,6 +23,18 @@ def get_users_from_group(groupName):
 
 def get_users(group):
     
+    if group == 'Users':
+        userIdString = 'studentId'
+        userNameString = 'studentName'
+    if group == 'Teachers':
+        userIdString = 'teacherId'
+        userNameString = 'teacherName'
+    if group == 'Admins':
+        userIdString = 'adminId'
+        userNameString = 'adminName'
+        userType = 'generalAdmin'
+
+
     all_users_info = []
     users_response = get_users_from_group(group)
     
@@ -30,13 +42,13 @@ def get_users(group):
 
         for attribute in user['Attributes']:
             if attribute['Name'] == 'custom:name':
-                studentName = attribute['Value']
+                userName = attribute['Value']
                 
                 print(all_users_info)
         
                 all_users_info.append({
-                    "studentId": user['Username'],
-                    "studentName": studentName
+                    f"{userIdString}": user['Username'],
+                    f"{userNameString}": userName
                 })
     
     return all_users_info
