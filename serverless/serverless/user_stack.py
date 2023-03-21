@@ -36,9 +36,9 @@ class UserStack(Stack):
 
         # /user/student
         get_student = _lambda.Function(self, "getStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.get_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        post_student = _lambda.Function(self, "postStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.post_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        put_student = _lambda.Function(self, "putStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.put_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        delete_student = _lambda.Function(self, "deleteStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.delete_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        # post_student = _lambda.Function(self, "postStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.post_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        # put_student = _lambda.Function(self, "putStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.put_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        # delete_student = _lambda.Function(self, "deleteStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.delete_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /user/student/courses
         get_student_course = _lambda.Function(self, "getStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.get_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -87,54 +87,54 @@ class UserStack(Stack):
 
         # Create methods in the required resources
         # /user/student
-        post_user_student_model = apigw.Model(
-                self,
-                "PostUserStudentModel",
-                rest_api=main_api,
-                content_type="application/json",
-                model_name="PostUserStudentModel",
-                schema=apigw.JsonSchema(
-                    title="PostUserStudentModel",
-                    schema=apigw.JsonSchemaVersion.DRAFT4,
-                    type=apigw.JsonSchemaType.OBJECT,
-                    properties={
-                        "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                        "firstName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                        "lastName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                        "contactNumber": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
-                    },
-                    required=["studentId", "firstName", "lastName", "contactNumber"]))
+        # post_user_student_model = apigw.Model(
+        #         self,
+        #         "PostUserStudentModel",
+        #         rest_api=main_api,
+        #         content_type="application/json",
+        #         model_name="PostUserStudentModel",
+        #         schema=apigw.JsonSchema(
+        #             title="PostUserStudentModel",
+        #             schema=apigw.JsonSchemaVersion.DRAFT4,
+        #             type=apigw.JsonSchemaType.OBJECT,
+        #             properties={
+        #                 "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+        #                 "firstName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+        #                 "lastName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+        #                 "contactNumber": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+        #             },
+        #             required=["studentId", "firstName", "lastName", "contactNumber"]))
 
-        put_user_student_model = apigw.Model(
-                self,
-                "PutUserStudentModel",
-                rest_api=main_api,
-                content_type="application/json",
-                model_name="PutUserStudentModel",
-                schema=apigw.JsonSchema(
-                    title="PutUserStudentModel",
-                    schema=apigw.JsonSchemaVersion.DRAFT4,
-                    type=apigw.JsonSchemaType.OBJECT,
-                    properties={
-                        "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                        "firstName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                        "lastName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                        "contactNumber": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                        "isSoftDeleted": apigw.JsonSchema(type=apigw.JsonSchemaType.BOOLEAN)
-                    },
-                    required=["studentId", "firstName", "lastName", "contactNumber", "isSoftDeleted"]))
+        # put_user_student_model = apigw.Model(
+        #         self,
+        #         "PutUserStudentModel",
+        #         rest_api=main_api,
+        #         content_type="application/json",
+        #         model_name="PutUserStudentModel",
+        #         schema=apigw.JsonSchema(
+        #             title="PutUserStudentModel",
+        #             schema=apigw.JsonSchemaVersion.DRAFT4,
+        #             type=apigw.JsonSchemaType.OBJECT,
+        #             properties={
+        #                 "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+        #                 "firstName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+        #                 "lastName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+        #                 "contactNumber": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+        #                 "isSoftDeleted": apigw.JsonSchema(type=apigw.JsonSchemaType.BOOLEAN)
+        #             },
+        #             required=["studentId", "firstName", "lastName", "contactNumber", "isSoftDeleted"]))
 
         student_resource.add_method("GET", apigw.LambdaIntegration(get_student), request_parameters={
           'method.request.querystring.studentId': False})
 
-        student_resource.add_method("POST", apigw.LambdaIntegration(post_student), request_models={
-          'application/json': post_user_student_model})
+        # student_resource.add_method("POST", apigw.LambdaIntegration(post_student), request_models={
+        #   'application/json': post_user_student_model})
 
-        student_resource.add_method("PUT", apigw.LambdaIntegration(put_student), request_models={
-          'application/json': put_user_student_model})
+        # student_resource.add_method("PUT", apigw.LambdaIntegration(put_student), request_models={
+        #   'application/json': put_user_student_model})
 
-        student_resource.add_method("DELETE", apigw.LambdaIntegration(delete_student), request_parameters={
-          'method.request.querystring.studentId': True})
+        # student_resource.add_method("DELETE", apigw.LambdaIntegration(delete_student), request_parameters={
+        #   'method.request.querystring.studentId': True})
 
         # /user/student/course
         student_course_resource.add_method("GET", apigw.LambdaIntegration(get_student_course), request_parameters={

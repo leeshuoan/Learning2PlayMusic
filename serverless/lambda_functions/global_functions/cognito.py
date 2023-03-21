@@ -2,7 +2,7 @@ import boto3
 
 
 ##############################################
-### (USER POOL) GET ALL USERS FROM A GROUP ###
+### (USER POOL) GET ALL USERS FROM A GROUP ### -- NOT INVOKED OUTSIDE
 ##############################################
 
 # Existing groups: 'Admins', 'Teachers', 'Users'
@@ -43,7 +43,7 @@ def get_users(group):
 
 
 #####################################
-### (IDENTITY POOL) GET ALL USERS ###
+### (IDENTITY POOL) GET ALL USERS ### -- NOT INVOKED OUTSIDE
 #####################################
 
 class CognitoIdentityProviderWrapper:

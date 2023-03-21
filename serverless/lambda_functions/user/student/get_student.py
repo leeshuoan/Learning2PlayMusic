@@ -4,37 +4,26 @@ import json
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
+from global_functions.cognito import *
 
 def lambda_handler(event, context):
 
     try:
 
+        # get all students from Cognito
+        students = get_users('Users')
+
         # check if <studentId> is being passed in
         studentId = event['queryStringParameters']
         if studentId is None or studentId == "null":
-            sortKey = "Student#"
+            return response_200_items(students)
+
         else:
             studentId = event['queryStringParameters']['studentId']
-            sortKey = "Student#" + studentId
+            for student in students:
+                if studentId == student['studentId']:
+                    return response_200_items(student)
 
-            # check if <studentId> exists in database
-            if not id_exists("User", "Student", studentId):
-                return response_404("studentId does not exist in database")
-
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
-        
-        response = table.query(
-            KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
-            ExpressionAttributeValues={
-                ":PK": "User",
-                ":SK": sortKey
-            }
-            )
-
-        items = response["Items"]
-
-        return response_200_items(items)
 
 
     except Exception as e:
