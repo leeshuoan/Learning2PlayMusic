@@ -9,3 +9,8 @@ updates:
     directory: "/Learn2PlayMusic-FYP-FE" # Location of package manifests
     schedule:
       interval: "weekly"
+
+  - package-ecosystem: "pip" # See documentation for possible values
+    directory: "/serverless/requirements.txt" # Location of package manifests
+    schedule:
+      interval: "weekly"
