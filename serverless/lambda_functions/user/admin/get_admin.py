@@ -6,23 +6,25 @@ from global_functions.responses import *
 from global_functions.exists_in_db import *
 from global_functions.cognito import *
 
+### THIS FUNCTION IS BUILT FOR GENERAL ADMINS ONLY ###
+
 def lambda_handler(event, context):
 
     try:
 
-        # get all students from Cognito
-        students = get_users('Users')
+        # get all admins from Cognito
+        admins = get_users('Admins')
 
-        # check if <studentId> is being passed in
-        studentId = event['queryStringParameters']
-        if studentId is None or studentId == "null":
-            return response_200_items(students)
+        # check if <adminId> is being passed in
+        adminId = event['queryStringParameters']
+        if adminId is None or adminId == "null":
+            return response_200_items(admins)
 
         else:
-            studentId = event['queryStringParameters']['studentId']
-            for student in students:
-                if studentId == student['studentId']:
-                    return response_200_items(student)
+            adminId = event['queryStringParameters']['adminId']
+            for admin in admins:
+                if adminId == admin['adminId']:
+                    return response_200_items(admin)
 
 
 

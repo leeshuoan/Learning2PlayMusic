@@ -21,6 +21,7 @@ class UserStack(Stack):
         USER_STUDENT_COURSE_FUNCTIONS_FOLDER = "user.student.course"
         USER_TEACHER_FUNCTIONS_FOLDER = "user.teacher"
         USER_TEACHER_COURSE_FUNCTIONS_FOLDER = "user.teacher.course"
+        USER_ADMIN_FUNCTIONS_FOLDER = "user.admin"
 
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
@@ -56,6 +57,10 @@ class UserStack(Stack):
         post_teacher_course = _lambda.Function(self, "postTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.post_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_teacher_course = _lambda.Function(self, "deleteTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.delete_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
+        # /user/admin
+        get_admin = _lambda.Function(self, "getAdmin", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_ADMIN_FUNCTIONS_FOLDER}.get_admin.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+
         ##############
         ### API GW ###
         ##############
@@ -79,6 +84,7 @@ class UserStack(Stack):
         student_course_resource = student_resource.add_resource("course")
         teacher_resource = user_resource.add_resource("teacher")
         teacher_course_resource = teacher_resource.add_resource("course")
+        admin_resource = user_resource.add_resource("admin")
 
 
         ###########################################
@@ -216,6 +222,15 @@ class UserStack(Stack):
           'method.request.querystring.courseId': True})
 
 
+        #########################################
+        ### API GW RESOURCES METHODS - ADMINS ###
+        #########################################
+
+        admin_resource.add_method("GET", apigw.LambdaIntegration(get_admin), request_parameters={
+          'method.request.querystring.adminId': False})
+
+
+
         ############
         ### CORS ###
         ############
@@ -226,3 +241,4 @@ class UserStack(Stack):
         student_course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         teacher_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         teacher_course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        admin_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
