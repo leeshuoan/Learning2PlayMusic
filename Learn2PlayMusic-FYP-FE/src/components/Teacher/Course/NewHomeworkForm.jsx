@@ -75,11 +75,11 @@ const NewHomeworkForm = () => {
             New Homework
           </Typography>
           <form noValidate>
-            <TextField required fullWidth id="title" label="Title" variant="outlined" sx={{ mt: 2 }} />
-            <TextField label="Add Text" variant="outlined" rows={7} multiline fullWidth sx={{ mt: 2, mb: 2 }} />
+            <TextField required id="title" label="Title" variant="outlined" sx={{ mt: 2 }} />
+            <TextField required label="Description" variant="outlined" rows={7} multiline fullWidth sx={{ mt: 2, mb: 2 }} />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                label="Due Date"
+                label="Due Date *"
                 value={value}
                 onChange={(newValue) => {
                   console.log(newValue);

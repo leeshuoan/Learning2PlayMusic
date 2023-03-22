@@ -126,6 +126,7 @@ const UserCourse = (userInfo) => {
       });
       setCourseMaterial(materialData);
 
+      console.log(data4)
       const quizData = data4.map((quiz) => {
         const id = quiz.SK.split("Quiz#")[1].substr(0, 1);
         const date = new Date(quiz.QuizDueDate);

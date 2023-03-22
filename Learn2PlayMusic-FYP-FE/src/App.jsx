@@ -40,6 +40,7 @@ import TeacherHomeworkOverview from "./components/Teacher/Course/TeacherHomework
 import ViewCourseMaterialsForm from "./components/Teacher/Course/ViewCourseMaterialsForm";
 import TeacherCourse from "./components/Teacher/TeacherCourse";
 import TeacherHome from "./components/Teacher/TeacherHome";
+import NewQuiz from "./components/Teacher/Course/NewQuiz";
 
 Amplify.configure(aws_exports);
 
@@ -133,6 +134,7 @@ function App() {
               </Route>
               <Route path="report/:userId" element={<BaseProgressReport />} />
               <Route path="report/:userId/:reportId" element={<BaseProgressReport />} />
+              <Route path="quiz/new" element={<NewQuiz userInfo={userInfo} />} />
             </Route>
           </Route>
 

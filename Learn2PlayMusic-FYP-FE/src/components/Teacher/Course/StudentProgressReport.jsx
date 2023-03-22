@@ -45,8 +45,6 @@ const StudentProgressReport = (report) => {
   };
 
   const handleEvaluationChange = (event) => {
-    console.log(event.target)
-    console.log(evaluation)
     setEvaluation({...evaluation, [event.target.name]: event.target.value});
   };
 
