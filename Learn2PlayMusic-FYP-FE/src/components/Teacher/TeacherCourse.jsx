@@ -16,12 +16,15 @@ const TeacherCourse = (userInfo) => {
   const [courseMaterial, setCourseMaterial] = useState([]);
   const [courseQuiz, setCourseQuiz] = useState([]);
   const [courseAnnouncements, setCourseAnnouncements] = useState([]);
+  const [refreshUseEffect, setRefreshUseEffect] = useState(false);
   // for deletion modal
   const [deleteAnnouncementModal, setDeleteAnnouncementModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [deleteMaterialModal, setDeleteMaterialModal] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
-  const [classList, setClassList] = useState([]);  
+  const [deleteQuizModal, setDeleteQuizModal] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [classList, setClassList] = useState([]);
 
   // navigate pages
   const navigate = useNavigate();
@@ -222,6 +225,32 @@ const TeacherCourse = (userInfo) => {
     return;
   }
 
+  async function deleteQuiz() {
+    console.log('test')
+    console.log(selectedQuiz)
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        courseId: courseid,
+        quizId: selectedQuiz,
+      }),
+    })
+    if (res.status !== 200) {
+      console.log(res)
+      toast.error("An unexpected error occured");
+      return;
+    }
+
+    toast.success("Quiz deleted successfully");
+    setSelectedQuiz(null);
+    setDeleteQuizModal(false);
+    setOpen(true)
+    setRefreshUseEffect(!refreshUseEffect);
+  }
+
   useEffect(() => {
     async function fetchData() {
       const [data1, data2, data3, data4, data5, data6] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI, getClassListAPI]);
@@ -255,6 +284,7 @@ const TeacherCourse = (userInfo) => {
       });
       setCourseMaterial(materialData);
 
+      console.log(data4)
       const quizData = data4.map((quiz) => {
         const id = quiz.SK.split("Quiz#")[1].substr(0, 1);
         const date = new Date(quiz.QuizDueDate);
@@ -271,19 +301,13 @@ const TeacherCourse = (userInfo) => {
       });
       setCourseAnnouncements(announcementsData);
 
-      // const classListData = data6.map((student) => {
-      //   const ParticipationPoints = " "
-      //   return { ...student };
-      // })
-      console.log(data6)
       setClassList(data6);
-      console.log(classList)
     }
 
     fetchData().then(() => {
       setOpen(false);
     });
-  }, []);
+  }, [refreshUseEffect]);
 
   const menuNavigate = (option) => {
     if (option == "Announcements") navigate(`/teacher/course/${course.id}/announcement`);
@@ -301,7 +325,7 @@ const TeacherCourse = (userInfo) => {
         handleClose={() => {
           setDeleteAnnouncementModal(false);
         }}>
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ pb: 2 }}>
           <Typography variant="h6" sx={{ mb: 2 }}>
             Delete Announcement
           </Typography>
@@ -330,7 +354,7 @@ const TeacherCourse = (userInfo) => {
         handleClose={() => {
           setDeleteMaterialModal(false);
         }}>
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ pb: 2 }}>
           <Typography variant="h6" sx={{ mb: 2 }}>
             Delete Material
           </Typography>
@@ -349,6 +373,35 @@ const TeacherCourse = (userInfo) => {
             Cancel
           </Button>
           <Button fullWidth variant="contained" color="error" onClick={deleteMaterial}>
+            Delete
+          </Button>
+        </Box>
+      </TransitionModal>
+      {/* Delete quiz modal ========================================================================================================================*/}
+      <TransitionModal
+        open={deleteQuizModal}
+        handleClose={() => {
+          setDeleteQuizModal(false);
+        }}>
+        <Box sx={{ pb: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Delete Quiz
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Are you sure you want to delete this quiz?
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mx: 2 }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mr: 1, color: "primary.main" }}
+            onClick={() => {
+              setDeleteQuizModal(false);
+            }}>
+            Cancel
+          </Button>
+          <Button fullWidth variant="contained" color="error" onClick={deleteQuiz}>
             Delete
           </Button>
         </Box>
@@ -435,29 +488,29 @@ const TeacherCourse = (userInfo) => {
               {/* end header */}
               {courseAnnouncements.map((announcement, key) => (
                 <Card key={key} variant="outlined" sx={{ boxShadow: "none", mt: 2, p: 2 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: {xs: "column", sm: "row"} }}>
-                      <Typography variant="subtitle1" sx={{}}>
-                        {announcement.Title}
+                  <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" } }}>
+                    <Typography variant="subtitle1" sx={{}}>
+                      {announcement.Title}
+                    </Typography>
+                    <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
+                      <Typography
+                        variant="button"
+                        onClick={() => {
+                          var endpt = category == "announcement" ? `edit/${announcement.id}` : `announcement/edit/${announcement.id}`;
+                          navigate(endpt, { state: { course: course, title: announcement.Title, content: announcement.Content } });
+                        }}>
+                        <Link underline="hover">Edit</Link>
                       </Typography>
-                      <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
-                        <Typography
-                          variant="button"
-                          onClick={() => {
-                            var endpt = category == "announcement" ? `edit/${announcement.id}` : `announcement/edit/${announcement.id}`;
-                            navigate(endpt, { state: { course: course, title: announcement.Title, content: announcement.Content } });
-                          }}>
-                          <Link underline="hover">Edit</Link>
-                        </Typography>
-                        <Typography
-                          variant="button"
-                          onClick={() => {
-                            setDeleteAnnouncementModal(true);
-                            setSelectedAnnouncement(announcement.id);
-                          }}>
-                          <Link underline="hover">Delete</Link>
-                        </Typography>
-                      </Stack>
-                    </Box>
+                      <Typography
+                        variant="button"
+                        onClick={() => {
+                          setDeleteAnnouncementModal(true);
+                          setSelectedAnnouncement(announcement.id);
+                        }}>
+                        <Link underline="hover">Delete</Link>
+                      </Typography>
+                    </Stack>
+                  </Box>
                   <Typography variant="subsubtitle" sx={{ mb: 1 }}>
                     Posted {announcement.Date}
                   </Typography>
@@ -485,7 +538,7 @@ const TeacherCourse = (userInfo) => {
                   {/* end header */}
 
                   <Grid item xs={12} sx={{ mt: 3 }}>
-                    <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
+                    <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => { }}></MaterialReactTable>
                   </Grid>
                 </Grid>
               </Card>
@@ -511,32 +564,35 @@ const TeacherCourse = (userInfo) => {
                 {/* end header */}
                 {courseQuiz.map((quiz, key) => (
                   <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: {xs: "column", sm: "row"} }}>
-                        <Typography variant="h6" sx={{ mb: 1 }}>
-                          {quiz.QuizTitle}
-                        </Typography>
-                        <Stack direction="row"divider={<Divider orientation="vertical" flexItem />} spacing={{ xs: 1, sm: 2 }}>
-                          {/*  todo visibile, edit, delete */}
-                          <Typography variant="button">
-                            <Link underline="hover">
-                              <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" } }}>
+                      <Typography variant="h6" sx={{ mb: 1 }}>
+                        {quiz.QuizTitle}
+                      </Typography>
+                      <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={{ xs: 1, sm: 2 }}>
+                        {/*  todo visibile, edit, delete */}
+                        <Typography variant="button">
+                          <Link underline="hover">
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
                               <VisibilityIcon fontSize="inherit" /> &nbsp; Showing
-                              </Box>
-                            </Link>
-                          </Typography>
-                          <Typography variant="button">
-                            <Link underline="hover">Edit</Link>
-                          </Typography>
-                          <Typography variant="button">
-                            <Link underline="hover">Delete</Link>
-                          </Typography>
-                        </Stack>
-                    </Box>
-                        <Typography variant="body1" sx={{  mt: 1, mb: 2 }}>
-                          {quiz.QuizDescription}
+                            </Box>
+                          </Link>
                         </Typography>
-                        {/* todo :view quiz summary */}
-                        <Button variant="contained">View Quiz Summary</Button>
+                        <Typography variant="button">
+                          <Link underline="hover">Edit</Link>
+                        </Typography>
+                        <Typography variant="button">
+                          <Link underline="hover" onClick={() => {
+                            setSelectedQuiz(quiz.id)
+                            setDeleteQuizModal(true)
+                          }}>Delete</Link>
+                        </Typography>
+                      </Stack>
+                    </Box>
+                    <Typography variant="body1" sx={{ mt: 1, mb: 2 }}>
+                      {quiz.QuizDescription}
+                    </Typography>
+                    {/* todo :view quiz summary */}
+                    <Button variant="contained">View Quiz Summary</Button>
                   </Card>
                 ))}
               </Card>
@@ -604,7 +660,7 @@ const TeacherCourse = (userInfo) => {
                           </Typography>
                           <Typography
                             variant="button"
-                            // onclick={() => {
+                          // onclick={() => {
                           >
                             <Link underline="hover">Delete</Link>
                           </Typography>
@@ -626,7 +682,7 @@ const TeacherCourse = (userInfo) => {
                 </Grid>
                 {/* end header */}
 
-                <MaterialReactTable columns={classListColumns} data={classList} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
+                <MaterialReactTable columns={classListColumns} data={classList} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => { }}></MaterialReactTable>
               </Card>
             </Box>
           </Box>
