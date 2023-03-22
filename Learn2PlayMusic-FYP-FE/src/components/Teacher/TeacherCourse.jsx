@@ -23,7 +23,8 @@ const TeacherCourse = (userInfo) => {
   const [deleteMaterialModal, setDeleteMaterialModal] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [deleteQuizModal, setDeleteQuizModal] = useState(false);
-  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [visibilityQuizModal, setVisibilityQuizModal] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState({ Visibility: false });
   const [classList, setClassList] = useState([]);
 
   // navigate pages
@@ -226,8 +227,6 @@ const TeacherCourse = (userInfo) => {
   }
 
   async function deleteQuiz() {
-    console.log('test')
-    console.log(selectedQuiz)
     const res = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
       method: "DELETE",
       headers: {
@@ -235,7 +234,7 @@ const TeacherCourse = (userInfo) => {
       },
       body: JSON.stringify({
         courseId: courseid,
-        quizId: selectedQuiz,
+        quizId: selectedQuiz.id,
       }),
     })
     if (res.status !== 200) {
@@ -245,8 +244,39 @@ const TeacherCourse = (userInfo) => {
     }
 
     toast.success("Quiz deleted successfully");
-    setSelectedQuiz(null);
+    setSelectedQuiz({ Visibility: false});
     setDeleteQuizModal(false);
+    setOpen(true)
+    setRefreshUseEffect(!refreshUseEffect);
+  }
+
+  async function changeQuizVisibility(newVisibility) {
+    console.log(selectedQuiz)
+    const newQuizData = {
+      visibility: newVisibility,  
+      quizId: selectedQuiz.id,
+      quizMaxAttempts: selectedQuiz.QuizMaxAttempts,
+      quizDescription: selectedQuiz.QuizDescription,
+      quizTitle: selectedQuiz.QuizTitle,
+      courseId: courseid,
+    }
+    console.log(newQuizData)
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newQuizData),
+    })
+    if (res.status !== 202) {
+      console.log(res)
+      toast.error("An unexpected error occured");
+      return;
+    }
+
+    toast.success("Quiz visibility changed successfully");
+    setSelectedQuiz({ Visibility: null });
+    setVisibilityQuizModal(false);
     setOpen(true)
     setRefreshUseEffect(!refreshUseEffect);
   }
@@ -270,8 +300,6 @@ const TeacherCourse = (userInfo) => {
         const formattedDueDate = `${dueDate.toLocaleDateString()} `;
         const assignedDate = new Date(homework.HomeworkDueDate);
         const formattedAssignedDate = `${assignedDate.toLocaleDateString()} ${assignedDate.toLocaleTimeString()}`;
-        const homeworkName = homework.HomeworkName;
-        const homeworkDescription = homework.HomeworkDescription;
         return { ...homework, id, HomeworkDueDate: formattedDueDate, HomeworkAssignedDate: formattedAssignedDate };
       });
       setCourseHomework(homeworkData);
@@ -286,10 +314,10 @@ const TeacherCourse = (userInfo) => {
 
       console.log(data4)
       const quizData = data4.map((quiz) => {
-        const id = quiz.SK.split("Quiz#")[1].substr(0, 1);
+        const id = quiz.SK.split("Quiz#")[1];
         const date = new Date(quiz.QuizDueDate);
         const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-        return { ...quiz, id, QuizDueDate: formattedDate };
+        return { ...quiz, id };
       });
       setCourseQuiz(quizData);
 
@@ -301,6 +329,11 @@ const TeacherCourse = (userInfo) => {
       });
       setCourseAnnouncements(announcementsData);
 
+      // const classListData = data6.map((student) => {
+      //   const ParticipationPoints = " "
+      //   return { ...student };
+      // })
+      console.log(data6)
       setClassList(data6);
     }
 
@@ -406,6 +439,39 @@ const TeacherCourse = (userInfo) => {
           </Button>
         </Box>
       </TransitionModal>
+      {/* Visibility quiz modal ========================================================================================================================*/}
+      <TransitionModal
+        open={visibilityQuizModal}
+        handleClose={() => {
+          setVisibilityQuizModal(false);
+        }}>
+        <Box sx={{ pb: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Change Quiz Visibility
+          </Typography>
+
+          <Box sx={{ display: selectedQuiz.Visibility ? "block" : "none" }}><Typography variant="body2" sx={{ mb: 2 }}>Are you sure you want to hide this quiz?</Typography></Box>
+          <Box sx={{ display: selectedQuiz.Visibility ? "none" : "block" }}><Typography variant="body2" sx={{ mb: 2 }}>Are you sure you want to make this quiz visible?</Typography></Box>
+          
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mx: 2 }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mr: 1, color: "primary.main" }}
+            onClick={() => {
+              setVisibilityQuizModal(false);
+            }}>
+            Cancel
+          </Button>
+          <Button fullWidth variant="contained" onClick={() => {changeQuizVisibility(false)}} sx={{ display: selectedQuiz.Visibility ? "block" : "none" }}>
+            Hide
+          </Button>
+          <Button fullWidth variant="contained" onClick={() => {changeQuizVisibility(true)}} sx={{ display: selectedQuiz.Visibility ? "none" : "block" }}>
+            Show
+          </Button>
+        </Box>
+      </TransitionModal>
       {/* breadcrumbs ======================================================================================================================== */}
       <CustomBreadcrumbs root="/teacher" links={null} breadcrumbEnding={course.name} />
       {/* header ======================================================================================================================== */}
@@ -470,21 +536,17 @@ const TeacherCourse = (userInfo) => {
           <Box>
             <Card sx={{ py: 3, px: 5, mt: 2, display: category == "announcement" ? "block" : category === undefined ? "block" : "none" }}>
               {/* header */}
-              <Grid container>
-                <Grid item xs={10} md={11}>
-                  <Typography variant="h5">Class Announcements</Typography>
-                </Grid>
-                <Grid item xs={2} md={1}>
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      var endpt = category == "announcement" ? "new" : "announcement/new";
-                      navigate(endpt, { state: { course: course, title: "", content: "" } });
-                    }}>
-                    +&nbsp;New
-                  </Button>
-                </Grid>
-              </Grid>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <Typography variant="h5">Class Announcements</Typography>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    var endpt = category == "announcement" ? "new" : "announcement/new";
+                    navigate(endpt, { state: { course: course, title: "", content: "" } });
+                  }}>
+                  +&nbsp;New
+                </Button>
+              </Box>
               {/* end header */}
               {courseAnnouncements.map((announcement, key) => (
                 <Card key={key} variant="outlined" sx={{ boxShadow: "none", mt: 2, p: 2 }}>
@@ -522,45 +584,35 @@ const TeacherCourse = (userInfo) => {
             <Box>
               <Card sx={{ py: 3, px: 5, mt: 2, display: category == "material" ? "block" : category === undefined ? "none" : "none" }}>
                 {/* header */}
-                <Grid container>
-                  <Grid item xs={10} md={11}>
-                    <Typography variant="h5">Class Materials</Typography>
-                  </Grid>
-                  <Grid item xs={2} md={1}>
-                    <Button
-                      variant="contained"
-                      onClick={() => {
-                        navigate("new", { state: { material: {}, course: course } });
-                      }}>
-                      +&nbsp;New
-                    </Button>
-                  </Grid>
-                  {/* end header */}
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                  <Typography variant="h5">Class Materials</Typography>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      navigate("new", { state: { material: {}, course: course } });
+                    }}>
+                    +&nbsp;New
+                  </Button>
+                </Box>
+                {/* end header */}
 
-                  <Grid item xs={12} sx={{ mt: 3 }}>
-                    <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => { }}></MaterialReactTable>
-                  </Grid>
-                </Grid>
+                <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => { }}></MaterialReactTable>
               </Card>
             </Box>
             {/* quiz ==================================================================================================== */}
             <Box sx={{ display: category == "quiz" ? "block" : "none" }}>
               <Card sx={{ py: 3, px: 5, mt: 2, display: category == "quiz" ? "block" : category === undefined ? "none" : "none" }}>
                 {/* header */}
-                <Grid container>
-                  <Grid item xs={10} md={11}>
-                    <Typography variant="h5">Quizzes</Typography>
-                  </Grid>
-                  <Grid item xs={2} md={1}>
-                    <Button
-                      variant="contained"
-                      onClick={() => {
-                        navigate("new", { state: { material: {}, course: course } });
-                      }}>
-                      +&nbsp;New
-                    </Button>
-                  </Grid>
-                </Grid>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                  <Typography variant="h5">Quizzes</Typography>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      navigate("new", { state: { material: {}, course: course } });
+                    }}>
+                    +&nbsp;New
+                  </Button>
+                </Box>
                 {/* end header */}
                 {courseQuiz.map((quiz, key) => (
                   <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
@@ -570,10 +622,18 @@ const TeacherCourse = (userInfo) => {
                       </Typography>
                       <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={{ xs: 1, sm: 2 }}>
                         {/*  todo visibile, edit, delete */}
-                        <Typography variant="button">
-                          <Link underline="hover">
+                        <Typography variant="button" >
+                          <Link underline="hover" onClick={() => {
+                            setSelectedQuiz(quiz)
+                            setVisibilityQuizModal(true)
+                          }}>
                             <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <VisibilityIcon fontSize="inherit" /> &nbsp; Showing
+                              <Box sx={{ display: quiz.Visibility ? "flex" : "none", alignItems: "center" }}>
+                                <VisibilityIcon fontSize="inherit" /> &nbsp; VIsible
+                              </Box>
+                              <Box sx={{ display: quiz.Visibility ? "none" : "flex", alignItems: "center" }}>
+                                <VisibilityIcon fontSize="inherit" /> &nbsp; Not VIsible
+                              </Box>
                             </Box>
                           </Link>
                         </Typography>
@@ -582,7 +642,7 @@ const TeacherCourse = (userInfo) => {
                         </Typography>
                         <Typography variant="button">
                           <Link underline="hover" onClick={() => {
-                            setSelectedQuiz(quiz.id)
+                            setSelectedQuiz(quiz)
                             setDeleteQuizModal(true)
                           }}>Delete</Link>
                         </Typography>
@@ -601,20 +661,16 @@ const TeacherCourse = (userInfo) => {
             <Box sx={{ display: category == "homework" ? "block" : "none" }}>
               <Card sx={{ py: 3, px: 5, mt: 2, display: category == "homework" ? "block" : category === undefined ? "block" : "none" }}>
                 {/* header */}
-                <Grid container>
-                  <Grid item xs={10} md={11}>
-                    <Typography variant="h5">Homework</Typography>
-                  </Grid>
-                  <Grid item xs={2} md={1}>
-                    <Button
-                      variant="contained"
-                      onClick={() => {
-                        navigate(`new`);
-                      }}>
-                      +&nbsp;New
-                    </Button>
-                  </Grid>
-                </Grid>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                  <Typography variant="h5">Homework</Typography>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      navigate(`new`);
+                    }}>
+                    +&nbsp;New
+                  </Button>
+                </Box>
                 {/* end header */}
                 <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
                   <Grid item xs={4}>
@@ -675,13 +731,8 @@ const TeacherCourse = (userInfo) => {
             <Box sx={{ display: category == "classlist" ? "block" : "none" }}>
               <Card sx={{ py: 3, px: 4, mt: 2 }}>
                 {/* mui table*/}
-                <Grid container>
-                  <Grid item xs={10} md={11}>
-                    <Typography variant="h5">Class List</Typography>
-                  </Grid>
-                </Grid>
+                <Typography variant="h5" sx={{ mb: 2 }}>Class List</Typography>
                 {/* end header */}
-
                 <MaterialReactTable columns={classListColumns} data={classList} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => { }}></MaterialReactTable>
               </Card>
             </Box>
