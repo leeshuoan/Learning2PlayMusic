@@ -44,7 +44,7 @@ const TeacherHomeworkOverview = () => {
 
       let homeworkData = {
         id: data2.SK.split("#")[1],
-        name: data2.HomeworkName,
+        title: data2.HomeworkTitle,
         description: data2.HomeworkDescription,
         dueDate: formattedDueDate,
         assignedDate: formattedAssignedDate,
@@ -86,7 +86,7 @@ const TeacherHomeworkOverview = () => {
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/homework` }]} breadcrumbEnding={homework.name} />
+        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/homework` }]} breadcrumbEnding={homework.title} />
 
         <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -114,7 +114,7 @@ const TeacherHomeworkOverview = () => {
         <Box>
           <Card sx={{ py: 3, px: 5, mt: 2 }}>
             <Typography variant="h6" sx={{ mb: 1 }}>
-              {homework.name} - Overview
+              {homework.title} - Overview
             </Typography>
             <Typography variant="body2">{homework.description}</Typography>
             <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-start" }}>

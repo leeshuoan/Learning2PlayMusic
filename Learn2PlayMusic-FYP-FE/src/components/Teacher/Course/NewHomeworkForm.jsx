@@ -7,6 +7,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import { toast } from "react-toastify";
 
 const NewHomeworkForm = () => {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ const NewHomeworkForm = () => {
   const [course, setCourse] = useState({});
   const [open, setOpen] = useState(true);
   dayjs.extend(customParseFormat);
+  const [homeworkTitle, setHomeworkTitle] = useState("");
+  const [homeworkDescription, setHomeworkDescription] = useState("");
   const [value, setValue] = useState(null);
 
   async function request(endpoint) {
@@ -43,6 +46,39 @@ const NewHomeworkForm = () => {
     fetchData();
     setOpen(false);
   }, []);
+
+  const createHomework = (e) => {
+    e.preventDefault();
+    if (value ==  null) {
+      toast.error("Please select a due date!");
+      return;
+    }
+    if (new Date(value.toISOString()) < new Date()) {
+      toast.error("Due date cannot be in the past!");
+      return;
+    }
+    const newHomework = { 
+      homeworkTitle: homeworkTitle,
+      homeworkDescription: homeworkDescription,
+      homeworkDueDate: value.toISOString(),
+      homeworkAssignedDate: new Date().toISOString(),
+      courseId: courseid,
+    };
+    console.log(newHomework)
+    const res = fetch(`${import.meta.env.VITE_API_URL}/course/homework`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newHomework),
+      });
+    if (res) {
+      toast.success("Homework created successfully!");
+      navigate(`/teacher/course/${courseid}/homework`);
+    } else {
+      toast.error("An unexpected error occured during homework creation");
+    }
+  }
 
   return (
     <>
@@ -74,9 +110,9 @@ const NewHomeworkForm = () => {
           <Typography variant="h6" sx={{ mb: 1 }}>
             New Homework
           </Typography>
-          <form noValidate>
-            <TextField required id="title" label="Title" variant="outlined" sx={{ mt: 2 }} />
-            <TextField required label="Description" variant="outlined" rows={7} multiline fullWidth sx={{ mt: 2, mb: 2 }} />
+          <form onSubmit={createHomework}>
+            <TextField id="title" label="Title" variant="outlined" value={homeworkTitle} onChange={() => setHomeworkTitle(event.target.value)} sx={{ mt: 2 }} required />
+            <TextField id="description" label="Description" variant="outlined" rows={7} value={homeworkDescription} onChange={() => setHomeworkDescription(event.target.value)} multiline fullWidth sx={{ mt: 2, mb: 2 }} required />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Due Date *"
@@ -97,7 +133,7 @@ const NewHomeworkForm = () => {
                 }}>
                 Cancel
               </Button>
-              <Button variant="contained">Create</Button>
+              <Button variant="contained" type="submit" >Create</Button>
             </Box>
           </form>
         </Card>

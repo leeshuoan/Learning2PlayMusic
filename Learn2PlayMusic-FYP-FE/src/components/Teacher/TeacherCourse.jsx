@@ -321,13 +321,12 @@ const TeacherCourse = (userInfo) => {
       };
       setCourse(courseData);
 
+      console.log(data2)
       const homeworkData = data2.map((homework) => {
-        const id = homework.SK.split("Homework#")[1].substr(0, 1);
-        const dueDate = new Date(homework.HomeworkAssignedDate);
+        const id = homework.SK.split("Homework#")[1];
+        const dueDate = new Date(homework.HomeworkDueDate);
         const formattedDueDate = `${dueDate.toLocaleDateString()} `;
-        const assignedDate = new Date(homework.HomeworkDueDate);
-        const formattedAssignedDate = `${assignedDate.toLocaleDateString()} ${assignedDate.toLocaleTimeString()}`;
-        return { ...homework, id, HomeworkDueDate: formattedDueDate, HomeworkAssignedDate: formattedAssignedDate };
+        return { ...homework, id, HomeworkDueDate: formattedDueDate };
       });
       setCourseHomework(homeworkData);
 
@@ -748,7 +747,7 @@ const TeacherCourse = (userInfo) => {
                     <Grid container>
                       <Grid item xs={12} sm={4}>
                         <Typography variant="body1" sx={{ color: "primary.main" }}>
-                          <Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkName}</Link>
+                          <Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkTitle}</Link>
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={4}>
