@@ -11,7 +11,7 @@ def lambda_handler(event, context):
     table = dynamodb.Table(table_name)
 
     try:
-        request_body = event['body']
+        request_body = json.loads(event['body'])
 
         course_id = request_body['courseId']
         homework_title = request_body['homeworkTitle']        
