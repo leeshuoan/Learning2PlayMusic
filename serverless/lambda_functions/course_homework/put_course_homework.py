@@ -14,16 +14,15 @@ def lambda_handler(event, context):
         request_body = json.loads(event['body'])
 
         course_id = request_body['courseId']
-        homework_title = request_body['homeworkTitle']
+        homework_title = request_body['homeworkTitle']        
+        homework_due_date = request_body['homeworkDueDate']
+        homework_id = request_body['homeworkId']
+        homework_description = request_body['homeworkDescription']
 
         key = {
             "PK": f"Course#{course_id}",
             "SK": f"Homework#{homework_id}",
         }
-
-        homework_due_date = request_body['homeworkDueDate']
-        homework_id = request_body['homeworkId']
-        homework_description = request_body['homeworkId']
 
         expression_attribute_values = {
             ":HomeworkTitle": homework_title,
