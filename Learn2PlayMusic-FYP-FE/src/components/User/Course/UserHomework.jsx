@@ -6,6 +6,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 import UploadIcon from "@mui/icons-material/Upload";
 import TransitionModal from "../../utils/TransitionModal";
+import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
 import celebration from "../../../assets/celebration.png";
 
 const UserHomework = (userInfo) => {
@@ -52,7 +53,7 @@ const UserHomework = (userInfo) => {
 
       let homeworkData = {
         id: data2.SK.split("#")[1],
-        name: data2.HomeworkName,
+        title: data2.HomeworkTitle,
         description: data2.HomeworkDescription,
         dueDate: formattedDueDate,
         assignedDate: formattedAssignedDate,
@@ -148,27 +149,7 @@ const UserHomework = (userInfo) => {
       </TransitionModal>
 
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
-          <Link
-            underline="hover"
-            color="inherit"
-            sx={{ display: "flex", alignItems: "center" }}
-            onClick={() => {
-              navigate("/home");
-            }}>
-            <HomeIcon sx={{ mr: 0.5 }} />
-            Home
-          </Link>
-          <Link
-            underline="hover"
-            color="inherit"
-            onClick={() => {
-              navigate(`/home/course/${courseid}/homework`);
-            }}>
-            {course.name}
-          </Link>
-          <Typography color="text.primary">{homework.name}</Typography>
-        </Breadcrumbs>
+        <CustomBreadcrumbs root="/home" links={[{ name: course.name, path: `/home/course/${courseid}/homework` }]} breadcrumbEnding={homework.title} />
 
         <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -196,7 +177,7 @@ const UserHomework = (userInfo) => {
         <Box sx={{ display: submitted ? "none" : "block" }}>
           <Card sx={{ py: 3, px: 5, mt: 2 }}>
             <Typography variant="h6" sx={{ mb: 1 }}>
-              {homework.name}
+              {homework.title}
             </Typography>
             <Typography variant="body2">{homework.description}</Typography>
             <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-start" }}>

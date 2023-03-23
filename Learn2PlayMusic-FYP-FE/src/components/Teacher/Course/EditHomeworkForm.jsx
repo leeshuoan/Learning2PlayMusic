@@ -42,15 +42,18 @@ const EditHomeworkForm = () => {
         teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
-      setHomeworkTitle(data2.HomeworkName);
+      setHomeworkTitle(data2.HomeworkTitle);
       setHomeworkDescription(data2.HomeworkDescription);
       dayjs.extend(customParseFormat);
-      console.log(data2.HomeworkDueDate);
       setValue(dayjs(data2.HomeworkDueDate));
     }
     fetchData();
     setOpen(false);
   }, []);
+
+  const updateHomework = async (e) => {
+    e.preventDefault();
+  }
 
   return (
     <>
@@ -81,9 +84,9 @@ const EditHomeworkForm = () => {
 
         <Card sx={{ py: 3, px: 5, mt: 2 }}>
           <Typography variant="h6" sx={{ mb: 1 }}>
-            New Homework
+            Edit Homework
           </Typography>
-          <form noValidate>
+          <form onSubmit={updateHomework}>
             <TextField required fullWidth id="title" label="Title" variant="outlined" value={homeworkTitle} onChange={(e) => setHomeworkTitle(e.target.value)} sx={{ mt: 2 }} />
             <TextField label="Add Text" variant="outlined" rows={7} value={homeworkDescription} onChange={(e) => setHomeworkDescription(e.target.value)} multiline fullWidth sx={{ mt: 2, mb: 2 }} />
             <LocalizationProvider dateAdapter={AdapterDayjs}>

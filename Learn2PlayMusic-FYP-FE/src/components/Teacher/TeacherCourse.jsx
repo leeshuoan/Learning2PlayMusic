@@ -25,6 +25,8 @@ const TeacherCourse = (userInfo) => {
   const [deleteQuizModal, setDeleteQuizModal] = useState(false);
   const [visibilityQuizModal, setVisibilityQuizModal] = useState(false);
   const [selectedQuiz, setSelectedQuiz] = useState({ Visibility: false });
+  const [deleteHomeworkModal, setDeleteHomeworkModal] = useState(false);
+  const [selectedHomework, setSelectedHomework] = useState(null);
   const [classList, setClassList] = useState([]);
 
   // navigate pages
@@ -244,8 +246,33 @@ const TeacherCourse = (userInfo) => {
     }
 
     toast.success("Quiz deleted successfully");
-    setSelectedQuiz({ Visibility: false});
+    setSelectedQuiz({ Visibility: false });
     setDeleteQuizModal(false);
+    setOpen(true)
+    setRefreshUseEffect(!refreshUseEffect);
+  }
+
+  async function deleteHomework() {
+    console.log(selectedHomework)
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/course/homework`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        courseId: courseid,
+        homeworkId: selectedHomework.id,
+      }),
+    })
+    if (res.status !== 200) {
+      console.log(res)
+      toast.error("An unexpected error occured");
+      return;
+    }
+
+    toast.success("Homework deleted successfully");
+    setSelectedHomework();
+    setDeleteHomeworkModal(false);
     setOpen(true)
     setRefreshUseEffect(!refreshUseEffect);
   }
@@ -253,7 +280,7 @@ const TeacherCourse = (userInfo) => {
   async function changeQuizVisibility(newVisibility) {
     console.log(selectedQuiz)
     const newQuizData = {
-      visibility: newVisibility,  
+      visibility: newVisibility,
       quizId: selectedQuiz.id,
       quizMaxAttempts: selectedQuiz.QuizMaxAttempts,
       quizDescription: selectedQuiz.QuizDescription,
@@ -294,13 +321,12 @@ const TeacherCourse = (userInfo) => {
       };
       setCourse(courseData);
 
+      console.log(data2)
       const homeworkData = data2.map((homework) => {
-        const id = homework.SK.split("Homework#")[1].substr(0, 1);
-        const dueDate = new Date(homework.HomeworkAssignedDate);
+        const id = homework.SK.split("Homework#")[1];
+        const dueDate = new Date(homework.HomeworkDueDate);
         const formattedDueDate = `${dueDate.toLocaleDateString()} `;
-        const assignedDate = new Date(homework.HomeworkDueDate);
-        const formattedAssignedDate = `${assignedDate.toLocaleDateString()} ${assignedDate.toLocaleTimeString()}`;
-        return { ...homework, id, HomeworkDueDate: formattedDueDate, HomeworkAssignedDate: formattedAssignedDate };
+        return { ...homework, id, HomeworkDueDate: formattedDueDate };
       });
       setCourseHomework(homeworkData);
 
@@ -452,7 +478,7 @@ const TeacherCourse = (userInfo) => {
 
           <Box sx={{ display: selectedQuiz.Visibility ? "block" : "none" }}><Typography variant="body2" sx={{ mb: 2 }}>Are you sure you want to hide this quiz?</Typography></Box>
           <Box sx={{ display: selectedQuiz.Visibility ? "none" : "block" }}><Typography variant="body2" sx={{ mb: 2 }}>Are you sure you want to make this quiz visible?</Typography></Box>
-          
+
         </Box>
         <Box sx={{ display: "flex", justifyContent: "space-between", mx: 2 }}>
           <Button
@@ -464,11 +490,40 @@ const TeacherCourse = (userInfo) => {
             }}>
             Cancel
           </Button>
-          <Button fullWidth variant="contained" onClick={() => {changeQuizVisibility(false)}} sx={{ display: selectedQuiz.Visibility ? "block" : "none" }}>
+          <Button fullWidth variant="contained" onClick={() => { changeQuizVisibility(false) }} sx={{ display: selectedQuiz.Visibility ? "block" : "none" }}>
             Hide
           </Button>
-          <Button fullWidth variant="contained" onClick={() => {changeQuizVisibility(true)}} sx={{ display: selectedQuiz.Visibility ? "none" : "block" }}>
+          <Button fullWidth variant="contained" onClick={() => { changeQuizVisibility(true) }} sx={{ display: selectedQuiz.Visibility ? "none" : "block" }}>
             Show
+          </Button>
+        </Box>
+      </TransitionModal>
+      {/* Delete homework modal ========================================================================================================================*/}
+      <TransitionModal
+        open={deleteHomeworkModal}
+        handleClose={() => {
+          setDeleteHomeworkModal(false);
+        }}>
+        <Box sx={{ pb: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Delete Homework
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Are you sure you want to delete this homework?
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mx: 2 }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mr: 1, color: "primary.main" }}
+            onClick={() => {
+              setDeleteHomeworkModal(false);
+            }}>
+            Cancel
+          </Button>
+          <Button fullWidth variant="contained" color="error" onClick={deleteHomework}>
+            Delete
           </Button>
         </Box>
       </TransitionModal>
@@ -692,7 +747,7 @@ const TeacherCourse = (userInfo) => {
                     <Grid container>
                       <Grid item xs={12} sm={4}>
                         <Typography variant="body1" sx={{ color: "primary.main" }}>
-                          <Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkName}</Link>
+                          <Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkTitle}</Link>
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={4}>
@@ -718,7 +773,10 @@ const TeacherCourse = (userInfo) => {
                             variant="button"
                           // onclick={() => {
                           >
-                            <Link underline="hover">Delete</Link>
+                            <Link underline="hover" onClick={() => {
+                              setSelectedHomework(homework)
+                              setDeleteHomeworkModal(true)
+                            }}>Delete</Link>
                           </Typography>
                         </Stack>
                       </Grid>

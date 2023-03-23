@@ -85,7 +85,7 @@ const UserCourse = (userInfo) => {
         try {
           const homeworkData = await Promise.all(
             data2.map(async (homework) => {
-              const id = homework.SK.split("Homework#")[1].substr(0, 1);
+              const id = homework.SK.split("Homework#")[1]
               const date = new Date(homework.HomeworkDueDate);
               const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
 
@@ -307,7 +307,7 @@ const UserCourse = (userInfo) => {
                   <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
                     <Grid container spacing={2}>
                       <Grid item xs={12} sm={3}>
-                        <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkName}</Link></Typography>
+                        <Typography variant='body1' sx={{ color: "primary.main" }}><Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkTitle}</Link></Typography>
                       </Grid>
                       <Grid item xs={12} sm={3}>
                         <Typography variant='body1' sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>{homework.HomeworkDueDate}</Typography>
