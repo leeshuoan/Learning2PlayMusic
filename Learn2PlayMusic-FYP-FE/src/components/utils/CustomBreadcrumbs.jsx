@@ -28,7 +28,7 @@ export default function CustomBreadcrumbs({ root, links, breadcrumbEnding }) {
               onClick={() => {
                 navigate(`${link.path}`);
               }}>
-              <Typography color="text.primary">{link.name}</Typography>
+              {link.name}
             </Link>
           ))
         : ""}
