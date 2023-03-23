@@ -9,22 +9,47 @@ from global_functions.cognito import *
 def lambda_handler(event, context):
 
     try:
-
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table("LMS")
         studentId = event['queryStringParameters']['studentId']
+        contactlist = []
 
-        # get all teachers from Cognito
-        teachers = get_users('Teachers')
+        # check if studentId exists in Cognito
+        if not get_user('Users', studentId):
+            return response_404('studentId does not exist in Cognito')
 
         # check for teachers who teach this student
-        
+        # 1. get all courses student attends
+        student_course_response = table.query(
+            KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
+            ExpressionAttributeValues={
+                ":PK": f"Student#{studentId}",
+                ":SK": "Course#"
+            })
 
-        all_users = []
+        student_course_items = student_course_response['Items']
 
-        [all_users.append(admin) for admin in admins if admin['adminId']!=adminId]
-        [all_users.append(student) for student in students]
-        [all_users.append(teacher) for teacher in teachers]
+        for i in range(len(student_course_items)):
+            courseId = student_course_items[i].get("SK").split("#")[1]
 
-        return response_200_items(all_users)
+            course_response = table.get_item(
+                Key={
+                  "PK":"Course",
+                  "SK": f"Course#{courseId}"
+                }
+            )
+
+            course_item = course_response['Item']
+            teacherId = course_item['TeacherId']
+            teacherName = get_user('Teachers', teacherId)['teacherName']
+            contact = {
+                'TeacherId': teacherId,
+                'TeacherName': teacherName
+                }
+
+            contactlist.append(contact)
+
+        return response_200_items(contactlist)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")
