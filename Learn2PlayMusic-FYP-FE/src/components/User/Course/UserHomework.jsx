@@ -1,13 +1,11 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useTheme, Typography, Container, Card, Box, TextField, Link, Button, Breadcrumbs, Backdrop, IconButton, CircularProgress } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import HomeIcon from "@mui/icons-material/Home";
 import UploadIcon from "@mui/icons-material/Upload";
-import TransitionModal from "../../utils/TransitionModal";
-import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import { Backdrop, Box, Button, Card, CircularProgress, Container, IconButton, TextField, Typography, useTheme } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import celebration from "../../../assets/celebration.png";
+import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import TransitionModal from "../../utils/TransitionModal";
 
 const UserHomework = (userInfo) => {
   const theme = useTheme();

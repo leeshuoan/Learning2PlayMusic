@@ -1,7 +1,5 @@
 import json
-import os
 import sys
-from datetime import datetime
 
 import boto3
 import dateutil.tz
@@ -13,18 +11,19 @@ from global_functions.sns import *
 def lambda_handler(event, context):
 
     try:
-        sgTimezone = dateutil.tz.gettz("Asia/Singapore")
-        dateId = datetime.now(tz=sgTimezone).strftime("%Y-%m-%dT%H:%M:%S")
+        dateId = event["queryStringParameters"]["dateId"]
+        if not id_exists("GeneralAnnouncements", "Date", dateId):
+            return response_404("dateId does not exist in database")
 
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
-        request_body = json.loads(event["body"])
 
+        request_body = json.loads(event["body"])
         if "content" not in request_body:
             return response_400("content is missing from request body")
         if "announcementTitle" not in request_body:
             return response_400("announcementTitle is missing from request body")
-
+        # will send all fields, even if no change
         content = request_body["content"]
         announcementTitle = request_body["announcementTitle"]
 
@@ -38,7 +37,7 @@ def lambda_handler(event, context):
         response = table.put_item(Item=item)
         publish_general_announcement(announcementTitle, content)
 
-        return response_200_msg_items("inserted", item)
+        return response_200_msg_items("updated", item)
 
     # currently, this is only for functions that sends in request body - to catch 'missing fields' error
     except KeyError:

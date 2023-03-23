@@ -1,17 +1,9 @@
-import * as React from "react";
-import {
-  Typography,
-  Button,
-  Grid,
-  InputLabel,
-  TextField,
-  Select,
-  MenuItem,
-} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { Auth, API } from "aws-amplify";
-import uuid from "react-uuid";
+import { Button, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { API, Auth } from "aws-amplify";
+import * as React from "react";
 import { toast } from "react-toastify";
+import uuid from "react-uuid";
 
 export default function CreateUserForm({ roles, handleClose }) {
   const [name, setName] = React.useState("");
@@ -50,9 +42,7 @@ export default function CreateUserForm({ roles, handleClose }) {
       queryStringParameters: {},
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${(await Auth.currentSession())
-          .getAccessToken()
-          .getJwtToken()}`,
+        Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`,
       },
       body: {
         username: email,
@@ -72,10 +62,10 @@ export default function CreateUserForm({ roles, handleClose }) {
         handleClose();
       }
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
       toast.error("Error creating user", {
         position: toast.POSITION.TOP_CENTER,
-        });
+      });
     }
   };
   return (
@@ -83,7 +73,7 @@ export default function CreateUserForm({ roles, handleClose }) {
       <form noValidate onSubmit={createNewUser}>
         <Grid container spacing={2}>
           <Grid item xs={1}>
-            <CloseIcon sx={{ "&:hover": {cursor: "pointer"} }} onClick={() => handleClose()} />
+            <CloseIcon sx={{ "&:hover": { cursor: "pointer" } }} onClick={() => handleClose()} />
           </Grid>
           <Grid item xs={10}>
             <Typography align="center" variant="h4">
@@ -91,42 +81,15 @@ export default function CreateUserForm({ roles, handleClose }) {
             </Typography>
           </Grid>
           <Grid item xs={12} sm={12}>
-            <TextField
-              autoComplete="fname"
-              name="name"
-              variant="outlined"
-              required
-              fullWidth
-              id="name"
-              label="Name"
-              value={name}
-              onChange={handleNameChange}
-              autoFocus
-            />
+            <TextField autoComplete="fname" name="name" variant="outlined" required fullWidth id="name" label="Name" value={name} onChange={handleNameChange} autoFocus />
           </Grid>
 
           <Grid item xs={12}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              value={email}
-              onChange={handleEmailChange}
-            />
+            <TextField variant="outlined" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" value={email} onChange={handleEmailChange} />
           </Grid>
           <Grid item xs={12}>
             <InputLabel id="roleLabel">Role</InputLabel>
-            <Select
-              labelId="roleLabel"
-              id="role"
-              name="role"
-              value={role}
-              onChange={handleRoleChange}
-              fullWidth>
+            <Select labelId="roleLabel" id="role" name="role" value={role} onChange={handleRoleChange} fullWidth>
               {roles.map((r) =>
                 r === "Student" ? (
                   <MenuItem key={"User"} value={"User"}>
