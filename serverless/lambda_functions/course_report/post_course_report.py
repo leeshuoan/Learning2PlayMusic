@@ -27,7 +27,6 @@ def lambda_handler(event, context):
             })
         
         reportNum = str(response['Count']+1)
-
         reportId = reportNum + "-" + year
 
         # VALIDATION
@@ -64,20 +63,19 @@ def lambda_handler(event, context):
         }
 
         item = {
-                "PK": f"Course#{json.loads(event['body'])['courseId']}",
-                "SK": f"Student#{json.loads(event['body'])['studentId']}Report#{reportId}",
+                "PK": f"Course#{courseId}",
+                "SK": f"Student#{studentId}Report#{reportId}",
                 "EvaluationList": evaluation_list,
-                "Title": json.loads(event['body'])['title'],
-                'AvailableDate': json.loads(event['body'])['availableDate'],
-                'UpdatedDate': "",
-                "GoalsForNewTerm": json.loads(event['body'])['goalsForNewTerm'],
-                "AdditionalComments": json.loads(event['body'])['additionalComments'],
+                "Title": '',
+                'AvailableDate': event['queryStringParameters']['availableDate'],
+                'UpdatedDate': '',
+                "GoalsForNewTerm": '',
+                "AdditionalComments": '',
             }
         response = table.put_item(Item=item)
 
         return response_200_msg_items("inserted", item)
 
-    # currently, this is only for functions that sends in request body - to catch 'missing fields' error
     except KeyError:
         print("❗Exception Type Caught - KeyError")
         return response_500("One or more field(s) is missing. Please double check that all fields in the model schema are populated.")

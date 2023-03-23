@@ -586,26 +586,6 @@ class CourseStack(Stack):
             'application/json': post_course_announcement_model})
         course_announcement_resource.add_method("PUT", apigw.LambdaIntegration(put_course_announcement), request_models={
             'application/json': put_course_announcement_model})
-        
-        # /course/report
-        REPORT_EVALUATIONLIST_ENUM = ['Good', 'Excellent', 'Satisfactory', 'N.A.', 'Weak', 'Poor']
-        post_course_report_model = main_api.add_model(
-            "PostCourseReportModel",
-            content_type="application/json",
-            model_name="PostCourseReportModel",
-            schema=apigw.JsonSchema(
-                title="PostCourseReportModel",
-                schema=apigw.JsonSchemaVersion.DRAFT4,
-                type=apigw.JsonSchemaType.OBJECT,
-                properties={
-                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "additionalComments": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "goalsForNewTerm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "availableDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "updatedDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                },
-                required=["courseId", "studentId"]))
 
         # /course/report
         put_course_report_model = main_api.add_model(
@@ -651,8 +631,10 @@ class CourseStack(Stack):
             'method.request.querystring.courseId': True,
             'method.request.querystring.studentId': True,
             'method.request.querystring.reportId': False})
-        course_report_resource.add_method("POST", apigw.LambdaIntegration(post_course_report), request_models={
-            'application/json': post_course_report_model})
+        course_report_resource.add_method("POST", apigw.LambdaIntegration(post_course_report), request_parameters={
+            'method.request.querystring.courseId': True,
+            'method.request.querystring.studentId': True,
+            'method.request.querystring.availableDate': True})
         course_report_resource.add_method("PUT", apigw.LambdaIntegration(put_course_report), request_models={
             'application/json': put_course_report_model})
         course_report_resource.add_method("DELETE", apigw.LambdaIntegration(delete_course_report), request_parameters={
