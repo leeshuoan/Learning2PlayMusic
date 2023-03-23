@@ -246,10 +246,9 @@ class CourseStack(Stack):
                 properties={
                     "courseName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "courseSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "teacherId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "teacherName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    "teacherId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
-                required=[ "courseName", "courseSlot", "teacherId", "teacherName"]))
+                required=[ "courseName", "courseSlot", "teacherId"]))
 
         course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={
             'method.request.querystring.courseId': False})

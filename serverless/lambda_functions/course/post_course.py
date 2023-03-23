@@ -5,6 +5,7 @@ import uuid
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
+from global_functions.cognito import *
 
 def lambda_handler(event, context):
 
@@ -20,6 +21,8 @@ def lambda_handler(event, context):
         if not id_exists("User", "Teacher", teacherId):
             return response_404("teacherId does not exist in database")
 
+        # teacherName =
+
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
         short_uuid = str(uuid.uuid4().hex)[:8]
@@ -29,9 +32,10 @@ def lambda_handler(event, context):
             "SK": f"Course#{short_uuid}",
             "CourseName": json.loads(event['body'])['courseName'],
             "CourseSlot": json.loads(event['body'])['courseSlot'],
-            "TeacherId": json.loads(event['body'])['teacherId'],
-            "TeacherName": json.loads(event['body'])['teacherName']
+            "TeacherId": json.loads(event['body'])['teacherId']
         }
+
+
 
         response = table.put_item(Item= item)
 

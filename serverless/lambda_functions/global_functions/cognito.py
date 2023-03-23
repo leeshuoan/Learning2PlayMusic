@@ -1,9 +1,9 @@
 import boto3
 
 
-##############################################
-### (USER POOL) GET ALL USERS FROM A GROUP ### -- NOT INVOKED OUTSIDE
-##############################################
+##########################################################
+### (USER POOL) GET ALL INFO ON ALL USERS FROM A GROUP ### -- NOT INVOKED OUTSIDE
+##########################################################
 
 # Existing groups: 'Admins', 'Teachers', 'Users'
 
@@ -17,9 +17,9 @@ def get_users_from_group(groupName):
     return response['Users']
     
 
-######################################
-### (USER POOL) GET NAME OF A USER ###
-######################################
+##########################################################
+### (USER POOL) GET NAME, ID ON ALL USERS FROM A GROUP ###
+##########################################################
 
 def get_users(group):
     
@@ -52,6 +52,31 @@ def get_users(group):
                 })
     
     return all_users_info
+
+#############################################
+### (USER POOL) GET ONE USER FROM A GROUP ###
+#############################################
+
+def get_user(group,userId):
+
+    if group == 'Users':
+        userIdString = 'studentId'
+        userNameString = 'studentName'
+    if group == 'Teachers':
+        userIdString = 'teacherId'
+        userNameString = 'teacherName'
+    if group == 'Admins':
+        userIdString = 'adminId'
+        userNameString = 'adminName'
+        userType = 'generalAdmin'
+
+
+    user_info = []
+    users = get_users(group)
+
+    [user_info.append(user) for user in users if user[userIdString]==userId]
+
+    return user_info
 
 
 #####################################
