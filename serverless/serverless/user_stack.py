@@ -59,7 +59,7 @@ class UserStack(Stack):
         # delete_teacher = _lambda.Function(self, "deleteTeacher", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_FUNCTIONS_FOLDER}.delete_teacher.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /user/teacher/contactlist
-        # get_teacher_contactlist = _lambda.Function(self, "getContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_CONTACTLIST_FUNCTIONS_FOLDER}.get_student_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        get_teacher_contactlist = _lambda.Function(self, "getTeacherContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_CONTACTLIST_FUNCTIONS_FOLDER}.get_teacher_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /user/teacher/courses
         get_teacher_course = _lambda.Function(self, "getTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.get_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -68,6 +68,8 @@ class UserStack(Stack):
 
         # /user/admin
         get_admin = _lambda.Function(self, "getAdmin", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_ADMIN_FUNCTIONS_FOLDER}.get_admin.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+        # /user/admin/contactlist
         get_admin_contactlist = _lambda.Function(self, "getAdminContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_ADMIN_CONTACTLIST_FUNCTIONS_FOLDER}.get_admin_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
 
@@ -97,6 +99,7 @@ class UserStack(Stack):
 
         teacher_resource = user_resource.add_resource("teacher")
         teacher_course_resource = teacher_resource.add_resource("course")
+        teacher_contactlist_resource = teacher_resource.add_resource("contactlist")
 
         admin_resource = user_resource.add_resource("admin")
         admin_contactlist_resource = admin_resource.add_resource("contactlist")
@@ -148,9 +151,6 @@ class UserStack(Stack):
         student_resource.add_method("GET", apigw.LambdaIntegration(get_student), request_parameters={
           'method.request.querystring.studentId': False})
 
-        student_contactlist_resource.add_method("GET", apigw.LambdaIntegration(get_student_contactlist), request_parameters={
-          'method.request.querystring.studentId': True})
-
         # student_resource.add_method("POST", apigw.LambdaIntegration(post_student), request_models={
         #   'application/json': post_user_student_model})
 
@@ -171,6 +171,10 @@ class UserStack(Stack):
         student_course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_student_course), request_parameters={
           'method.request.querystring.studentId': True,
           'method.request.querystring.courseId': True})
+
+        # /user/student/contactlist
+        student_contactlist_resource.add_method("GET", apigw.LambdaIntegration(get_student_contactlist), request_parameters={
+          'method.request.querystring.studentId': True})
 
 
         ###########################################
@@ -238,6 +242,10 @@ class UserStack(Stack):
         teacher_course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_teacher_course), request_parameters={
           'method.request.querystring.teacherId': True,
           'method.request.querystring.courseId': True})
+
+        # /user/teacher/contactlist
+        teacher_contactlist_resource.add_method("GET", apigw.LambdaIntegration(get_teacher_contactlist), request_parameters={
+          'method.request.querystring.teacherId': True})
 
 
         #########################################
