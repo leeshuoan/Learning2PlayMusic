@@ -47,7 +47,8 @@ def lambda_handler(event, context):
                 'TeacherName': teacherName
                 }
 
-            contactlist.append(contact)
+            if contact not in contactlist:
+                contactlist.append(contact)
 
         return response_200_items(contactlist)
 
