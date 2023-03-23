@@ -11,7 +11,7 @@ def lambda_handler(event, context):
     table = dynamodb.Table(table_name)
 
     try:
-        request_body = json.loads(event['body'])
+        request_body = event['body']
 
         course_id = request_body['courseId']
         homework_title = request_body['homeworkTitle']        
@@ -30,7 +30,7 @@ def lambda_handler(event, context):
             ":HomeworkDescription": homework_description
         }
 
-        table.updateItem(
+        table.update_item(
             Key = key,
             UpdateExpression = 'SET HomeworkTitle = :HomeworkTitle, HomeworkDueDate = :HomeworkDueDate, HomeworkDescription = :HomeworkDescription',
             ExpressionAttributeValues=expression_attribute_values
