@@ -17,13 +17,17 @@ def lambda_handler(event, context):
         course_id = request_body['courseId']
         homework_title = request_body['homeworkTitle']
         homework_due_date = request_body['homeworkDueDate']
+        homework_assigned_date = request_body['homeworkAssignedDate']
+        homework_description = request_body['homeworkDescription']
         homework_id = random_uuid
 
         item = {
             "PK": f"Course#{course_id}",
             "SK": f"Homework#{homework_id}",
             "HomeworkTitle": homework_title,
-            "HomeworkDueDate": homework_due_date
+            "HomeworkDueDate": homework_due_date,
+            "HomeworkAssignedDate": homework_assigned_date,
+            "HomeworkDescription": homework_description
         }
 
         table.put_item(Item = item)

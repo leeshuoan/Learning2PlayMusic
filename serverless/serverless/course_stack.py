@@ -469,7 +469,9 @@ class CourseStack(Stack):
                 properties={
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "homeworkTitle": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "homeworkDueDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    "homeworkDueDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "homeworkAssignedDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "homeworkDescription": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
                 required=["courseId", "homeworkTitle", "homeworkDueDate"]))
         
