@@ -45,34 +45,28 @@ def lambda_handler(event, context):
         if not combination_id_exists("Course", courseId, "Student", studentId):
             return response_404("studentId is not registered with the course. To do so, please use /user/student/course to register")
 
-        # check that evaluation_list is present in the request body
-        if 'evaluationList' not in json.loads(event['body']):
-            return response_400("evaluationList is missing from request body")
-        
-        # check that title is present in the request body
-        if 'title' not in json.loads(event['body']):
-            return response_400("title is missing from request body")
-        
-        # check that availableDate is present in the request body
-        if 'availableDate' not in json.loads(event['body']):
-            return response_400("availableDate is missing from request body")
-
-        # check that updatedDate is present in the request body
-        if 'updatedDate' not in json.loads(event['body']):
-            return response_400("updatedDate is missing from request body")
-
-        # check that all evaluation metrics are present in the evaluation_list
-        valid_metrics = set(['posture', 'rhythm', 'toneQuality', 'dynamicsControl', 'articulation', 'sightReading', 
-                            'practice', 'theory', 'scales', 'aural', 
-                            'musicality', 'performing', 'enthusiasm', 'punctuality', 'attendance'])
-        metrics_set = set(json.loads(event['body'])['evaluationList'].keys())
-        if not valid_metrics.issubset(metrics_set):
-            return response_400("evaluationList is missing one or more evaluation metrics")
+        evaluation_list = {
+            'posture': '',
+            'rhythm': '',
+            'toneQuality': '',
+            'dynamicsControl': '',
+            'articulation': '',
+            'sightReading': '',
+            'practice': '',
+            'theory': '',
+            'scales': '',
+            'aural': '',
+            'musicality': '',
+            'performing': '',
+            'enthusiasm': '',
+            'punctuality': '',
+            'attendance': ''
+        }
 
         item = {
                 "PK": f"Course#{json.loads(event['body'])['courseId']}",
                 "SK": f"Student#{json.loads(event['body'])['studentId']}Report#{reportId}",
-                "EvaluationList": json.loads(event['body'])['evaluationList'],
+                "EvaluationList": evaluation_list,
                 "Title": json.loads(event['body'])['title'],
                 'AvailableDate': json.loads(event['body'])['availableDate'],
                 'UpdatedDate': "",

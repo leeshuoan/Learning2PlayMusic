@@ -604,28 +604,8 @@ class CourseStack(Stack):
                     "goalsForNewTerm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "availableDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "updatedDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "evaluationList": apigw.JsonSchema(
-                        type=apigw.JsonSchemaType.OBJECT,
-                        properties = {
-                          "attendance": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "dynamicsControl": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "punctuality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "toneQuality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "theory": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "enthusiasm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "rhythm": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "scales": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "posture": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "articulation": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "musicality": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "sightReading": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "practice": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "aural": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM),
-                          "performing": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING, enum=REPORT_EVALUATIONLIST_ENUM)
-                        }
-                      )
                 },
-                required=["courseId", "studentId", "evaluationList"]))
+                required=["courseId", "studentId"]))
 
         # /course/report
         put_course_report_model = main_api.add_model(
