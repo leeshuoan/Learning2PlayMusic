@@ -4,6 +4,7 @@ import json
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
+from global_functions.cognito import *
 
 def lambda_handler(event, context):
 
@@ -24,13 +25,13 @@ def lambda_handler(event, context):
             studentId = event['queryStringParameters']['studentId']
             sortKey = "Student#" + studentId
 
-            # check if <studentId> exists in database
-            if not id_exists("User", "Student", studentId):
-                return response_404("studentId does not exist in database")
+            # check if studentId exists in Cognito
+            if not get_user('Users', studentId):
+                return response_404('studentId does not exist in Cognito')
 
-            # check if <courseId><studentId> exists in database
+            # check if <studentId> has been registered with <courseId>
             if not combination_id_exists("Student", studentId, "Course", courseId):
-                return response_202_msg("studentId is not registered with the course. To do so, please use /user/student/course to register")
+                return response_404("studentId is not registered with the course. To do so, please use /user/student/course to register")
 
         response = table.query(
             IndexName="SK-PK-index",

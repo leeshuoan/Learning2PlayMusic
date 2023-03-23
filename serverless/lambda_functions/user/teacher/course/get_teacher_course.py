@@ -4,6 +4,7 @@ import json
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
+from global_functions.cognito import *
 
 def lambda_handler(event, context):
 
@@ -12,10 +13,10 @@ def lambda_handler(event, context):
         table = dynamodb.Table("LMS")
 
         # VALIDATION
-        # check if <teacherId> exists in database
+        # check if teacherId exists in Cognito
         teacherId = event['queryStringParameters']['teacherId']
-        if not id_exists("User", "Teacher", teacherId):
-            return response_404("teacherId does not exist in database")
+        if not get_user('Teachers', teacherId):
+            return response_404('teacherId does not exist in Cognito')
 
         teacher_course_response = table.query(
             KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
