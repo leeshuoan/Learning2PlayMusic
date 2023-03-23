@@ -85,7 +85,7 @@ class AnnouncementStack(Stack):
             role=LAMBDA_ROLE,
             environment={"SNS_TOPIC_ARN": post_topic.topic_arn},
         )
-        post_generalannouncement = _lambda.Function(
+        put_generalannouncement = _lambda.Function(
             self,
             "putGeneralAnnouncement",
             runtime=_lambda.Runtime.PYTHON_3_9,
@@ -159,7 +159,7 @@ class AnnouncementStack(Stack):
         )
         generalannouncement_resource.add_method(
             "PUT",
-            apigw.LambdaIntegration(post_generalannouncement),
+            apigw.LambdaIntegration(put_generalannouncement),
             request_models={"application/json": model},
             request_parameters={"method.request.querystring.dateId": True},
         )

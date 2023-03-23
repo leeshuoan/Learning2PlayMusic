@@ -25,6 +25,12 @@ export default function EditAnnouncementForm({ dateId, existingAnnouncementTitle
       toast.error("Please make changes in at least one field!");
       return;
     }
+    console.log(
+      JSON.stringify({
+        announcementTitle: announcementTitle,
+        content: content,
+      })
+    );
     const response = await fetch(GAendpoint, {
       method: "PUT",
       headers: {
