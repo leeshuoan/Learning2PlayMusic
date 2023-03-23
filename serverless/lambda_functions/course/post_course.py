@@ -18,10 +18,9 @@ def lambda_handler(event, context):
 
         # check if <teacherId> exists in database
         teacherId = json.loads(event['body'])['teacherId']
-        if not id_exists("User", "Teacher", teacherId):
-            return response_404("teacherId does not exist in database")
 
-        # teacherName =
+        if not get_user('Teachers', teacherId):
+            return response_404("teacherId does not exist in database")
 
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
@@ -34,8 +33,6 @@ def lambda_handler(event, context):
             "CourseSlot": json.loads(event['body'])['courseSlot'],
             "TeacherId": json.loads(event['body'])['teacherId']
         }
-
-
 
         response = table.put_item(Item= item)
 

@@ -4,6 +4,7 @@ import json
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
+from global_functions.cognito import *
 
 def lambda_handler(event, context):
 
@@ -35,6 +36,12 @@ def lambda_handler(event, context):
             )
 
         items = response["Items"]
+
+        # add teacher's name
+        for item in items:
+            teacherId = item['TeacherId']
+            teacherName = get_user('Teachers', teacherId)['teacherName']
+            item['TeacherName'] = teacherName
 
         return response_200_items(items)
 

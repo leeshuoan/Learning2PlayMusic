@@ -74,9 +74,9 @@ def get_user(group,userId):
     user_info = []
     users = get_users(group)
 
-    [user_info.append(user) for user in users if user[userIdString]==userId]
-
-    return user_info
+    for user in users:
+        if user[userIdString]==userId:
+            return user
 
 
 #####################################
