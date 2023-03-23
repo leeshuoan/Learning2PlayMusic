@@ -6,27 +6,25 @@ from global_functions.responses import *
 from global_functions.exists_in_db import *
 from global_functions.cognito import *
 
-### THIS FUNCTION IS BUILT FOR GENERAL ADMINS ONLY ###
-
 def lambda_handler(event, context):
 
     try:
 
-        # get all admins from Cognito
-        admins = get_users('Admins')
+        studentId = event['queryStringParameters']['studentId']
 
-        # check if <adminId> is being passed in
-        adminId = event['queryStringParameters']
-        if adminId is None or adminId == "null":
-            return response_200_items(admins)
+        # get all teachers from Cognito
+        teachers = get_users('Teachers')
 
-        else:
-            adminId = event['queryStringParameters']['adminId']
-            for admin in admins:
-                if adminId == admin['adminId']:
-                    return response_200_items(admin)
+        # check for teachers who teach this student
+        
 
+        all_users = []
 
+        [all_users.append(admin) for admin in admins if admin['adminId']!=adminId]
+        [all_users.append(student) for student in students]
+        [all_users.append(teacher) for teacher in teachers]
+
+        return response_200_items(all_users)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

@@ -1,6 +1,7 @@
 import boto3
 import json
 import uuid
+from datetime import datetime, timezone
 
 from global_functions.responses import *
 
@@ -19,6 +20,8 @@ def lambda_handler(event, context):
         homework_due_date = request_body['homeworkDueDate']
         homework_assigned_date = request_body['homeworkAssignedDate']
         homework_description = request_body['homeworkDescription']
+        now = datetime.now(timezone.utc)
+        homework_assigned_date = now.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         homework_id = random_uuid
 
         item = {

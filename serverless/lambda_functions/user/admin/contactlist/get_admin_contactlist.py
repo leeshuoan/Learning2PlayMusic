@@ -12,21 +12,20 @@ def lambda_handler(event, context):
 
     try:
 
-        # get all admins from Cognito
+        adminId = event['queryStringParameters']['adminId']
+
+        # get all users from Cognito
         admins = get_users('Admins')
+        students = get_users('Users')
+        teachers = get_users('Teachers')
 
-        # check if <adminId> is being passed in
-        adminId = event['queryStringParameters']
-        if adminId is None or adminId == "null":
-            return response_200_items(admins)
+        all_users = []
 
-        else:
-            adminId = event['queryStringParameters']['adminId']
-            for admin in admins:
-                if adminId == admin['adminId']:
-                    return response_200_items(admin)
+        [all_users.append(admin) for admin in admins if admin['adminId']!=adminId]
+        [all_users.append(student) for student in students]
+        [all_users.append(teacher) for teacher in teachers]
 
-
+        return response_200_items(all_users)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

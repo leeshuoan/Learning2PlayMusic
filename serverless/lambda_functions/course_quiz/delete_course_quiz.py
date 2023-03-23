@@ -36,6 +36,8 @@ def lambda_handler(event, context):
                 }
             )
 
+    # TODO: get all students in the course, foreach student, delete Student#<studentID>Quiz#<quizId>
+
         return response_200_msg(f"successfully deleted quiz and all associated quiz questions under quizId : {quiz_id}")
 
     except Exception as e:

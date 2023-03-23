@@ -246,10 +246,9 @@ class CourseStack(Stack):
                 properties={
                     "courseName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "courseSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "teacherId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "teacherName": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    "teacherId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                 },
-                required=[ "courseName", "courseSlot", "teacherId", "teacherName"]))
+                required=[ "courseName", "courseSlot", "teacherId"]))
 
         course_resource.add_method("GET", apigw.LambdaIntegration(get_course), request_parameters={
             'method.request.querystring.courseId': False})
@@ -500,7 +499,7 @@ class CourseStack(Stack):
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "homeworkId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
                     },
-                required=["courseId", "homeworkId", "homeworkTitle", "homeworkDueDate"]))
+                required=["courseId", "homeworkId", "homeworkTitle", "homeworkDueDate", "homeworkDescription"]))
 
         course_homework_resource.add_method("POST", apigw.LambdaIntegration(post_course_homework), request_models={
             "application/json": post_course_homework_resource_model

@@ -1,0 +1,14 @@
+{
+    "httpMethod": "POST",
+    "queryStringParameters": {
+      "foo": "bar"
+    },
+    "body": {
+      "courseId": 1,
+      "homeworkTitle": "UPDATED tesQuiz",
+      "homeworkDueDate": "2023-03-24T16:00:00.000Z",
+      "homeworkId": "426adb3e",
+      "homeworkDescription": "UPDATED testing123"
+    },
+    "path": "/course/homework"
+  }

@@ -22,6 +22,7 @@ class UserStack(Stack):
         USER_TEACHER_FUNCTIONS_FOLDER = "user.teacher"
         USER_TEACHER_COURSE_FUNCTIONS_FOLDER = "user.teacher.course"
         USER_ADMIN_FUNCTIONS_FOLDER = "user.admin"
+        USER_ADMIN_CONTACTLIST_FUNCTIONS_FOLDER = "user.admin.contactlist"
 
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
@@ -59,6 +60,7 @@ class UserStack(Stack):
 
         # /user/admin
         get_admin = _lambda.Function(self, "getAdmin", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_ADMIN_FUNCTIONS_FOLDER}.get_admin.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        get_admin_contactlist = _lambda.Function(self, "getAdminContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_ADMIN_CONTACTLIST_FUNCTIONS_FOLDER}.get_admin_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
 
         ##############
@@ -85,6 +87,7 @@ class UserStack(Stack):
         teacher_resource = user_resource.add_resource("teacher")
         teacher_course_resource = teacher_resource.add_resource("course")
         admin_resource = user_resource.add_resource("admin")
+        admin_contactlist_resource = admin_resource.add_resource("contactlist")
 
 
         ###########################################
@@ -229,6 +232,8 @@ class UserStack(Stack):
         admin_resource.add_method("GET", apigw.LambdaIntegration(get_admin), request_parameters={
           'method.request.querystring.adminId': False})
 
+        admin_contactlist_resource.add_method("GET", apigw.LambdaIntegration(get_admin_contactlist), request_parameters={
+          'method.request.querystring.adminId': True})
 
 
         ############
