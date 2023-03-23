@@ -1,4 +1,6 @@
-import { Backdrop, Box, Button, CircularProgress, Typography } from "@mui/material";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import EditIcon from "@mui/icons-material/Edit";
+import { Backdrop, Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import TransitionModal from "../../utils/TransitionModal";
@@ -57,7 +59,7 @@ const AdminAnnouncementManagement = () => {
         id: "title",
         header: "Title",
         size: 30,
-        Cell: ({ cell, row }) => <Typography variant="body2">{row.original.title.length > 30 ? row.original.title.substring(0, 30) + "..." : row.original.title}</Typography>,
+        Cell: ({ cell, row }) => <Typography variant="body2">{row.original.title.length > 35 ? row.original.title.substring(0, 35) + "..." : row.original.title}</Typography>,
       },
       {
         accessorKey: "date",
@@ -69,7 +71,7 @@ const AdminAnnouncementManagement = () => {
         accessorKey: "content",
         id: "content",
         header: "Content",
-        Cell: ({ cell, row }) => <Typography variant="body2">{row.original.content.length > 130 ? row.original.content.substring(0, 130) + "..." : row.original.content}</Typography>,
+        Cell: ({ cell, row }) => <Typography variant="body2">{row.original.content.length > 145 ? row.original.content.substring(0, 145) + "..." : row.original.content}</Typography>,
       },
       {
         accessorKey: "",
@@ -81,23 +83,21 @@ const AdminAnnouncementManagement = () => {
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: "1rem",
+              gap: "2px",
             }}>
-            <Button
-              variant="contained"
+            <IconButton
               onClick={() => {
                 handleOpenEditModal(row.original.id, row.original.title, row.original.content);
               }}>
-              Edit
-            </Button>
-            <Button
-              variant="contained"
+              <EditIcon></EditIcon>
+            </IconButton>
+            <IconButton
               color="error"
               onClick={() => {
                 handleOpenDeleteModal(row.original.id, row.original.title, row.original.content);
               }}>
-              Delete
-            </Button>
+              <DeleteForeverIcon></DeleteForeverIcon>
+            </IconButton>
           </Box>
         ),
       },
@@ -202,6 +202,7 @@ const AdminAnnouncementManagement = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: "1rem",
+                my: 1,
               }}>
               <Button
                 variant="contained"
