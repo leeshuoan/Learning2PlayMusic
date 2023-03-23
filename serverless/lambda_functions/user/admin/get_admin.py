@@ -1,7 +1,6 @@
 import sys
 import boto3
 import json
-import pandas as pd
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
@@ -14,12 +13,7 @@ def lambda_handler(event, context):
     try:
 
         # get all admins from Cognito
-        admins = pd.DataFrame(get_users('Admins'))
-        students = pd.DataFrame(get_users('Users'))
-
-        new = pd.concat(admins, students)
-
-        print("new admins: ", new)
+        admins = get_users('Admins')
 
         # check if <adminId> is being passed in
         adminId = event['queryStringParameters']
