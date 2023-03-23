@@ -14,6 +14,10 @@ def lambda_handler(event, context):
 
         adminId = event['queryStringParameters']['adminId']
 
+        # check if adminId exists in Cognito
+        if not get_user('Admins', adminId):
+            return response_404('adminId does not exist in Cognito')
+
         # get all users from Cognito
         admins = get_users('Admins')
         students = get_users('Users')
