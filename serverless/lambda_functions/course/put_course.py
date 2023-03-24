@@ -10,7 +10,9 @@ from global_functions.responses import *
 def lambda_handler(event, context):
     try:
         # VALIDATION
+        print(json.loads(event["body"]))
         requestBody = json.loads(event["body"])
+        print(requestBody)
         if requestBody == {}:
             return response_400("request body is empty")
 
@@ -32,10 +34,11 @@ def lambda_handler(event, context):
             teacherId = requestBody["teacherId"]
             if not get_user(teacherId):
                 return response_404("teacherId does not exist in Cognito")
-
             update_expression += "TeacherId = :teacherId, "
             expression_attribute_values[":teacherId"] = teacherId
-
+        print(update_expression[-2:])
+        print(expression_attribute_values)
+        print(key)
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
         ## update_items way
