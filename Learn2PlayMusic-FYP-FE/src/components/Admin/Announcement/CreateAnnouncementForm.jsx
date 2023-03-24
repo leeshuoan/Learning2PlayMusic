@@ -59,9 +59,9 @@ export default function CreateAnnouncementForm({ handleCloseModal, handleCloseMo
       <Box
         sx={{
           display: "flex",
-          justifyContent: "center",
-          gap: "1rem",
-          marginTop: "1rem",
+
+          justifyContent: "space-between",
+          marginTop: 3,
         }}>
         <Button
           variant="contained"

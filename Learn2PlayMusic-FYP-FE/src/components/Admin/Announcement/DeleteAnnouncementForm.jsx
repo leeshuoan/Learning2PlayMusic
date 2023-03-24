@@ -34,10 +34,8 @@ export default function DeleteAnnouncementForm({ dateId, announcementTitle, cont
       <Box
         sx={{
           display: "flex",
-          justifyContent: "center",
-          gap: "1rem",
-          mt: "1rem",
-          p: "1rem",
+          justifyContent: "space-between",
+          marginTop: 3,
         }}>
         <Button
           variant="contained"

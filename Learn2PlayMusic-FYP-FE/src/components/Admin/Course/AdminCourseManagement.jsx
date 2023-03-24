@@ -4,12 +4,27 @@ import { Backdrop, Box, Button, CircularProgress, IconButton, Typography } from 
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import TransitionModal from "../../utils/TransitionModal";
+import CreateCourseForm from "./CreateCourseForm";
+import DeleteCourseForm from "./DeleteCourseForm";
 
 const AdminCourseManagement = () => {
+  const modalStyle = {
+    position: "relative",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "50%",
+    bgcolor: "background.paper",
+    border: "1px solid #000",
+    borderRadius: 2,
+    p: 4,
+  };
   const [courses, setCourses] = useState([]);
   const [courseName, setCourseName] = useState("");
-  const [content, setContent] = useState("");
-  const [dateId, setDateId] = useState("");
+  const [courseId, setCourseId] = useState("");
+  const [teacherName, setTeacherName] = useState("");
+  const [teacherId, setTeacherId] = useState("");
+  const [timeSlot, setTimeslot] = useState("");
   const [reloadData, setReloadData] = useState(false);
 
   const [open, setOpen] = useState(true);
@@ -28,10 +43,12 @@ const AdminCourseManagement = () => {
     setOpenEditModal(false);
     setReloadData(!reloadData);
   };
-  function handleOpenEditModal(dateId, courseName, content) {
-    setDateId(dateId);
-    setcourseName(courseName);
-    setContent(content);
+  function handleOpenEditModal(timeSlot, teacherName, courseName, courseId, teacherId) {
+    setTimeslot(timeSlot);
+    setCourseName(courseName);
+    setCourseId(courseId);
+    setTeacherName(teacherName);
+    setTeacherId(teacherId);
     setOpenEditModal(true);
   }
 
@@ -42,10 +59,11 @@ const AdminCourseManagement = () => {
     setOpenDeleteModal(false);
     setReloadData(!reloadData);
   };
-  function handleOpenDeleteModal(dateId, courseName, content) {
-    setDateId(dateId);
+  function handleOpenDeleteModal(timeSlot, teacherName, courseName, courseId) {
+    setTimeslot(timeSlot);
     setCourseName(courseName);
-    setContent(content);
+    setCourseId(courseId);
+    setTeacherName(teacherName);
     setOpenDeleteModal(true);
   }
 
@@ -84,14 +102,14 @@ const AdminCourseManagement = () => {
             }}>
             <IconButton
               onClick={() => {
-                handleOpenEditModal(row.original.id, row.original.name, row.original.content);
+                handleOpenEditModal(row.original.timeSlot, row.original.teacherName, row.original.courseName, row.original.id, row.original.teacherId);
               }}>
               <EditIcon></EditIcon>
             </IconButton>
             <IconButton
               color="error"
               onClick={() => {
-                handleOpenDeleteModal(row.original.id, row.original.name, row.original.content);
+                handleOpenDeleteModal(row.original.timeSlot, row.original.teacherName, row.original.courseName, row.original.id);
               }}>
               <DeleteForeverIcon></DeleteForeverIcon>
             </IconButton>
@@ -129,38 +147,16 @@ const AdminCourseManagement = () => {
   return (
     <Box>
       {/* new course form */}
-      <TransitionModal
-        open={openModal}
-        handleClose={handleCloseModal}
-        style={{
-          position: "relative",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "50%",
-          bgcolor: "background.paper",
-          border: "1px solid #000",
-          borderRadius: 2,
-          p: 4,
-        }}></TransitionModal>
+      <TransitionModal open={openModal} handleClose={handleCloseModal} style={modalStyle}>
+        <CreateCourseForm handleCloseModal={handleCloseModal} handleCloseModalSuccess={handleCloseModalSuccess}></CreateCourseForm>
+      </TransitionModal>
       {/* edit course form */}
-      <TransitionModal
-        open={openEditModal}
-        handleClose={handleCloseEditModal}
-        style={{
-          position: "relative",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "50%",
-          bgcolor: "background.paper",
-          border: "1px solid #000",
-          borderRadius: 2,
-          p: 4,
-        }}></TransitionModal>
+      <TransitionModal open={openEditModal} handleClose={handleCloseEditModal} style={modalStyle}></TransitionModal>
 
       {/* delete confirmation */}
-      <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal}></TransitionModal>
+      <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal} style={modalStyle}>
+        <DeleteCourseForm courseId={courseId} courseName={courseName} timeSlot={timeSlot} teacherName={teacherName} handleCloseDeleteModal={handleCloseDeleteModal} handleCloseDeleteModalSuccess={handleCloseDeleteModalSuccess} />
+      </TransitionModal>
 
       {/* header */}
       <Typography variant="h5" sx={{ m: 1, mt: 4 }}>

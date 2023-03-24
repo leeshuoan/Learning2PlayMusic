@@ -9,6 +9,16 @@ import DeleteAnnouncementForm from "./DeleteAnnouncementForm";
 import EditAnnouncementForm from "./EditAnnouncementForm";
 
 const AdminAnnouncementManagement = () => {
+  const modalStyle = {
+    position: "relative",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "50%",
+    bgcolor: "background.paper",
+    border: "1px solid #000",
+    borderRadius: 2,
+  };
   const [announcements, setAnnouncements] = useState([]);
   const [announcementTitle, setAnnouncementTitle] = useState("");
   const [content, setContent] = useState("");
@@ -131,42 +141,16 @@ const AdminAnnouncementManagement = () => {
   return (
     <Box>
       {/* new announcement form */}
-      <TransitionModal
-        open={openModal}
-        handleClose={handleCloseModal}
-        style={{
-          position: "relative",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "50%",
-          bgcolor: "background.paper",
-          border: "1px solid #000",
-          borderRadius: 2,
-          p: 4,
-        }}>
+      <TransitionModal open={openModal} handleClose={handleCloseModal} style={modalStyle}>
         <CreateAnnouncementForm handleCloseModal={handleCloseModal} handleCloseModalSuccess={handleCloseModalSuccess} />
       </TransitionModal>
       {/* edit announcement form */}
-      <TransitionModal
-        open={openEditModal}
-        handleClose={handleCloseEditModal}
-        style={{
-          position: "relative",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "50%",
-          bgcolor: "background.paper",
-          border: "1px solid #000",
-          borderRadius: 2,
-          p: 4,
-        }}>
+      <TransitionModal open={openEditModal} handleClose={handleCloseEditModal} style={modalStyle}>
         <EditAnnouncementForm dateId={dateId} existingAnnouncementTitle={announcementTitle} existingContent={content} handleCloseEditModal={handleCloseEditModal} handleCloseEditModalSuccess={handleCloseEditModalSuccess} />
       </TransitionModal>
 
       {/* delete confirmation */}
-      <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal}>
+      <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal} style={modalStyle}>
         <DeleteAnnouncementForm dateId={dateId} announcementTitle={announcementTitle} content={content} handleCloseDeleteModal={handleCloseDeleteModal} handleCloseDeleteModalSuccess={handleCloseDeleteModalSuccess} />
       </TransitionModal>
 
