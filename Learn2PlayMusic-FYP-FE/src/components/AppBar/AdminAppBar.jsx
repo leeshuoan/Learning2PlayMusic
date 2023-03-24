@@ -4,12 +4,14 @@ import { AppBar, Avatar, Box, Container, IconButton, ListItemIcon, Menu, MenuIte
 import { Auth, Storage } from "aws-amplify";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
   const pages = ["Announcements", "Courses", "Users"];
   const { category } = useParams();
   const theme = useTheme();
   const navigate = useNavigate();
+  const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [image, setImage] = useState(null);
@@ -44,6 +46,14 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
       .catch((err) => console.log(err));
   };
 
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
+  };
+  
+    const handleCloseNavMenu = () => {
+      setAnchorElNav(null);
+    };
+
   return (
     <>
       {
@@ -52,17 +62,42 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
             <Toolbar disableGutters sx={{ display: "flex", justifyContent: "space-between" }}>
               {/* MOBILE NAV */}
               <Box sx={{ display: { xs: "flex", md: "none" } }}>
-                <Avatar
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleOpenNavMenu}
+                  color="inherit"
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorElNav}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  open={Boolean(anchorElNav)}
+                  onClose={handleCloseNavMenu}
                   sx={{
-                    display: { xs: "flex", md: "none" },
-                    ml: 1,
-                    width: 32,
-                    height: 32,
-                    bgcolor: "grey[100]",
-                    "&:hover": { cursor: "pointer" },
-                  }}>
-                  <ChatIcon onClick={() => navigate("/chat")} />
-                </Avatar>
+                    display: { xs: 'block', md: 'none' },
+                  }}
+                >
+                  {pages.map((page) => (
+                    <MenuItem key={page} onClick={() => navigate(`/admin/${page.toLowerCase()}`)}>
+                      <Typography textAlign="center" variant="body2">
+                        {page}
+                      </Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
               </Box>
 
               {/* left part of Nav bar */}
@@ -105,7 +140,6 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
                   }}>
                   <Avatar
                     sx={{
-                      display: { xs: "none", md: "flex" },
                       ml: 1.6,
                       width: 32,
                       height: 32,
@@ -154,14 +188,6 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
                   }}
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
-                  {pages.map((page) => (
-                    <MenuItem key={page} onClick={() => navigate(`/admin/${page.toLowerCase()}`)}>
-                      <Typography textAlign="center" variant="body2">
-                        {page}
-                      </Typography>
-                    </MenuItem>
-                  ))}
-
                   <MenuItem
                     onClick={() => {
                       navigate("/profile");
