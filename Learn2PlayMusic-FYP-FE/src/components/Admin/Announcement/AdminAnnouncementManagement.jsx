@@ -15,7 +15,7 @@ const AdminAnnouncementManagement = () => {
   const [dateId, setDateId] = useState("");
   const [reloadData, setReloadData] = useState(false);
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   // create
   const [openModal, setOpenModal] = useState(false);
   const handleCloseModal = () => setOpenModal(false);
@@ -125,6 +125,7 @@ const AdminAnnouncementManagement = () => {
       });
       setAnnouncements(fetchedData);
       console.log(fetchedData);
+      setOpen(false);
     });
   }, [reloadData]);
   return (
