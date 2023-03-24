@@ -51,7 +51,7 @@ async function lambda_handler(event, context) {
 
     let uploadedImage;
     let s3Params;
-    if (requestBody && "questionImage" in requestBody) {
+    if (requestBody && "questionImage" in requestBody && requestBody['questionImage'] != "") {
       const base64data = requestBody.questionImage;
       const fileExtension = base64data.split(';')[0].split('/')[1];
       const base64Image = base64data.replace(/^data:image\/\w+;base64,/, "");
@@ -93,7 +93,7 @@ async function lambda_handler(event, context) {
       },
     };
 
-    if ("questionImage" in requestBody) {
+    if ("questionImage" in requestBody && requestBody['questionImage'] != "") {
       params.Item.questionImage = s3Params.Bucket + "/" + s3Params.Key;
     }
     await dynamodb.put(params).promise();
