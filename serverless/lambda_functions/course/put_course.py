@@ -25,7 +25,7 @@ def lambda_handler(event, context):
         if "courseName" in requestBody:
             update_expression += "CourseName = :courseName, "
             expression_attribute_values[":courseName"] = requestBody["courseName"]
-
+        print(update_expression)
         if "courseSlot" in requestBody:
             update_expression += "CourseSlot = :courseSlot, "
             expression_attribute_values[":courseSlot"] = requestBody["courseSlot"]
@@ -36,9 +36,8 @@ def lambda_handler(event, context):
                 return response_404("teacherId does not exist in Cognito")
             update_expression += "TeacherId = :teacherId, "
             expression_attribute_values[":teacherId"] = teacherId
-        print(update_expression[-2:])
+        print(update_expression)
         print(expression_attribute_values)
-        print(key)
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
         ## update_items way
@@ -46,6 +45,7 @@ def lambda_handler(event, context):
             "PK": "Course",
             "SK": f"Course#{requestBody['courseId']}",
         }
+        print(key)
 
         response = table.update_item(
             Key=key,
