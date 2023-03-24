@@ -130,7 +130,7 @@ class UserStack(Stack):
 
         # Create resources for the API
         user_resource = main_api.root.add_resource("user")
-        user_chat_resource = user_resource.add_resource("user")
+        user_chat_resource = user_resource.add_resource("chat")
         user_chat_contactlist_resource = user_chat_resource.add_resource("contactlist")
 
         student_resource = user_resource.add_resource("student")
