@@ -46,7 +46,7 @@ def lambda_handler(event, context):
 
         response = table.update_item(
             Key=key,
-            UpdateExpression=update_expression,
+            UpdateExpression=update_expression[-2:],
             ExpressionAttributeValues=expression_attribute_values,
         )
 

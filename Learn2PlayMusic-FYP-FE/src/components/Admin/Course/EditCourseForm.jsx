@@ -40,8 +40,7 @@ export default function EditCourseForm({ courseId, ogCourseName, ogTimeSlot, ogT
     }
     // request body building
     let requestBody = { courseId: courseId };
-    console.log(courseName);
-    console.log(ogCourseName);
+
     if (courseName != ogCourseName) {
       requestBody.courseName = courseName;
     }
@@ -108,6 +107,7 @@ export default function EditCourseForm({ courseId, ogCourseName, ogTimeSlot, ogT
             name="day"
             id="day"
             options={daysOfWeek}
+            defaultValue={ogTimeSlot.split(" ")[0]}
             renderInput={(params) => <TextField {...params} label="Day *" />}
             onChange={(event, newValue) => {
               setDay(newValue);
@@ -120,6 +120,7 @@ export default function EditCourseForm({ courseId, ogCourseName, ogTimeSlot, ogT
             name="hour"
             id="hour"
             options={hoursOfDay}
+            defaultValue={ogTimeSlot.split(" ")[1].toUpperCase()}
             renderInput={(params) => <TextField {...params} label="Timing *" />}
             onChange={(event, newValue) => {
               setHour(newValue);
@@ -132,6 +133,7 @@ export default function EditCourseForm({ courseId, ogCourseName, ogTimeSlot, ogT
             name="teacher"
             id="teacher"
             options={teachers}
+            defaultValue={selectedTeacher}
             isOptionEqualToValue={(option, value) => option.teacherId === value.teacherId}
             getOptionLabel={(option) => option.teacherName}
             renderInput={(params) => <TextField {...params} label="Teacher *" />}
