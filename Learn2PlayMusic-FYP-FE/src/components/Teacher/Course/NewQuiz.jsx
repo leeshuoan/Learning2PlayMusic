@@ -76,6 +76,8 @@ const NewQuiz = () => {
 
   async function createQuiz(e) {
     e.preventDefault();
+    console.log(quizQuestions)
+    return
     const newQuiz = {
       quizTitle: quizTitle,
       quizDescription: quizDescription,
@@ -99,7 +101,7 @@ const NewQuiz = () => {
 
   const addQuestion = () => {
     setQuizQuestions([...quizQuestions, {
-      qnNumber: qnNumber, 
+      qnNumber: qnNumber,
       question: "",
       questionOptionType: "MCQ",
       options: {
@@ -110,7 +112,19 @@ const NewQuiz = () => {
       },
       answer: ""
     }])
-    setQnNumber(qnNumber + 1);
+    setQnNumber(qnNumber + 1)
+  }
+
+  const handleQuestionChange = (qnInfo) => {
+    const newQuizQuestions = quizQuestions.map(qn => {
+      console.log(qnInfo)
+      if (qn.qnNumber === qnInfo.qnNumber) {
+        return qnInfo;
+      }
+      return qn;
+    })
+    console.log(newQuizQuestions)
+    setQuizQuestions(newQuizQuestions);
   }
 
   return (
@@ -167,8 +181,8 @@ const NewQuiz = () => {
                 <InputLabel id="description-label" sx={{ mt: 2 }}>Description</InputLabel>
                 <TextField value={quizDescription} onChange={() => setQuizDescription(event.target.value)} fullWidth multiline rows={3} />
               </Box>
-              {quizQuestions.map((question) => {
-                return (<NewQuizQuestion qnInfo={question}/>)
+              {quizQuestions.map((question, key) => {
+                return (<NewQuizQuestion key={key} qnInfo={question} handleQuestionChange={handleQuestionChange}/>)
               })}
               <Button variant="outlined" fullWidth sx={{ color: "primary.main", mt: 2 }} onClick={addQuestion}>Add Question</Button>
               <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
