@@ -25,7 +25,8 @@ class UserStack(Stack):
 
         USER_TEACHER_FUNCTIONS_FOLDER = "user.teacher"
         USER_TEACHER_COURSE_FUNCTIONS_FOLDER = "user.teacher.course"
-        USER_TEACHER_CONTACTLIST_FUNCTIONS_FOLDER = "user.teacher.contactlist"
+        USER_TEACHER_CHAT_FUNCTIONS_FOLDER = "user.teacher.chat"
+        USER_TEACHER_CHAT_CONTACTLIST_FUNCTIONS_FOLDER = "user.teacher.chat.contactlist"
 
         USER_ADMIN_FUNCTIONS_FOLDER = "user.admin"
         USER_ADMIN_CHAT_FUNCTIONS_FOLDER = "user.admin.chat"
@@ -54,8 +55,12 @@ class UserStack(Stack):
         post_student_course = _lambda.Function(self, "postStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.post_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_student_course = _lambda.Function(self, "deleteStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.delete_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
+        # /user/student/chat/contactlist
+        get_student_chat = _lambda.Function(self, "getStudentChat", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_CHAT_FUNCTIONS_FOLDER}.get_student_chat.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        post_student_chat = _lambda.Function(self, "postStudentChat", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_CHAT_FUNCTIONS_FOLDER}.post_student_chat.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
         # /user/student/contactlist
-        get_student_contactlist = _lambda.Function(self, "getStudentContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_CHAT_CONTACTLIST_FUNCTIONS_FOLDER}.get_student_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        get_student_chat_contactlist = _lambda.Function(self, "getStudentChatContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_CHAT_CONTACTLIST_FUNCTIONS_FOLDER}.get_student_chat_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         #########################
         ### LAMBDA - TEACHERS ###
@@ -67,13 +72,17 @@ class UserStack(Stack):
         # put_teacher = _lambda.Function(self, "putTeacher", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_FUNCTIONS_FOLDER}.put_teacher.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         # delete_teacher = _lambda.Function(self, "deleteTeacher", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_FUNCTIONS_FOLDER}.delete_teacher.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
-        # /user/teacher/contactlist
-        get_teacher_contactlist = _lambda.Function(self, "getTeacherContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_CONTACTLIST_FUNCTIONS_FOLDER}.get_teacher_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-
         # /user/teacher/courses
         get_teacher_course = _lambda.Function(self, "getTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.get_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_teacher_course = _lambda.Function(self, "postTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.post_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_teacher_course = _lambda.Function(self, "deleteTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.delete_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+        # /user/teacher/chat/contactlist
+        get_teacher_chat = _lambda.Function(self, "getTeacherChat", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_CHAT_FUNCTIONS_FOLDER}.get_teacher_chat.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        post_teacher_chat = _lambda.Function(self, "postTeacherChat", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_CHAT_FUNCTIONS_FOLDER}.post_teacher_chat.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+        # /user/teacher/contactlist
+        get_teacher_chat_contactlist = _lambda.Function(self, "getTeacherChatContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_CHAT_CONTACTLIST_FUNCTIONS_FOLDER}.get_teacher_chat_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         #########################
         ### LAMBDA - ADMINS ###
@@ -112,11 +121,13 @@ class UserStack(Stack):
 
         student_resource = user_resource.add_resource("student")
         student_course_resource = student_resource.add_resource("course")
-        student_contactlist_resource = student_resource.add_resource("contactlist")
+        student_chat_resource = student_resource.add_resource("chat")
+        student_chat_contactlist_resource = student_chat_resource.add_resource("contactlist")
 
         teacher_resource = user_resource.add_resource("teacher")
         teacher_course_resource = teacher_resource.add_resource("course")
-        teacher_contactlist_resource = teacher_resource.add_resource("contactlist")
+        teacher_chat_resource = teacher_resource.add_resource("chat")
+        teacher_chat_contactlist_resource = teacher_chat_resource.add_resource("contactlist")
 
         admin_resource = user_resource.add_resource("admin")
         admin_chat_resource = admin_resource.add_resource("chat")
@@ -190,8 +201,15 @@ class UserStack(Stack):
           'method.request.querystring.studentId': True,
           'method.request.querystring.courseId': True})
 
+        # /user/student/chat
+        student_chat_resource.add_method("GET", apigw.LambdaIntegration(get_student_chat), request_parameters={
+          'method.request.querystring.studentId': True})
+        student_chat_resource.add_method("POST", apigw.LambdaIntegration(post_student_chat), request_parameters={
+          'method.request.querystring.studentId': True,
+          'method.request.querystring.userId': True})
+
         # /user/student/contactlist
-        student_contactlist_resource.add_method("GET", apigw.LambdaIntegration(get_student_contactlist), request_parameters={
+        student_chat_contactlist_resource.add_method("GET", apigw.LambdaIntegration(get_student_chat_contactlist), request_parameters={
           'method.request.querystring.studentId': True})
 
 
@@ -261,8 +279,15 @@ class UserStack(Stack):
           'method.request.querystring.teacherId': True,
           'method.request.querystring.courseId': True})
 
-        # /user/teacher/contactlist
-        teacher_contactlist_resource.add_method("GET", apigw.LambdaIntegration(get_teacher_contactlist), request_parameters={
+        # /user/teacher/chat
+        teacher_chat_resource.add_method("GET", apigw.LambdaIntegration(get_teacher_chat), request_parameters={
+          'method.request.querystring.teacherId': True})
+        teacher_chat_resource.add_method("POST", apigw.LambdaIntegration(post_teacher_chat), request_parameters={
+          'method.request.querystring.teacherId': True,
+          'method.request.querystring.userId': True})
+
+        # /user/teacher/chat/contactlist
+        teacher_chat_contactlist_resource.add_method("GET", apigw.LambdaIntegration(get_teacher_chat_contactlist), request_parameters={
           'method.request.querystring.teacherId': True})
 
 
@@ -293,8 +318,17 @@ class UserStack(Stack):
 
         # Enable CORS for each resource/sub-resource etc.
         user_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+
         student_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         student_course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        student_chat_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        student_chat_contactlist_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+
         teacher_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         teacher_course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        teacher_chat_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        teacher_chat_contactlist_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+
         admin_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        admin_chat_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        admin_chat_contactlist_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)

@@ -48,13 +48,17 @@ def get_users(group):
 #################################
 
 def get_all_users():
+    print("in get_all_users() function")
 
     all_users_info = []
     admins = get_users('Admins')
     students = get_users('Users')
     teachers = get_users('Teachers')
 
-    all_users_info.append(admins).append(students).append(teachers)
+    [all_users_info.append(admin) for admin in admins]
+    [all_users_info.append(student) for student in students]
+    [all_users_info.append(teacher) for teacher in teachers]
+
     print("COGNITO ALL USERS: ", all_users_info)
 
     return all_users_info
@@ -64,11 +68,15 @@ def get_all_users():
 #############################################
 
 def get_user(userId):
+    print("in get_user(userId) function")
+    print("userId: ", userId)
 
     all_users = get_all_users()
+    print('all_users: ', all_users)
 
     for user in all_users:
         if userId in user.values():
+            print("user found: ", user)
             return user
 
 

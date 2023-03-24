@@ -27,10 +27,10 @@ def lambda_handler(event, context):
         # get user
         user = get_user(userId)
 
-        if 'teacher' in user.keys():
+        if 'teacherId' in user:
             primarykey = f"Teacher#{userId}"
 
-        if 'student' in user.keys():
+        if 'studentId' in user:
             primarykey = f"Student#{userId}"
 
         dynamodb = boto3.resource("dynamodb")

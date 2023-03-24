@@ -30,6 +30,7 @@ def lambda_handler(event, context):
 
         items = response["Items"]
 
+        return response_200_items(items)
 
 
     except Exception as e:
