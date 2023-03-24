@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import NewQuizQuestion from "./NewQuizQuestion";
 
 const NewQuiz = () => {
   const navigate = useNavigate();
@@ -16,6 +17,21 @@ const NewQuiz = () => {
   const [quizDescription, setQuizDescription] = useState("");
   const [quizMaxAttempts, setQuizMaxAttempts] = useState(1);
   const [visibility, setVisibility] = useState(true);
+  const [quizQuestions, setQuizQuestions] = useState([
+    {
+      qnNumber: 1, 
+      question: "",
+      questionOptionType: "MCQ",
+      options: {
+        option1: "",
+        option2: "",
+        option3: "",
+        option4: "",
+      },
+      answer: ""
+    },
+  ])
+  const [qnNumber, setQnNumber] = useState(2);
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
@@ -81,6 +97,22 @@ const NewQuiz = () => {
     }
   }
 
+  const addQuestion = () => {
+    setQuizQuestions([...quizQuestions, {
+      qnNumber: qnNumber, 
+      question: "",
+      questionOptionType: "MCQ",
+      options: {
+        option1: "",
+        option2: "",
+        option3: "",
+        option4: "",
+      },
+      answer: ""
+    }])
+    setQnNumber(qnNumber + 1);
+  }
+
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
@@ -135,6 +167,10 @@ const NewQuiz = () => {
                 <InputLabel id="description-label" sx={{ mt: 2 }}>Description</InputLabel>
                 <TextField value={quizDescription} onChange={() => setQuizDescription(event.target.value)} fullWidth multiline rows={3} />
               </Box>
+              {quizQuestions.map((question) => {
+                return (<NewQuizQuestion qnInfo={question}/>)
+              })}
+              <Button variant="outlined" fullWidth sx={{ color: "primary.main", mt: 2 }} onClick={addQuestion}>Add Question</Button>
               <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
                 <Button variant="contained" type="submit">Create Quiz</Button>
               </Box>
