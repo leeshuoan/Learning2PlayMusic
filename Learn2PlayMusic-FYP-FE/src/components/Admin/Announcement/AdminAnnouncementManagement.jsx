@@ -18,6 +18,7 @@ const AdminAnnouncementManagement = () => {
     bgcolor: "background.paper",
     border: "1px solid #000",
     borderRadius: 2,
+    p: 4,
   };
   const [announcements, setAnnouncements] = useState([]);
   const [announcementTitle, setAnnouncementTitle] = useState("");

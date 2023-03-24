@@ -1,16 +1,28 @@
-import { Box, Button, Typography, useTheme } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Typography, useTheme } from "@mui/material";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
 export default function DeleteAnnouncementForm({ dateId, announcementTitle, content, handleCloseDeleteModal, handleCloseDeleteModalSuccess }) {
   const theme = useTheme();
+  const [open, setOpen] = useState(false);
+
   const GAendpoint = `${import.meta.env.VITE_API_URL}/generalannouncement?dateId=${dateId}`;
   async function handleDelete() {
-    const response = await fetch(GAendpoint, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    setOpen(true);
+    let response;
+    try {
+      response = await fetch(GAendpoint, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      toast.error("An unexpected error occurred!");
+      setOpen(false);
+      return;
+    }
+    setOpen(false);
     if (response.status == 200) {
       const data = await response.json();
       toast.success(`Announcement ${announcementTitle} deleted!`);
@@ -52,6 +64,9 @@ export default function DeleteAnnouncementForm({ dateId, announcementTitle, cont
           Yes
         </Button>
       </Box>
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 }

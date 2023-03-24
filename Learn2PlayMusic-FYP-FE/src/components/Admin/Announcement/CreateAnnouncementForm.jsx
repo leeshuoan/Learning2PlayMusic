@@ -1,4 +1,4 @@
-import { Box, Button, Grid, TextField, Typography, useTheme } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Grid, TextField, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -6,6 +6,7 @@ export default function CreateAnnouncementForm({ handleCloseModal, handleCloseMo
   const theme = useTheme();
   const [announcementTitle, setAnnouncementTitle] = useState("");
   const [content, setContent] = useState("");
+  const [open, setOpen] = useState(false);
 
   const handleAnnouncementTitleChange = (event) => {
     setAnnouncementTitle(event.target.value);
@@ -15,22 +16,32 @@ export default function CreateAnnouncementForm({ handleCloseModal, handleCloseMo
   };
   const GAendpoint = `${import.meta.env.VITE_API_URL}/generalannouncement`;
   const submitForm = async (event) => {
+    setOpen(true);
     event.preventDefault();
 
     if (announcementTitle === "" || content === "") {
+      setOpen(false);
       toast.error("Please fill in all fields!");
       return;
     }
-    const response = await fetch(GAendpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        announcementTitle: announcementTitle,
-        content: content,
-      }),
-    });
+    let response;
+    try {
+      response = await fetch(GAendpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          announcementTitle: announcementTitle,
+          content: content,
+        }),
+      });
+    } catch (error) {
+      toast.error("An unexpected error occurred!");
+      setOpen(false);
+      return;
+    }
+    setOpen(false);
     if (response.status == 200) {
       const data = await response.json();
       toast.success(`Announcement ${announcementTitle} added!`);
@@ -78,6 +89,9 @@ export default function CreateAnnouncementForm({ handleCloseModal, handleCloseMo
           Create
         </Button>
       </Box>
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </form>
   );
 }

@@ -1,9 +1,11 @@
-import { Box, Button, Grid, TextField, Typography, useTheme } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Grid, TextField, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 export default function EditAnnouncementForm({ dateId, existingAnnouncementTitle, existingContent, handleCloseEditModal, handleCloseEditModalSuccess }) {
   const theme = useTheme();
+  const [open, setOpen] = useState(false);
+
   const [announcementTitle, setAnnouncementTitle] = useState(existingAnnouncementTitle);
   const [content, setContent] = useState(existingContent);
 
@@ -15,13 +17,16 @@ export default function EditAnnouncementForm({ dateId, existingAnnouncementTitle
   };
   const GAendpoint = `${import.meta.env.VITE_API_URL}/generalannouncement?dateId=${dateId}`;
   const submitForm = async (event) => {
+    setOpen(true);
     event.preventDefault();
 
     if (announcementTitle === "" || content === "") {
+      setOpen(false);
       toast.error("Please fill in all fields!");
       return;
     }
     if (announcementTitle === existingAnnouncementTitle && content === existingContent) {
+      setOpen(false);
       toast.error("Please make changes in at least one field!");
       return;
     }
@@ -31,16 +36,24 @@ export default function EditAnnouncementForm({ dateId, existingAnnouncementTitle
         content: content,
       })
     );
-    const response = await fetch(GAendpoint, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        announcementTitle: announcementTitle,
-        content: content,
-      }),
-    });
+    let response;
+    try {
+      response = await fetch(GAendpoint, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          announcementTitle: announcementTitle,
+          content: content,
+        }),
+      });
+    } catch (error) {
+      toast.error("An unexpected error occurred!");
+      setOpen(false);
+      return;
+    }
+    setOpen(false);
     if (response.status == 200) {
       const data = await response.json();
       toast.success(`Announcement ${announcementTitle} updated!`);
@@ -87,6 +100,9 @@ export default function EditAnnouncementForm({ dateId, existingAnnouncementTitle
           Update
         </Button>
       </Box>
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </form>
   );
 }

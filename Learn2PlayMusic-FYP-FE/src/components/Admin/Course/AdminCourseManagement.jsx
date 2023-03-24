@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import TransitionModal from "../../utils/TransitionModal";
 import CreateCourseForm from "./CreateCourseForm";
 import DeleteCourseForm from "./DeleteCourseForm";
+import EditCourseForm from "./EditCourseForm";
 
 const AdminCourseManagement = () => {
   const modalStyle = {
@@ -151,8 +152,9 @@ const AdminCourseManagement = () => {
         <CreateCourseForm handleCloseModal={handleCloseModal} handleCloseModalSuccess={handleCloseModalSuccess}></CreateCourseForm>
       </TransitionModal>
       {/* edit course form */}
-      <TransitionModal open={openEditModal} handleClose={handleCloseEditModal} style={modalStyle}></TransitionModal>
-
+      <TransitionModal open={openEditModal} handleClose={handleCloseEditModal} style={modalStyle}>
+        <EditCourseForm courseId={courseId} ogCourseName={courseName} ogTimeSlot={timeSlot} ogTeacherName={teacherName} ogTeacherId={teacherId} handleCloseEditModal={handleCloseEditModal} handleCloseEditModalSuccess={handleCloseEditModalSuccess} />
+      </TransitionModal>
       {/* delete confirmation */}
       <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal} style={modalStyle}>
         <DeleteCourseForm courseId={courseId} courseName={courseName} timeSlot={timeSlot} teacherName={teacherName} handleCloseDeleteModal={handleCloseDeleteModal} handleCloseDeleteModalSuccess={handleCloseDeleteModalSuccess} />

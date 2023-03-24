@@ -1,16 +1,29 @@
-import { Box, Button, Grid, Typography, useTheme } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Grid, Typography, useTheme } from "@mui/material";
 import { toast } from "react-toastify";
+import { useState } from "react"; 
 
 export default function DeleteCourseForm({ courseId, courseName, timeSlot, teacherName, handleCloseDeleteModal, handleCloseDeleteModalSuccess }) {
   const theme = useTheme();
+  const [open, setOpen] = useState(false);
+
   const courseEndpoint = `${import.meta.env.VITE_API_URL}/course?courseId=${courseId}`;
   async function handleDelete() {
-    const response = await fetch(courseEndpoint, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    setOpen(true);
+    let response;
+    try {
+      response = await fetch(courseEndpoint, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      toast.error("An unexpected error occurred!");
+      setOpen(false);
+      return;
+    }
+
+    setOpen(false);
     if (response.status == 200) {
       const data = await response.json();
       toast.success(`Course ${courseName} deleted!`);
@@ -67,6 +80,9 @@ export default function DeleteCourseForm({ courseId, courseName, timeSlot, teach
         <Button variant="contained" color="error" onClick={handleDelete}>
           Delete
         </Button>
+        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Box>
     </>
   );
