@@ -40,7 +40,7 @@ def lambda_handler(event, context):
         # add teacher's name
         for item in items:
             teacherId = item['TeacherId']
-            teacherName = get_user('Teachers', teacherId)['teacherName']
+            teacherName = get_user(teacherId)['teacherName']
             item['TeacherName'] = teacherName
 
         return response_200_items(items)

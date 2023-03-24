@@ -19,7 +19,7 @@ def lambda_handler(event, context):
         # check if <teacherId> exists in database
         teacherId = json.loads(event['body'])['teacherId']
 
-        if not get_user('Teachers', teacherId):
+        if not get_user(teacherId):
             return response_404("teacherId does not exist in Cognito")
 
         dynamodb = boto3.resource("dynamodb")

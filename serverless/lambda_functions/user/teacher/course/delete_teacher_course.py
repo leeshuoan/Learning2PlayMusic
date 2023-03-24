@@ -14,7 +14,7 @@ def lambda_handler(event, context):
         # VALIDATION
         # check if teacherId exists in Cognito
         teacherId = event['queryStringParameters']['teacherId']
-        if not get_user('Teachers', teacherId):
+        if not get_user(teacherId):
             return response_404('teacherId does not exist in Cognito')
 
         # check if <courseId> exists in database
@@ -23,10 +23,8 @@ def lambda_handler(event, context):
             return response_404("courseId does not exist in database.")
 
         # check if <teacherId><courseId> combination exists in database
-        # db won't throw error if try to delete a primary key combination that does not exist,
-        # this is more to inform that teacher was not registered with the course.
         if not combination_id_exists("Teacher", teacherId, "Course", courseId):
-            return response_202_msg("This teacher has not been registered with the course")
+            return response_404("This teacher has not been registered with the course")
 
         else:
             dynamodb = boto3.resource("dynamodb")

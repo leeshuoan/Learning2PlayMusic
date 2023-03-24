@@ -14,7 +14,7 @@ def lambda_handler(event, context):
         # VALIDATION
         # check if studentId exists in Cognito
         studentId = event['queryStringParameters']['studentId']
-        if not get_user('Users', studentId):
+        if not get_user(studentId):
             return response_404('studentId does not exist in Cognito')
 
         # check if <courseId> exists in database

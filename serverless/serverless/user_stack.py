@@ -17,14 +17,19 @@ class UserStack(Stack):
 
         FUNCTIONS_FOLDER = "./lambda_functions/"
         USER_FUNCTIONS_FOLDER = "user"
+
         USER_STUDENT_FUNCTIONS_FOLDER = "user.student"
         USER_STUDENT_COURSE_FUNCTIONS_FOLDER = "user.student.course"
-        USER_STUDENT_CONTACTLIST_FUNCTIONS_FOLDER = "user.student.contactlist"
+        USER_STUDENT_CHAT_FUNCTIONS_FOLDER = "user.student.chat"
+        USER_STUDENT_CHAT_CONTACTLIST_FUNCTIONS_FOLDER = "user.student.chat.contactlist"
+
         USER_TEACHER_FUNCTIONS_FOLDER = "user.teacher"
         USER_TEACHER_COURSE_FUNCTIONS_FOLDER = "user.teacher.course"
         USER_TEACHER_CONTACTLIST_FUNCTIONS_FOLDER = "user.teacher.contactlist"
+
         USER_ADMIN_FUNCTIONS_FOLDER = "user.admin"
-        USER_ADMIN_CONTACTLIST_FUNCTIONS_FOLDER = "user.admin.contactlist"
+        USER_ADMIN_CHAT_FUNCTIONS_FOLDER = "user.admin.chat"
+        USER_ADMIN_CHAT_CONTACTLIST_FUNCTIONS_FOLDER = "user.admin.chat.contactlist"
 
         # Get existing iam role (lambda-general-role)
         iam = boto3.client("iam")
@@ -34,9 +39,9 @@ class UserStack(Stack):
           self, "lambda-general-role",role_arn)
 
 
-        ########################
-        ### LAMBDA FUNCTIONS ###
-        ########################
+        #########################
+        ### LAMBDA - STUDENTS ###
+        #########################
 
         # /user/student
         get_student = _lambda.Function(self, "getStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.get_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -50,7 +55,11 @@ class UserStack(Stack):
         delete_student_course = _lambda.Function(self, "deleteStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.delete_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /user/student/contactlist
-        get_student_contactlist = _lambda.Function(self, "getStudentContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_CONTACTLIST_FUNCTIONS_FOLDER}.get_student_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        get_student_contactlist = _lambda.Function(self, "getStudentContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_CHAT_CONTACTLIST_FUNCTIONS_FOLDER}.get_student_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+        #########################
+        ### LAMBDA - TEACHERS ###
+        #########################
 
         # /user/teacher
         get_teacher = _lambda.Function(self, "getTeacher", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_FUNCTIONS_FOLDER}.get_teacher.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -66,11 +75,19 @@ class UserStack(Stack):
         post_teacher_course = _lambda.Function(self, "postTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.post_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_teacher_course = _lambda.Function(self, "deleteTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.delete_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
+        #########################
+        ### LAMBDA - ADMINS ###
+        #########################
+
         # /user/admin
         get_admin = _lambda.Function(self, "getAdmin", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_ADMIN_FUNCTIONS_FOLDER}.get_admin.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
-        # /user/admin/contactlist
-        get_admin_contactlist = _lambda.Function(self, "getAdminContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_ADMIN_CONTACTLIST_FUNCTIONS_FOLDER}.get_admin_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        # /user/admin/chat
+        get_admin_chat = _lambda.Function(self, "getAdminChat", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_ADMIN_CHAT_FUNCTIONS_FOLDER}.get_admin_chat.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        post_admin_chat = _lambda.Function(self, "postAdminChat", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_ADMIN_CHAT_FUNCTIONS_FOLDER}.post_admin_chat.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+        # /user/admin/chat/contactlist
+        get_admin_chat_contactlist = _lambda.Function(self, "getAdminChatContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_ADMIN_CHAT_CONTACTLIST_FUNCTIONS_FOLDER}.get_admin_chat_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
 
         ##############
@@ -102,7 +119,8 @@ class UserStack(Stack):
         teacher_contactlist_resource = teacher_resource.add_resource("contactlist")
 
         admin_resource = user_resource.add_resource("admin")
-        admin_contactlist_resource = admin_resource.add_resource("contactlist")
+        admin_chat_resource = admin_resource.add_resource("chat")
+        admin_chat_contactlist_resource = admin_chat_resource.add_resource("contactlist")
 
 
         ###########################################
@@ -252,10 +270,20 @@ class UserStack(Stack):
         ### API GW RESOURCES METHODS - ADMINS ###
         #########################################
 
+        # /user/admin
         admin_resource.add_method("GET", apigw.LambdaIntegration(get_admin), request_parameters={
           'method.request.querystring.adminId': False})
 
-        admin_contactlist_resource.add_method("GET", apigw.LambdaIntegration(get_admin_contactlist), request_parameters={
+        # /user/admin/chat
+        admin_chat_resource.add_method("GET", apigw.LambdaIntegration(get_admin_chat), request_parameters={
+          'method.request.querystring.adminId': True})
+
+        admin_chat_resource.add_method("POST", apigw.LambdaIntegration(post_admin_chat), request_parameters={
+          'method.request.querystring.adminId': True,
+          'method.request.querystring.userId': True})
+
+        # /user/admin/chat/contactlist
+        admin_chat_contactlist_resource.add_method("GET", apigw.LambdaIntegration(get_admin_chat_contactlist), request_parameters={
           'method.request.querystring.adminId': True})
 
 
