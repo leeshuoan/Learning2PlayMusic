@@ -1,21 +1,7 @@
 import boto3
 
-
-##########################################################
-### (USER POOL) GET ALL INFO ON ALL USERS FROM A GROUP ### -- NOT INVOKED OUTSIDE
-##########################################################
-
-# Existing groups: 'Admins', 'Teachers', 'Users'
-
-def get_users_from_group(groupName):
-    client = boto3.client('cognito-idp')
-    
-    response = client.list_users_in_group(
-                UserPoolId='ap-southeast-1_WMzch8no8',
-                GroupName=groupName
-                )
-    return response['Users']
-    
+USERPOOLID = 'ap-southeast-1_WMzch8no8'
+client = boto3.client('cognito-idp')
 
 ##########################################################
 ### (USER POOL) GET NAME, ID ON ALL USERS FROM A GROUP ###
@@ -36,7 +22,10 @@ def get_users(group):
 
 
     all_users_info = []
-    users_response = get_users_from_group(group)
+    users_response = client.list_users_in_group(
+                        UserPoolId=USERPOOLID,
+                        GroupName=group
+                      )['Users']
     
     for user in users_response:
 
@@ -53,29 +42,41 @@ def get_users(group):
     
     return all_users_info
 
+
+#################################
+### (USER POOL) GET ALL USERS ###
+#################################
+
+def get_all_users():
+    print("in get_all_users() function")
+
+    all_users_info = []
+    admins = get_users('Admins')
+    students = get_users('Users')
+    teachers = get_users('Teachers')
+
+    [all_users_info.append(admin) for admin in admins]
+    [all_users_info.append(student) for student in students]
+    [all_users_info.append(teacher) for teacher in teachers]
+
+    print("COGNITO ALL USERS: ", all_users_info)
+
+    return all_users_info
+
 #############################################
 ### (USER POOL) GET ONE USER FROM A GROUP ###
 #############################################
 
-def get_user(group,userId):
+def get_user(userId):
+    print("in get_user(userId) function")
+    print("userId: ", userId)
 
-    if group == 'Users':
-        userIdString = 'studentId'
-        userNameString = 'studentName'
-    if group == 'Teachers':
-        userIdString = 'teacherId'
-        userNameString = 'teacherName'
-    if group == 'Admins':
-        userIdString = 'adminId'
-        userNameString = 'adminName'
-        userType = 'generalAdmin'
+    all_users = get_all_users()
+    print('all_users: ', all_users)
 
-
-    user_info = []
-    users = get_users(group)
-
-    for user in users:
-        if user[userIdString]==userId:
+    for user in all_users:
+        if userId in user.values():
+            print("user found: ", user)
             return user
 
 

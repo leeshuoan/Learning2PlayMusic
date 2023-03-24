@@ -7,6 +7,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import { toast } from "react-toastify";
 
 const EditHomeworkForm = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const EditHomeworkForm = () => {
   const [value, setValue] = useState(null);
   const [homeworkTitle, setHomeworkTitle] = useState("");
   const [homeworkDescription, setHomeworkDescription] = useState("");
+  const [homeworkAssignedDate, setHomeworkAssignedDate] = useState("");
   dayjs.extend(customParseFormat);
 
   async function request(endpoint) {
@@ -44,6 +46,7 @@ const EditHomeworkForm = () => {
       setCourse(courseData);
       setHomeworkTitle(data2.HomeworkTitle);
       setHomeworkDescription(data2.HomeworkDescription);
+      setHomeworkAssignedDate(data2.HomeworkAssignedDate)
       dayjs.extend(customParseFormat);
       setValue(dayjs(data2.HomeworkDueDate));
     }
@@ -53,6 +56,36 @@ const EditHomeworkForm = () => {
 
   const updateHomework = async (e) => {
     e.preventDefault();
+    if (value ==  null) {
+      toast.error("Please select a due date!");
+      return;
+    }
+    if (new Date(value.toISOString()) < new Date()) {
+      toast.error("Due date cannot be in the past!");
+      return;
+    }
+    const updatedHomework = {
+      homeworkId: homeworkId,
+      homeworkTitle: homeworkTitle,
+      homeworkDescription: homeworkDescription,
+      homeworkDueDate: value.toISOString(),
+      homeworkAssignedDate: homeworkAssignedDate,
+      courseId: courseid,
+    }
+    console.log(updatedHomework);
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/course/homework`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedHomework),
+    });
+    if (res.status === 202) {
+      toast.success("Homework updated!");
+      navigate(`/teacher/course/${courseid}/homework`);
+    } else {
+      toast.error("An unexpected error occured when updating homework");
+    }
   }
 
   return (
@@ -108,7 +141,7 @@ const EditHomeworkForm = () => {
                 }}>
                 Cancel
               </Button>
-              <Button variant="contained">Update</Button>
+              <Button variant="contained" type="submit">Update</Button>
             </Box>
           </form>
         </Card>

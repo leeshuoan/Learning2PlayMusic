@@ -1,6 +1,7 @@
 import sys
 import boto3
 import json
+import uuid
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
@@ -13,23 +14,37 @@ def lambda_handler(event, context):
     try:
 
         adminId = event['queryStringParameters']['adminId']
+        userId = event['queryStringParameters']['userId']
 
         # check if adminId exists in Cognito
-        if not get_user('Admins', adminId):
+        if not get_user(adminId):
             return response_404('adminId does not exist in Cognito')
+        
+        # check if userId exists in Cognito
+        if not get_user(userId): # either teacher or student
+            return response_404('userId does not exist in Cognito')
+        
+        # get user
+        user = get_user(userId)
 
-        # get all users from Cognito
-        admins = get_users('Admins')
-        students = get_users('Users')
-        teachers = get_users('Teachers')
+        if 'teacherId' in user:
+            primarykey = f"Teacher#{userId}"
 
-        all_users = []
+        if 'studentId' in user:
+            primarykey = f"Student#{userId}"
 
-        [all_users.append(admin) for admin in admins if admin['adminId']!=adminId]
-        [all_users.append(student) for student in students]
-        [all_users.append(teacher) for teacher in teachers]
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table("Chat")
+        short_uuid = str(uuid.uuid4().hex)[:8]
 
-        return response_200_items(all_users)
+        item = {
+                "PK": primarykey,
+                "SK": f"Admin#{adminId}",
+                "ChatId": short_uuid
+            }
+        response = table.put_item(Item=item)
+
+        return response_200_msg_items("inserted", item)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

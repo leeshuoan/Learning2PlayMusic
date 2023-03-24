@@ -5,16 +5,17 @@ import uuid
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
+from global_functions.cognito import *
 
 def lambda_handler(event, context):
 
     try:
 
         # VALIDATION
-        # check if <teacherId> exists in database (i.e. teacher registered in DB)
+        # check if teacherId exists in Cognito
         teacherId = event['queryStringParameters']['teacherId']
-        if not id_exists("User", "Teacher", teacherId):
-            return response_404("teacherId does not exist in database.")
+        if not get_user(teacherId):
+            return response_404('teacherId does not exist in Cognito')
 
         # check if <courseId> exists in database
         courseId = event['queryStringParameters']['courseId']

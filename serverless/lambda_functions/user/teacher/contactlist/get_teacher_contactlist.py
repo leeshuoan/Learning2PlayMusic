@@ -11,10 +11,10 @@ def lambda_handler(event, context):
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
-
-        # VALIDATION
-        # check if teacherId exists in Cognito
         teacherId = event['queryStringParameters']['teacherId']
+        contactlist = []
+
+        # check if teacherId exists in Cognito
         if not get_user(teacherId):
             return response_404('teacherId does not exist in Cognito')
 
@@ -24,25 +24,35 @@ def lambda_handler(event, context):
                 ":PK": f"Teacher#{teacherId}",
                 ":SK": "Course#"
             })
-        
+
         teacher_course_items = teacher_course_response['Items']
+
         for i in range(len(teacher_course_items)):
             courseId = teacher_course_items[i].get("SK").split("#")[1]
 
-            course_response = table.get_item(
-                Key={
-                  "PK":"Course",
-                  "SK": f"Course#{courseId}"
+            response = table.query(
+                IndexName="SK-PK-index",
+                KeyConditionExpression="SK = :SK AND begins_with(PK, :PK)",
+                ExpressionAttributeValues={
+                    ":SK": f"Course#{courseId}",
+                    ":PK": f"Student#"
+                })
+
+            items = response["Items"]
+
+            for item in items:
+                studentId = item['studentId'].split('#')[1]
+                studentName = get_user(studentId)['studentName']
+                student = {
+                    'StudentId': studentId,
+                    'StudentName': studentName
                 }
-            )
 
-            course_item = course_response['Item']
-            course_item.pop("PK")
-            course_item.pop("SK")
+                if student not in contactlist:
+                    contactlist.append(student)
 
-            teacher_course_items[i].update(course_item)
 
-        return response_200_items(teacher_course_items)
+        return response_200_items(contactlist)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

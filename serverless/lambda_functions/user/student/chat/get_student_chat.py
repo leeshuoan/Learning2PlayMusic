@@ -9,40 +9,26 @@ from global_functions.cognito import *
 def lambda_handler(event, context):
 
     try:
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
 
-        # VALIDATION
-        # check if studentId exists in Cognito
         studentId = event['queryStringParameters']['studentId']
+
+        # check if studentId exists in Cognito
         if not get_user(studentId):
             return response_404('studentId does not exist in Cognito')
+        
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table("Chat")
 
-        student_course_response = table.query(
-            KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
+        response = table.query(
+            KeyConditionExpression="PK = :PK",
             ExpressionAttributeValues={
                 ":PK": f"Student#{studentId}",
-                ":SK": "Course#"
             })
-        
-        student_course_items = student_course_response['Items']
-        for i in range(len(student_course_items)):
-            courseId = student_course_items[i].get("SK").split("#")[1]
 
-            course_response = table.get_item(
-                Key={
-                  "PK":"Course",
-                  "SK": f"Course#{courseId}"
-                }
-            )
+        items = response["Items"]
 
-            course_item = course_response['Item']
-            course_item.pop("PK")
-            course_item.pop("SK")
+        return response_200_items(items)
 
-            student_course_items[i].update(course_item)
-
-        return response_200_items(student_course_items)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

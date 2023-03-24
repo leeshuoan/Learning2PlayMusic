@@ -15,7 +15,7 @@ def lambda_handler(event, context):
         contactlist = []
 
         # check if studentId exists in Cognito
-        if not get_user('Users', studentId):
+        if not get_user(studentId):
             return response_404('studentId does not exist in Cognito')
 
         # check for teachers who teach this student
@@ -41,13 +41,14 @@ def lambda_handler(event, context):
 
             course_item = course_response['Item']
             teacherId = course_item['TeacherId']
-            teacherName = get_user('Teachers', teacherId)['teacherName']
+            teacherName = get_user(teacherId)['teacherName']
             contact = {
                 'TeacherId': teacherId,
                 'TeacherName': teacherName
                 }
 
-            contactlist.append(contact)
+            if contact not in contactlist:
+                contactlist.append(contact)
 
         return response_200_items(contactlist)
 
