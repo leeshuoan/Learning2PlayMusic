@@ -1,14 +1,17 @@
-import { useMemo, useState, useEffect } from "react";
-import { useTheme, Box, Button, Typography, Grid, Backdrop, CircularProgress } from "@mui/material";
-import MaterialReactTable from "material-react-table";
-import { Auth, API } from "aws-amplify";
-import CreateUserForm from "./CreateUserForm";
-import TransitionModal from "../utils/TransitionModal";
 import CloseIcon from "@mui/icons-material/Close";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import RestoreFromTrashIcon from "@mui/icons-material/RestoreFromTrash";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Backdrop, Box, Button, CircularProgress, Grid, IconButton, Typography, useTheme } from "@mui/material";
+import { API, Auth } from "aws-amplify";
+import MaterialReactTable from "material-react-table";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import TransitionModal from "../utils/TransitionModal";
+import CreateUserForm from "./CreateUserForm";
 
 const AdminUserManagement = () => {
-  const theme = useTheme()
+  const theme = useTheme();
   const [data, setData] = useState([]);
   const [reloadData, setReloadData] = useState(false);
   const [open, setOpen] = useState(true);
@@ -29,16 +32,14 @@ const AdminUserManagement = () => {
       queryStringParameters: {},
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${(await Auth.currentSession())
-          .getAccessToken()
-          .getJwtToken()}`,
+        Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`,
       },
     };
     let groups = await API.get(apiName, path, myInit);
     var rs = [];
     for (let idx in groups.Groups) {
       let groupName = groups.Groups[idx].GroupName;
-      console.log(groupName)
+      console.log(groupName);
       rs.push(groupName.substr(0, groupName.length - 1));
     }
     setRoles(rs);
@@ -52,9 +53,7 @@ const AdminUserManagement = () => {
       queryStringParameters: {},
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${(await Auth.currentSession())
-          .getAccessToken()
-          .getJwtToken()}`,
+        Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`,
       },
     };
     let users = await API.get(apiName, path, myInit);
@@ -63,18 +62,11 @@ const AdminUserManagement = () => {
     for (let idx in userData) {
       for (let attributeIdx in userData[idx]["Attributes"]) {
         if (userData[idx]["Attributes"][attributeIdx]["Name"] == "email") {
-          userData[idx]["Attributes"].Email =
-            userData[idx]["Attributes"][attributeIdx]["Value"];
-        } else if (
-          userData[idx]["Attributes"][attributeIdx]["Name"] == "custom:name"
-        ) {
-          userData[idx]["Attributes"].Name =
-            userData[idx]["Attributes"][attributeIdx]["Value"];
-        } else if (
-          userData[idx]["Attributes"][attributeIdx]["Name"] == "custom:role"
-        ) {
-          userData[idx]["Attributes"].Role =
-            userData[idx]["Attributes"][attributeIdx]["Value"];
+          userData[idx]["Attributes"].Email = userData[idx]["Attributes"][attributeIdx]["Value"];
+        } else if (userData[idx]["Attributes"][attributeIdx]["Name"] == "custom:name") {
+          userData[idx]["Attributes"].Name = userData[idx]["Attributes"][attributeIdx]["Value"];
+        } else if (userData[idx]["Attributes"][attributeIdx]["Name"] == "custom:role") {
+          userData[idx]["Attributes"].Role = userData[idx]["Attributes"][attributeIdx]["Value"];
         }
       }
       userData[idx]["Enabled"] = userData[idx]["Enabled"] ? "Enabled" : "Disabled";
@@ -88,10 +80,10 @@ const AdminUserManagement = () => {
   };
 
   const disableUser = async (user) => {
-    setOpenDisableUser(true)
-    setToDisableUser(user)
-    console.log(toDisableUser)
-  }
+    setOpenDisableUser(true);
+    setToDisableUser(user);
+    console.log(toDisableUser);
+  };
 
   const confirmDisableUser = async () => {
     let apiName = "AdminQueries";
@@ -99,30 +91,28 @@ const AdminUserManagement = () => {
     let myInit = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${(await Auth.currentSession())
-          .getAccessToken()
-          .getJwtToken()}`,
+        Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`,
       },
       body: {
         username: toDisableUser.Username,
-      }
+      },
     };
     let success = await API.post(apiName, path, myInit);
-    console.log(success)
+    console.log(success);
     if (success.message) {
       toast.success("User disabled successfully", {
         position: toast.POSITION.TOP_CENTER,
-      })
-      setReloadData(!reloadData)
-      setOpenDisableUser(false)
+      });
+      setReloadData(!reloadData);
+      setOpenDisableUser(false);
     }
-  }
+  };
 
   const enableUser = async (user) => {
-    setOpenEnableUser(true)
-    setToEnableUser(user)
-    console.log(toEnableUser)
-  }
+    setOpenEnableUser(true);
+    setToEnableUser(user);
+    console.log(toEnableUser);
+  };
 
   const confirmEnableUser = async () => {
     let apiName = "AdminQueries";
@@ -130,29 +120,27 @@ const AdminUserManagement = () => {
     let myInit = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${(await Auth.currentSession())
-          .getAccessToken()
-          .getJwtToken()}`,
+        Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`,
       },
       body: {
         username: toEnableUser.Username,
-      }
+      },
     };
     let success = await API.post(apiName, path, myInit);
-    console.log(success)
+    console.log(success);
     if (success.message) {
       toast.success("User enabled successfully", {
         position: toast.POSITION.TOP_CENTER,
-      })
-      setReloadData(!reloadData)
-      setOpenEnableUser(false)
+      });
+      setReloadData(!reloadData);
+      setOpenEnableUser(false);
     }
-  }
+  };
 
   const deleteUser = async (user) => {
-    setOpenDeleteUser(true)
-    setToDeleteUser(user)
-  }
+    setOpenDeleteUser(true);
+    setToDeleteUser(user);
+  };
 
   const confirmDeleteUser = async () => {
     let apiName = "AdminQueries";
@@ -160,23 +148,21 @@ const AdminUserManagement = () => {
     let myInit = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${(await Auth.currentSession())
-          .getAccessToken()
-          .getJwtToken()}`,
+        Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`,
       },
       body: {
         username: toDeleteUser.Username,
-      }
+      },
     };
     let success = await API.post(apiName, path, myInit);
     if (success.message) {
       toast.success("User deleted successfully", {
         position: toast.POSITION.TOP_CENTER,
-      })
-      setReloadData(!reloadData)
-      setOpenDeleteUser(false)
+      });
+      setReloadData(!reloadData);
+      setOpenDeleteUser(false);
     }
-  }
+  };
 
   const createdUser = () => {
     setOpenCreateUser(false);
@@ -186,8 +172,8 @@ const AdminUserManagement = () => {
   useEffect(() => {
     listUsers();
     listGroups();
-    setOpen(false)
-    return () => { };
+    setOpen(false);
+    return () => {};
   }, [reloadData]);
 
   const columns = useMemo(
@@ -211,19 +197,19 @@ const AdminUserManagement = () => {
         accessorKey: "Attributes.Role",
         id: "role",
         header: "Role",
-        size: 30
+        size: 30,
       },
       {
         accessorKey: "UserStatus",
         id: "status",
         header: "Status",
-        size: 40
+        size: 40,
       },
       {
         accessorKey: "Enabled",
         id: "enabled",
         header: "Enabled",
-        size: 30
+        size: 30,
       },
       {
         accessorKey: "",
@@ -234,11 +220,34 @@ const AdminUserManagement = () => {
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: "1rem",
             }}>
-            <Button variant="contained" sx={{ display: row.original.Enabled == "Enabled" ? "block" : "none" }} onClick={() => { disableUser(row.original) }}>Disable</Button>
-            <Button variant="contained" sx={{ display: row.original.Enabled == "Enabled" ? "none" : "block" }} onClick={() => { enableUser(row.original) }}>Enable</Button>
-            <Button variant="contained" color="error" disabled={ row.original.Enabled == "Enabled" ? true : false } onClick={() => { deleteUser(row.original) }}>Delete</Button>
+            <IconButton
+              variant="contained"
+              color="error"
+              sx={{ display: row.original.Enabled == "Enabled" ? "block" : "none", mt: 0.5 }}
+              onClick={() => {
+                disableUser(row.original);
+              }}>
+              <DeleteIcon />
+            </IconButton>
+            <IconButton
+              variant="contained"
+              color="success"
+              sx={{ display: row.original.Enabled == "Enabled" ? "none" : "block", mt: 0.5 }}
+              onClick={() => {
+                enableUser(row.original);
+              }}>
+              <RestoreFromTrashIcon />
+            </IconButton>
+            <IconButton
+              variant="contained"
+              color="error"
+              disabled={row.original.Enabled == "Enabled" ? true : false}
+              onClick={() => {
+                deleteUser(row.original);
+              }}>
+              <DeleteForeverIcon />
+            </IconButton>
           </Box>
         ),
       },
@@ -282,7 +291,12 @@ const AdminUserManagement = () => {
         <>
           <Grid container spacing={2}>
             <Grid item xs={1}>
-              <CloseIcon sx={{ "&:hover": { cursor: "pointer" } }} onClick={() => { setOpenDeleteUser(false) }} />
+              <CloseIcon
+                sx={{ "&:hover": { cursor: "pointer" } }}
+                onClick={() => {
+                  setOpenDeleteUser(false);
+                }}
+              />
             </Grid>
             <Grid item xs={10}>
               <Typography align="center" variant="h5">
@@ -292,13 +306,22 @@ const AdminUserManagement = () => {
                 Warning: This action cannot be undone.
               </Typography>
             </Grid>
-            <Grid item xs={12} sx={{ display: "flex", alignItems: "center", flexDirection:  "column" }}>
+            <Grid item xs={12} sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
               <Box>Name: {toDeleteUser && toDeleteUser.Attributes.Name}</Box>
               <Box>Email: {toDeleteUser && toDeleteUser.Attributes.Email}</Box>
             </Grid>
             <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-              <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmDeleteUser()}>Delete</Button>
-              <Button variant="contained" sx={{ backgroundColor: "lightgrey", color: 'black', boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }} onClick={() => { setOpenDeleteUser(false) }}>Cancel</Button>
+              <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmDeleteUser()}>
+                Delete
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
+                onClick={() => {
+                  setOpenDeleteUser(false);
+                }}>
+                Cancel
+              </Button>
             </Grid>
           </Grid>
         </>
@@ -320,20 +343,34 @@ const AdminUserManagement = () => {
         <>
           <Grid container spacing={2}>
             <Grid item xs={1}>
-              <CloseIcon sx={{ "&:hover": { cursor: "pointer" } }} onClick={() => { setOpenEnableUser(false) }} />
+              <CloseIcon
+                sx={{ "&:hover": { cursor: "pointer" } }}
+                onClick={() => {
+                  setOpenEnableUser(false);
+                }}
+              />
             </Grid>
             <Grid item xs={10}>
               <Typography align="center" variant="h5">
                 Enable User?
               </Typography>
             </Grid>
-            <Grid item xs={12} sx={{ display: "flex", alignItems: "center", flexDirection:  "column" }}>
+            <Grid item xs={12} sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
               <Box>Name: {toEnableUser && toEnableUser.Attributes.Name}</Box>
               <Box>Email: {toEnableUser && toEnableUser.Attributes.Email}</Box>
             </Grid>
             <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-              <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmEnableUser()}>Enable</Button>
-              <Button variant="contained" sx={{ backgroundColor: "lightgrey", color: 'black', boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }} onClick={() => { setOpenEnableUser(false) }}>Cancel</Button>
+              <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmEnableUser()}>
+                Enable
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
+                onClick={() => {
+                  setOpenEnableUser(false);
+                }}>
+                Cancel
+              </Button>
             </Grid>
           </Grid>
         </>
@@ -355,20 +392,34 @@ const AdminUserManagement = () => {
         <>
           <Grid container spacing={2}>
             <Grid item xs={1}>
-              <CloseIcon sx={{ "&:hover": { cursor: "pointer" } }} onClick={() => { setOpenDisableUser(false) }} />
+              <CloseIcon
+                sx={{ "&:hover": { cursor: "pointer" } }}
+                onClick={() => {
+                  setOpenDisableUser(false);
+                }}
+              />
             </Grid>
             <Grid item xs={10}>
               <Typography align="center" variant="h5">
                 Disable User?
               </Typography>
             </Grid>
-            <Grid item xs={12} sx={{ display: "flex", alignItems: "center", flexDirection:  "column" }}>
+            <Grid item xs={12} sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
               <Box>Name: {toDisableUser && toDisableUser.Attributes.Name}</Box>
               <Box>Email: {toDisableUser && toDisableUser.Attributes.Email}</Box>
             </Grid>
             <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-              <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmDisableUser()}>Disable</Button>
-              <Button variant="contained" sx={{ backgroundColor: "lightgrey", color: 'black', boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }} onClick={() => { setOpenDisableUser(false) }}>Cancel</Button>
+              <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmDisableUser()}>
+                Disable
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
+                onClick={() => {
+                  setOpenDisableUser(false);
+                }}>
+                Cancel
+              </Button>
             </Grid>
           </Grid>
         </>
@@ -377,8 +428,8 @@ const AdminUserManagement = () => {
         User Management
       </Typography>
       <MaterialReactTable
-        enableHiding={false} 
-        enableFullScreenToggle={false} 
+        enableHiding={false}
+        enableFullScreenToggle={false}
         enableDensityToggle={false}
         columns={columns}
         data={data}
@@ -391,16 +442,17 @@ const AdminUserManagement = () => {
                 alignItems: "center",
                 gap: "1rem",
               }}>
-              <Button variant="contained" onClick={() => { setOpenCreateUser(true) }}>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setOpenCreateUser(true);
+                }}>
                 Add User
               </Button>
             </Box>
           );
         }}></MaterialReactTable>
-        <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-      >
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </Box>
