@@ -42,10 +42,10 @@ def lambda_handler(event, context):
             "PK": "Course",
             "SK": f"Course#{requestBody['courseId']}",
         }
-        print("update_expression: ", update_expression[-2:])
+        print("update_expression: ", update_expression[:-2])
         response = table.update_item(
             Key=key,
-            UpdateExpression=update_expression[-2:],
+            UpdateExpression=update_expression[:-2],
             ExpressionAttributeValues=expression_attribute_values,
         )
 
