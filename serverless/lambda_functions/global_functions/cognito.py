@@ -12,10 +12,10 @@ def get_users(group):
     if group == 'Users':
         userIdString = 'studentId'
         userNameString = 'studentName'
-    if group == 'Teachers':
+    elif group == 'Teachers':
         userIdString = 'teacherId'
         userNameString = 'teacherName'
-    if group == 'Admins':
+    elif group == 'Admins':
         userIdString = 'adminId'
         userNameString = 'adminName'
         userType = 'generalAdmin'
