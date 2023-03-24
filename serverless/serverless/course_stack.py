@@ -519,9 +519,9 @@ class CourseStack(Stack):
         put_course_model = main_api.add_model(
             "PutCourseModel",
             content_type="application/json",
-            model_name="PostCourseModel",
+            model_name="PutCourseModel",
             schema=apigw.JsonSchema(
-                title="PostCourseModel",
+                title="PutCourseModel",
                 schema=apigw.JsonSchemaVersion.DRAFT4,
                 type=apigw.JsonSchemaType.OBJECT,
                 properties={
