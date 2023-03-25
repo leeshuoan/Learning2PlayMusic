@@ -126,6 +126,7 @@ const AdminAnnouncementManagement = () => {
     return response.json();
   }
   useEffect(() => {
+    //`${import.meta.env.VITE_API_URL}/user/chat/contactlist?userId=${userInfo.userInfo.id}
     getAPI(`${import.meta.env.VITE_API_URL}/generalannouncement`).then((res) => {
       var fetchedData = res.map((announcement) => {
         const date = announcement.SK.split("#")[1].split("T")[0];
