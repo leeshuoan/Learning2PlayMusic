@@ -43,7 +43,7 @@ function Chat(userInfo) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedChat, setSelectedChat] = useState(contacts[0]);
   const [newMsg, setNewMsg] = useState("");
-  const [root, setRoot] = useState(userInfo.userInfo.role == "Admin" ? "admin" : userInfo.userInfo.role == "Student" ? "home" : "teacher");
+  const [root, setRoot] = useState(userInfo.userInfo.role == "Admin" ? "/admin" : userInfo.userInfo.role == "Student" ? "/home" : "/teacher");
   const navigate = useNavigate();
 
   const messagesRef = collection(db, "Chat#1");
