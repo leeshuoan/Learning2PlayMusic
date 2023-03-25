@@ -22,7 +22,6 @@ def lambda_handler(event, context):
 
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("Chat")
-        short_uuid = str(uuid.uuid4().hex)[:8]
 
         # check if firstUserId exists in Cognito
         if not get_user(firstUserId):
