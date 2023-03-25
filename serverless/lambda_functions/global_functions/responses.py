@@ -116,7 +116,6 @@ def response_409(error_msg):
     }
 
 
-
 ##########################
 ### SERVER-SLIDE ERROR ###
 ##########################
@@ -132,3 +131,33 @@ def response_500(error_msg):
         },
         "body": json.dumps({"message": f"[ERROR] {error_msg}"})
     }
+
+######################
+### RANDOM PIKACHU ###
+######################
+
+def has_student_teacher_pairing(studentId, teacherId, table):
+
+    # get all course taught by teacher
+    response = table.query(
+        KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+        ExpressionAttributeValues={
+            ":PK": f"Teacher#{teacherId}",
+            ":SK": f"Course#"
+        })
+    items = response["Items"]
+
+    # check if for each course the teacher teaches, whether the student is in the course
+    for item in items:
+        courseId = item['SK'].split("#")[1]
+
+        student = table.get_item(
+              Key={
+                  "PK": f"Student#{studentId}",
+                  "SK": f"Course#{courseId}"
+              })
+
+        if 'Item' in student:
+            return True
+
+    return False

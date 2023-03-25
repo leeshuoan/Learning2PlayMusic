@@ -6,9 +6,6 @@ from global_functions.responses import *
 from global_functions.exists_in_db import *
 from global_functions.cognito import *
 
-dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table("LMS")
-
 def lambda_handler(event, context):
 
     try:
@@ -21,17 +18,21 @@ def lambda_handler(event, context):
         admins = get_users('Admins')
         students = get_users('Users')
         teachers = get_users('Teachers')
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table("LMS")
         contactlist = []
 
         if 'studentId' in user:
           for teacher in teachers:
-            if check_student_teacher_pairing(user['studentId'], teacher['teacherId']) and teacher['teacherId']!=userId:
+            if has_student_teacher_pairing(user['studentId'], teacher['teacherId'], table) and teacher['teacherId']!=userId:
                 contactlist.append(teacher)
+          [contactlist.append(admin) for admin in admins]
 
         elif 'teacherId' in user:
           for student in students:
-              if check_student_teacher_pairing(student['studentId'], user['teacherId']) and student['studentId']!=userId:
+              if has_student_teacher_pairing(student['studentId'], user['teacherId'], table) and student['studentId']!=userId:
                   contactlist.append(student)
+          [contactlist.append(admin) for admin in admins]
 
         else: # is admin
           [contactlist.append(admin) for admin in admins if admin['adminId']!=userId]
@@ -51,29 +52,3 @@ def lambda_handler(event, context):
         print("❗Error: ", e)
 
         return response_500(e)
-
-def check_student_teacher_pairing(studentId, teacherId):
-
-    # get all course taught by teacher
-    response = table.query(
-        KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
-        ExpressionAttributeValues={
-            ":PK": f"Teacher#{teacherId}",
-            ":SK": f"Course#"
-        })
-    items = response["Items"]
-
-    # check if for each course the teacher teaches, whether the student is in the course
-    for item in items:
-        courseId = item['SK'].split("#")[1]
-
-        student = table.get_item(
-              Key={
-                  "PK": f"Student#{studentId}",
-                  "SK": f"Course#{courseId}"
-              })
-
-        if 'Item' in student:
-            return True
-
-    return False
