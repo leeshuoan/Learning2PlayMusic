@@ -51,15 +51,17 @@ def lambda_handler(event, context):
               })
           items = response["Items"]
 
-          # if FE passes in adminId
-          if 'adminId' in user:
-            response = table.query(
-                IndexName="SK-PK-index",
-                KeyConditionExpression="SK = :SK",
-                ExpressionAttributeValues={
-                    ":SK": f"Admin#{userId}"
-                })
-            items = response["Items"]
+          [items.append(item) for item in items0]
+
+        # if FE passes in adminId
+        if 'adminId' in user:
+          response = table.query(
+              IndexName="SK-PK-index",
+              KeyConditionExpression="SK = :SK",
+              ExpressionAttributeValues={
+                  ":SK": f"Admin#{userId}"
+              })
+          items = response["Items"]
 
         return response_200_items(items)
 

@@ -39,6 +39,7 @@ class UserStack(Stack):
         # /user/chat
         get_user_chat = _lambda.Function(self, "getUserChat", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_CHAT_FUNCTIONS_FOLDER}.get_user_chat.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_user_chat = _lambda.Function(self, "PostUserChat", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_CHAT_FUNCTIONS_FOLDER}.post_user_chat.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        delete_user_chat = _lambda.Function(self, "DeleteUserChat", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_CHAT_FUNCTIONS_FOLDER}.delete_user_chat.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /user/chat/contactlist
         get_user_chat_contactlist = _lambda.Function(self, "getUserChatContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_CHAT_CONTACTLIST_FUNCTIONS_FOLDER}.get_user_chat_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -123,6 +124,9 @@ class UserStack(Stack):
         user_chat_resource.add_method("GET", apigw.LambdaIntegration(get_user_chat), request_parameters={
           'method.request.querystring.userId': True})
         user_chat_resource.add_method("POST", apigw.LambdaIntegration(post_user_chat), request_parameters={
+          'method.request.querystring.firstUserId': True,
+          'method.request.querystring.secondUserId': True})
+        user_chat_resource.add_method("POST", apigw.LambdaIntegration(delete_user_chat), request_parameters={
           'method.request.querystring.firstUserId': True,
           'method.request.querystring.secondUserId': True})
 
