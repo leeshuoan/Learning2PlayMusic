@@ -8,33 +8,60 @@ from global_functions.cognito import *
 
 def lambda_handler(event, context):
 
+    # DYDB MAPPING WILL ALWAYS BE AS FOLLOWS
     # Student#1 Teacher#1
     # Teacher#1 Admin#1
     # Student#1 Admin#1
 
     try:
 
-        firstUserId = event['queryStringParameters']['firstUserId']
-        secondUserId = event['queryStringParameters']['secondUserId']
+        userId = event['queryStringParameters']['userId']
 
-        # check if firstUserId exists in Cognito
-        if not get_user(firstUserId):
-            return response_404('firstUserId does not exist in Cognito')
-        
-        # check if secondUserId exists in Cognito
-        if not get_user(secondUserId):
-            return response_404('secondUserId does not exist in Cognito')
+        # check if userId exists in Cognito
+        user = get_user(userId)
+        if not user:
+            return response_404('userId does not exist in Cognito')
 
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("Chat")
 
-        response = table.query(
-            KeyConditionExpression="PK = :PK",
-            ExpressionAttributeValues={
-                ":PK": f"Student#{studentId}",
-            })
+        # if FE passes in studentId
+        if 'studentId' in user:
+          response = table.query(
+              KeyConditionExpression="PK = :PK",
+              ExpressionAttributeValues={
+                  ":PK": f"Student#{userId}",
+              })
+          items = response["Items"]
 
-        items = response["Items"]
+        # if FE passes in teacherId
+        if 'teacherId' in user:
+          response0 = table.query(
+              KeyConditionExpression="PK = :PK",
+              ExpressionAttributeValues={
+                  ":PK": f"Teacher#{userId}",
+              })
+          items0 = response0["Items"]
+
+          response = table.query(
+              IndexName="SK-PK-index",
+              KeyConditionExpression="SK = :SK",
+              ExpressionAttributeValues={
+                  ":SK": f"Teacher#{userId}"
+              })
+          items = response["Items"]
+
+          # if FE passes in adminId
+          if 'adminId' in user:
+            response = table.query(
+                IndexName="SK-PK-index",
+                KeyConditionExpression="SK = :SK",
+                ExpressionAttributeValues={
+                    ":SK": f"Admin#{userId}"
+                })
+            items = response["Items"]
+
+          [items.append(item) for item in items0]
 
         return response_200_items(items)
 
