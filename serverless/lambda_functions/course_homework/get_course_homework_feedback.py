@@ -19,49 +19,19 @@ def lambda_handler(event, context):
     try:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
+        course_id = queryStringParameters["courseId"]
 
-        courseId = queryStringParameters["courseId"]
-        studentId = queryStringParameters["studentId"]
-
-        # if specific homeworkId is specified
-        if "homeworkId" in queryStringParameters.keys():
-            homeworkId = queryStringParameters["homeworkId"]
-            response = table.get_item(
-                Key={
-                    "PK": f"Course#{courseId}",
-                    "SK": f"Student#{studentId}Homework#{homeworkId}"
-                })
-            if "Item" not in response:
-                raise Exception("No such courseid/studentid/homeworkid")
-            
-            items = response["Item"]
-            if items['HomeworkAttachment'] != "":
-                get_presigned_url(items, "HomeworkAttachment")
-
+        # if studentid specified: handleStudentHomework
+        if "studentId" in queryStringParameters:
+            student_id = queryStringParameters["studentId"]
+            return get_single_student_homework(course_id, student_id, queryStringParameters, table)
 
         else:
-            response = table.query(
-                KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
-                ExpressionAttributeValues={
-                    ":PK": f"Course#{courseId}",
-                    ":SK": f"Student#{studentId}Homework#"
-                })
-            items = response["Items"]
-            for item in items:
-                if items['HomeworkAttachment'] != "":
-                    get_presigned_url(item, "HomeworkAttachment")
+            return get_all_student_homework(course_id, queryStringParameters, table)
 
 
 
-        res["statusCode"] = 200
-        res["headers"] = {
-            "Access-Control-Allow-Headers": "Content-Type",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST,GET,PUT"
-        }
-        res["body"] = json.dumps(items, cls = Encoder)
 
-        return res
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")
@@ -72,4 +42,101 @@ def lambda_handler(event, context):
         print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
-        return response_500((str(exception_type) + str(e)))
+        return response_500((str(exception_type) + str(e) + "in line" + str(line_number)))
+    
+def get_single_student_homework(course_id, student_id, queryStringParameters, table):
+
+    # if specific homeworkId is specified
+    res = {}
+    if "homeworkId" in queryStringParameters.keys():
+        homework_id = queryStringParameters["homeworkId"]
+        response = table.get_item(
+            Key={
+                "PK": f"Course#{course_id}",
+                "SK": f"Student#{student_id}Homework#{homework_id}"
+            })
+        if "Item" not in response:
+            raise Exception("No such courseid/studentid/homeworkid")
+        
+        items = response["Item"]
+        if items['HomeworkAttachment'] != "":
+            get_presigned_url(items, "HomeworkAttachment")
+
+
+    else:
+        response = table.query(
+            KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+            ExpressionAttributeValues={
+                ":PK": f"Course#{course_id}",
+                ":SK": f"Student#{student_id}Homework#"
+            })
+        items = response["Items"]
+        for item in items:
+            if item['HomeworkAttachment'] != "":
+                get_presigned_url(item, "HomeworkAttachment")
+
+    res["statusCode"] = 200
+    res["headers"] = {
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST,GET,PUT"
+    }
+    res["body"] = json.dumps(items, cls = Encoder)
+
+    return res
+
+def get_all_student_homework(course_id, queryStringParameters, table):
+
+    res = {}
+    students_response = table.query(
+        IndexName="SK-PK-index",
+        KeyConditionExpression="SK = :SK AND begins_with(PK, :PK)",
+        ExpressionAttributeValues={
+            ":SK": f"Course#{course_id}",
+            ":PK": "Student#"
+        })
+    
+    students = students_response["Items"]
+
+    items = []
+    if "homeworkId" in queryStringParameters.keys():
+        homework_id = queryStringParameters["homeworkId"]
+        for student in students:
+            student_id = student["PK"].split("#")[1]
+            response = table.get_item(
+                Key={
+                    "PK": f"Course#{course_id}",
+                    "SK": f"Student#{student_id}Homework#{homework_id}"
+                })
+            if "Item" not in response:
+                continue   
+            items.append(response["Item"])
+        for item in items:
+            if item['HomeworkAttachment'] != "":
+                get_presigned_url(item, "HomeworkAttachment")
+
+    else:
+        for student in students:
+            student_id = student["PK"].split("#")[1]
+            response = table.query(
+                KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+                ExpressionAttributeValues={
+                    ":PK": f"Course#{course_id}",
+                    ":SK": f"Student#{student_id}Homework#"
+                })
+            items.append(response["Items"])
+        for item in items:
+            for homework in item:
+                if homework['HomeworkAttachment'] != "":
+                    get_presigned_url(item, "HomeworkAttachment")
+    
+    res["statusCode"] = 200
+    res["headers"] = {
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST,GET,PUT"
+    }
+    res["body"] = json.dumps(items, cls = Encoder)
+
+    return res
+

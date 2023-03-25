@@ -1,0 +1,7 @@
+{
+    "httpMethod": "POST",
+    "queryStringParameters": {
+      "courseId": "1",
+      "studentId": "81c2ca2f-6a04-4e79-a41c-97aa85cf9edb"
+    }
+  }

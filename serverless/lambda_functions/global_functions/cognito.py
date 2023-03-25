@@ -62,7 +62,7 @@ def get_all_users():
 ### (USER POOL) GET ONE USER FROM A GROUP ###
 #############################################
 
-def get_user(userId):
+def     get_user(userId):
 
     all_users = get_all_users()
 
