@@ -10,7 +10,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 
 const CourseMaterialsForm = () => {
   dayjs.extend(customParseFormat);

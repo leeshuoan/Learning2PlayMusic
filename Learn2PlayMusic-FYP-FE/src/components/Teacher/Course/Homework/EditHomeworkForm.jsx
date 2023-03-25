@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 import { toast } from "react-toastify";
 
 const EditHomeworkForm = () => {

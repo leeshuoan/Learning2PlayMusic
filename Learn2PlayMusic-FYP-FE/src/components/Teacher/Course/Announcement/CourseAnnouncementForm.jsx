@@ -2,7 +2,7 @@ import { Box, Button, Card, Container, TextField, Typography } from "@mui/materi
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 
 export default function CourseAnnouncementForm() {
   const navigate = useNavigate();

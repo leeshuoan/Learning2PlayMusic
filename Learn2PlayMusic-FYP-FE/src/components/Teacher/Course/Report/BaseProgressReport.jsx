@@ -1,11 +1,11 @@
 import { Backdrop, Box, Card, CircularProgress, Container, FormControl, InputLabel, MenuItem, Select, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 import StudentProgressReport from "./StudentProgressReport";
 
 const BaseProgressReport = () => {
-  const theme = useTheme(); 
+  const theme = useTheme();
   const navigate = useNavigate();
   const { courseid } = useParams();
   const { userId } = useParams();
@@ -24,8 +24,9 @@ const BaseProgressReport = () => {
       },
     });
 
-    if (!response.ok) { // handle non-2xx HTTP status codes
-      console.log(response)
+    if (!response.ok) {
+      // handle non-2xx HTTP status codes
+      console.log(response);
       throw new Error(`${response}`);
     }
 
@@ -38,7 +39,9 @@ const BaseProgressReport = () => {
 
   useEffect(() => {
     async function fetchData() {
-      let data1 = [], data2 = [], data3 = [];
+      let data1 = [],
+        data2 = [],
+        data3 = [];
       try {
         [data1, data2, data3] = await Promise.all([getCourseAPI, getReportAPI, getClassListAPI]);
       } catch (error) {
@@ -53,13 +56,13 @@ const BaseProgressReport = () => {
       };
       setCourse(courseData);
 
-      console.log(data2)
+      console.log(data2);
       const reportData = data2.map((report) => {
-        const ReportId = report.SK.split("Report#")[1]
+        const ReportId = report.SK.split("Report#")[1];
         const Available = new Date(report.AvailableDate) > new Date() ? false : true;
         return { ...report, ReportId, Available };
-      })
-      setProgressReports(reportData)
+      });
+      setProgressReports(reportData);
 
       const studentData = data3.filter((student) => student.studentId == userId);
       setStudentName(studentData[0].studentName);
@@ -109,7 +112,7 @@ const BaseProgressReport = () => {
             <Typography variant="subsubtitle" sx={{ mb: 0.5 }}>
               STUDENT NAME
             </Typography>
-            <Typography variant="body2">{ studentName }</Typography>
+            <Typography variant="body2">{studentName}</Typography>
             <FormControl sx={{ mt: 3, mb: 1 }}>
               <InputLabel id="progress-report">Progress Report</InputLabel>
               <Select labelId="progress-report" id="progress-report" value={selected} label="progress-report" onChange={handleChange}>
@@ -119,17 +122,21 @@ const BaseProgressReport = () => {
                   </MenuItem>
                 )}
                 {progressReports.map((report, key) => {
-                  return <MenuItem selected={report.ReportId == reportId} value={report.ReportId} key={key} onClick={() => navigate(`/teacher/course/${courseid}/report/${userId}/${report.ReportId}`) }>{report.Title}</MenuItem>;
+                  return (
+                    <MenuItem selected={report.ReportId == reportId} value={report.ReportId} key={key} onClick={() => navigate(`/teacher/course/${courseid}/report/${userId}/${report.ReportId}`)}>
+                      {report.Title}
+                    </MenuItem>
+                  );
                 })}
               </Select>
             </FormControl>
 
             {progressReports.map((report, key) => {
               return (
-                <Box sx={{ display: report.ReportId == reportId ? "block": "none" }} key={key}>
-                  <StudentProgressReport report={report} courseId={courseid} userId={userId} reportId={reportId}/>
+                <Box sx={{ display: report.ReportId == reportId ? "block" : "none" }} key={key}>
+                  <StudentProgressReport report={report} courseId={courseid} userId={userId} reportId={reportId} />
                 </Box>
-              )
+              );
             })}
           </Card>
         </Box>

@@ -10,24 +10,22 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 
-const EditCourseMaterialsForm = () => {
+const NewCourseMaterialsForm = () => {
   dayjs.extend(customParseFormat);
   const navigate = useNavigate();
   const { courseid } = useParams();
-  const { materialid } = useParams();
 
   const [open, setOpen] = useState(true);
   const [course, setCourse] = useState({});
-  const [material, setMaterial] = useState({});
   const [date, setDate] = useState(null);
   const [embeddedLink, setEmbeddedLink] = useState("");
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
   const [title, setTitle] = useState("");
   const [base64Attachment, setBase64Attachment] = useState(""); // base 64 file
-  const [s3Url, setS3Url] = useState(""); // s3 link
+  // todo : handle when there is already an s3 link for the material
 
   // file handling
   const fileToBase64 = (file, callback) => {
@@ -49,7 +47,6 @@ const EditCourseMaterialsForm = () => {
     setFile(null);
     setFileName(null);
     setBase64Attachment("");
-    setS3Url("");
   };
   const downloadUploadedFile = () => {
     const url = URL.createObjectURL(file);
@@ -70,16 +67,6 @@ const EditCourseMaterialsForm = () => {
       materialType: materialTypeStr,
       materialAttachment: base64Attachment,
       materialAttachmentFileName: fileName,
-      materialId: materialid,
-    };
-    return JSON.stringify(requestBodyObject);
-  }
-  function buildRequestBodyWOChangeInOriginalFile() {
-    const requestBodyObject = {
-      courseId: courseid,
-      materialTitle: title,
-      materialLessonDate: date.add(1, "day").toISOString(),
-      materialId: materialid,
     };
     return JSON.stringify(requestBodyObject);
   }
@@ -96,13 +83,6 @@ const EditCourseMaterialsForm = () => {
         message: "Please fill in all the fields!",
       };
     }
-    // make sure there are changes
-    if (title == material.MaterialTitle && date.add(1, "day").toISOString() == material.MaterialLessonDate && fileName == material.MaterialAttachmentFileName) {
-      return {
-        error: true,
-        message: "Please make changes to the material!",
-      };
-    }
     return {
       error: false,
     };
@@ -116,16 +96,12 @@ const EditCourseMaterialsForm = () => {
       setOpen(false);
       return;
     }
-    var requestBody;
-    if (file != "notChangingPDF") {
-      const materialTypeStr = file ? file.type.split("/")[1].toUpperCase() : "Link";
-      requestBody = buildRequestBody(materialTypeStr);
-    } else {
-      requestBody = buildRequestBodyWOChangeInOriginalFile();
-    }
+    const materialTypeStr = file ? file.type.split("/")[1].toUpperCase() : "Link";
+    const requestBody = buildRequestBody(materialTypeStr);
+
     console.log(requestBody);
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/material`, {
-      method: "PUT",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -133,10 +109,10 @@ const EditCourseMaterialsForm = () => {
     });
 
     if (response.status === 200) {
-      toast.success("Material edited successfully!");
+      toast.success("Material added successfully!");
       navigate(`/teacher/course/${courseid}/material`);
     } else {
-      toast.error("Failed to edit material!");
+      toast.error("Failed to add material!");
       setTimeout(() => {
         window.location.reload();
       }, 2000);
@@ -153,14 +129,14 @@ const EditCourseMaterialsForm = () => {
     return response.json();
   }
   const getCourseAPI = request(`/course?courseId=${courseid}`);
-  const getMaterialAPI = request(`/course/material?courseId=${courseid}&materialId=${materialid}`);
 
   useEffect(() => {
+    //  the page is not rendering properly when the data is fetched in the useEffect, help me fix this
+
     async function fetchData() {
-      const [data1, data2] = await Promise.all([getCourseAPI, getMaterialAPI]);
+      const data1 = await getCourseAPI;
 
       console.log(data1[0]);
-      console.log(data2);
       let courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
@@ -168,21 +144,6 @@ const EditCourseMaterialsForm = () => {
         teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
-
-      let ary = data2.MaterialLessonDate.split("T")[0].split("-");
-      let fetchedDate = dayjs(data2.MaterialLessonDate.split("T")[0]);
-      setDate(fetchedDate);
-
-      setTitle(data2.MaterialTitle);
-      setEmbeddedLink(data2.MaterialLink);
-      console.log(data2.MaterialLink);
-      setS3Url(data2.MaterialAttachment);
-
-      if (data2.MaterialLink == "") {
-        setFile("notChangingPDF"); // placeholder
-        setFileName(data2.MaterialAttachmentFileName);
-      }
-      setMaterial(data2);
     }
     fetchData().then(() => {
       setOpen(false);
@@ -211,9 +172,8 @@ const EditCourseMaterialsForm = () => {
         <Box sx={{ display: "flex", width: "100%" }}>
           <Container maxWidth="xl">
             <Typography variant="h5" sx={{ color: "primary", mt: 3 }}>
-              Edit Class Material
+              New Class Material
             </Typography>
-
             <TextField
               required
               fullWidth
@@ -239,7 +199,6 @@ const EditCourseMaterialsForm = () => {
             <Typography variant="h6" sx={{ mt: 3 }}>
               Upload File or Embed Link
             </Typography>
-
             {file == null ? (
               <Button variant="outlined" sx={{ color: "text.primary", mt: 3 }} size="large" startIcon={<FileUploadIcon />} component="label">
                 Upload File
@@ -249,22 +208,16 @@ const EditCourseMaterialsForm = () => {
               <></>
             )}
             {file ? (
-              s3Url != "" ? (
-                <div>
-                  <Typography variant="body2" style={{ textDecoration: "underline" }}>
-                    <IconButton onClick={handleRemoveFile}>
-                      <ClearIcon />
-                    </IconButton>
-                    <Link href={s3Url} _target="blank">
-                      {fileName}
-                    </Link>
-                  </Typography>
-                </div>
-              ) : (
-                <Link _target="blank" onClick={downloadUploadedFile}>
-                  {fileName}
-                </Link>
-              )
+              <div>
+                <Typography variant="body2" style={{ textDecoration: "underline" }}>
+                  <IconButton onClick={handleRemoveFile}>
+                    <ClearIcon />
+                  </IconButton>
+                  <Link _target="blank" onClick={downloadUploadedFile}>
+                    {fileName}
+                  </Link>
+                </Typography>
+              </div>
             ) : (
               <Typography variant="body2">No file uploaded yet</Typography>
             )}
@@ -306,7 +259,7 @@ const EditCourseMaterialsForm = () => {
                 Cancel
               </Button>
               <Button variant="contained" onClick={handleSubmit}>
-                Update
+                Post
               </Button>
             </Box>
           </Container>
@@ -319,4 +272,4 @@ const EditCourseMaterialsForm = () => {
   );
 };
 
-export default EditCourseMaterialsForm;
+export default NewCourseMaterialsForm;

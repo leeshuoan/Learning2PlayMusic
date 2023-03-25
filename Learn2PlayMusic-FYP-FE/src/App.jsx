@@ -28,19 +28,19 @@ import UserHome from "./components/User/UserHome";
 // admin
 import AdminHome from "./components/Admin/AdminHome";
 // teacher
-import BaseProgressReport from "./components/Teacher/Course/BaseProgressReport";
-import CourseAnnouncementForm from "./components/Teacher/Course/CourseAnnouncementForm";
-import CourseMaterialsForm from "./components/Teacher/Course/CourseMaterialsForm";
-import EditCourseMaterialsForm from "./components/Teacher/Course/EditCourseMaterialsForm";
-import EditHomeworkForm from "./components/Teacher/Course/EditHomeworkForm";
-import NewCourseMaterialsForm from "./components/Teacher/Course/NewCourseMaterialsForm";
-import NewHomeworkForm from "./components/Teacher/Course/NewHomeworkForm";
-import TeacherGradeHomework from "./components/Teacher/Course/TeacherGradeHomework";
-import TeacherHomeworkOverview from "./components/Teacher/Course/TeacherHomeworkOverview";
-import ViewCourseMaterialsForm from "./components/Teacher/Course/ViewCourseMaterialsForm";
+import CourseAnnouncementForm from "./components/Teacher/Course/Announcement/CourseAnnouncementForm";
+import EditHomeworkForm from "./components/Teacher/Course/Homework/EditHomeworkForm";
+import NewHomeworkForm from "./components/Teacher/Course/Homework/NewHomeworkForm";
+import TeacherGradeHomework from "./components/Teacher/Course/Homework/TeacherGradeHomework";
+import TeacherHomeworkOverview from "./components/Teacher/Course/Homework/TeacherHomeworkOverview";
+import CourseMaterialsForm from "./components/Teacher/Course/Materials/CourseMaterialsForm";
+import EditCourseMaterialsForm from "./components/Teacher/Course/Materials/EditCourseMaterialsForm";
+import NewCourseMaterialsForm from "./components/Teacher/Course/Materials/NewCourseMaterialsForm";
+import ViewCourseMaterialsForm from "./components/Teacher/Course/Materials/ViewCourseMaterialsForm";
+import NewQuiz from "./components/Teacher/Course/Quiz/NewQuiz";
+import BaseProgressReport from "./components/Teacher/Course/Report/BaseProgressReport";
 import TeacherCourse from "./components/Teacher/TeacherCourse";
 import TeacherHome from "./components/Teacher/TeacherHome";
-import NewQuiz from "./components/Teacher/Course/NewQuiz";
 
 Amplify.configure(aws_exports);
 

@@ -3,7 +3,7 @@ import { Backdrop, Box, Card, CircularProgress, Container, TextField, MenuItem, 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 
 const NewQuiz = () => {
   const navigate = useNavigate();
