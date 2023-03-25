@@ -16,8 +16,6 @@ def lambda_handler(event, context):
 
     try:
 
-        print("in try chat function")
-
         firstUserId = event['queryStringParameters']['firstUserId']
         secondUserId = event['queryStringParameters']['secondUserId']
         hasAdmin = False
