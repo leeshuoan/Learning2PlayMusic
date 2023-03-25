@@ -126,7 +126,7 @@ class UserStack(Stack):
         user_chat_resource.add_method("POST", apigw.LambdaIntegration(post_user_chat), request_parameters={
           'method.request.querystring.firstUserId': True,
           'method.request.querystring.secondUserId': True})
-        user_chat_resource.add_method("POST", apigw.LambdaIntegration(delete_user_chat), request_parameters={
+        user_chat_resource.add_method("DELETE", apigw.LambdaIntegration(delete_user_chat), request_parameters={
           'method.request.querystring.firstUserId': True,
           'method.request.querystring.secondUserId': True})
 
