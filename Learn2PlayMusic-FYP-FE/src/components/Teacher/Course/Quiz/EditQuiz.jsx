@@ -4,10 +4,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 
-const NewQuiz = () => {
+const EditQuiz = () => {
   const navigate = useNavigate();
   const { courseid } = useParams();
+  const { quizid } = useParams();
   const [course, setCourse] = useState({});
+  const [quiz, setQuiz] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [quizTitle, setQuizTitle] = useState("");
   const [quizDescription, setQuizDescription] = useState("");
@@ -32,14 +34,14 @@ const NewQuiz = () => {
   }
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
+  const getQuizAPI = request(`/course/quiz?courseId=${courseid}&quizId=${quizid}`);
 
   useEffect(() => {
     async function fetchData() {
-      let data1 = [],
-        data2 = [],
-        data3 = [];
+      let data1 = [];
+      let data2 = [];
       try {
-        [data1] = await Promise.all([getCourseAPI]);
+        [data1, data2] = await Promise.all([getCourseAPI, getQuizAPI]);
       } catch (error) {
         console.log(error);
       }
@@ -51,6 +53,20 @@ const NewQuiz = () => {
         teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
+
+      let quizData = {
+        quizMaxAttempts: data2.QuizMaxAttempts,
+        quizDescription: data2.QuizDescription,
+        quizTitle: data2.QuizTitle,
+        visibility: data2.Visibility,
+      };
+      setQuiz(quizData); // for referencing when update
+      console.log(quizData);
+      // to fill up the form
+      setQuizTitle(data2.QuizTitle);
+      setQuizDescription(data2.QuizDescription);
+      setQuizMaxAttempts(data2.QuizMaxAttempts);
+      setVisibility(data2.Visibility);
     }
 
     fetchData().then(() => {
@@ -58,23 +74,40 @@ const NewQuiz = () => {
     });
   }, []);
 
-  async function createQuiz(e) {
-    setIsLoading(true);
-
+  async function editQuiz(e) {
     e.preventDefault();
-    const newQuiz = {
+    setIsLoading(true);
+    // input validation
+    if (quizTitle === "" || quizTitle === "" || quizMaxAttempts === "" || visibility === "") {
+      toast.error("Please fill in all the required fields");
+      setIsLoading(false);
+      return;
+    }
+    if (quizTitle === quiz.quizTitle && quizDescription === quiz.quizDescription && quizMaxAttempts === quiz.quizMaxAttempts && visibility === quiz.visibility) {
+      toast.error("Please make changes to the quiz before updating");
+      setIsLoading(false);
+      return;
+    }
+    if (quizMaxAttempts < 1) {
+      toast.error("Max attempts must be at least 1");
+      setIsLoading(false);
+      return;
+    }
+
+    const updatedQuiz = {
       quizTitle: quizTitle,
       quizDescription: quizDescription,
       quizMaxAttempts: quizMaxAttempts,
       visibility: visibility,
       courseId: courseid,
+      quizId: quizid,
     };
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newQuiz),
+      body: JSON.stringify(updatedQuiz),
     });
     setIsLoading(false);
 
@@ -87,7 +120,7 @@ const NewQuiz = () => {
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/quiz` }]} breadcrumbEnding="New Quiz" />
+        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/quiz` }]} breadcrumbEnding="Edit Quiz" />
         <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
@@ -114,9 +147,9 @@ const NewQuiz = () => {
         <Box>
           <Card sx={{ py: 3, px: 5, mt: 2 }}>
             <Typography variant="h5" sx={{ mb: 2 }}>
-              New Quiz
+              Edit Quiz
             </Typography>
-            <form onSubmit={createQuiz}>
+            <form onSubmit={editQuiz}>
               <Box sx={{ mt: 1 }}>
                 <Grid spacing={2} container>
                   <Grid item xs={12} sm={4} md={3}>
@@ -150,7 +183,7 @@ const NewQuiz = () => {
                   Cancel
                 </Button>
                 <Button variant="contained" type="submit">
-                  Create Quiz
+                  Edit Quiz
                 </Button>
               </Box>
             </form>
@@ -165,4 +198,4 @@ const NewQuiz = () => {
   );
 };
 
-export default NewQuiz;
+export default EditQuiz;

@@ -238,9 +238,9 @@ const TeacherCourse = (userInfo) => {
         courseId: courseid,
         quizId: selectedQuiz.id,
       }),
-    })
+    });
     if (res.status !== 200) {
-      console.log(res)
+      console.log(res);
       toast.error("An unexpected error occured");
       return;
     }
@@ -248,12 +248,12 @@ const TeacherCourse = (userInfo) => {
     toast.success("Quiz deleted successfully");
     setSelectedQuiz({ Visibility: false });
     setDeleteQuizModal(false);
-    setOpen(true)
+    setOpen(true);
     setRefreshUseEffect(!refreshUseEffect);
   }
 
   async function deleteHomework() {
-    console.log(selectedHomework)
+    console.log(selectedHomework);
     const res = await fetch(`${import.meta.env.VITE_API_URL}/course/homework`, {
       method: "DELETE",
       headers: {
@@ -263,9 +263,9 @@ const TeacherCourse = (userInfo) => {
         courseId: courseid,
         homeworkId: selectedHomework.id,
       }),
-    })
+    });
     if (res.status !== 200) {
-      console.log(res)
+      console.log(res);
       toast.error("An unexpected error occured");
       return;
     }
@@ -273,12 +273,12 @@ const TeacherCourse = (userInfo) => {
     toast.success("Homework deleted successfully");
     setSelectedHomework();
     setDeleteHomeworkModal(false);
-    setOpen(true)
+    setOpen(true);
     setRefreshUseEffect(!refreshUseEffect);
   }
 
   async function changeQuizVisibility(newVisibility) {
-    console.log(selectedQuiz)
+    console.log(selectedQuiz);
     const newQuizData = {
       visibility: newVisibility,
       quizId: selectedQuiz.id,
@@ -286,17 +286,17 @@ const TeacherCourse = (userInfo) => {
       quizDescription: selectedQuiz.QuizDescription,
       quizTitle: selectedQuiz.QuizTitle,
       courseId: courseid,
-    }
-    console.log(newQuizData)
+    };
+    console.log(newQuizData);
     const res = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newQuizData),
-    })
+    });
     if (res.status !== 202) {
-      console.log(res)
+      console.log(res);
       toast.error("An unexpected error occured");
       return;
     }
@@ -304,7 +304,7 @@ const TeacherCourse = (userInfo) => {
     toast.success("Quiz visibility changed successfully");
     setSelectedQuiz({ Visibility: null });
     setVisibilityQuizModal(false);
-    setOpen(true)
+    setOpen(true);
     setRefreshUseEffect(!refreshUseEffect);
   }
 
@@ -321,7 +321,7 @@ const TeacherCourse = (userInfo) => {
       };
       setCourse(courseData);
 
-      console.log(data2)
+      console.log(data2);
       const homeworkData = data2.map((homework) => {
         const id = homework.SK.split("Homework#")[1];
         const dueDate = new Date(homework.HomeworkDueDate);
@@ -338,7 +338,7 @@ const TeacherCourse = (userInfo) => {
       });
       setCourseMaterial(materialData);
 
-      console.log(data4)
+      console.log(data4);
       const quizData = data4.map((quiz) => {
         const id = quiz.SK.split("Quiz#")[1];
         const date = new Date(quiz.QuizDueDate);
@@ -359,7 +359,7 @@ const TeacherCourse = (userInfo) => {
       //   const ParticipationPoints = " "
       //   return { ...student };
       // })
-      console.log(data6)
+      console.log(data6);
       setClassList(data6);
     }
 
@@ -476,9 +476,16 @@ const TeacherCourse = (userInfo) => {
             Change Quiz Visibility
           </Typography>
 
-          <Box sx={{ display: selectedQuiz.Visibility ? "block" : "none" }}><Typography variant="body2" sx={{ mb: 2 }}>Are you sure you want to hide this quiz?</Typography></Box>
-          <Box sx={{ display: selectedQuiz.Visibility ? "none" : "block" }}><Typography variant="body2" sx={{ mb: 2 }}>Are you sure you want to make this quiz visible?</Typography></Box>
-
+          <Box sx={{ display: selectedQuiz.Visibility ? "block" : "none" }}>
+            <Typography variant="body2" sx={{ mb: 2 }}>
+              Are you sure you want to hide this quiz?
+            </Typography>
+          </Box>
+          <Box sx={{ display: selectedQuiz.Visibility ? "none" : "block" }}>
+            <Typography variant="body2" sx={{ mb: 2 }}>
+              Are you sure you want to make this quiz visible?
+            </Typography>
+          </Box>
         </Box>
         <Box sx={{ display: "flex", justifyContent: "space-between", mx: 2 }}>
           <Button
@@ -490,10 +497,22 @@ const TeacherCourse = (userInfo) => {
             }}>
             Cancel
           </Button>
-          <Button fullWidth variant="contained" onClick={() => { changeQuizVisibility(false) }} sx={{ display: selectedQuiz.Visibility ? "block" : "none" }}>
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={() => {
+              changeQuizVisibility(false);
+            }}
+            sx={{ display: selectedQuiz.Visibility ? "block" : "none" }}>
             Hide
           </Button>
-          <Button fullWidth variant="contained" onClick={() => { changeQuizVisibility(true) }} sx={{ display: selectedQuiz.Visibility ? "none" : "block" }}>
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={() => {
+              changeQuizVisibility(true);
+            }}
+            sx={{ display: selectedQuiz.Visibility ? "none" : "block" }}>
             Show
           </Button>
         </Box>
@@ -651,7 +670,7 @@ const TeacherCourse = (userInfo) => {
                 </Box>
                 {/* end header */}
 
-                <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => { }}></MaterialReactTable>
+                <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
               </Card>
             </Box>
             {/* quiz ==================================================================================================== */}
@@ -677,29 +696,41 @@ const TeacherCourse = (userInfo) => {
                       </Typography>
                       <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={{ xs: 1, sm: 2 }}>
                         {/*  todo visibile, edit, delete */}
-                        <Typography variant="button" >
-                          <Link underline="hover" onClick={() => {
-                            setSelectedQuiz(quiz)
-                            setVisibilityQuizModal(true)
-                          }}>
+                        <Typography variant="button">
+                          <Link
+                            underline="hover"
+                            onClick={() => {
+                              setSelectedQuiz(quiz);
+                              setVisibilityQuizModal(true);
+                            }}>
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                               <Box sx={{ display: quiz.Visibility ? "flex" : "none", alignItems: "center" }}>
-                                <VisibilityIcon fontSize="inherit" /> &nbsp; VIsible
+                                <VisibilityIcon fontSize="inherit" /> &nbsp; Visible
                               </Box>
                               <Box sx={{ display: quiz.Visibility ? "none" : "flex", alignItems: "center" }}>
-                                <VisibilityIcon fontSize="inherit" /> &nbsp; Not VIsible
+                                <VisibilityIcon fontSize="inherit" /> &nbsp; Not Visible
                               </Box>
                             </Box>
                           </Link>
                         </Typography>
                         <Typography variant="button">
-                          <Link underline="hover">Edit</Link>
+                          <Link
+                            underline="hover"
+                            onClick={() => {
+                              navigate(`edit/${quiz.id}`);
+                            }}>
+                            Edit
+                          </Link>
                         </Typography>
                         <Typography variant="button">
-                          <Link underline="hover" onClick={() => {
-                            setSelectedQuiz(quiz)
-                            setDeleteQuizModal(true)
-                          }}>Delete</Link>
+                          <Link
+                            underline="hover"
+                            onClick={() => {
+                              setSelectedQuiz(quiz);
+                              setDeleteQuizModal(true);
+                            }}>
+                            Delete
+                          </Link>
                         </Typography>
                       </Stack>
                     </Box>
@@ -707,7 +738,12 @@ const TeacherCourse = (userInfo) => {
                       {quiz.QuizDescription}
                     </Typography>
                     {/* todo :view quiz summary */}
-                    <Button variant="contained">View Quiz Summary</Button>
+                    <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
+                      <Typography variant="body2" sx={{ mt: 1 }}>
+                        Max attempts allowed: {quiz.QuizMaxAttempts}
+                      </Typography>
+                      <Button variant="contained">View Quiz Summary</Button>
+                    </Box>
                   </Card>
                 ))}
               </Card>
@@ -771,12 +807,16 @@ const TeacherCourse = (userInfo) => {
                           </Typography>
                           <Typography
                             variant="button"
-                          // onclick={() => {
+                            // onclick={() => {
                           >
-                            <Link underline="hover" onClick={() => {
-                              setSelectedHomework(homework)
-                              setDeleteHomeworkModal(true)
-                            }}>Delete</Link>
+                            <Link
+                              underline="hover"
+                              onClick={() => {
+                                setSelectedHomework(homework);
+                                setDeleteHomeworkModal(true);
+                              }}>
+                              Delete
+                            </Link>
                           </Typography>
                         </Stack>
                       </Grid>
@@ -789,9 +829,11 @@ const TeacherCourse = (userInfo) => {
             <Box sx={{ display: category == "classlist" ? "block" : "none" }}>
               <Card sx={{ py: 3, px: 4, mt: 2 }}>
                 {/* mui table*/}
-                <Typography variant="h5" sx={{ mb: 2 }}>Class List</Typography>
+                <Typography variant="h5" sx={{ mb: 2 }}>
+                  Class List
+                </Typography>
                 {/* end header */}
-                <MaterialReactTable columns={classListColumns} data={classList} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => { }}></MaterialReactTable>
+                <MaterialReactTable columns={classListColumns} data={classList} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
               </Card>
             </Box>
           </Box>
