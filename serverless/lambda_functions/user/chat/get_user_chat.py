@@ -8,15 +8,23 @@ from global_functions.cognito import *
 
 def lambda_handler(event, context):
 
+    # Student#1 Teacher#1
+    # Teacher#1 Admin#1
+    # Student#1 Admin#1
+
     try:
 
         firstUserId = event['queryStringParameters']['firstUserId']
         secondUserId = event['queryStringParameters']['secondUserId']
 
-        # check if studentId exists in Cognito
-        if not get_user(studentId):
-            return response_404('studentId does not exist in Cognito')
+        # check if firstUserId exists in Cognito
+        if not get_user(firstUserId):
+            return response_404('firstUserId does not exist in Cognito')
         
+        # check if secondUserId exists in Cognito
+        if not get_user(secondUserId):
+            return response_404('secondUserId does not exist in Cognito')
+
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("Chat")
 
