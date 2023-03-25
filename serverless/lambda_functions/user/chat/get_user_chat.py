@@ -61,8 +61,6 @@ def lambda_handler(event, context):
                 })
             items = response["Items"]
 
-          [items.append(item) for item in items0]
-
         return response_200_items(items)
 
 
