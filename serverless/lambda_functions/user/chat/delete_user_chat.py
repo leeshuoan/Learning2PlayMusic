@@ -97,7 +97,7 @@ def lambda_handler(event, context):
                   ":SK": primarykey,
                   ":PK": sortkey
               })
-          if 'Item' not in response:
+          if 'Items' not in response:
               return response_202_msg("Nothing to delete. This 2 users have no history of conversation.")
 
           # 3. if found existing convo between the 2 users
