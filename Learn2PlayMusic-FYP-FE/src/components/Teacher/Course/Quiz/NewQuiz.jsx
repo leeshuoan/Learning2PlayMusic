@@ -2,7 +2,8 @@ import { Backdrop, Box, Button, Card, CircularProgress, Container, Grid, InputLa
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
+import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import NewQuizQuestion from "./NewQuizQuestion";
 
 const NewQuiz = () => {
   const navigate = useNavigate();
@@ -13,6 +14,21 @@ const NewQuiz = () => {
   const [quizDescription, setQuizDescription] = useState("");
   const [quizMaxAttempts, setQuizMaxAttempts] = useState(1);
   const [visibility, setVisibility] = useState(true);
+  const [quizQuestions, setQuizQuestions] = useState([
+    {
+      qnNumber: 1,
+      question: "",
+      questionOptionType: "MCQ",
+      options: {
+        option1: "",
+        option2: "",
+        option3: "",
+        option4: "",
+      },
+      answer: ""
+    },
+  ])
+  const [qnNumber, setQnNumber] = useState(2);
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
@@ -62,26 +78,81 @@ const NewQuiz = () => {
     setIsLoading(true);
 
     e.preventDefault();
+    console.log(quizQuestions)
     const newQuiz = {
       quizTitle: quizTitle,
       quizDescription: quizDescription,
       quizMaxAttempts: quizMaxAttempts,
       visibility: visibility,
       courseId: courseid,
-    };
+    }
+    let newQuizId = null
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newQuiz),
-    });
-    setIsLoading(false);
+    })
+    if (response.ok) {
+      const responseData = await response.json();
+      newQuizId = responseData.message.split('id').splice(1, 1).join().split(' ')[1];
+    } else {
+      console.error(`Error: ${response.status} - ${response.statusText}`);
+      return
+    }
+
+    for (let i = 0; i < quizQuestions.length; i++) {
+      const newQuizQuestion = {...quizQuestions[i], courseId: courseid, quizId: newQuizId}
+      console.log(newQuizQuestion)
+      try {
+        fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newQuizQuestion),
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
 
     if (response) {
       navigate(`/teacher/course/${courseid}/quiz`);
       toast.success("Quiz created successfully");
+
+      console.log("error")
+      toast.error("An unexpected error occurred during quiz creation")
     }
+  }
+
+  const addQuestion = () => {
+    setQuizQuestions([...quizQuestions, {
+      qnNumber: qnNumber,
+      question: "",
+      questionOptionType: "MCQ",
+      options: {
+        option1: "",
+        option2: "",
+        option3: "",
+        option4: "",
+      },
+      answer: ""
+    }])
+    setQnNumber(qnNumber + 1)
+  }
+
+  const handleQuestionChange = (qnInfo) => {
+    const newQuizQuestions = quizQuestions.map(qn => {
+      console.log(qnInfo)
+      if (qn.qnNumber === qnInfo.qnNumber) {
+        return qnInfo;
+      }
+      return qn;
+    })
+    console.log(newQuizQuestions)
+    setQuizQuestions(newQuizQuestions);
   }
 
   return (
@@ -140,18 +211,12 @@ const NewQuiz = () => {
                 </InputLabel>
                 <TextField value={quizDescription} onChange={() => setQuizDescription(event.target.value)} fullWidth multiline rows={3} />
               </Box>
-              <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
-                <Button
-                  variant="outlined"
-                  sx={{ color: "primary.main" }}
-                  onClick={() => {
-                    navigate(-1);
-                  }}>
-                  Cancel
-                </Button>
-                <Button variant="contained" type="submit">
-                  Create Quiz
-                </Button>
+              {quizQuestions.map((question, key) => {
+                return (<NewQuizQuestion key={key} qnInfo={question} handleQuestionChange={handleQuestionChange} />)
+              })}
+              <Button variant="outlined" fullWidth sx={{ color: "primary.main", mt: 2 }} onClick={addQuestion}>Add Question</Button>
+              <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+                <Button variant="contained" type="submit">Create Quiz</Button>
               </Box>
             </form>
           </Card>
