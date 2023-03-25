@@ -19,7 +19,7 @@ const NewQuiz = () => {
   const [visibility, setVisibility] = useState(true);
   const [quizQuestions, setQuizQuestions] = useState([
     {
-      qnNumber: 1, 
+      qnNumber: 1,
       question: "",
       questionOptionType: "MCQ",
       options: {
@@ -77,7 +77,6 @@ const NewQuiz = () => {
   async function createQuiz(e) {
     e.preventDefault();
     console.log(quizQuestions)
-    return
     const newQuiz = {
       quizTitle: quizTitle,
       quizDescription: quizDescription,
@@ -85,17 +84,44 @@ const NewQuiz = () => {
       visibility: visibility,
       courseId: courseid,
     }
+    let newQuizId = null
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newQuiz),
-      })
+      },
+      body: JSON.stringify(newQuiz),
+    })
+    if (response.ok) {
+      const responseData = await response.json();
+      newQuizId = responseData.message.split('id').splice(1, 1).join().split(' ')[1];
+    } else {
+      console.error(`Error: ${response.status} - ${response.statusText}`);
+      return
+    }
+
+    for (let i = 0; i < quizQuestions.length; i++) {
+      const newQuizQuestion = {...quizQuestions[i], courseId: courseid, quizId: newQuizId}
+      console.log(newQuizQuestion)
+      try {
+        fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newQuizQuestion),
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
 
     if (response) {
       navigate(`/teacher/course/${courseid}/quiz`)
       toast.success("Quiz created successfully");
+
+      console.log("error")
+      toast.error("An unexpected error occurred during quiz creation")
     }
   }
 
@@ -168,7 +194,7 @@ const NewQuiz = () => {
                   </Grid>
                   <Grid item xs={12} sm={4} md={3} >
                     <InputLabel id="max-attempts-label">Max Attempts *</InputLabel>
-                    <TextField  id="max-attempts" type="number" value={quizMaxAttempts} onChange={() => setQuizMaxAttempts(event.target.value)} variant="outlined" required />
+                    <TextField id="max-attempts" type="number" value={quizMaxAttempts} onChange={() => setQuizMaxAttempts(event.target.value)} variant="outlined" required />
                   </Grid>
                   <Grid item xs={12} sm={4} md={3} >
                     <InputLabel id="visible-label">Visbility *</InputLabel>
@@ -182,7 +208,7 @@ const NewQuiz = () => {
                 <TextField value={quizDescription} onChange={() => setQuizDescription(event.target.value)} fullWidth multiline rows={3} />
               </Box>
               {quizQuestions.map((question, key) => {
-                return (<NewQuizQuestion key={key} qnInfo={question} handleQuestionChange={handleQuestionChange}/>)
+                return (<NewQuizQuestion key={key} qnInfo={question} handleQuestionChange={handleQuestionChange} />)
               })}
               <Button variant="outlined" fullWidth sx={{ color: "primary.main", mt: 2 }} onClick={addQuestion}>Add Question</Button>
               <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
