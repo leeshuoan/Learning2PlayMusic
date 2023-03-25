@@ -45,7 +45,7 @@ class UserStack(Stack):
         get_user_chat_contactlist = _lambda.Function(self, "getUserChatContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_CHAT_CONTACTLIST_FUNCTIONS_FOLDER}.get_user_chat_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
 
-        #########################
+        ########################
         #  LAMBDA - STUDENTS   #
         #########################
 
