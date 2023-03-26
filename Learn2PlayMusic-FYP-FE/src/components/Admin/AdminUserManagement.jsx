@@ -111,9 +111,7 @@ const AdminUserManagement = (userInfo) => {
     // settle courses user is enrolled in
     let userCoursesDict = await postAPIWithBody(`${import.meta.env.VITE_API_URL}/user/course/enrolled`, { userIds: fetchedUserIds });
     setUserCoursesEnrolled(userCoursesDict);
-    // for (let i in userData) {
-    //   userData[i]["CoursesEnrolled"] = userCoursesDict[userData[i].Username];
-    // }
+    console.log(userData);
     setData(userData);
   };
   // enrol multiple users================================================================================================================================================================================================================================================================================
@@ -718,17 +716,22 @@ const AdminUserManagement = (userInfo) => {
               <Typography variant="body2">
                 <b>User Status:</b> {row.original.UserStatus}
               </Typography>
-              <Typography variant="body2">
-                <b>Courses enrolled in:</b>
-                {userCoursesEnrolled[row.original.Username].map((course) => {
-                  return (
-                    <span key={course.SK + course.PK}>
-                      <br></br>
-                      {course.CourseName} on {course.CourseSlot}
-                    </span>
-                  );
-                })}
-              </Typography>
+              {row.original.Attributes.Role == "Admin" ? null : (
+                <Typography variant="body2">
+                  <b>Courses enrolled in:</b>
+                  {userCoursesEnrolled[row.original.Username].length == 0
+                    ? " None"
+                    : userCoursesEnrolled[row.original.Username].map((course) => {
+                        return (
+                          <span key={course.SK + course.PK}>
+                            <br></br>
+                            {course.CourseName} on {course.CourseSlot}
+                          </span>
+                        );
+                      })}
+                </Typography>
+              )}
+
               {/* {data.map((user) => {
                 return (
                   <Typography variant="body2" key={user.Username}>
