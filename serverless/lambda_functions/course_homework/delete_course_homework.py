@@ -9,6 +9,7 @@ from global_functions.exists_in_db import *
 
 s3 = boto3.client('s3')
 
+
 def lambda_handler(event, context):
 
     try:
@@ -20,14 +21,12 @@ def lambda_handler(event, context):
         homework_id = request_body['homeworkId']
 
         table.delete_item(
-            Key= {
+            Key={
                 "PK": f"Course#{course_id}",
                 "SK": f"Homework#{homework_id}"
             })
 
-
         return response_200_msg(f"successfully deleted item homework: {course_id} and {homework_id} ")
-
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

@@ -8,9 +8,12 @@ from global_functions.get_presigned_url import *
 from global_functions.responses import *
 from global_functions.exists_in_db import *
 
+
 class Encoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, decimal.Decimal): return float(obj)
+        if isinstance(obj, decimal.Decimal):
+            return float(obj)
+
 
 def lambda_handler(event, context):
 
@@ -51,7 +54,7 @@ def lambda_handler(event, context):
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "POST,GET,PUT"
         }
-        res["body"] = json.dumps(items, cls = Encoder)
+        res["body"] = json.dumps(items, cls=Encoder)
 
         return res
 

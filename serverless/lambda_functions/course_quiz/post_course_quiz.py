@@ -4,7 +4,8 @@ import uuid
 
 from global_functions.responses import *
 
-def lambda_handler(event, context): 
+
+def lambda_handler(event, context):
 
     dynamodb = boto3.resource('dynamodb')
     table_name = "LMS"
@@ -29,25 +30,25 @@ def lambda_handler(event, context):
             "QuizDescription": quiz_description,
             "NumberOfStudentsAttempted": 0,
             "AverageScore": 0,
-            "Visibility": visibility 
+            "Visibility": visibility
         }
 
-        table.put_item(Item = item)
+        table.put_item(Item=item)
 
         students_response = table.query(
-        IndexName="SK-PK-index",
-        KeyConditionExpression="SK = :SK AND begins_with(PK, :PK)",
-        ExpressionAttributeValues={
-            ":SK": f"Course#{course_id}",
-            ":PK": "Student#"
-        })
+            IndexName="SK-PK-index",
+            KeyConditionExpression="SK = :SK AND begins_with(PK, :PK)",
+            ExpressionAttributeValues={
+                ":SK": f"Course#{course_id}",
+                ":PK": "Student#"
+            })
 
         students = students_response["Items"]
         for student in students:
             table.put_item(
                 Item={
-                    'PK':f"Course#{course_id}",
-                    'SK':f"{student['PK']}Quiz#{quiz_id}",
+                    'PK': f"Course#{course_id}",
+                    'SK': f"{student['PK']}Quiz#{quiz_id}",
                     "QuizTitle": quiz_title,
                     "QuizMaxAttempts": quiz_max_attempts,
                     "Visibility": visibility,
