@@ -936,7 +936,7 @@ class CourseStack(Stack):
             apigw.LambdaIntegration(get_course_homework_feedback),
             request_parameters={
                 "method.request.querystring.courseId": True,
-                "method.request.querystring.studentId": True,
+                "method.request.querystring.studentId": False,
                 "method.request.querystring.homeworkId": False,
             },
         )
