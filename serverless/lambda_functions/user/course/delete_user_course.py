@@ -40,12 +40,12 @@ def lambda_handler(event, context):
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
-        item = {
+        table.delete_item(
+            Key= {
                 "PK": f"{userType}#{userId}",
                 "SK": f"Course#{courseId}"
             }
-
-        table.delete_item(Item=item)
+            )
 
         return response_200_msg("successfully deleted item")
 

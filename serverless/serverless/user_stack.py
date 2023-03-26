@@ -61,9 +61,9 @@ class UserStack(Stack):
         # delete_student = _lambda.Function(self, "deleteStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.delete_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /user/student/course
-        get_student_course = _lambda.Function(self, "getStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.get_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        post_student_course = _lambda.Function(self, "postStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.post_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        delete_student_course = _lambda.Function(self, "deleteStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.delete_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        # get_student_course = _lambda.Function(self, "getStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.get_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        # post_student_course = _lambda.Function(self, "postStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.post_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        # delete_student_course = _lambda.Function(self, "deleteStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.delete_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
 
         #########################
@@ -77,9 +77,9 @@ class UserStack(Stack):
         # delete_teacher = _lambda.Function(self, "deleteTeacher", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_FUNCTIONS_FOLDER}.delete_teacher.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         # /user/teacher/courses
-        get_teacher_course = _lambda.Function(self, "getTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.get_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        post_teacher_course = _lambda.Function(self, "postTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.post_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        delete_teacher_course = _lambda.Function(self, "deleteTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.delete_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        # get_teacher_course = _lambda.Function(self, "getTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.get_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        # post_teacher_course = _lambda.Function(self, "postTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.post_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        # delete_teacher_course = _lambda.Function(self, "deleteTeacherCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_TEACHER_COURSE_FUNCTIONS_FOLDER}.delete_teacher_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
 
         ########################
@@ -114,10 +114,10 @@ class UserStack(Stack):
         user_chat_contactlist_resource = user_chat_resource.add_resource("contactlist")
 
         student_resource = user_resource.add_resource("student")
-        student_course_resource = student_resource.add_resource("course")
+        # student_course_resource = student_resource.add_resource("course")
 
         teacher_resource = user_resource.add_resource("teacher")
-        teacher_course_resource = teacher_resource.add_resource("course")
+        # teacher_course_resource = teacher_resource.add_resource("course")
 
         admin_resource = user_resource.add_resource("admin")
 
@@ -207,16 +207,16 @@ class UserStack(Stack):
         #   'method.request.querystring.studentId': True})
 
         # /user/student/course
-        student_course_resource.add_method("GET", apigw.LambdaIntegration(get_student_course), request_parameters={
-          'method.request.querystring.studentId': True})
+        # student_course_resource.add_method("GET", apigw.LambdaIntegration(get_student_course), request_parameters={
+        #   'method.request.querystring.studentId': True})
 
-        student_course_resource.add_method("POST", apigw.LambdaIntegration(post_student_course), request_parameters={
-          'method.request.querystring.studentId': True,
-          'method.request.querystring.courseId': True})
+        # student_course_resource.add_method("POST", apigw.LambdaIntegration(post_student_course), request_parameters={
+        #   'method.request.querystring.studentId': True,
+        #   'method.request.querystring.courseId': True})
 
-        student_course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_student_course), request_parameters={
-          'method.request.querystring.studentId': True,
-          'method.request.querystring.courseId': True})
+        # student_course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_student_course), request_parameters={
+        #   'method.request.querystring.studentId': True,
+        #   'method.request.querystring.courseId': True})
 
 
         ###########################################
@@ -274,16 +274,16 @@ class UserStack(Stack):
         #   'method.request.querystring.teacherId': True})
 
         # /user/teacher/course
-        teacher_course_resource.add_method("GET", apigw.LambdaIntegration(get_teacher_course), request_parameters={
-          'method.request.querystring.teacherId': True})
+        # teacher_course_resource.add_method("GET", apigw.LambdaIntegration(get_teacher_course), request_parameters={
+        #   'method.request.querystring.teacherId': True})
 
-        teacher_course_resource.add_method("POST", apigw.LambdaIntegration(post_teacher_course), request_parameters={
-          'method.request.querystring.teacherId': True,
-          'method.request.querystring.courseId': True})
+        # teacher_course_resource.add_method("POST", apigw.LambdaIntegration(post_teacher_course), request_parameters={
+        #   'method.request.querystring.teacherId': True,
+        #   'method.request.querystring.courseId': True})
 
-        teacher_course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_teacher_course), request_parameters={
-          'method.request.querystring.teacherId': True,
-          'method.request.querystring.courseId': True})
+        # teacher_course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_teacher_course), request_parameters={
+        #   'method.request.querystring.teacherId': True,
+        #   'method.request.querystring.courseId': True})
 
 
         #########################################
@@ -305,7 +305,7 @@ class UserStack(Stack):
         user_chat_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         user_chat_contactlist_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         student_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
-        student_course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        # student_course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         teacher_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
-        teacher_course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        # teacher_course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         admin_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
