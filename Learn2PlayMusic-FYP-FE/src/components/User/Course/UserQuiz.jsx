@@ -3,6 +3,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { Backdrop, Box, Breadcrumbs, Button, Card, CircularProgress, Container, Grid, Link, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import celebration from "../../../assets/celebration.png";
 import TransitionModal from "../../utils/TransitionModal";
 import QuizCard from "./QuizCard";
@@ -54,13 +55,21 @@ const UserQuiz = (userInfo) => {
 
     Promise.all([getCourse, getQuizAPI, getQuizQuestionAPI])
       .then(async ([courseInfoRes, quizInfoRes, quizQnRes]) => {
+        if (quizInfoRes.status === 404 || quizQnRes.status === 404 || courseInfoRes.status === 404) {
+          toast.error("Invalid ID");
+          navigate(`/home/course/${courseid}/quiz`);
+          return;
+        }
+        if (quizInfoRes.status === 500 || quizQnRes.status === 500 || courseInfoRes.status === 500) {
+          toast.error("Unexpected error occurred");
+          navigate(`/home/course/${courseid}/quiz`);
+          return;
+        }
         let courseInfo = [];
         let quizInfo = [];
         let quizQns = [];
         [courseInfo, quizInfo, quizQns] = await Promise.all([courseInfoRes.json(), quizInfoRes.json(), quizQnRes.json()]);
 
-
-        console.log(quizQnRes.message);
         let courseData = {
           id: courseInfo[0].SK.split("#")[1],
           name: courseInfo[0].CourseName,
