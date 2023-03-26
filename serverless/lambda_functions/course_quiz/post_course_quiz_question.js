@@ -16,16 +16,15 @@ async function lambda_handler(event, context) {
     const requestBody = JSON.parse(event.body);
 
     for (let question of requestBody) {
-      const uuid = uuidv4();
 
       questionCount++;
-      let questionId = uuid.slice(0, 8);
       const courseId = question.courseId;
       const quizId = question.quizId;
       const questionOptionType = question.questionOptionType;
       const questionText = question.question;
       const options = question.options;
       const answer = question.answer;
+      const qnNumber = question.qnNumber
 
       let uploadedImage;
       let s3Params;
@@ -40,7 +39,7 @@ async function lambda_handler(event, context) {
         const imageBuffer = Buffer.from(base64Image, "base64");
         s3Params = {
           Bucket: bucketName,
-          Key: `Course${courseId}/Quiz${quizId}/Question${questionId}.${fileExtension}`,
+          Key: `Course${courseId}/Quiz${quizId}/Question${qnNumber}.${fileExtension}`,
           Body: imageBuffer,
           ContentType: "image/" + fileExtension,
         };
@@ -56,7 +55,7 @@ async function lambda_handler(event, context) {
         TableName: "LMS",
         Item: {
           PK: `Course#${courseId}`,
-          SK: `Quiz#${quizId}Question#${questionId}`,
+          SK: `Quiz#${quizId}Question#${qnNumber}`,
           QuestionOptionType: questionOptionType,
           Question: questionText,
           Options: options,
@@ -70,7 +69,7 @@ async function lambda_handler(event, context) {
         "questionImage" in question &&
         question["questionImage"] != ""
       ) {
-        params.Item.questionImage = s3Params.Bucket + "/" + s3Params.Key;
+        params.Item.QuestionImage = s3Params.Bucket + "/" + s3Params.Key;
       }
       await dynamodb.put(params).promise();
     }
