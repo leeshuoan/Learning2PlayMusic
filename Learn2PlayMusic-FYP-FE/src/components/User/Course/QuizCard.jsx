@@ -13,14 +13,13 @@ function QuizCard({ question, options, answer, image, index, handleOptionChange 
     handleOptionChange(e.target.value);
   };
 
-  console.log(image)
   return (
     <Card>
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2">
           Q{index}.{question}
         </Typography>
-        {image && <img src={image} alt="question" />}
+        {image && <img src={image} width="400" height="400" alt="question" />}
         <RadioGroup
           aria-label="quiz"
           name="quiz"

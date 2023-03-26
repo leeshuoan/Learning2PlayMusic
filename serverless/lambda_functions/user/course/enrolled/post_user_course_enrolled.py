@@ -9,37 +9,37 @@ from global_functions.cognito import *
 def lambda_handler(event, context):
 
     try:
-        
+
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
-        students_response = {}
-        teachers_response = {}
-        final_response = {
-            'Students': students_response,
-            'Teachers': teachers_response
-        }
+        final_response = {}
 
-        userIds = event['body']['userIds']
+        userIds = json.loads(event['body'])['userIds']
 
         for userId in userIds:
-            
-            response = {}
-            response['userId'] = userId
 
+            response = []
             user = get_user(userId)
-            if not user:
-                response['isSuccessful'] = False
-                response['errorMessage'] = 'userId does not exist in Cognito'
-            
+
+            if user == None:
+                response = {
+                    'error': 'userId does not exist in Cognito'
+                }
+                final_response[userId] = [response]
+                continue
+
             if 'studentId' in user:
                 partitionkey = f"Student#{userId}"
-        
+
             elif 'teacherId' in user:
                 partitionkey = f"Teacher#{userId}"
 
             else:
-                response['isSuccessful'] = False
-                response['errorMessage'] = 'Please check that you have entered a correct studentId/teacherId'
+                response = {
+                    'error': 'Please check that you have entered a correct studentId/teacherId'
+                }
+                final_response[userId] = [response]
+                continue
 
             # get all courses that this student is enrolled in
             db_response = table.query(
@@ -48,12 +48,11 @@ def lambda_handler(event, context):
                     ":PK": partitionkey,
                     ":SK": "Course#"
                 })
-        
+
             items = db_response['Items']
 
-            # for each course, get the course details to append to the above response
+            # for each course, get the course details to append to the above resp
             for i in range(len(items)):
-                print("i: ", i)
                 courseId = items[i].get("SK").split("#")[1]
 
                 course_response = table.get_item(
@@ -69,12 +68,11 @@ def lambda_handler(event, context):
 
                 items[i].update(course_item)
 
-                print("response: ", response)
-                print("items[i]: ", items[i])
+            final_response[userId] = items
 
 
         # will always return response 200
-        return response_200_items(items)
+        return response_200_items(final_response)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

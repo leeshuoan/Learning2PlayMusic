@@ -79,6 +79,13 @@ const UserQuiz = (userInfo) => {
         };
         setCourse(courseData);
 
+        // route guard
+        if (quizInfo.QuizAttempt >= quizInfo.QuizMaxAttempts) {
+          toast.error("You have reached the maximum number of attempts for this quiz");
+          navigate(`/home/course/${courseid}/quiz`);
+          return;
+        }
+
         setQuizTitle(quizInfo.QuizTitle);
         setQuizAttempt(quizInfo.QuizAttempt);
         setQuizMaxAttempt(quizInfo.QuizMaxAttempts);
