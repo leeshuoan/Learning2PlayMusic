@@ -274,12 +274,12 @@ const UserQuiz = (userInfo) => {
               Attempt: {quizAttempt}/{quizMaxAttempt}
             </Typography>
             <Grid container spacing={3}>
-              {questionsArray.map(({ Question, Options, Answer, id, QuestionImage }, index) => (
+              {questionsArray.map(({ Question, Options, Answer, id, questionImage }, index) => (
                 <Grid key={index} item xs={12}>
                   <QuizCard
                     index={index + 1}
                     question={Question}
-                    image={QuestionImage}
+                    image={questionImage}
                     options={Options}
                     answer={Answer}
                     handleOptionChange={(selectedOption) => {
