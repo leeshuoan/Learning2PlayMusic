@@ -36,7 +36,7 @@ def lambda_handler(event, context):
                     "PK": f"Student#{studentId}",
                     "SK": f"Course#{courseId}"
                 }
-            
+
             course_info = table.get_item(
                 Key={
                     "PK": "Course",

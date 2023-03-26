@@ -33,10 +33,10 @@ def lambda_handler(event, context):
             return response_400("Please check that you have entered a correct studentId/teacherId")
 
         # check if <userId><courseId> combination exists in database
-        if combination_id_exists(userType, userId, "Course", courseId):
-            return response_202_msg(f"This {userType.lower()} has been enrolled with the course")
+        if not combination_id_exists(userType, userId, "Course", courseId):
+            return response_202_msg(f"This {userType.lower()} has not been enrolled with the course")
 
-        # enroll user to course
+        # remove a user from course
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
@@ -45,9 +45,9 @@ def lambda_handler(event, context):
                 "SK": f"Course#{courseId}"
             }
 
-        table.put_item(Item=item)
+        table.delete_item(Item=item)
 
-        return response_200_msg_items("inserted", item)
+        return response_200_msg("successfully deleted item")
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")

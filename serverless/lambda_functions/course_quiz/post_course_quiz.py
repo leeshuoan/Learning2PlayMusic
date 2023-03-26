@@ -47,7 +47,7 @@ def lambda_handler(event, context):
             table.put_item(
                 Item={
                     'PK':f"Course#{course_id}",
-                    'SK':f"{student['SK']}Quiz#{quiz_id}"
+                    'SK':f"{student['PK']}Quiz#{quiz_id}"
                 }
             )
 
