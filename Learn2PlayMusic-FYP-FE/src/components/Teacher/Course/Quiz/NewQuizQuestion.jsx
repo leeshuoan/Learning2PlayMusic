@@ -8,12 +8,7 @@ const NewQuizQuestion = ({qnInfo, handleQuestionChange}) => {
   const [image, setImage] = useState("")
   const [answer, setAnswer] = useState('')
   const [questionType, setQuestionType] = useState('multiple-choice')
-  const [options, setOptions] = useState({
-    option1: '',
-    option2: '',
-    option3: '',
-    option4: '',
-  })
+  const [options, setOptions] = useState(["", "", "", ""])
 
   const fileUploaded = async (e) => {
     setFile(e.target.files[0]);
@@ -44,6 +39,7 @@ const NewQuizQuestion = ({qnInfo, handleQuestionChange}) => {
 
   const handleQnTypeChange = (event) => {
     console.log(event.target.value)
+    setOptions(["", "", "", ""])
     setQuestionType(event.target.value);
   };
 
@@ -51,16 +47,23 @@ const NewQuizQuestion = ({qnInfo, handleQuestionChange}) => {
     setQuestion(event.target.value)
   }
 
-  const handleOptionChange = (optionType, event) => {
-    setOptions({
-      ...options,
-      [optionType]: event.target.value
-    })
+  const handleOptionChange = (idx, event) => {
+    setOptions (options.map((option, index) => {
+      if (idx === index) {
+        return event.target.value
+      } else {
+        return option
+      }
+    }))
+  }
+
+  const handleTrueFalseChange = (event) => {
+    setOptions(["True", "False"])
+    setAnswer(event.target.value)
   }
 
   const handleAnswerChange = (event) => {
-    console.log(event.target.value)
-    setAnswer(event.target.value)
+    setAnswer(options[event.target.value])
   }
 
   return (
@@ -106,31 +109,31 @@ const NewQuizQuestion = ({qnInfo, handleQuestionChange}) => {
             <Grid container columnSpacing={2} sx={{ mt: 1 }}>
               <Grid item xs={12} md={6}>
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <FormControlLabel sx={{ mr: 0 }} value="option1" control={<Radio size="xs" sx={{ ml: 1 }}/>} />
+                  <FormControlLabel sx={{ mr: 0 }} value={0} control={<Radio size="small" sx={{ ml: 1 }}/>} />
                   <InputLabel id="question-label">Option 1 *</InputLabel>
                 </Box>
-                <TextField id="question" value={options.option1} fullWidth onChange={() => handleOptionChange("option1", event)} variant="outlined" required />
+                <TextField id="question" value={options.option1} fullWidth onChange={() => handleOptionChange(0, event)} variant="outlined" required />
               </Grid>
               <Grid item xs={12} md={6}>
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <FormControlLabel sx={{ mr: 0 }} value="option2" control={<Radio size="xs" sx={{ ml: 1 }}/>} />
+                  <FormControlLabel sx={{ mr: 0 }} value={1} control={<Radio size="small" sx={{ ml: 1 }}/>} />
                   <InputLabel id="question-label">Option 2 *</InputLabel>
                 </Box>
-                <TextField id="question" value={options.option2} fullWidth onChange={() => handleOptionChange("option2", event)} variant="outlined" required />
+                <TextField id="question" value={options.option2} fullWidth onChange={() => handleOptionChange(1, event)} variant="outlined" required />
               </Grid>
               <Grid item xs={12} md={6}>
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <FormControlLabel sx={{ mr: 0 }} value="option3" control={<Radio size="xs" sx={{ ml: 1 }}/>} />
+                  <FormControlLabel sx={{ mr: 0 }} value={2} control={<Radio size="small" sx={{ ml: 1 }}/>} />
                   <InputLabel id="question-label">Option 3 *</InputLabel>
                 </Box>
-                <TextField id="question" value={options.option3} fullWidth onChange={() => handleOptionChange("option3", event)} variant="outlined" required />
+                <TextField id="question" value={options.option3} fullWidth onChange={() => handleOptionChange(2, event)} variant="outlined" required />
               </Grid>
               <Grid item xs={12} md={6}>
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <FormControlLabel sx={{ mr: 0 }} value="option4" control={<Radio size="xs" sx={{ ml: 1 }}/>} />
+                  <FormControlLabel sx={{ mr: 0 }} value={3} control={<Radio size="small" sx={{ ml: 1 }}/>} />
                   <InputLabel id="question-label">Option 4 *</InputLabel>
                 </Box>
-                <TextField id="question" value={options.option4} fullWidth onChange={() => handleOptionChange("option4", event)} variant="outlined" required />
+                <TextField id="question" value={options.option4} fullWidth onChange={() => handleOptionChange(3, event)} variant="outlined" required />
               </Grid>
             </Grid>
           </RadioGroup>
@@ -138,9 +141,9 @@ const NewQuizQuestion = ({qnInfo, handleQuestionChange}) => {
         </Box>
         <Box sx={{ display: questionType === "true-false" ? "block" : "none" }}>
           <InputLabel id="correct-option-label" sx={{ mt: 2 }}>Correct Option</InputLabel>
-          <RadioGroup>
-              <FormControlLabel sx={{ mr: 0 }} value={true} control={<Radio size="xs" />} label="True" />
-              <FormControlLabel sx={{ mr: 0 }} value={false} control={<Radio size="xs" />} label="False" />
+          <RadioGroup onChange={(e) => handleTrueFalseChange(e)}>
+              <FormControlLabel sx={{ mr: 0 }} value="True" control={<Radio size="small" />} label="True" />
+              <FormControlLabel sx={{ mr: 0 }} value="False" control={<Radio size="small" />} label="False" />
           </RadioGroup>
         </Box>
       </Card>

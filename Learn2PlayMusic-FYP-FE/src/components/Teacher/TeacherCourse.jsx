@@ -1,6 +1,7 @@
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Accordion, AccordionDetails, AccordionSummary, Backdrop, Box, Button, Card, CircularProgress, Container, Divider, Grid, Link, MenuItem, Stack, Typography } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
@@ -670,7 +671,7 @@ const TeacherCourse = (userInfo) => {
                 </Box>
                 {/* end header */}
 
-                <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
+                <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => { }}></MaterialReactTable>
               </Card>
             </Box>
             {/* quiz ==================================================================================================== */}
@@ -699,16 +700,17 @@ const TeacherCourse = (userInfo) => {
                         <Typography variant="button">
                           <Link
                             underline="hover"
+                            sx={{ color: quiz.Visibility ? "success.dark" : "error.dark", "&:hover": { underline: quiz.Visibility ? "success.dark" : "error.dark" } }}
                             onClick={() => {
                               setSelectedQuiz(quiz);
                               setVisibilityQuizModal(true);
                             }}>
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                               <Box sx={{ display: quiz.Visibility ? "flex" : "none", alignItems: "center" }}>
-                                <VisibilityIcon fontSize="inherit" /> &nbsp; Visible
+                                <VisibilityIcon fontSize="inherit" /> &nbsp; Shown
                               </Box>
                               <Box sx={{ display: quiz.Visibility ? "none" : "flex", alignItems: "center" }}>
-                                <VisibilityIcon fontSize="inherit" /> &nbsp; Not Visible
+                                <VisibilityOffIcon fontSize="inherit" /> &nbsp; Hidden
                               </Box>
                             </Box>
                           </Link>
@@ -807,7 +809,7 @@ const TeacherCourse = (userInfo) => {
                           </Typography>
                           <Typography
                             variant="button"
-                            // onclick={() => {
+                          // onclick={() => {
                           >
                             <Link
                               underline="hover"
@@ -833,7 +835,7 @@ const TeacherCourse = (userInfo) => {
                   Class List
                 </Typography>
                 {/* end header */}
-                <MaterialReactTable columns={classListColumns} data={classList} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
+                <MaterialReactTable columns={classListColumns} data={classList} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => { }}></MaterialReactTable>
               </Card>
             </Box>
           </Box>

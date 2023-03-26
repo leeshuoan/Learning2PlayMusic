@@ -26,7 +26,7 @@ def lambda_handler(event, context):
             partitionkey = f"Teacher#{userId}"
 
         else:
-            return response_400("Please check that you have entered a correct userId")
+            return response_400("Please check that you have entered a correct studentId/teacherId")
             
         response = table.query(
             KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
@@ -50,7 +50,7 @@ def lambda_handler(event, context):
             course_item.pop("PK")
             course_item.pop("SK")
 
-        items[i].update(course_item)
+            items[i].update(course_item)
     
         return response_200_items(items)
 
