@@ -214,7 +214,7 @@ const NewQuiz = () => {
               {quizQuestions.map((question, key) => {
                 return <NewQuizQuestion key={key} qnInfo={question} handleQuestionChange={handleQuestionChange} />;
               })}
-              <Button variant="outlined" color="success" fullWidth sx={{ color: "black", mt: 2 }} onClick={addQuestion}>
+              <Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>
                 Add Question
               </Button>
               <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>

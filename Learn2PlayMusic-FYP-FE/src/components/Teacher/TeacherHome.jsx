@@ -19,7 +19,7 @@ const TeacherHome = ({ userInfo }) => {
   }
 
   const fetchAnnouncements = request(`/generalannouncement`);
-  const fetchCourses = request(`/user/teacher/course?teacherId=${userInfo.id}`);
+  const fetchCourses = request(`/user/course?userId=${userInfo.id}`);
 
   useEffect(() => {
     async function fetchData() {

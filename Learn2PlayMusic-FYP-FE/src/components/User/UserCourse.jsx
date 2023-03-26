@@ -118,7 +118,7 @@ const UserCourse = (userInfo) => {
       });
 
       const materialData = data3.map((material) => {
-        const id = material.SK.split("Material#")[1].substr(0, 1);
+        const id = material.SK.split("Material#")[1]
         const date = new Date(material.MaterialLessonDate);
         const formattedDate = `${date.toLocaleDateString()}`;
         return { ...material, id, MaterialLessonDate: formattedDate };
@@ -127,7 +127,7 @@ const UserCourse = (userInfo) => {
 
       console.log(data4);
       const quizData = data4.map((quiz) => {
-        const id = quiz.SK.split("Quiz#")[1].substr(0, 1);
+        const id = quiz.SK.split("Quiz#")[1]
         const date = new Date(quiz.QuizDueDate);
         const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
         return { ...quiz, id, QuizDueDate: formattedDate };
@@ -135,7 +135,7 @@ const UserCourse = (userInfo) => {
       setCourseQuiz(quizData);
 
       const announcementsData = data5.map((announcement) => {
-        const id = announcement.SK.split("Announcement#")[1].substr(0, 1);
+        const id = announcement.SK.split("Announcement#")[1]
         const date = new Date(announcement.Date);
         const formattedDate = date.toLocaleDateString();
         return { ...announcement, id, Date: formattedDate };
@@ -143,7 +143,7 @@ const UserCourse = (userInfo) => {
       setCourseAnnouncement(announcementsData);
 
       const progressReportData = data6.map((report) => {
-        const id = report.SK.split("Report#")[1].substr(0, 1);
+        const id = report.SK.split("Report#")[1]
         const date = new Date(report["AvailableDate"]);
         const nowDate = new Date();
         if (nowDate > date) {
@@ -291,12 +291,7 @@ const UserCourse = (userInfo) => {
                   </Typography>
                   <Grid container spacing={2} sx={{ alignItems: "center" }}>
                     <Grid item xs={12} sm={6}>
-                      <Button
-                        variant="contained"
-                        disabled={quiz.QuizAttempt >= quiz.QuizMaxAttempt}
-                        onClick={() => {
-                          navigate(`${quiz.id}`);
-                        }}>
+                      <Button variant="contained" disabled={quiz.QuizAttempt >= quiz.QuizMaxAttempts} onClick={() => { navigate(`${quiz.id}`) }}>
                         <PlayCircleFilledIcon sx={{ mr: 1 }} />
                         Start Quiz
                       </Button>
@@ -314,16 +309,9 @@ const UserCourse = (userInfo) => {
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography variant="body1" sx={{ textAlign: "center", color: "primary.main", display: { xs: "none", sm: "block" } }}>
-                        Attempts
-                      </Typography>
-                      <Typography variant="body1" sx={{ textAlign: "center", color: quiz.attempts == 0 ? "grey" : "", display: { xs: "none", sm: "block" } }}>
-                        {quiz.QuizAttempt}/{quiz.QuizMaxAttempt}
-                      </Typography>
-                      <Typography variant="body1" sx={{ color: quiz.attempts == 0 ? "grey" : "", display: { xs: "flex", sm: "none" } }}>
-                        <span sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</span>
-                        {quiz.QuizAttempt}/{quiz.QuizMaxAttempt}
-                      </Typography>
+                      <Typography variant='body1' sx={{ textAlign: "center", color: 'primary.main', display: { xs: "none", sm: "block" } }}>Attempts</Typography>
+                      <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block" } }}>{quiz.QuizAttempt}/{quiz.QuizMaxAttempts}</Typography>
+                      <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "flex", sm: "none" } }}><span sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</span>{quiz.QuizAttempt}/{quiz.QuizMaxAttempts}</Typography>
                     </Grid>
                   </Grid>
                 </Card>
