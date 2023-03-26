@@ -14,10 +14,10 @@ async function lambda_handler(event, context) {
   try {
     let questionCount = 0;
     const requestBody = JSON.parse(event.body);
-    const uuid = uuidv4();
-
 
     for (let question of requestBody) {
+      const uuid = uuidv4();
+
       questionCount++;
       let questionId = uuid.slice(0, 8);
       const courseId = question.courseId;
