@@ -160,9 +160,7 @@ const AdminUserManagement = (userInfo) => {
     let success = await API.post(apiName, path, myInit);
     console.log(success);
     if (success.message) {
-      toast.success("User disabled successfully", {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      toast.success("User disabled successfully");
       setReloadData(!reloadData);
       setOpenDisableUser(false);
     }
@@ -189,9 +187,7 @@ const AdminUserManagement = (userInfo) => {
     let success = await API.post(apiName, path, myInit);
     console.log(success);
     if (success.message) {
-      toast.success("User enabled successfully", {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      toast.success("User enabled successfully");
       setReloadData(!reloadData);
       setOpenEnableUser(false);
     }
@@ -216,9 +212,7 @@ const AdminUserManagement = (userInfo) => {
     };
     let success = await API.post(apiName, path, myInit);
     if (success.message) {
-      toast.success("User deleted successfully", {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      toast.success("User deleted successfully");
       setReloadData(!reloadData);
       setOpenDeleteUser(false);
     }
