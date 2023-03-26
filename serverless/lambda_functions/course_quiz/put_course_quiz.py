@@ -53,7 +53,7 @@ def lambda_handler(event, context):
             ':quizTitle': quiz_title,
             ':quizMaxAttempts': quiz_max_attempts,
             ':visibility': visibility,
-            'default': 0
+            ':default': 0
         }
         for student in students:
             table.update_item(
