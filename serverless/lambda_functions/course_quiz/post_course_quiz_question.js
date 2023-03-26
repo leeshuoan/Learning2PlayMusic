@@ -16,7 +16,6 @@ async function lambda_handler(event, context) {
     const requestBody = JSON.parse(event.body);
     const uuid = uuidv4();
 
-    const batches = [];
 
     for (let question of requestBody) {
       questionCount++;
@@ -54,17 +53,16 @@ async function lambda_handler(event, context) {
       }
 
       const params = {
-        PutRequest: {
-          Item: {
-            PK: `Course#${courseId}`,
-            SK: `Quiz#${quizId}Question#${questionId}`,
-            QuestionOptionType: questionOptionType,
-            Question: questionText,
-            Options: options,
-            Answer: answer,
-            Attempts: 0,
-            Correct: 0,
-          },
+        TableName: "LMS",
+        Item: {
+          PK: `Course#${courseId}`,
+          SK: `Quiz#${quizId}Question#${questionId}`,
+          QuestionOptionType: questionOptionType,
+          Question: questionText,
+          Options: options,
+          Answer: answer,
+          Attempts: 0,
+          Correct: 0,
         },
       };
 
@@ -72,18 +70,9 @@ async function lambda_handler(event, context) {
         "questionImage" in question &&
         question["questionImage"] != ""
       ) {
-        params.PutRequest.Item.questionImage = s3Params.Bucket + "/" + s3Params.Key;
+        params.Item.questionImage = s3Params.Bucket + "/" + s3Params.Key;
       }
-
-      let batchIndex = Math.floor(questionCount / 25);
-      if (!batches[batchIndex]) {
-        batches[batchIndex] = { RequestItems: { LMS: [] } };
-      }
-      batches[batchIndex].RequestItems.LMS.push(params);
-    }
-
-    for (let batch of batches) {
-      await dynamodb.batchWrite(batch).promise();
+      await dynamodb.put(params).promise();
     }
 
     return response_200(
