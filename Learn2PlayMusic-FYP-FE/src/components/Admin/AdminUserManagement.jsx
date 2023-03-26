@@ -1,9 +1,7 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
-import DeleteIcon from "@mui/icons-material/Delete";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import RestoreFromTrashIcon from "@mui/icons-material/RestoreFromTrash";
-import { Autocomplete,Backdrop, Box, Button, CircularProgress, Grid, IconButton, Tooltip, Typography, useTheme } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Grid, IconButton, Switch, Tooltip, Typography, useTheme } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
@@ -91,6 +89,7 @@ const AdminUserManagement = () => {
       let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
       userData[idx]["UserCreateDate"] = formattedDate;
     }
+    console.log(userData);
     setData(userData);
   };
 
@@ -103,7 +102,7 @@ const AdminUserManagement = () => {
   const confirmEnrolUser = async () => {
     let endpoint = `${import.meta.env.VITE_API_URL}//user/student/course?courseId=1&userId=1`;
     let myInit = {
-      method : "POST",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -218,19 +217,16 @@ const AdminUserManagement = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "Attributes.Email",
-        id: "email",
-        header: "Email",
-      },
-      {
         accessorKey: "Attributes.Name",
         id: "name",
         header: "Name",
+        minSize: 100,
       },
       {
-        accessorKey: "UserCreateDate",
-        id: "createDate",
-        header: "Creation Date",
+        accessorKey: "Attributes.Email",
+        id: "email",
+        header: "Email",
+        minSize: 100,
       },
       {
         accessorKey: "Attributes.Role",
@@ -239,31 +235,35 @@ const AdminUserManagement = () => {
         size: 30,
       },
       {
-        accessorKey: "UserStatus",
-        id: "status",
-        header: "Status",
-        size: 40,
-      },
-      {
         accessorKey: "Enabled",
         id: "enabled",
         header: "Enabled",
-        size: 30,
+        maxSize: 20,
+        Cell: ({ cell, row }) => (
+          <Tooltip title={row.original.Enabled == "Disabled" ? "Enable user" : "Disable user"} placement="bottom">
+            <Switch
+              color="success"
+              checked={row.original.Enabled == "Enabled"}
+              onChange={(event) => {
+                if (event.target.checked) {
+                  enableUser(row.original);
+                } else {
+                  disableUser(row.original);
+                }
+              }}></Switch>
+          </Tooltip>
+        ),
       },
       {
         accessorKey: "",
-        id: "actions",
-        header: "Actions",
-        Cell: ({ cell, row }) => (
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-            }}>
-            <Tooltip title="Enrol user" placement="bottom">
+        id: "enrol",
+        header: "Enrol",
+        Cell: ({ cell, row }) =>
+          row.original.Attributes.Role != "Admin" ? (
+            <Tooltip title="Enrol user to course" placement="bottom">
               <IconButton
                 variant="contained"
-                color="success"
+                color="info"
                 disabled={row.original.Enabled == "Enabled" ? false : true}
                 onClick={() => {
                   enrolUser(row.original);
@@ -271,41 +271,27 @@ const AdminUserManagement = () => {
                 <AddCircleIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Disable user" placement="bottom">
-              <IconButton
-                variant="contained"
-                color="error"
-                sx={{ display: row.original.Enabled == "Enabled" ? "block" : "none", mt: 0.5 }}
-                onClick={() => {
-                  disableUser(row.original);
-                }}>
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Enable user" placement="bottom">
-              <IconButton
-                variant="contained"
-                color="success"
-                sx={{ display: row.original.Enabled == "Enabled" ? "none" : "block", mt: 0.5 }}
-                onClick={() => {
-                  enableUser(row.original);
-                }}>
-                <RestoreFromTrashIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete user forever" placement="bottom">
-              <IconButton
-                variant="contained"
-                color="error"
-                disabled={row.original.Enabled == "Enabled" ? true : false}
-                onClick={() => {
-                  deleteUser(row.original);
-                }}>
-                <DeleteForeverIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
+          ) : null,
+        maxSize: 20,
+      },
+      {
+        accessorKey: "",
+        id: "delete",
+        header: "Delete",
+        Cell: ({ cell, row }) => (
+          <Tooltip title="Delete user forever" placement="bottom">
+            <IconButton
+              variant="contained"
+              color="error"
+              disabled={row.original.Enabled == "Enabled" ? true : false}
+              onClick={() => {
+                deleteUser(row.original);
+              }}>
+              <DeleteForeverIcon />
+            </IconButton>
+          </Tooltip>
         ),
+        maxSize: 20,
       },
     ],
     []
@@ -484,6 +470,8 @@ const AdminUserManagement = () => {
       <MaterialReactTable
         enableHiding={false}
         enableFullScreenToggle={false}
+        enableMultiRowSelection={true}
+        enableRowSelection={true}
         enableDensityToggle={false}
         columns={columns}
         data={data}
@@ -505,7 +493,23 @@ const AdminUserManagement = () => {
               </Button>
             </Box>
           );
-        }}></MaterialReactTable>
+        }}
+        renderDetailPanel={({ row }) => (
+          <Box
+            sx={{
+              display: "grid",
+              margin: "auto",
+              gridTemplateColumns: "1fr 1fr",
+              width: "100%",
+            }}>
+            <Typography variant="body2">
+              <b>User Creation Date:</b> {row.original.UserCreateDate}
+            </Typography>
+            <Typography variant="body2">
+              <b>User Status:</b> {row.original.UserStatus}
+            </Typography>
+          </Box>
+        )}></MaterialReactTable>
       <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
