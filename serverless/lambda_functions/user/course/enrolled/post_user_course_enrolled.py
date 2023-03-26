@@ -9,7 +9,7 @@ from global_functions.cognito import *
 def lambda_handler(event, context):
 
     try:
-        
+
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
         final_response = {}
@@ -17,7 +17,7 @@ def lambda_handler(event, context):
         userIds = json.loads(event['body'])['userIds']
 
         for userId in userIds:
-            
+
             print("userId: ", userId)
 
             response = []
@@ -25,18 +25,24 @@ def lambda_handler(event, context):
             user = get_user(userId)
             print("user: ", user)
             if user == None:
-                response['isSuccessful'] = False
-                response['errorMessage'] = 'userId does not exist in Cognito'
-            
+                response = {
+                    'error': 'userId does not exist in Cognito'
+                }
+                final_response[userId] = [response]
+                continue
+
             if 'studentId' in user:
                 partitionkey = f"Student#{userId}"
-        
+
             elif 'teacherId' in user:
                 partitionkey = f"Teacher#{userId}"
 
             else:
-                response['isSuccessful'] = False
-                response['errorMessage'] = 'Please check that you have entered a correct studentId/teacherId'
+                response = {
+                    'error': 'Please check that you have entered a correct studentId/teacherId'
+                }
+                final_response[userId] = [response]
+                continue
 
             # get all courses that this student is enrolled in
             db_response = table.query(
@@ -45,10 +51,8 @@ def lambda_handler(event, context):
                     ":PK": partitionkey,
                     ":SK": "Course#"
                 })
-        
+
             items = db_response['Items']
-            items.pop("PK")
-            items.pop("SK")
 
             # for each course, get the course details to append to the above resp
             for i in range(len(items)):
@@ -63,8 +67,10 @@ def lambda_handler(event, context):
                 )
 
                 course_item = course_response['Item']
+                print('course_item before: ', course_item)
                 course_item.pop("PK")
                 course_item.pop("SK")
+                print('course_item after: ', course_item)
 
                 items[i].update(course_item)
 
