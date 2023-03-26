@@ -17,6 +17,7 @@ class UserStack(Stack):
 
         FUNCTIONS_FOLDER = "./lambda_functions/"
         USER_FUNCTIONS_FOLDER = "user"
+        USER_COURSE_FUNCTIONS_FOLDER = "user.course"
         USER_CHAT_FUNCTIONS_FOLDER = "user.chat"
         USER_CHAT_CONTACTLIST_FUNCTIONS_FOLDER = "user.chat.contactlist"
         USER_STUDENT_FUNCTIONS_FOLDER = "user.student"
@@ -44,6 +45,10 @@ class UserStack(Stack):
         # /user/chat/contactlist
         get_user_chat_contactlist = _lambda.Function(self, "getUserChatContactList", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_CHAT_CONTACTLIST_FUNCTIONS_FOLDER}.get_user_chat_contactlist.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
+        # /user/course
+        get_user_course = _lambda.Function(self, "getUserCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_FUNCTIONS_FOLDER}.get_user_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        # post_user_course = _lambda.Function(self, "postUserCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_FUNCTIONS_FOLDER}.post_user_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        # delete_user_course = _lambda.Function(self, "deleteUserCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_FUNCTIONS_FOLDER}.delete_user_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         ########################
         #  LAMBDA - STUDENTS   #
@@ -55,7 +60,7 @@ class UserStack(Stack):
         # put_student = _lambda.Function(self, "putStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.put_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         # delete_student = _lambda.Function(self, "deleteStudent", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_FUNCTIONS_FOLDER}.delete_student.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
-        # /user/student/courses
+        # /user/student/course
         get_student_course = _lambda.Function(self, "getStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.get_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_student_course = _lambda.Function(self, "postStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.post_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_student_course = _lambda.Function(self, "deleteStudentCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_STUDENT_COURSE_FUNCTIONS_FOLDER}.delete_student_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
@@ -104,6 +109,7 @@ class UserStack(Stack):
 
         # Create resources for the API
         user_resource = main_api.root.add_resource("user")
+        user_course_resource = user_resource.add_resource("course")
         user_chat_resource = user_resource.add_resource("chat")
         user_chat_contactlist_resource = user_chat_resource.add_resource("contactlist")
 
@@ -132,6 +138,10 @@ class UserStack(Stack):
 
         # /user/chat/contactlist
         user_chat_contactlist_resource.add_method("GET", apigw.LambdaIntegration(get_user_chat_contactlist), request_parameters={
+          'method.request.querystring.userId': True})
+
+        # /user/course
+        user_course_resource.add_method("GET", apigw.LambdaIntegration(get_user_course), request_parameters={
           'method.request.querystring.userId': True})
 
 
@@ -285,6 +295,7 @@ class UserStack(Stack):
 
         # Enable CORS for each resource/sub-resource etc.
         user_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        user_course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         user_chat_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         user_chat_contactlist_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         student_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
