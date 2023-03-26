@@ -16,7 +16,7 @@ const AdminHome = (userInfo) => {
 
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-      {category == "users" ? <AdminUserManagement /> : null}
+      {category == "users" ? <AdminUserManagement userInfo={userInfo}/> : null}
       {category == "announcements" ? <AdminAnnouncementManagement /> : null}
       {category == "courses" ? <AdminCourseManagement /> : null}
     </Container>
