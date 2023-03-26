@@ -31,7 +31,7 @@ const NewQuizQuestion = ({qnInfo, handleQuestionChange}) => {
       questionOptionType: questionType,
       options: options,
       answer: answer,
-      image: image,
+      questionImage: image,
     }
     console.log(newQnInfo)
     handleQuestionChange(newQnInfo)

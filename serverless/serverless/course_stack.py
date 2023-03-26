@@ -714,7 +714,7 @@ class CourseStack(Stack):
                     ),
                     "visibility": apigw.JsonSchema(type=apigw.JsonSchemaType.BOOLEAN),
                 },
-                required=["courseId", "quizId"],
+                required=["courseId", "quizId", "quizTitle", "quizMaxAttempts", "quizDescription", "visibility"],
             ),
         )
 
