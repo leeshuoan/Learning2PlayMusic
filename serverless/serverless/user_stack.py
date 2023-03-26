@@ -143,6 +143,9 @@ class UserStack(Stack):
         # /user/course
         user_course_resource.add_method("GET", apigw.LambdaIntegration(get_user_course), request_parameters={
           'method.request.querystring.userId': True})
+        user_course_resource.add_method("POST", apigw.LambdaIntegration(post_user_course), request_parameters={
+          'method.request.querystring.userId': True,
+          'method.request.querystring.courseId': True})
 
 
         ###########################################
