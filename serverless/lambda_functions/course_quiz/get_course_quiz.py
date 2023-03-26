@@ -49,6 +49,8 @@ def lambda_handler(event, context):
         print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
+        if exception_type == KeyError:
+            return response_404("Id not found")
         return response_500((str(exception_type) + str(e)))
 
 

@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import {useTheme, Typography, Container, Grid, Button, Card, Box, Link, Breadcrumbs, Backdrop, CircularProgress } from "@mui/material";
-import QuizCard from "./QuizCard";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
-import TransitionModal from "../../utils/TransitionModal";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import { Backdrop, Box, Breadcrumbs, Button, Card, CircularProgress, Container, Grid, Link, Typography, useTheme } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import celebration from "../../../assets/celebration.png";
+import TransitionModal from "../../utils/TransitionModal";
+import QuizCard from "./QuizCard";
 
 const UserQuiz = (userInfo) => {
   const navigate = useNavigate();
@@ -17,69 +17,50 @@ const UserQuiz = (userInfo) => {
   const [openModal, setOpenModal] = useState(false);
   const [questionsArray, setQuestionsArray] = useState([]);
   const theme = useTheme();
-  const [selectedOptions, setSelectedOptions] = useState({}); //{24d690e0: "Drums", 62a1bb2d: "Drums"}
+  const [selectedOptions, setSelectedOptions] = useState({});
   const [quizMaxAttempt, setQuizMaxAttempt] = useState(0);
   const [quizAttempt, setQuizAttempt] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const headerConfig = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const getCourse = fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, headerConfig);
 
-  const getCourse = fetch(
-    `${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}&quizId=${quizId}`, headerConfig);
 
-  const getQuizAPI = fetch(
-    `${
-      import.meta.env.VITE_API_URL
-    }/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}&quizId=${quizId}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  const getQuizQuestionAPI = fetch(
-    `${
-      import.meta.env.VITE_API_URL
-    }/course/quiz/question?courseId=${courseid}&quizId=${quizId}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const getQuizQuestionAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question?courseId=${courseid}&quizId=${quizId}`, headerConfig);
 
   const submitQuiz = async (requestBody) => {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/course/quiz/submit`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody)
-      }
-    );
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz/submit`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
     const data = await response.json();
     return data;
   };
 
   useEffect(() => {
+    /*     
+      try {
+      } catch (error) {
+        console.log(error);
+      } */
+
     Promise.all([getCourse, getQuizAPI, getQuizQuestionAPI])
       .then(async ([courseInfoRes, quizInfoRes, quizQnRes]) => {
-        const [courseInfo, quizInfo, quizQns] = await Promise.all([
-          courseInfoRes.json(),
-          quizInfoRes.json(),
-          quizQnRes.json(),
-        ]);
+        let courseInfo = [];
+        let quizInfo = [];
+        let quizQns = [];
+        [courseInfo, quizInfo, quizQns] = await Promise.all([courseInfoRes.json(), quizInfoRes.json(), quizQnRes.json()]);
 
+
+        console.log(quizQnRes.message);
         let courseData = {
           id: courseInfo[0].SK.split("#")[1],
           name: courseInfo[0].CourseName,
@@ -227,10 +208,7 @@ const UserQuiz = (userInfo) => {
       </TransitionModal>
 
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <Breadcrumbs
-          aria-label="breadcrumb"
-          separator={<NavigateNextIcon fontSize="small" />}
-          sx={{ mt: 3 }}>
+        <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
           <Link
             underline="hover"
             color="inherit"
@@ -252,8 +230,7 @@ const UserQuiz = (userInfo) => {
           <Typography>{quizTitle}</Typography>
         </Breadcrumbs>
 
-        <Card
-          sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
+        <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
               <Typography variant="h5" sx={{ color: "primary.main" }}>
@@ -284,22 +261,20 @@ const UserQuiz = (userInfo) => {
               Attempt: {quizAttempt}/{quizMaxAttempt}
             </Typography>
             <Grid container spacing={3}>
-              {questionsArray.map(
-                ({ Question, Options, Answer, id, QuestionImage }, index) => (
-                  <Grid key={index} item xs={12}>
-                    <QuizCard
-                      index={index + 1}
-                      question={Question}
-                      image={QuestionImage}
-                      options={Options}
-                      answer={Answer}
-                      handleOptionChange={(selectedOption) => {
-                        handleOptionChange(id, selectedOption);
-                      }}
-                    />
-                  </Grid>
-                )
-              )}
+              {questionsArray.map(({ Question, Options, Answer, id, QuestionImage }, index) => (
+                <Grid key={index} item xs={12}>
+                  <QuizCard
+                    index={index + 1}
+                    question={Question}
+                    image={QuestionImage}
+                    options={Options}
+                    answer={Answer}
+                    handleOptionChange={(selectedOption) => {
+                      handleOptionChange(id, selectedOption);
+                    }}
+                  />
+                </Grid>
+              ))}
             </Grid>
             {/* on submit send the quiz results to backend */}
             {/* add a submit button */}
@@ -309,17 +284,13 @@ const UserQuiz = (userInfo) => {
               onClick={() => {
                 setOpenModal(true);
               }}
-              disabled={
-                questionsArray.length != Object.keys(selectedOptions).length
-              }>
+              disabled={questionsArray.length != Object.keys(selectedOptions).length}>
               SUBMIT QUIZ
             </Button>
           </Card>
         </Box>
 
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}>
+        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
           <CircularProgress color="inherit" />
         </Backdrop>
       </Container>
