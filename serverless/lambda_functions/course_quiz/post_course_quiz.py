@@ -34,6 +34,23 @@ def lambda_handler(event, context):
 
         table.put_item(Item = item)
 
+        students_response = table.query(
+        IndexName="SK-PK-index",
+        KeyConditionExpression="SK = :SK AND begins_with(PK, :PK)",
+        ExpressionAttributeValues={
+            ":SK": f"Course#{course_id}",
+            ":PK": "Student#"
+        })
+
+        students = students_response["Items"]
+        for student in students:
+            table.put_item(
+                Item={
+                    'PK':f"Course#{course_id}",
+                    'SK':f"{student['SK']}Quiz#{quiz_id}"
+                }
+            )
+
         return response_202_msg(f"Quiz successfully created with id {quiz_id}")
 
     except Exception as e:

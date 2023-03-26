@@ -36,7 +36,6 @@ def lambda_handler(event, context):
                 }
             )
 
-    # TODO: get all students in the course, foreach student, delete Student#<studentID>Quiz#<quizId>
         students_response = table.query(
         IndexName="SK-PK-index",
         KeyConditionExpression="SK = :SK AND begins_with(PK, :PK)",
