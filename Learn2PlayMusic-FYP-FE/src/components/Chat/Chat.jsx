@@ -113,12 +113,12 @@ function Chat(userInfo) {
   useEffect(() => {
     console.log("useEffect called");
     getAPI(contactListAPI).then((res) => {
-      console.log(res);
       var fetchedData = res.map((contact) => {
+        console.log(contact)
         let contactKeys = Object.keys(contact);
         let id = "";
         let name = "";
-        for (k of contactKeys) {
+        for (let k of contactKeys) {
           if (k.endsWith("Id")) {
             id = contact[k];
           }

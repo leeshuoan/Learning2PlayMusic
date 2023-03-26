@@ -2,7 +2,7 @@ import { Backdrop, Box, Button, Card, CircularProgress, Container, Grid, InputLa
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
+import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 import NewQuizQuestion from "./NewQuizQuestion";
 
 const NewQuiz = () => {
