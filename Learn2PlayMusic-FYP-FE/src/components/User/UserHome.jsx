@@ -19,7 +19,7 @@ const UserHome = ({ userInfo }) => {
     return response.json();
   }
 
-  const fetchCourses = request(`/user/student/course?studentId=${userInfo.id}`);
+  const fetchCourses = request(`/user/course?userId=${userInfo.id}`);
   const fetchAnnouncements = request(`/generalannouncement`);
 
   useEffect(() => {

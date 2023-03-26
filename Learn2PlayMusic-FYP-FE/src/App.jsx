@@ -136,7 +136,7 @@ function App() {
               <Route path="report/:userId" element={<BaseProgressReport />} />
               <Route path="report/:userId/:reportId" element={<BaseProgressReport />} />
               <Route path="quiz/new" element={<NewQuiz userInfo={userInfo} />} />
-              <Route path="quiz/edit/:quizid" element={<EditQuiz userInfo={userInfo} />} />
+              <Route path="quiz/edit/:quizId" element={<EditQuiz userInfo={userInfo} />} />
             </Route>
           </Route>
 

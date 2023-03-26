@@ -80,7 +80,7 @@ const UserQuiz = (userInfo) => {
 
         setQuizTitle(quizInfo.QuizTitle);
         setQuizAttempt(quizInfo.QuizAttempt);
-        setQuizMaxAttempt(quizInfo.QuizMaxAttempt);
+        setQuizMaxAttempt(quizInfo.QuizMaxAttempts);
 
         quizQns.forEach((question) => {
           question["id"] = question.SK.split("Question#")[1];
@@ -96,9 +96,10 @@ const UserQuiz = (userInfo) => {
   }, []);
 
   const handleOptionChange = (id, selectedOption) => {
+    const questionId = `Question#${id}`;
     setSelectedOptions((prevOptions) => ({
       ...prevOptions,
-      [id]: selectedOption,
+      [questionId]: selectedOption,
     }));
   };
 
@@ -110,6 +111,7 @@ const UserQuiz = (userInfo) => {
     for (let key in selectedOptions) {
       if (selectedOptions.hasOwnProperty(key)) {
         // loop through the answer key dictionary
+        const qId = key.split("Question#")[1];
         for (let question of questionsArray) {
           if (key === question.id) {
             // Compare the user's response value to the "Answer" value in the answer key dictionary
@@ -127,7 +129,7 @@ const UserQuiz = (userInfo) => {
       courseId: course.id,
       studentId: userInfo.userInfo.id,
       quizId: quizId,
-      quizScore: quizScore,
+      submissions: selectedOptions,
     };
     // submit
     try {
