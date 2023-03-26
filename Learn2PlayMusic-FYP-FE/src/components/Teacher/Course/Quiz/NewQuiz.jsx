@@ -19,15 +19,10 @@ const NewQuiz = () => {
       qnNumber: 1,
       question: "",
       questionOptionType: "MCQ",
-      options: {
-        option1: "",
-        option2: "",
-        option3: "",
-        option4: "",
-      },
+      options: ["", "", "", ""],
       answer: ""
     },
-  ])
+  ]);
   const [qnNumber, setQnNumber] = useState(2);
 
   async function request(endpoint) {
@@ -51,9 +46,7 @@ const NewQuiz = () => {
 
   useEffect(() => {
     async function fetchData() {
-      let data1 = [],
-        data2 = [],
-        data3 = [];
+      let data1 = [], data2 = [], data3 = [];
       try {
         [data1] = await Promise.all([getCourseAPI]);
       } catch (error) {
@@ -79,51 +72,64 @@ const NewQuiz = () => {
 
     e.preventDefault();
     console.log(quizQuestions)
+
+    for (let i = 0; i < quizQuestions.length; i++) {
+      console.log(quizQuestions[i].answer)
+      if (quizQuestions[i].answer === "") {
+        toast.error("Missing answer for question");
+        setIsLoading(false);
+        return
+      }
+    }
+
     const newQuiz = {
       quizTitle: quizTitle,
       quizDescription: quizDescription,
       quizMaxAttempts: quizMaxAttempts,
       visibility: visibility,
       courseId: courseid,
-    }
-    let newQuizId = null
+    };
+    let newQuizId = null;
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newQuiz),
-    })
+    });
     if (response.ok) {
       const responseData = await response.json();
-      newQuizId = responseData.message.split('id').splice(1, 1).join().split(' ')[1];
+      newQuizId = responseData.message.split("id").splice(1, 1).join().split(" ")[1];
     } else {
       console.error(`Error: ${response.status} - ${response.statusText}`);
-      return
+      return;
     }
 
+    let newQuizQuestions = []
     for (let i = 0; i < quizQuestions.length; i++) {
       const newQuizQuestion = {...quizQuestions[i], courseId: courseid, quizId: newQuizId}
-      console.log(newQuizQuestion)
-      try {
-        fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newQuizQuestion),
-        })
-      } catch (error) {
-        console.log(error)
-      }
+      newQuizQuestions.push(newQuizQuestion)
+    }
+
+    try {
+      console.log(newQuizQuestions)
+      fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newQuizQuestions),
+      })
+    } catch (error) {
+      console.log(error)
+      setIsLoading(false)
+      toast.error("An unexpected error occurred during quiz creation")
+      return
     }
 
     if (response) {
       navigate(`/teacher/course/${courseid}/quiz`);
       toast.success("Quiz created successfully");
-
-      console.log("error")
-      toast.error("An unexpected error occurred during quiz creation")
     }
   }
 
@@ -132,28 +138,22 @@ const NewQuiz = () => {
       qnNumber: qnNumber,
       question: "",
       questionOptionType: "MCQ",
-      options: {
-        option1: "",
-        option2: "",
-        option3: "",
-        option4: "",
-      },
+      options: [", '', '', '"],
       answer: ""
     }])
     setQnNumber(qnNumber + 1)
   }
 
   const handleQuestionChange = (qnInfo) => {
-    const newQuizQuestions = quizQuestions.map(qn => {
-      console.log(qnInfo)
+    const newQuizQuestions = quizQuestions.map((qn) => {
+      console.log(qnInfo);
       if (qn.qnNumber === qnInfo.qnNumber) {
         return qnInfo;
       }
       return qn;
     })
-    console.log(newQuizQuestions)
     setQuizQuestions(newQuizQuestions);
-  }
+  };
 
   return (
     <>
@@ -212,11 +212,23 @@ const NewQuiz = () => {
                 <TextField value={quizDescription} onChange={() => setQuizDescription(event.target.value)} fullWidth multiline rows={3} />
               </Box>
               {quizQuestions.map((question, key) => {
-                return (<NewQuizQuestion key={key} qnInfo={question} handleQuestionChange={handleQuestionChange} />)
+                return <NewQuizQuestion key={key} qnInfo={question} handleQuestionChange={handleQuestionChange} />;
               })}
-              <Button variant="outlined" fullWidth sx={{ color: "primary.main", mt: 2 }} onClick={addQuestion}>Add Question</Button>
-              <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
-                <Button variant="contained" type="submit">Create Quiz</Button>
+              <Button variant="outlined" color="success" fullWidth sx={{ color: "black", mt: 2 }} onClick={addQuestion}>
+                Add Question
+              </Button>
+              <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
+                <Button
+                  variant="outlined"
+                  sx={{ color: "primary.main" }}
+                  onClick={() => {
+                    navigate(`/teacher/course/${courseid}/quiz`);
+                  }}>
+                  Cancel
+                </Button>
+                <Button variant="contained" type="submit">
+                  Create Quiz
+                </Button>
               </Box>
             </form>
           </Card>
