@@ -70,6 +70,7 @@ const UserQuiz = (userInfo) => {
         let quizQns = [];
         [courseInfo, quizInfo, quizQns] = await Promise.all([courseInfoRes.json(), quizInfoRes.json(), quizQnRes.json()]);
 
+        console.log(quizQns)
         let courseData = {
           id: courseInfo[0].SK.split("#")[1],
           name: courseInfo[0].CourseName,
@@ -131,6 +132,7 @@ const UserQuiz = (userInfo) => {
       quizId: quizId,
       submissions: selectedOptions,
     };
+    console.log(requestBody)
     // submit
     try {
       const submitQuizData = await submitQuiz(requestBody);

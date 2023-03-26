@@ -73,13 +73,26 @@ const NewQuiz = () => {
     e.preventDefault();
     console.log(quizQuestions)
 
+
+
+    // check the other fields
+    let errorMsg = ""
+    if (quizTitle === "") {
+      errorMsg = "Missing quiz title"
+    }
+    if (quizMaxAttempts === "") {
+      errorMsg = "Missing quiz max attempts"
+    }
     for (let i = 0; i < quizQuestions.length; i++) {
       console.log(quizQuestions[i].answer)
       if (quizQuestions[i].answer === "") {
-        toast.error("Missing answer for question");
-        setIsLoading(false);
-        return
+        errorMsg = "Missing answer for question"
       }
+    }
+    if (errorMsg !== "") {
+      setIsLoading(false)
+      toast.error(errorMsg)
+      return
     }
 
     const newQuiz = {
@@ -187,7 +200,7 @@ const NewQuiz = () => {
             <Typography variant="h5" sx={{ mb: 2 }}>
               New Quiz
             </Typography>
-            <form onSubmit={createQuiz}>
+            <form onSubmit={createQuiz} noValidate>
               <Box sx={{ mt: 1 }}>
                 <Grid spacing={2} container>
                   <Grid item xs={12} sm={4} md={3}>
