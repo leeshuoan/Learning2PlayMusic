@@ -13,9 +13,11 @@ async function lambda_handler(event, context) {
   const uuid = uuidv4();
 
   try {
+    let questionCount = 0;
     const requestBody = JSON.parse(event.body);
 
     for (let question of requestBody) {
+      questionCount++;
       let questionId = uuid.slice(0, 8);
       const courseId = question.courseId;
       const quizId = question.quizId;
@@ -73,7 +75,7 @@ async function lambda_handler(event, context) {
     }
 
     return response_200(
-      `Successfully inserted Questions!`
+      `Successfully inserted ${questionCount} Question(s)!`
     );
   } catch (e) {
     return response_400(e);
