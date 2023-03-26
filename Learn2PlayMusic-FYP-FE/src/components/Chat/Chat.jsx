@@ -93,6 +93,7 @@ function Chat(userInfo) {
       const [res] = await Promise.all([getAPI(contactListAPI)]);
       console.log(res);
       var fetchedData = res.map((contact) => {
+        console.log(contact)
         let contactKeys = Object.keys(contact);
         let id = "";
         let name = "";
