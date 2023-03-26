@@ -1,6 +1,6 @@
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
-import { Backdrop, Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Container, IconButton, Tooltip, Typography } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import TransitionModal from "../../utils/TransitionModal";
@@ -96,19 +96,24 @@ const AdminAnnouncementManagement = () => {
               alignItems: "center",
               gap: "2px",
             }}>
-            <IconButton
-              onClick={() => {
-                handleOpenEditModal(row.original.id, row.original.title, row.original.content);
-              }}>
-              <EditIcon></EditIcon>
-            </IconButton>
-            <IconButton
-              color="error"
-              onClick={() => {
-                handleOpenDeleteModal(row.original.id, row.original.title, row.original.content);
-              }}>
-              <DeleteForeverIcon></DeleteForeverIcon>
-            </IconButton>
+            
+            <Tooltip title="Edit" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  handleOpenEditModal(row.original.id, row.original.title, row.original.content);
+                }}>
+                <EditIcon></EditIcon>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete" placement="bottom">
+              <IconButton
+                color="error"
+                onClick={() => {
+                  handleOpenDeleteModal(row.original.id, row.original.title, row.original.content);
+                }}>
+                <DeleteForeverIcon></DeleteForeverIcon>
+              </IconButton>
+            </Tooltip>
           </Box>
         ),
       },
@@ -141,7 +146,7 @@ const AdminAnnouncementManagement = () => {
     });
   }, [reloadData]);
   return (
-    <Box>
+    <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       {/* new announcement form */}
       <TransitionModal open={openModal} handleClose={handleCloseModal} style={modalStyle}>
         <CreateAnnouncementForm handleCloseModal={handleCloseModal} handleCloseModalSuccess={handleCloseModalSuccess} />
@@ -205,7 +210,7 @@ const AdminAnnouncementManagement = () => {
       <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Box>
+    </Container>
   );
 };
 export default AdminAnnouncementManagement;
