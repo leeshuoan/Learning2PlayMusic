@@ -58,6 +58,16 @@ def response_200_msg_items(action, item):
                     "item": item
                     })
     }
+def response_202_msg_custom_items( customItem):
+    return {
+        "statusCode": 202,
+        "headers": {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST,GET,DELETE,PUT"
+        },
+        "body": json.dumps(customItem)
+    }
 
 # For DELETE functions
 def response_200_msg(success_msg):

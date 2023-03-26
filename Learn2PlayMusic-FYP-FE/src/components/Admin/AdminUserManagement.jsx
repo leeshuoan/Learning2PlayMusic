@@ -1,5 +1,4 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Autocomplete, Backdrop, Box, Button, CircularProgress, Container, Grid, IconButton, Switch, TextField, Tooltip, Typography, useTheme } from "@mui/material";
 import { API, Auth } from "aws-amplify";
@@ -11,24 +10,39 @@ import CreateUserForm from "./CreateUserForm";
 
 const AdminUserManagement = (userInfo) => {
   const theme = useTheme();
+  // table data
   const [data, setData] = useState([]);
   const [reloadData, setReloadData] = useState(false);
+  const [userIds, setUserIds] = useState([]); // all userIds of users in table (used to fetch for courses the user is enrolled in)
+  const [userCoursesEnrolled, setUserCoursesEnrolled] = useState([{ userid: [{ PK: "", SK: "", CourseSlot: "", CourseName: "", TeacherId: "" }] }]);
+  // const [userCoursesEnrolled, setUserCoursesEnrolled] = useState([{ userid: "", CourseSlot: "", CourseName: "", }]);
+
+  // loading screen
   const [open, setOpen] = useState(true);
+  // all courses -> as optiosn for enroling users to course
+  const [allCourses, setAllCourses] = useState([]);
+  // enrol user ala carte
   const [openEnrolUser, setOpenEnrolUser] = useState(false);
   const [toEnrolUser, setToEnrolUser] = useState("");
   const [toEnrolCourse, setToEnrolCourse] = useState("");
+  // create user
   const [openCreateUser, setOpenCreateUser] = useState(false);
-  const [openDisableUser, setOpenDisableUser] = useState(false);
-  const [openEnableUser, setOpenEnableUser] = useState(false);
-  const [openDeleteUser, setOpenDeleteUser] = useState(false);
-  const [toDisableUser, setToDisableUser] = useState("");
-  const [toEnableUser, setToEnableUser] = useState("");
-  const [toDeleteUser, setToDeleteUser] = useState("");
   const [roles, setRoles] = useState([]);
-  const [userCoursesEnrolled, setUserCoursesEnrolled] = useState([{ userid: "", CourseSlot: "", CourseName: "" }]);
-  const [userIds, setUserIds] = useState([]);
-  const [allCourses, setAllCourses] = useState([]);
+  // diable user
+  const [openDisableUser, setOpenDisableUser] = useState(false);
+  const [toDisableUser, setToDisableUser] = useState("");
+  // enable user
+  const [openEnableUser, setOpenEnableUser] = useState(false);
+  const [toEnableUser, setToEnableUser] = useState("");
+  // delete user
+  const [openDeleteUser, setOpenDeleteUser] = useState(false);
+  const [toDeleteUser, setToDeleteUser] = useState("");
+  // enrol multiple users;
   const [rowSelection, setRowSelection] = useState([]);
+  const [openEnrolMultipleUsers, setOpenEnrolMultipleUser] = useState(false);
+  const [toEnrolUserIds, setToEnrolUserIds] = useState([]);
+  const [toEnrolUsernames, setToEnrolUsernames] = useState([]);
+  const [toEnrolCourses, setToEnrolCourses] = useState([]);
 
   function modalStyle(widthPercent) {
     return {
@@ -42,10 +56,6 @@ const AdminUserManagement = (userInfo) => {
       borderRadius: 2,
       p: 4,
     };
-  }
-  // enrol multiple users
-  function enrolUsers() {
-    const selectedUserIds = Object.keys(rowSelection).map((key) => data[key].Username);
   }
 
   // list groups ================================================================================================================================================================================================================================================================================
@@ -66,7 +76,6 @@ const AdminUserManagement = (userInfo) => {
       rs.push(groupName.substr(0, groupName.length - 1));
     }
     setRoles(rs);
-    console.log(rs);
   };
   // list users ================================================================================================================================================================================================================================================================================
   const listUsers = async () => {
@@ -104,7 +113,13 @@ const AdminUserManagement = (userInfo) => {
     setData(userData);
     setUserIds(fetchedUserIds);
   };
-  // enrol user================================================================================================================================================================================================================================================================================
+  // enrol multiple users================================================================================================================================================================================================================================================================================
+  function enrolMultipleUsers() {
+    const selectedUserIds = Object.keys(rowSelection).map((key) => data[key].Username);
+    setToEnrolUsers(selectedUserIds);
+  }
+
+  // enrol user ala carte================================================================================================================================================================================================================================================================================
   const enrolUser = async (user) => {
     setOpenEnrolUser(true);
     setToEnrolUser(user);
@@ -122,7 +137,6 @@ const AdminUserManagement = (userInfo) => {
         "Content-Type": "application/json",
       },
     };
-    console.log(toEnrolCourse.id);
     let res = await fetch(endpoint, myInit);
     let data = await res.json();
     if (res.status == 202) {
@@ -158,7 +172,6 @@ const AdminUserManagement = (userInfo) => {
       },
     };
     let success = await API.post(apiName, path, myInit);
-    console.log(success);
     if (success.message) {
       toast.success("User disabled successfully");
       setReloadData(!reloadData);
@@ -368,14 +381,6 @@ const AdminUserManagement = (userInfo) => {
         <TransitionModal open={openDeleteUser} handleClose={() => setOpenDeleteUser(false)} style={modalStyle(25)}>
           <>
             <Grid container spacing={2}>
-              <Grid item xs={1}>
-                <CloseIcon
-                  sx={{ "&:hover": { cursor: "pointer" } }}
-                  onClick={() => {
-                    setOpenDeleteUser(false);
-                  }}
-                />
-              </Grid>
               <Grid item xs={10}>
                 <Typography align="center" variant="h5">
                   Delete User?
@@ -412,14 +417,6 @@ const AdminUserManagement = (userInfo) => {
         <TransitionModal open={openEnableUser} handleClose={() => setOpenEnableUser(false)} style={modalStyle(25)}>
           <>
             <Grid container spacing={2}>
-              <Grid item xs={1}>
-                <CloseIcon
-                  sx={{ "&:hover": { cursor: "pointer" } }}
-                  onClick={() => {
-                    setOpenEnableUser(false);
-                  }}
-                />
-              </Grid>
               <Grid item xs={10}>
                 <Typography align="center" variant="h5">
                   Enable User?
@@ -453,14 +450,6 @@ const AdminUserManagement = (userInfo) => {
         <TransitionModal open={openDisableUser} handleClose={() => setOpenDisableUser(false)} style={modalStyle(25)}>
           <>
             <Grid container spacing={2}>
-              <Grid item xs={1}>
-                <CloseIcon
-                  sx={{ "&:hover": { cursor: "pointer" } }}
-                  onClick={() => {
-                    setOpenDisableUser(false);
-                  }}
-                />
-              </Grid>
               <Grid item xs={10}>
                 <Typography align="center" variant="h5">
                   Disable User?
@@ -490,18 +479,108 @@ const AdminUserManagement = (userInfo) => {
             </Grid>
           </>
         </TransitionModal>
-        {/* enrol user ========================================================================================== */}
+        {/* enrol user ala carte========================================================================================== */}
         <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(50)}>
           <>
             <Grid container spacing={2}>
-              <Grid item xs={1}>
-                <CloseIcon
-                  sx={{ "&:hover": { cursor: "pointer" } }}
-                  onClick={() => {
-                    setOpenEnrolUser(false);
+              <Grid item xs={10}>
+                <Typography align="center" variant="h5">
+                  Enrol User?
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sx={{ display: "flex", alignItems: "left", flexDirection: "column" }}>
+                <Box>
+                  <b>Name:</b> {toEnrolUser && toEnrolUser.Attributes.Name}
+                </Box>
+                <Box>
+                  <b>Email</b> {toEnrolUser && toEnrolUser.Attributes.Email}
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} sx={{ display: "flex", justifyContent: "left", mt: 1 }}>
+                <Autocomplete
+                  fullWidth
+                  disablePortal
+                  name="course"
+                  id="course"
+                  options={allCourses}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  getOptionLabel={(option) => option.courseDetails}
+                  renderInput={(params) => <TextField {...params} label="Course *" />}
+                  onChange={(event, newValue) => {
+                    setToEnrolCourse(newValue);
                   }}
                 />
               </Grid>
+              <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
+                  onClick={() => {
+                    setOpenEnrolUser(false);
+                  }}>
+                  Cancel
+                </Button>
+                <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmEnrolUser()}>
+                  Enrol
+                </Button>
+              </Grid>
+            </Grid>
+          </>
+        </TransitionModal>
+        {/* enrol multiple users========================================================================================== */}
+        <TransitionModal open={openEnrolMultipleUsers} handleClose={() => setOpenEnrolMultipleUser(false)} style={modalStyle(50)}>
+          <>
+            <Grid container spacing={2}>
+              <Grid item xs={10}>
+                <Typography align="center" variant="h5">
+                  Enrol User?
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sx={{ display: "flex", alignItems: "left", flexDirection: "column" }}>
+                <Box>
+                  <b>Name:</b> {toEnrolUser && toEnrolUser.Attributes.Name}
+                </Box>
+                <Box>
+                  <b>Email</b> {toEnrolUser && toEnrolUser.Attributes.Email}
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} sx={{ display: "flex", justifyContent: "left", mt: 1 }}>
+                <Autocomplete
+                  fullWidth
+                  disablePortal
+                  name="course"
+                  id="course"
+                  options={allCourses}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  getOptionLabel={(option) => option.courseDetails}
+                  renderInput={(params) => <TextField {...params} label="Course *" />}
+                  onChange={(event, newValue) => {
+                    setToEnrolCourse(newValue);
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
+                  onClick={() => {
+                    setOpenEnrolUser(false);
+                  }}>
+                  Cancel
+                </Button>
+                <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmEnrolUser()}>
+                  Enrol
+                </Button>
+              </Grid>
+            </Grid>
+          </>
+        </TransitionModal>
+        {/* enrol user ala carte ========================================================================================== */}
+        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(50)}>
+          <>
+            <Grid container spacing={2}>
               <Grid item xs={10}>
                 <Typography align="center" variant="h5">
                   Enrol User?
@@ -577,7 +656,7 @@ const AdminUserManagement = (userInfo) => {
                   }}>
                   Add User
                 </Button>
-                <Button variant="contained" onClick={enrolUsers} disabled={table.getSelectedRowModel().flatRows.length === 0}>
+                <Button variant="contained" onClick={enrolMultipleUsers} disabled={table.getSelectedRowModel().flatRows.length === 0}>
                   Enrol User
                 </Button>
               </Box>

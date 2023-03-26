@@ -1,14 +1,10 @@
 import boto3
-
-from aws_cdk import (
-    aws_lambda as _lambda,
-    aws_apigateway as apigw,
-    aws_iam,
-    Stack,
-    Fn
-)
-
+from aws_cdk import Fn, Stack
+from aws_cdk import aws_apigateway as apigw
+from aws_cdk import aws_iam
+from aws_cdk import aws_lambda as _lambda
 from constructs import Construct
+
 
 class UserStack(Stack):
 
@@ -19,6 +15,7 @@ class UserStack(Stack):
         USER_FUNCTIONS_FOLDER = "user"
         USER_COURSE_FUNCTIONS_FOLDER = "user.course"
         USER_COURSE_ENROLLED_FUNCTIONS_FOLDER = "user.course.enrolled"
+        USER_COURSE_ENROL_FUNCTIONS_FOLDER = "user.course.enrol"
         USER_CHAT_FUNCTIONS_FOLDER = "user.chat"
         USER_CHAT_CONTACTLIST_FUNCTIONS_FOLDER = "user.chat.contactlist"
         USER_STUDENT_FUNCTIONS_FOLDER = "user.student"
@@ -51,8 +48,11 @@ class UserStack(Stack):
         post_user_course = _lambda.Function(self, "postUserCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_FUNCTIONS_FOLDER}.post_user_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_user_course = _lambda.Function(self, "deleteUserCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_FUNCTIONS_FOLDER}.delete_user_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
-        # /user/course/enrolled
+        # /user/course/enrolled - get all enrolled courses for each user that is non-admin
         post_user_course_enrolled = _lambda.Function(self, "postUserCourseEnrolled", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_ENROLLED_FUNCTIONS_FOLDER}.post_user_course_enrolled.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        
+        # /user/course/enrol - batch enrol students to 1 course
+        post_user_course_enrol = _lambda.Function(self, "postUserCourseEnrol", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_ENROL_FUNCTIONS_FOLDER}.post_user_course_enrol.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
 
         ########################
@@ -116,6 +116,7 @@ class UserStack(Stack):
         user_resource = main_api.root.add_resource("user")
         user_course_resource = user_resource.add_resource("course")
         user_course_enrolled_resource = user_course_resource.add_resource("enrolled")
+        user_course_enrol_resource = user_course_resource.add_resource("enrol")
         user_chat_resource = user_resource.add_resource("chat")
         user_chat_contactlist_resource = user_chat_resource.add_resource("contactlist")
 
@@ -175,6 +176,27 @@ class UserStack(Stack):
 
         user_course_enrolled_resource.add_method("POST", apigw.LambdaIntegration(post_user_course_enrolled), request_models={
             "application/json": post_user_course_enrolled_model})
+        
+        # /user/course/enrol
+
+        post_user_course_enrol_model = apigw.Model(
+                self,
+                "PostUserCourseEnrolModel",
+                rest_api=main_api,
+                content_type="application/json",
+                model_name="PostUserCourseEnrolModel",
+                schema=apigw.JsonSchema(
+                    title="PostUserCourseEnrolModel",
+                    schema=apigw.JsonSchemaVersion.DRAFT4,
+                    type=apigw.JsonSchemaType.OBJECT,
+                    properties={
+                        "userIds": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY),
+                        "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING)
+                    },
+                    required=["userIds", "courseId"]))
+
+        user_course_enrol_resource.add_method("POST", apigw.LambdaIntegration(post_user_course_enrol), request_models={
+            "application/json": post_user_course_enrol_model})
 
 
         ###########################################
@@ -329,6 +351,7 @@ class UserStack(Stack):
         user_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         user_course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         user_course_enrolled_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        user_course_enrol_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         user_chat_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         user_chat_contactlist_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         student_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
