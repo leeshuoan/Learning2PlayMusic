@@ -18,6 +18,7 @@ class UserStack(Stack):
         FUNCTIONS_FOLDER = "./lambda_functions/"
         USER_FUNCTIONS_FOLDER = "user"
         USER_COURSE_FUNCTIONS_FOLDER = "user.course"
+        USER_COURSE_ENROLLED_FUNCTIONS_FOLDER = "user.course.enrolled"
         USER_CHAT_FUNCTIONS_FOLDER = "user.chat"
         USER_CHAT_CONTACTLIST_FUNCTIONS_FOLDER = "user.chat.contactlist"
         USER_STUDENT_FUNCTIONS_FOLDER = "user.student"
@@ -49,6 +50,10 @@ class UserStack(Stack):
         get_user_course = _lambda.Function(self, "getUserCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_FUNCTIONS_FOLDER}.get_user_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         post_user_course = _lambda.Function(self, "postUserCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_FUNCTIONS_FOLDER}.post_user_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         delete_user_course = _lambda.Function(self, "deleteUserCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_FUNCTIONS_FOLDER}.delete_user_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
+        # /user/course/enrolled
+        post_user_course_enrolled = _lambda.Function(self, "postUserCourseEnrolled", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_ENROLLED_FUNCTIONS_FOLDER}.post_user_course_enrolled.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+
 
         ########################
         #  LAMBDA - STUDENTS   #
@@ -110,6 +115,7 @@ class UserStack(Stack):
         # Create resources for the API
         user_resource = main_api.root.add_resource("user")
         user_course_resource = user_resource.add_resource("course")
+        user_course_enrolled_resource = user_course_resource.add_resource("course")
         user_chat_resource = user_resource.add_resource("chat")
         user_chat_contactlist_resource = user_chat_resource.add_resource("contactlist")
 
@@ -149,6 +155,26 @@ class UserStack(Stack):
         user_course_resource.add_method("DELETE", apigw.LambdaIntegration(delete_user_course), request_parameters={
           'method.request.querystring.userId': True,
           'method.request.querystring.courseId': True})
+
+        # /user/course/enrolled
+
+        post_user_course_enrolled_model = apigw.Model(
+                self,
+                "PostUserCourseEnrolledModel",
+                rest_api=main_api,
+                content_type="application/json",
+                model_name="PostUserCourseEnrolledModel",
+                schema=apigw.JsonSchema(
+                    title="PostUserCourseEnrolledModel",
+                    schema=apigw.JsonSchemaVersion.DRAFT4,
+                    type=apigw.JsonSchemaType.OBJECT,
+                    properties={
+                        "userIds": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY)
+                    },
+                    required=["userIds"]))
+
+        user_course_enrolled_resource.add_method("POST", apigw.LambdaIntegration(post_user_course_enrolled), request_models={
+            "application/json": post_user_course_enrolled_model})
 
 
         ###########################################
@@ -302,6 +328,7 @@ class UserStack(Stack):
         # Enable CORS for each resource/sub-resource etc.
         user_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         user_course_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
+        user_course_enrolled_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         user_chat_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         user_chat_contactlist_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
         student_resource.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST", "DELETE", "PUT"], status_code=200)
