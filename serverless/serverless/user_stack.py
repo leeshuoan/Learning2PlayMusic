@@ -158,20 +158,20 @@ class UserStack(Stack):
 
         # /user/course/enrolled
 
-        post_user_course_enrolled_model = main_api.add_model(
-            "PostUserCourseEnrolledModel",
-            content_type="application/json",
-            model_name="PostUserCourseEnrolledModel",
-            schema=apigw.JsonSchema(
-                title="PostUserCourseEnrolledModel",
-                schema=apigw.JsonSchemaVersion.DRAFT4,
-                type=apigw.JsonSchemaType.OBJECT,
-                properties={
-                    "userIds": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY)
-                },
-                required=["userIds"]
-            ),
-        )
+        post_user_course_enrolled_model = apigw.Model(
+                self,
+                "PostUserCourseEnrolledModel",
+                rest_api=main_api,
+                content_type="application/json",
+                model_name="PostUserCourseEnrolledModel",
+                schema=apigw.JsonSchema(
+                    title="PostUserCourseEnrolledModel",
+                    schema=apigw.JsonSchemaVersion.DRAFT4,
+                    type=apigw.JsonSchemaType.OBJECT,
+                    properties={
+                        "userIds": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY)
+                    },
+                    required=["userIds"]))
 
         user_course_enrolled_resource.add_method("POST", apigw.LambdaIntegration(post_user_course_enrolled), request_models={
             "application/json": post_user_course_enrolled_model})
