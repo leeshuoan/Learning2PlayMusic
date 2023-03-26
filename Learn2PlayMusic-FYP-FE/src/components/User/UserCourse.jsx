@@ -291,16 +291,7 @@ const UserCourse = (userInfo) => {
                   </Typography>
                   <Grid container spacing={2} sx={{ alignItems: "center" }}>
                     <Grid item xs={12} sm={6}>
-<<<<<<< Updated upstream
-                      <Button
-                        variant="contained"
-                        disabled={quiz.QuizAttempt >= quiz.QuizMaxAttempt}
-                        onClick={() => {
-                          navigate(`${quiz.id}`);
-                        }}>
-=======
                       <Button variant="contained" disabled={quiz.QuizAttempt >= quiz.QuizMaxAttempts} onClick={() => { navigate(`${quiz.id}`) }}>
->>>>>>> Stashed changes
                         <PlayCircleFilledIcon sx={{ mr: 1 }} />
                         Start Quiz
                       </Button>
@@ -318,22 +309,9 @@ const UserCourse = (userInfo) => {
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-<<<<<<< Updated upstream
-                      <Typography variant="body1" sx={{ textAlign: "center", color: "primary.main", display: { xs: "none", sm: "block" } }}>
-                        Attempts
-                      </Typography>
-                      <Typography variant="body1" sx={{ textAlign: "center", color: quiz.attempts == 0 ? "grey" : "", display: { xs: "none", sm: "block" } }}>
-                        {quiz.QuizAttempt}/{quiz.QuizMaxAttempt}
-                      </Typography>
-                      <Typography variant="body1" sx={{ color: quiz.attempts == 0 ? "grey" : "", display: { xs: "flex", sm: "none" } }}>
-                        <span sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</span>
-                        {quiz.QuizAttempt}/{quiz.QuizMaxAttempt}
-                      </Typography>
-=======
                       <Typography variant='body1' sx={{ textAlign: "center", color: 'primary.main', display: { xs: "none", sm: "block" } }}>Attempts</Typography>
                       <Typography variant='body1' sx={{ textAlign: "center", color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "none", sm: "block" } }}>{quiz.QuizAttempt}/{quiz.QuizMaxAttempts}</Typography>
                       <Typography variant='body1' sx={{ color: quiz.attempts == 0 ? 'grey' : '', display: { xs: "flex", sm: "none" } }}><span sx={{ color: "primary.main", mr: 0.5 }}>Attempts:</span>{quiz.QuizAttempt}/{quiz.QuizMaxAttempts}</Typography>
->>>>>>> Stashed changes
                     </Grid>
                   </Grid>
                 </Card>
