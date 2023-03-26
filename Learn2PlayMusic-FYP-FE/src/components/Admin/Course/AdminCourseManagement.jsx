@@ -1,6 +1,6 @@
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
-import { Backdrop, Box, Button, CircularProgress, IconButton, Typography } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Container, IconButton, Typography ,Tooltip} from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import TransitionModal from "../../utils/TransitionModal";
@@ -101,19 +101,23 @@ const AdminCourseManagement = () => {
               alignItems: "center",
               gap: "2px",
             }}>
-            <IconButton
-              onClick={() => {
-                handleOpenEditModal(row.original.timeSlot, row.original.teacherName, row.original.courseName, row.original.id, row.original.teacherId);
-              }}>
-              <EditIcon></EditIcon>
-            </IconButton>
-            <IconButton
-              color="error"
-              onClick={() => {
-                handleOpenDeleteModal(row.original.timeSlot, row.original.teacherName, row.original.courseName, row.original.id);
-              }}>
-              <DeleteForeverIcon></DeleteForeverIcon>
-            </IconButton>
+            <Tooltip title="Edit" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  handleOpenEditModal(row.original.timeSlot, row.original.teacherName, row.original.courseName, row.original.id, row.original.teacherId);
+                }}>
+                <EditIcon></EditIcon>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete" placement="bottom">
+              <IconButton
+                color="error"
+                onClick={() => {
+                  handleOpenDeleteModal(row.original.timeSlot, row.original.teacherName, row.original.courseName, row.original.id);
+                }}>
+                <DeleteForeverIcon></DeleteForeverIcon>
+              </IconButton>
+            </Tooltip>
           </Box>
         ),
       },
@@ -146,7 +150,7 @@ const AdminCourseManagement = () => {
     });
   }, [reloadData]);
   return (
-    <Box>
+    <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       {/* new course form */}
       <TransitionModal open={openModal} handleClose={handleCloseModal} style={modalStyle}>
         <CreateCourseForm handleCloseModal={handleCloseModal} handleCloseModalSuccess={handleCloseModalSuccess}></CreateCourseForm>
@@ -195,7 +199,7 @@ const AdminCourseManagement = () => {
       <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Box>
+    </Container>
   );
 };
 export default AdminCourseManagement;

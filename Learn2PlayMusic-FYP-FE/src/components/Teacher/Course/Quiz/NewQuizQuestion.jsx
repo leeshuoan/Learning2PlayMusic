@@ -31,7 +31,7 @@ const NewQuizQuestion = ({qnInfo, handleQuestionChange}) => {
       questionOptionType: questionType,
       options: options,
       answer: answer,
-      image: image,
+      questionImage: image,
     }
     console.log(newQnInfo)
     handleQuestionChange(newQnInfo)
@@ -140,10 +140,10 @@ const NewQuizQuestion = ({qnInfo, handleQuestionChange}) => {
           <Typography variant="subsubtitle">Select the correct option using the radio buttons</Typography>
         </Box>
         <Box sx={{ display: questionType === "true-false" ? "block" : "none" }}>
-          <InputLabel id="correct-option-label" sx={{ mt: 2 }}>Correct Option</InputLabel>
+          <InputLabel sx={{ mt: 2 }} >Correct Option</InputLabel>
           <RadioGroup onChange={(e) => handleTrueFalseChange(e)}>
               <FormControlLabel sx={{ mr: 0 }} value="True" control={<Radio size="small" />} label="True" />
-              <FormControlLabel sx={{ mr: 0 }} value="False" control={<Radio size="small" />} label="False" />
+              <FormControlLabel sx={{ mr: 0 }} value="False"  control={<Radio size="small" />} label="False" />
           </RadioGroup>
         </Box>
       </Card>

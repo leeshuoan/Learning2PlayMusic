@@ -23,12 +23,13 @@ def lambda_handler(event, context):
 
         for userId in userIds:
             
+            response = {}
+            response['userId'] = userId
+
             user = get_user(userId)
             if not user:
-                response = {
-                    'isSuccessful': False,
-                    'errorMessage': 'userId does not exist in Cognito'
-                }
+                response['isSuccessful'] = False
+                response['errorMessage'] = 'userId does not exist in Cognito'
             
             if 'studentId' in user:
                 partitionkey = f"Student#{userId}"
@@ -37,20 +38,22 @@ def lambda_handler(event, context):
                 partitionkey = f"Teacher#{userId}"
 
             else:
-                response = {
-                    'isSuccessful': False,
-                    'errorMessage': 'Please check that you have entered a correct studentId/teacherId'
-                }
+                response['isSuccessful'] = False
+                response['errorMessage'] = 'Please check that you have entered a correct studentId/teacherId'
 
-            response = table.query(
+            # get all courses that this student is enrolled in
+            db_response = table.query(
                 KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
                 ExpressionAttributeValues={
                     ":PK": partitionkey,
                     ":SK": "Course#"
                 })
         
-            items = response['Items']
+            items = db_response['Items']
+
+            # for each course, get the course details to append to the above response
             for i in range(len(items)):
+                print("i: ", i)
                 courseId = items[i].get("SK").split("#")[1]
 
                 course_response = table.get_item(
@@ -65,6 +68,10 @@ def lambda_handler(event, context):
                 course_item.pop("SK")
 
                 items[i].update(course_item)
+
+                print("response: ", response)
+                print("items[i]: ", items[i])
+
 
         # will always return response 200
         return response_200_items(items)
