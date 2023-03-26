@@ -1,12 +1,9 @@
 const DynamoDB = require("aws-sdk/clients/dynamodb");
-const { v4: uuidv4 } = require("uuid");
-
 const { response_200, response_400, response_500 } = require("./responses");
 
 const dynamodb = new DynamoDB.DocumentClient();
 
 async function lambda_handler(event, context) {
-  const uuid = uuidv4();
 
   try {
     const requestBody = JSON.parse(event.body);
@@ -26,8 +23,11 @@ async function lambda_handler(event, context) {
       AttributesToGet: ["QuizAttempt", "QuizMaxAttempt"],
     };
 
-    attemptsResponse = await dynamodb.get(getAttemptsParams).promise();
-    attempts = attemptsResponse.Item;
+    const attemptsResponse = await dynamodb.get(getAttemptsParams).promise();
+    const attempts = attemptsResponse.Item;
+    if (!attempts || !attempts.QuizAttempt || !attempts.QuizMaxAttempt) {
+      throw new Error("Invalid response from DynamoDB");
+    }
 
     if (attempts.QuizAttempt >= attempts.QuizMaxAttempt) {
       throw new Error(
@@ -43,9 +43,9 @@ async function lambda_handler(event, context) {
         ":sk": `Quiz#${quizId}Question#`,
       },
     };
-    questions_query = await dynamodb.query(getQuestionParam).promise();
-    questions = questions_query.Items;
-    numQuestions = questions.length;
+    const questionsQuery = await dynamodb.query(getQuestionParam).promise();
+    const questions = questionsQuery.Items;
+    const numQuestions = questions.length;
 
     for (const question of questions) {
       const SK = question.SK;
@@ -72,6 +72,8 @@ async function lambda_handler(event, context) {
       await dynamodb.update(updateQuestionParams).promise();
     }
 
+    const quizScorePercentage = numQuestions > 0 ? Math.round((quizScore / numQuestions) * 10000) / 10000 : 0;
+
     const updateStudentQuizParams = {
       TableName: "LMS",
       Key: {
@@ -81,7 +83,7 @@ async function lambda_handler(event, context) {
       UpdateExpression:
         "set QuizScore = :newQuizScore, QuizAttempt = QuizAttempt + :val",
       ExpressionAttributeValues: {
-        ":newQuizScore": quizScore / numQuestions,
+        ":newQuizScore": quizScorePercentage,
         ":val": 1,
       },
     };
@@ -90,7 +92,7 @@ async function lambda_handler(event, context) {
 
     return response_200(`Quiz ${quizId} successfully submitted`);
   } catch (e) {
-    return response_400(e);
+    return response_400(e.message);
   }
 }
 

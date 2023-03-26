@@ -70,11 +70,13 @@ def handle_general_course_quiz(courseId, table, queryStringParameters):
     else:
         response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+            FilterExpression='Visibility= :visibility',
             ExpressionAttributeValues={
                 ":PK": f"Course#{courseId}",
-                ":SK": f"Quiz#"
-            },
-            FilterExpression='attribute_not_exists(QuestionOptionType)'
+                ":SK": f"Quiz#",
+                ":visibility": True
+            }
+
         )
         items = response["Items"]
 
@@ -94,11 +96,12 @@ def handle_student_course_quiz(courseId, studentId, table, queryStringParameters
     else:
         response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
+            FilterExpression='Visibility= :visibility',
             ExpressionAttributeValues={
                 ":PK": f"Course#{courseId}",
-                ":SK": f"Student#{studentId}Quiz#"
+                ":SK": f"Student#{studentId}Quiz#",
+                ":visibility": True
             },
-            FilterExpression='attribute_not_exists(QuestionOptionType)'
         )
         items = response["Items"]
 
