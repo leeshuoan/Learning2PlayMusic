@@ -12,22 +12,19 @@ def lambda_handler(event, context):
         
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
-        students_response = {}
-        teachers_response = {}
-        final_response = {
-            'Students': students_response,
-            'Teachers': teachers_response
-        }
+        final_response = {}
 
-        userIds = event['body']['userIds']
+        userIds = json.loads(event['body'])['userIds']
 
         for userId in userIds:
             
-            response = {}
-            response['userId'] = userId
+            print("userId: ", userId)
+
+            response = []
 
             user = get_user(userId)
-            if not user:
+            print("user: ", user)
+            if user == None:
                 response['isSuccessful'] = False
                 response['errorMessage'] = 'userId does not exist in Cognito'
             
@@ -50,6 +47,8 @@ def lambda_handler(event, context):
                 })
         
             items = db_response['Items']
+            items.pop("PK")
+            items.pop("SK")
 
             # for each course, get the course details to append to the above response
             for i in range(len(items)):
@@ -69,12 +68,14 @@ def lambda_handler(event, context):
 
                 items[i].update(course_item)
 
-                print("response: ", response)
-                print("items[i]: ", items[i])
+            # response.append(items)
+            # print("response: ", response)
+            final_response[userId] = items
+            print("final_response: ", final_response)
 
 
         # will always return response 200
-        return response_200_items(items)
+        return response_200_items(final_response)
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")
