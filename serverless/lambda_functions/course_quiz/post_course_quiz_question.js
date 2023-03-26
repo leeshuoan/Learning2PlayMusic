@@ -15,7 +15,7 @@ async function lambda_handler(event, context) {
   try {
     const requestBody = JSON.parse(event.body);
 
-    for (question in requestBody) {
+    for (question of requestBody) {
       let questionId = uuid.slice(0, 8);
       const courseId = question.courseId;
       const quizId = question.quizId;
