@@ -18,12 +18,9 @@ def lambda_handler(event, context):
 
         for userId in userIds:
 
-            print("userId: ", userId)
-
             response = []
-
             user = get_user(userId)
-            print("user: ", user)
+
             if user == None:
                 response = {
                     'error': 'userId does not exist in Cognito'
@@ -56,7 +53,6 @@ def lambda_handler(event, context):
 
             # for each course, get the course details to append to the above resp
             for i in range(len(items)):
-                print("i: ", i)
                 courseId = items[i].get("SK").split("#")[1]
 
                 course_response = table.get_item(
@@ -67,17 +63,12 @@ def lambda_handler(event, context):
                 )
 
                 course_item = course_response['Item']
-                print('course_item before: ', course_item)
                 course_item.pop("PK")
                 course_item.pop("SK")
-                print('course_item after: ', course_item)
 
                 items[i].update(course_item)
 
-            # response.append(items)
-            # print("response: ", response)
             final_response[userId] = items
-            print("final_response: ", final_response)
 
 
         # will always return response 200
