@@ -1,8 +1,9 @@
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from "@mui/icons-material/Delete";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import RestoreFromTrashIcon from "@mui/icons-material/RestoreFromTrash";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Backdrop, Box, Button, CircularProgress, Grid, IconButton, Typography, useTheme } from "@mui/material";
+import { Autocomplete,Backdrop, Box, Button, CircularProgress, Grid, IconButton, Tooltip, Typography, useTheme } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
@@ -15,6 +16,9 @@ const AdminUserManagement = () => {
   const [data, setData] = useState([]);
   const [reloadData, setReloadData] = useState(false);
   const [open, setOpen] = useState(true);
+  const [openEnrolUser, setOpenEnrolUser] = useState(false);
+  const [toEnrolUser, setToEnrolUser] = useState("");
+  const [toEnrolCourse, setToEnrolCourse] = useState("");
   const [openCreateUser, setOpenCreateUser] = useState(false);
   const [openDisableUser, setOpenDisableUser] = useState(false);
   const [openEnableUser, setOpenEnableUser] = useState(false);
@@ -24,6 +28,17 @@ const AdminUserManagement = () => {
   const [toDeleteUser, setToDeleteUser] = useState("");
   const [roles, setRoles] = useState([]);
 
+  const modalStyle = {
+    position: "relative",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "50%",
+    bgcolor: "background.paper",
+    border: "1px solid #000",
+    borderRadius: 2,
+    p: 4,
+  };
   // list groups
   const listGroups = async () => {
     let apiName = "AdminQueries";
@@ -77,6 +92,30 @@ const AdminUserManagement = () => {
       userData[idx]["UserCreateDate"] = formattedDate;
     }
     setData(userData);
+  };
+
+  const enrolUser = async (user) => {
+    setOpenEnrolUser(true);
+    setToEnrolUser(user);
+    console.log(toEnrolUser.Attributes);
+  };
+
+  const confirmEnrolUser = async () => {
+    let endpoint = `${import.meta.env.VITE_API_URL}//user/student/course?courseId=1&userId=1`;
+    let myInit = {
+      method : "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    let response = await fetch(endpoint, myInit);
+    if (response.ok) {
+      toast.success("User enrolled successfully", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+      setReloadData(!reloadData);
+      setOpenEnrolUser(false);
+    }
   };
 
   const disableUser = async (user) => {
@@ -221,33 +260,50 @@ const AdminUserManagement = () => {
               display: "flex",
               alignItems: "center",
             }}>
-            <IconButton
-              variant="contained"
-              color="error"
-              sx={{ display: row.original.Enabled == "Enabled" ? "block" : "none", mt: 0.5 }}
-              onClick={() => {
-                disableUser(row.original);
-              }}>
-              <DeleteIcon />
-            </IconButton>
-            <IconButton
-              variant="contained"
-              color="success"
-              sx={{ display: row.original.Enabled == "Enabled" ? "none" : "block", mt: 0.5 }}
-              onClick={() => {
-                enableUser(row.original);
-              }}>
-              <RestoreFromTrashIcon />
-            </IconButton>
-            <IconButton
-              variant="contained"
-              color="error"
-              disabled={row.original.Enabled == "Enabled" ? true : false}
-              onClick={() => {
-                deleteUser(row.original);
-              }}>
-              <DeleteForeverIcon />
-            </IconButton>
+            <Tooltip title="Enrol user" placement="bottom">
+              <IconButton
+                variant="contained"
+                color="success"
+                disabled={row.original.Enabled == "Enabled" ? false : true}
+                onClick={() => {
+                  enrolUser(row.original);
+                }}>
+                <AddCircleIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Disable user" placement="bottom">
+              <IconButton
+                variant="contained"
+                color="error"
+                sx={{ display: row.original.Enabled == "Enabled" ? "block" : "none", mt: 0.5 }}
+                onClick={() => {
+                  disableUser(row.original);
+                }}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Enable user" placement="bottom">
+              <IconButton
+                variant="contained"
+                color="success"
+                sx={{ display: row.original.Enabled == "Enabled" ? "none" : "block", mt: 0.5 }}
+                onClick={() => {
+                  enableUser(row.original);
+                }}>
+                <RestoreFromTrashIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete user forever" placement="bottom">
+              <IconButton
+                variant="contained"
+                color="error"
+                disabled={row.original.Enabled == "Enabled" ? true : false}
+                onClick={() => {
+                  deleteUser(row.original);
+                }}>
+                <DeleteForeverIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
         ),
       },
@@ -257,37 +313,10 @@ const AdminUserManagement = () => {
 
   return (
     <Box m={2}>
-      <TransitionModal
-        open={openCreateUser}
-        handleClose={() => setOpenCreateUser(false)}
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "80%",
-          maxWidth: 800,
-          bgcolor: "background.paper",
-          border: "1px solid #000",
-          borderRadius: 2,
-          p: 4,
-        }}>
+      <TransitionModal open={openCreateUser} handleClose={() => setOpenCreateUser(false)} style={modalStyle}>
         {<CreateUserForm roles={roles} handleClose={() => createdUser()} />}
       </TransitionModal>
-      <TransitionModal
-        open={openDeleteUser}
-        handleClose={() => setOpenDeleteUser(false)}
-        style={{
-          position: "relative",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "50%",
-          bgcolor: "background.paper",
-          border: "1px solid #000",
-          borderRadius: 2,
-          p: 4,
-        }}>
+      <TransitionModal open={openDeleteUser} handleClose={() => setOpenDeleteUser(false)} style={modalStyle}>
         <>
           <Grid container spacing={2}>
             <Grid item xs={1}>
@@ -326,20 +355,7 @@ const AdminUserManagement = () => {
           </Grid>
         </>
       </TransitionModal>
-      <TransitionModal
-        open={openEnableUser}
-        handleClose={() => setOpenEnableUser(false)}
-        style={{
-          position: "relative",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "50%",
-          bgcolor: "background.paper",
-          border: "1px solid #000",
-          borderRadius: 2,
-          p: 4,
-        }}>
+      <TransitionModal open={openEnableUser} handleClose={() => setOpenEnableUser(false)} style={modalStyle}>
         <>
           <Grid container spacing={2}>
             <Grid item xs={1}>
@@ -375,20 +391,7 @@ const AdminUserManagement = () => {
           </Grid>
         </>
       </TransitionModal>
-      <TransitionModal
-        open={openDisableUser}
-        handleClose={() => setOpenDisableUser(false)}
-        style={{
-          position: "relative",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "50%",
-          bgcolor: "background.paper",
-          border: "1px solid #000",
-          borderRadius: 2,
-          p: 4,
-        }}>
+      <TransitionModal open={openDisableUser} handleClose={() => setOpenDisableUser(false)} style={modalStyle}>
         <>
           <Grid container spacing={2}>
             <Grid item xs={1}>
@@ -417,6 +420,57 @@ const AdminUserManagement = () => {
                 sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
                 onClick={() => {
                   setOpenDisableUser(false);
+                }}>
+                Cancel
+              </Button>
+            </Grid>
+          </Grid>
+        </>
+      </TransitionModal>
+      <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle}>
+        <>
+          <Grid container spacing={2}>
+            <Grid item xs={1}>
+              <CloseIcon
+                sx={{ "&:hover": { cursor: "pointer" } }}
+                onClick={() => {
+                  setOpenEnrolUser(false);
+                }}
+              />
+            </Grid>
+            <Grid item xs={10}>
+              <Typography align="center" variant="h5">
+                Enrol User?
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
+              <Box>Name: {toEnrolUser && toEnrolUser.Attributes.Name}</Box>
+              <Box>Email: {toEnrolUser && toEnrolUser.Attributes.Email}</Box>
+            </Grid>
+
+            <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+              {/* <Autocomplete
+                disablePortal
+                name="course"
+                id="course"
+                options={courses}
+                isOptionEqualToValue={(option, value) => option.teacherId === value.teacherId}
+                getOptionLabel={(option) => option.teacherName}
+                renderInput={(params) => <TextField {...params} label="Teacher *" />}
+                onChange={(event, newValue) => {
+                  setSelectedTeacher(newValue);
+                }}
+              /> */}
+            </Grid>
+            <Grid item xs={12} sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+              <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmEnrolUser()}>
+                Enrol
+              </Button>
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
+                onClick={() => {
+                  setOpenEnrolUser(false);
                 }}>
                 Cancel
               </Button>
