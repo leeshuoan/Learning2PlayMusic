@@ -50,7 +50,7 @@ def lambda_handler(event, context):
             items.pop("PK")
             items.pop("SK")
 
-            # for each course, get the course details to append to the above response
+            # for each course, get the course details to append to the above resp
             for i in range(len(items)):
                 print("i: ", i)
                 courseId = items[i].get("SK").split("#")[1]
