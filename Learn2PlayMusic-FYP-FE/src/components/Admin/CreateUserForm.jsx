@@ -29,9 +29,7 @@ export default function CreateUserForm({ roles, handleClose }) {
 
     if (email === "" || name === "" || role === "") {
       console.log("Please fill in all fields");
-      toast.error("Please fill in all fields", {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      toast.error("Please fill in all fields");
       return;
     }
 
@@ -63,9 +61,7 @@ export default function CreateUserForm({ roles, handleClose }) {
       }
     } catch (error) {
       console.log(error.message);
-      toast.error("Error creating user", {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      toast.error("Error creating user");
     }
   };
   return (

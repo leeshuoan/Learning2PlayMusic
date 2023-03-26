@@ -1,7 +1,7 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { Autocomplete, Backdrop, Box, Button, CircularProgress,Container, Grid, IconButton, Switch, TextField, Tooltip, Typography, useTheme } from "@mui/material";
+import { Autocomplete, Backdrop, Box, Button, CircularProgress, Container, Grid, IconButton, Switch, TextField, Tooltip, Typography, useTheme } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
@@ -43,6 +43,11 @@ const AdminUserManagement = (userInfo) => {
       p: 4,
     };
   }
+  // enrol multiple users
+  function enrolUsers() {
+    const selectedUserIds = Object.keys(rowSelection).map((key) => data[key].Username);
+  }
+
   // list groups ================================================================================================================================================================================================================================================================================
   const listGroups = async () => {
     let apiName = "AdminQueries";
@@ -103,25 +108,35 @@ const AdminUserManagement = (userInfo) => {
   const enrolUser = async (user) => {
     setOpenEnrolUser(true);
     setToEnrolUser(user);
-    console.log(toEnrolUser.Attributes);
   };
 
   const confirmEnrolUser = async () => {
-    let endpoint = `${import.meta.env.VITE_API_URL}//user/student/course?courseId=1&userId=1`;
+    if (toEnrolCourse == null) {
+      toast.error("Please select a course");
+      return;
+    }
+    let endpoint = `${import.meta.env.VITE_API_URL}/user/course?courseId=${toEnrolCourse.id}&userId=${toEnrolUser.Username}`;
     let myInit = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
     };
-    let response = await fetch(endpoint, myInit);
-    if (response.ok) {
-      toast.success("User enrolled successfully", {
-        position: toast.POSITION.TOP_CENTER,
-      });
-      setReloadData(!reloadData);
-      setOpenEnrolUser(false);
+    console.log(toEnrolCourse.id);
+    let res = await fetch(endpoint, myInit);
+    let data = await res.json();
+    if (res.status == 202) {
+      toast.warning(toEnrolUser.Attributes.Name + " has already been enrolled  in " + toEnrolCourse.courseDetails);
+    } else if (res.status == 400) {
+      toast.error(data.message);
+    } else if (res.status == 200) {
+      toast.success(toEnrolUser.Attributes.Name + " successfully enrolled in " + toEnrolCourse.courseDetails);
     }
+    setToEnrolCourse("");
+    setToEnrolUser("");
+    setReloadData(!reloadData);
+    setOpenEnrolUser(false);
+    return;
   };
   // disable user================================================================================================================================================================================================================================================================================
   const disableUser = async (user) => {
@@ -145,9 +160,7 @@ const AdminUserManagement = (userInfo) => {
     let success = await API.post(apiName, path, myInit);
     console.log(success);
     if (success.message) {
-      toast.success("User disabled successfully", {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      toast.success("User disabled successfully");
       setReloadData(!reloadData);
       setOpenDisableUser(false);
     }
@@ -174,9 +187,7 @@ const AdminUserManagement = (userInfo) => {
     let success = await API.post(apiName, path, myInit);
     console.log(success);
     if (success.message) {
-      toast.success("User enabled successfully", {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      toast.success("User enabled successfully");
       setReloadData(!reloadData);
       setOpenEnableUser(false);
     }
@@ -201,9 +212,7 @@ const AdminUserManagement = (userInfo) => {
     };
     let success = await API.post(apiName, path, myInit);
     if (success.message) {
-      toast.success("User deleted successfully", {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      toast.success("User deleted successfully");
       setReloadData(!reloadData);
       setOpenDeleteUser(false);
     }
@@ -433,7 +442,7 @@ const AdminUserManagement = (userInfo) => {
                   }}>
                   Cancel
                 </Button>
-                <Button variant="contained" sx={{ mr: 1 , color:"black" }} color="success" onClick={() => confirmEnableUser()}>
+                <Button variant="contained" sx={{ mr: 1, color: "black" }} color="success" onClick={() => confirmEnableUser()}>
                   Enable
                 </Button>
               </Grid>
@@ -567,6 +576,9 @@ const AdminUserManagement = (userInfo) => {
                     setOpenCreateUser(true);
                   }}>
                   Add User
+                </Button>
+                <Button variant="contained" onClick={enrolUsers} disabled={table.getSelectedRowModel().flatRows.length === 0}>
+                  Enrol User
                 </Button>
               </Box>
             );
