@@ -13,18 +13,23 @@ const AdminUserManagement = (userInfo) => {
   // table data
   const [data, setData] = useState([]);
   const [reloadData, setReloadData] = useState(false);
-  const [userIds, setUserIds] = useState([]); // all userIds of users in table (used to fetch for courses the user is enrolled in)
+  // const [userIds, setUserIds] = useState([]); // all userIds of users in table (used to fetch for courses the user is enrolled in)
   const [userCoursesEnrolled, setUserCoursesEnrolled] = useState([{ userid: [{ PK: "", SK: "", CourseSlot: "", CourseName: "", TeacherId: "" }] }]);
   // const [userCoursesEnrolled, setUserCoursesEnrolled] = useState([{ userid: "", CourseSlot: "", CourseName: "", }]);
 
   // loading screen
   const [open, setOpen] = useState(true);
-  // all courses -> as optiosn for enroling users to course
+  // all courses -> as options for enroling users to course
   const [allCourses, setAllCourses] = useState([]);
   // enrol user ala carte
   const [openEnrolUser, setOpenEnrolUser] = useState(false);
   const [toEnrolUser, setToEnrolUser] = useState("");
-  const [toEnrolCourse, setToEnrolCourse] = useState("");
+  const [toEnrolCourse, setToEnrolCourse] = useState(""); // used for batch too
+  // enrol multiple users;
+  const [rowSelection, setRowSelection] = useState([]);
+  const [openEnrolMultipleUsers, setOpenEnrolMultipleUser] = useState(false);
+  const [toMultipleEnrolUsers, setToMultipleEnrolUsers] = useState([]);
+  const [displayText, setDisplayText] = useState("");
   // create user
   const [openCreateUser, setOpenCreateUser] = useState(false);
   const [roles, setRoles] = useState([]);
@@ -37,12 +42,6 @@ const AdminUserManagement = (userInfo) => {
   // delete user
   const [openDeleteUser, setOpenDeleteUser] = useState(false);
   const [toDeleteUser, setToDeleteUser] = useState("");
-  // enrol multiple users;
-  const [rowSelection, setRowSelection] = useState([]);
-  const [openEnrolMultipleUsers, setOpenEnrolMultipleUser] = useState(false);
-  const [toEnrolUserIds, setToEnrolUserIds] = useState([]);
-  const [toEnrolUsernames, setToEnrolUsernames] = useState([]);
-  const [toEnrolCourses, setToEnrolCourses] = useState([]);
 
   function modalStyle(widthPercent) {
     return {
@@ -109,15 +108,60 @@ const AdminUserManagement = (userInfo) => {
       let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
       userData[idx]["UserCreateDate"] = formattedDate;
     }
-
+    // settle courses user is enrolled in
+    let userCoursesDict = await postAPIWithBody(`${import.meta.env.VITE_API_URL}/user/course/enrolled`, { userIds: fetchedUserIds });
+    setUserCoursesEnrolled(userCoursesDict);
+    // for (let i in userData) {
+    //   userData[i]["CoursesEnrolled"] = userCoursesDict[userData[i].Username];
+    // }
     setData(userData);
-    setUserIds(fetchedUserIds);
   };
   // enrol multiple users================================================================================================================================================================================================================================================================================
   function enrolMultipleUsers() {
-    const selectedUserIds = Object.keys(rowSelection).map((key) => data[key].Username);
-    setToEnrolUsers(selectedUserIds);
+    let toEnrolUsers = Object.keys(rowSelection).map((key) => data[key]);
+    let temp = "";
+
+    for (let i = 0; i < toEnrolUsers.length; i++) {
+      if (i == toEnrolUsers.length - 1) {
+        temp += toEnrolUsers[i].Attributes.Name;
+      } else {
+        temp += toEnrolUsers[i].Attributes.Name + ", ";
+      }
+    }
+    setDisplayText(temp);
+
+    setToMultipleEnrolUsers(toEnrolUsers);
+    setOpenEnrolMultipleUser(true);
   }
+  const confirmEnrolMultipleUsers = async () => {
+    if (toEnrolCourse == null) {
+      toast.error("Please select a course");
+      return;
+    }
+    let endpoint = `${import.meta.env.VITE_API_URL}/user/course/enrol`;
+    let myInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        courseId: toEnrolCourse.id,
+        userIds: toMultipleEnrolUsers.map((user) => user.Username),
+      }),
+    };
+    let res = await fetch(endpoint, myInit);
+    if (res.status == 202) {
+      toast.warning("Some users have already been enrolled in this course");
+    } else if (res.status == 400) {
+      toast.error("Something went wrong");
+    } else if (res.status == 200) {
+      toast.success("Successfully enrolled users");
+    } else {
+      toast.error("Something went wrong");
+    }
+    setOpenEnrolMultipleUser(false);
+    return;
+  };
 
   // enrol user ala carte================================================================================================================================================================================================================================================================================
   const enrolUser = async (user) => {
@@ -257,30 +301,31 @@ const AdminUserManagement = (userInfo) => {
     return response.json();
   }
 
-  // const getUserCoursesEnrolledAPI = postAPIWithBody(`${import.meta.env.VITE_API_URL}/user/course/enrolled`, { userIds: userIds });
+  // const getUserCoursesEnrolledAPI = ;
   const getCourses = getAPI(`${import.meta.env.VITE_API_URL}/course`);
 
   useEffect(() => {
     async function fetchData() {
-      // const [userCoursesEnrolled, courses] = await Promise.all([getUserCoursesEnrolledAPI, getCourses]);
       const [courses] = await Promise.all([getCourses]);
+      // const [userCoursesEnrolled, courses] = await Promise.all([ getCourses]);
       var fetchedCourses = courses.map((course) => {
         const id = course.SK.split("Course#")[1];
         const courseDetails = course.CourseName + " on " + course.CourseSlot;
         return { id, courseDetails };
       });
-      console.log(fetchedCourses);
-      setAllCourses(fetchedCourses);
 
+      setAllCourses(fetchedCourses);
+      console.log(userCoursesEnrolled);
       // var fetchedUserCoursesEnrolled = userCoursesEnrolled.map((userCourseEnrolled) => {
       //   return { ...userCourseEnrolled };
       // });
       // console.log(fetchedUserCoursesEnrolled);
       // setUserCoursesEnrolled(fetchedUserCoursesEnrolled);
     }
-    fetchData();
+
     listUsers();
     listGroups();
+    fetchData();
     setOpen(false);
     return () => {};
   }, [reloadData]);
@@ -534,15 +579,12 @@ const AdminUserManagement = (userInfo) => {
             <Grid container spacing={2}>
               <Grid item xs={10}>
                 <Typography align="center" variant="h5">
-                  Enrol User?
+                  Enrol the following users?
                 </Typography>
               </Grid>
               <Grid item xs={12} sx={{ display: "flex", alignItems: "left", flexDirection: "column" }}>
                 <Box>
-                  <b>Name:</b> {toEnrolUser && toEnrolUser.Attributes.Name}
-                </Box>
-                <Box>
-                  <b>Email</b> {toEnrolUser && toEnrolUser.Attributes.Email}
+                  <b>Name:</b> {displayText}
                 </Box>
               </Grid>
 
@@ -566,11 +608,11 @@ const AdminUserManagement = (userInfo) => {
                   variant="contained"
                   sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
                   onClick={() => {
-                    setOpenEnrolUser(false);
+                    setOpenEnrolMultipleUser(false);
                   }}>
                   Cancel
                 </Button>
-                <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmEnrolUser()}>
+                <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmEnrolMultipleUsers()}>
                   Enrol
                 </Button>
               </Grid>
@@ -657,7 +699,7 @@ const AdminUserManagement = (userInfo) => {
                   Add User
                 </Button>
                 <Button variant="contained" onClick={enrolMultipleUsers} disabled={table.getSelectedRowModel().flatRows.length === 0}>
-                  Enrol User
+                  Enrol User(s)
                 </Button>
               </Box>
             );
@@ -676,6 +718,30 @@ const AdminUserManagement = (userInfo) => {
               <Typography variant="body2">
                 <b>User Status:</b> {row.original.UserStatus}
               </Typography>
+              <Typography variant="body2">
+                <b>Courses enrolled in:</b>
+                {userCoursesEnrolled[row.original.Username].map((course) => {
+                  return (
+                    <span key={course.SK + course.PK}>
+                      <br></br>
+                      {course.CourseName} on {course.CourseSlot}
+                    </span>
+                  );
+                })}
+              </Typography>
+              {/* {data.map((user) => {
+                return (
+                  <Typography variant="body2" key={user.Username}>
+                    {user["CoursesEnrolled"].map((course) => {
+                      return (
+                        <div key={course}>
+                          {course.CourseName} {course.CourseSlot}
+                        </div>
+                      );
+                    })}
+                  </Typography>
+                );
+              })} */}
             </Box>
           )}></MaterialReactTable>
         {/* foot note ==========================================================================================*/}
