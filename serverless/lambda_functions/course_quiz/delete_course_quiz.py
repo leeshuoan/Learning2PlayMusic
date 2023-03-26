@@ -19,14 +19,14 @@ def lambda_handler(event, context):
         if not combination_id_exists("Course", course_id, "Quiz", quiz_id):
             return response_404("quizId does not exist in database")
         
-        response = table.query(
+        quizzes_response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
             ExpressionAttributeValues={
                 ":PK": f"Course#{course_id}",
-                ":SK": f"Quiz#"
+                ":SK": f"Quiz#{quiz_id}"
             }
         )
-        items = response["Items"]
+        items = quizzes_response["Items"]
 
         for item in items:
             table.delete_item(
@@ -37,6 +37,22 @@ def lambda_handler(event, context):
             )
 
     # TODO: get all students in the course, foreach student, delete Student#<studentID>Quiz#<quizId>
+        students_response = table.query(
+        IndexName="SK-PK-index",
+        KeyConditionExpression="SK = :SK AND begins_with(PK, :PK)",
+        ExpressionAttributeValues={
+            ":SK": f"Course#{course_id}",
+            ":PK": "Student#"
+        })
+    
+        students = students_response["Items"]
+        for student in students:
+            table.delete_item(
+                Key={
+                    'PK':f"Course#{course_id}",
+                    'SK':f"{student['SK']}Quiz#{quiz_id}"
+                }
+            )
 
         return response_200_msg(f"successfully deleted quiz and all associated quiz questions under quizId : {quiz_id}")
 

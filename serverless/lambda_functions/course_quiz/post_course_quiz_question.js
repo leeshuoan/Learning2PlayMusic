@@ -13,14 +13,16 @@ async function lambda_handler(event, context) {
   const uuid = uuidv4();
 
   try {
+    let questionCount = 0;
     const requestBody = JSON.parse(event.body);
 
-    for (question in requestBody) {
+    for (let question of requestBody) {
+      questionCount++;
       let questionId = uuid.slice(0, 8);
       const courseId = question.courseId;
       const quizId = question.quizId;
       const questionOptionType = question.questionOptionType;
-      const question = question.question;
+      const questionText = question.question;
       const options = question.options;
       const answer = question.answer;
 
@@ -55,7 +57,7 @@ async function lambda_handler(event, context) {
           PK: `Course#${courseId}`,
           SK: `Quiz#${quizId}Question#${questionId}`,
           QuestionOptionType: questionOptionType,
-          Question: question,
+          Question: questionText,
           Options: options,
           Answer: answer,
           Attempts: 0,
@@ -73,7 +75,7 @@ async function lambda_handler(event, context) {
     }
 
     return response_200(
-      `Successfully inserted Question ${question} with questionId ${questionId}!`
+      `Successfully inserted ${questionCount} Question(s)!`
     );
   } catch (e) {
     return response_400(e);
