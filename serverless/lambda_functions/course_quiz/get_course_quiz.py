@@ -74,7 +74,7 @@ def handle_general_course_quiz(courseId, table, queryStringParameters):
             ExpressionAttributeValues={
                 ":PK": f"Course#{courseId}",
                 ":SK": f"Quiz#",
-                ":visibility": False
+                ":visibility": True
             }
 
         )
@@ -100,7 +100,7 @@ def handle_student_course_quiz(courseId, studentId, table, queryStringParameters
             ExpressionAttributeValues={
                 ":PK": f"Course#{courseId}",
                 ":SK": f"Student#{studentId}Quiz#",
-                ":visibility": False
+                ":visibility": True
             },
         )
         items = response["Items"]
