@@ -118,7 +118,7 @@ function Chat(userInfo) {
         let contactKeys = Object.keys(contact);
         let id = "";
         let name = "";
-        for (k of contactKeys) {
+        for (let k of contactKeys) {
           if (k.endsWith("Id")) {
             id = contact[k];
           }
