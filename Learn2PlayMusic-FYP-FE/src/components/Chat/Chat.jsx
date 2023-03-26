@@ -1,7 +1,7 @@
 import HomeIcon from "@mui/icons-material/Home";
 import MenuIcon from "@mui/icons-material/Menu";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import { Box, Breadcrumbs, Button, Card, Divider, Drawer, Grid, IconButton, InputBase, Link, List, ListItem, ListItemButton, Toolbar, Typography } from "@mui/material";
+import { Box, Breadcrumbs, Button, Card, Divider, Drawer, Grid, IconButton, InputBase, Link, List, ListItem, ListItemButton,ListItemText, Toolbar, Typography, CircularProgress, Backdrop } from "@mui/material";
 import { addDoc, collection, limit, orderBy, query } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
@@ -13,34 +13,12 @@ import ChatMessage from "./ChatMessage";
 const drawerWidth = 240;
 
 function Chat(userInfo) {
-  // let contacts = [
-  //   {
-  //     id: "Chat#1",
-  //     name: "TeacherName",
-  //   },
-  //   {
-  //     id: "Chat#2",
-  //     name: "AdminName",
-  //   },
-  // ];
-
-  // if (userInfo.userInfo.name === "TeacherName") {
-  //   contacts = [
-  //     {
-  //       id: "Chat#1",
-  //       name: "StudentName",
-  //     },
-  //     {
-  //       id: "Chat#2",
-  //       name: "AdminName",
-  //     },
-  //   ];
-  // }
   const userId = userInfo.userInfo.id;
   const contactListAPI = `${import.meta.env.VITE_API_URL}/user/chat/contactlist?userId=${userId}`;
   const messagesEndRef = useRef(null);
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState([{ id: "", name: "" }]);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openLoading, setOpenLoading] = useState(true);
   const [selectedChat, setSelectedChat] = useState(contacts[0]);
   const [newMsg, setNewMsg] = useState("");
   const [root, setRoot] = useState(userInfo.userInfo.role == "Admin" ? "/admin" : userInfo.userInfo.role == "User" ? "/home" : "/teacher");
@@ -111,8 +89,8 @@ function Chat(userInfo) {
   }
 
   useEffect(() => {
-    console.log("useEffect called");
-    getAPI(contactListAPI).then((res) => {
+    async function fetchContacts() {
+      const [res] = await Promise.all([getAPI(contactListAPI)]);
       console.log(res);
       var fetchedData = res.map((contact) => {
         let contactKeys = Object.keys(contact);
@@ -133,11 +111,13 @@ function Chat(userInfo) {
       });
       setContacts(fetchedData);
       console.log(fetchedData);
+    }
+    fetchContacts().then(() => {
+      setOpenLoading(false);
+      scrollToBottom();
     });
-
-    scrollToBottom();
-    console.log(userInfo.userInfo);
   }, [messages]);
+
   return (
     <Box sx={{ display: "flex" }}>
       {/* DEFAULT RENDER */}
@@ -152,7 +132,7 @@ function Chat(userInfo) {
             {contacts.map((contact) => (
               <>
                 <ListItem key={contact.id} selected={selectedChat.id == contact.id} disablePadding>
-                  <ListItemButton>{/* <ListItemText primary={contact.name} /> */}</ListItemButton>
+                  <ListItemButton>{<ListItemText primary={contact.name} />}</ListItemButton>
                 </ListItem>
                 <Divider />
               </>
@@ -246,6 +226,9 @@ function Chat(userInfo) {
           </Box>
         </Box>
       </Box>
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={openLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 }
