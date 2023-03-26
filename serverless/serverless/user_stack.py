@@ -47,7 +47,7 @@ class UserStack(Stack):
 
         # /user/course
         get_user_course = _lambda.Function(self, "getUserCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_FUNCTIONS_FOLDER}.get_user_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
-        # post_user_course = _lambda.Function(self, "postUserCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_FUNCTIONS_FOLDER}.post_user_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
+        post_user_course = _lambda.Function(self, "postUserCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_FUNCTIONS_FOLDER}.post_user_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
         # delete_user_course = _lambda.Function(self, "deleteUserCourse", runtime=_lambda.Runtime.PYTHON_3_9, handler=f"{USER_COURSE_FUNCTIONS_FOLDER}.delete_user_course.lambda_handler", code=_lambda.Code.from_asset(FUNCTIONS_FOLDER), role=LAMBDA_ROLE)
 
         ########################
