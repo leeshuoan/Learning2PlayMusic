@@ -73,7 +73,7 @@ async function lambda_handler(event, context) {
     }
 
     return response_200(
-      `Successfully inserted Question ${questionText} with questionId ${questionId}!`
+      `Successfully inserted Questions!`
     );
   } catch (e) {
     return response_400(e);
