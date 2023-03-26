@@ -9,98 +9,69 @@ const s3 = new AWS.S3();
 
 const bucketName = process.env.QUESTION_IMAGE_BUCKET_NAME;
 
-function checkForNull(...args) {
-  const arguments = [
-    "courseId",
-    "quizId",
-    "questionOptionType",
-    "question",
-    "options",
-    "answer",
-  ];
-
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === undefined || args[i] === "") {
-      throw new Error(`Argument ${arguments[i]} cannot be empty`);
-    }
-  }
-}
-
 async function lambda_handler(event, context) {
   const uuid = uuidv4();
 
   try {
     const requestBody = JSON.parse(event.body);
 
-    let questionId;
-    let isUpdate = false;
+    for (question in requestBody) {
+      let questionId = uuid.slice(0, 8);
+      const courseId = question.courseId;
+      const quizId = question.quizId;
+      const questionOptionType = question.questionOptionType;
+      const question = question.question;
+      const options = question.options;
+      const answer = question.answer;
 
-    if (requestBody && "questionId" in requestBody) {
-      questionId = requestBody.questionId;
-      isUpdate = true;
-    } else {
-      questionId = uuid.slice(0, 8);
-    }
+      let uploadedImage;
+      let s3Params;
+      if (
+        question &&
+        "questionImage" in question &&
+        question["questionImage"] != ""
+      ) {
+        const base64data = question.questionImage;
+        const fileExtension = base64data.split(";")[0].split("/")[1];
+        const base64Image = base64data.replace(/^data:image\/\w+;base64,/, "");
+        const imageBuffer = Buffer.from(base64Image, "base64");
+        s3Params = {
+          Bucket: bucketName,
+          Key: `Course${courseId}/Quiz${quizId}/Question${questionId}.${fileExtension}`,
+          Body: imageBuffer,
+          ContentType: "image/" + fileExtension,
+        };
 
-    const courseId = requestBody.courseId;
-    const quizId = requestBody.quizId;
-    const questionOptionType = requestBody.questionOptionType;
-    const question = requestBody.question;
-    const options = requestBody.options;
-    const answer = requestBody.answer;
+        uploadedImage = await s3.putObject(s3Params).promise();
+      }
 
-    let uploadedImage;
-    let s3Params;
-    if (requestBody && "questionImage" in requestBody && requestBody['questionImage'] != "") {
-      const base64data = requestBody.questionImage;
-      const fileExtension = base64data.split(';')[0].split('/')[1];
-      const base64Image = base64data.replace(/^data:image\/\w+;base64,/, "");
-      const imageBuffer = Buffer.from(base64Image, "base64");
-      s3Params = {
-        Bucket: bucketName,
-        Key: `Course${courseId}/Quiz${quizId}/Question${questionId}.${fileExtension}`,
-        Body: imageBuffer,
-        ContentType: 'image/' + fileExtension
+      if (!options.includes(answer)) {
+        throw new Error("answer must be one of the options");
+      }
+
+      const params = {
+        TableName: "LMS",
+        Item: {
+          PK: `Course#${courseId}`,
+          SK: `Quiz#${quizId}Question#${questionId}`,
+          QuestionOptionType: questionOptionType,
+          Question: question,
+          Options: options,
+          Answer: answer,
+          Attempts: 0,
+          Correct: 0,
+        },
       };
 
-      uploadedImage = await s3.putObject(s3Params).promise();
+      if (
+        "questionImage" in question &&
+        question["questionImage"] != ""
+      ) {
+        params.Item.questionImage = s3Params.Bucket + "/" + s3Params.Key;
+      }
+      await dynamodb.put(params).promise();
     }
 
-    checkForNull(
-      courseId,
-      quizId,
-      questionOptionType,
-      question,
-      options,
-      answer
-    );
-
-    if (!options.includes(answer)) {
-      throw new Error("answer must be one of the options");
-    }
-
-    const params = {
-      TableName: "LMS",
-      Item: {
-        PK: `Course#${courseId}`,
-        SK: `Quiz#${quizId}Question#${questionId}`,
-        QuestionOptionType: questionOptionType,
-        Question: question,
-        Options: options,
-        Answer: answer,
-        Attempts: 0,
-        Correct: 0
-      },
-    };
-
-    if ("questionImage" in requestBody && requestBody['questionImage'] != "") {
-      params.Item.questionImage = s3Params.Bucket + "/" + s3Params.Key;
-    }
-    await dynamodb.put(params).promise();
-
-    if (isUpdate) {
-      return response_200(`Successfully updated questionId ${questionId}!`);
-    }
     return response_200(
       `Successfully inserted Question ${question} with questionId ${questionId}!`
     );
