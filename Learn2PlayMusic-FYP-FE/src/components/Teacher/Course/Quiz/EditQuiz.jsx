@@ -3,18 +3,28 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
+import NewQuizQuestion from "./NewQuizQuestion";
 
 const EditQuiz = () => {
   const navigate = useNavigate();
   const { courseid } = useParams();
-  const { quizid } = useParams();
+  const { quizId } = useParams();
   const [course, setCourse] = useState({});
-  const [quiz, setQuiz] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [quizTitle, setQuizTitle] = useState("");
   const [quizDescription, setQuizDescription] = useState("");
   const [quizMaxAttempts, setQuizMaxAttempts] = useState(1);
   const [visibility, setVisibility] = useState(true);
+  const [quizQuestions, setQuizQuestions] = useState([
+    {
+      qnNumber: 1,
+      question: "",
+      questionOptionType: "MCQ",
+      options: ["", "", "", ""],
+      answer: ""
+    },
+  ]);
+  const [qnNumber, setQnNumber] = useState(2);
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
@@ -34,18 +44,18 @@ const EditQuiz = () => {
   }
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
-  const getQuizAPI = request(`/course/quiz?courseId=${courseid}&quizId=${quizid}`);
+  const getQuizAPI = request(`/course/quiz?courseId=${courseid}&quizId=${quizId}`);
 
   useEffect(() => {
     async function fetchData() {
-      let data1 = [];
-      let data2 = [];
+      let data1 = [], data2 = [], data3 = [];
       try {
         [data1, data2] = await Promise.all([getCourseAPI, getQuizAPI]);
       } catch (error) {
         console.log(error);
       }
 
+      console.log(data2)
       let courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
@@ -53,20 +63,6 @@ const EditQuiz = () => {
         teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
-
-      let quizData = {
-        quizMaxAttempts: data2.QuizMaxAttempts,
-        quizDescription: data2.QuizDescription,
-        quizTitle: data2.QuizTitle,
-        visibility: data2.Visibility,
-      };
-      setQuiz(quizData); // for referencing when update
-      console.log(quizData);
-      // to fill up the form
-      setQuizTitle(data2.QuizTitle);
-      setQuizDescription(data2.QuizDescription);
-      setQuizMaxAttempts(data2.QuizMaxAttempts);
-      setVisibility(data2.Visibility);
     }
 
     fetchData().then(() => {
@@ -74,48 +70,93 @@ const EditQuiz = () => {
     });
   }, []);
 
-  async function editQuiz(e) {
-    e.preventDefault();
+  async function createQuiz(e) {
     setIsLoading(true);
-    // input validation
-    if (quizTitle === "" || quizTitle === "" || quizMaxAttempts === "" || visibility === "") {
-      toast.error("Please fill in all the required fields");
-      setIsLoading(false);
-      return;
-    }
-    if (quizTitle === quiz.quizTitle && quizDescription === quiz.quizDescription && quizMaxAttempts === quiz.quizMaxAttempts && visibility === quiz.visibility) {
-      toast.error("Please make changes to the quiz before updating");
-      setIsLoading(false);
-      return;
-    }
-    if (quizMaxAttempts < 1) {
-      toast.error("Max attempts must be at least 1");
-      setIsLoading(false);
-      return;
+
+    e.preventDefault();
+    console.log(quizQuestions)
+
+    for (let i = 0; i < quizQuestions.length; i++) {
+      console.log(quizQuestions[i].answer)
+      if (quizQuestions[i].answer === "") {
+        toast.error("Missing answer for question");
+        setIsLoading(false);
+        return
+      }
     }
 
-    const updatedQuiz = {
+    const newQuiz = {
       quizTitle: quizTitle,
       quizDescription: quizDescription,
       quizMaxAttempts: quizMaxAttempts,
       visibility: visibility,
       courseId: courseid,
-      quizId: quizid,
     };
+    let newQuizId = null;
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
-      method: "PUT",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedQuiz),
+      body: JSON.stringify(newQuiz),
     });
-    setIsLoading(false);
+    if (response.ok) {
+      const responseData = await response.json();
+      newQuizId = responseData.message.split("id").splice(1, 1).join().split(" ")[1];
+    } else {
+      console.error(`Error: ${response.status} - ${response.statusText}`);
+      return;
+    }
+
+    let newQuizQuestions = []
+    for (let i = 0; i < quizQuestions.length; i++) {
+      const newQuizQuestion = {...quizQuestions[i], courseId: courseid, quizId: newQuizId}
+      newQuizQuestions.push(newQuizQuestion)
+    }
+
+    try {
+      console.log(newQuizQuestions)
+      fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newQuizQuestions),
+      })
+    } catch (error) {
+      console.log(error)
+      setIsLoading(false)
+      toast.error("An unexpected error occurred during quiz creation")
+      return
+    }
 
     if (response) {
       navigate(`/teacher/course/${courseid}/quiz`);
       toast.success("Quiz created successfully");
     }
   }
+
+  const addQuestion = () => {
+    setQuizQuestions([...quizQuestions, {
+      qnNumber: qnNumber,
+      question: "",
+      questionOptionType: "MCQ",
+      options: [", '', '', '"],
+      answer: ""
+    }])
+    setQnNumber(qnNumber + 1)
+  }
+
+  const handleQuestionChange = (qnInfo) => {
+    const newQuizQuestions = quizQuestions.map((qn) => {
+      console.log(qnInfo);
+      if (qn.qnNumber === qnInfo.qnNumber) {
+        return qnInfo;
+      }
+      return qn;
+    })
+    setQuizQuestions(newQuizQuestions);
+  };
 
   return (
     <>
@@ -147,9 +188,9 @@ const EditQuiz = () => {
         <Box>
           <Card sx={{ py: 3, px: 5, mt: 2 }}>
             <Typography variant="h5" sx={{ mb: 2 }}>
-              Edit Quiz
+              New Quiz
             </Typography>
-            <form onSubmit={editQuiz}>
+            <form onSubmit={createQuiz}>
               <Box sx={{ mt: 1 }}>
                 <Grid spacing={2} container>
                   <Grid item xs={12} sm={4} md={3}>
@@ -173,17 +214,23 @@ const EditQuiz = () => {
                 </InputLabel>
                 <TextField value={quizDescription} onChange={() => setQuizDescription(event.target.value)} fullWidth multiline rows={3} />
               </Box>
+              {quizQuestions.map((question, key) => {
+                return <NewQuizQuestion key={key} qnInfo={question} handleQuestionChange={handleQuestionChange} />;
+              })}
+              <Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>
+                Add Question
+              </Button>
               <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
                 <Button
                   variant="outlined"
                   sx={{ color: "primary.main" }}
                   onClick={() => {
-                    navigate(-1);
+                    navigate(`/teacher/course/${courseid}/quiz`);
                   }}>
                   Cancel
                 </Button>
                 <Button variant="contained" type="submit">
-                  Edit Quiz
+                  Create Quiz
                 </Button>
               </Box>
             </form>

@@ -43,7 +43,7 @@ async function lambda_handler(event, context) {
     await dynamodb.delete(params).promise();
 
     return response_200(`Successfully deleted item with courseId:${courseId} quizId:${quizId} questionId:${questionId}!`);
-    
+
   } catch (e) {
     return response_400(e);
   }

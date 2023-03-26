@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 
 from global_functions.responses import *
 
+
 def lambda_handler(event, context):
 
     dynamodb = boto3.resource('dynamodb')
@@ -33,7 +34,7 @@ def lambda_handler(event, context):
             "HomeworkDescription": homework_description
         }
 
-        table.put_item(Item = item)
+        table.put_item(Item=item)
 
         return response_202_msg(f"Homework successfully created with id {homework_id}")
 

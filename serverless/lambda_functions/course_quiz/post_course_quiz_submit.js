@@ -9,7 +9,7 @@ async function lambda_handler(event, context) {
   const uuid = uuidv4();
 
   try {
-    const requestBody =  JSON.parse(event.body);
+    const requestBody = JSON.parse(event.body);
 
     const courseId = requestBody.courseId;
     const studentId = requestBody.studentId;
@@ -81,7 +81,7 @@ async function lambda_handler(event, context) {
       UpdateExpression:
         "set QuizScore = :newQuizScore, QuizAttempt = QuizAttempt + :val",
       ExpressionAttributeValues: {
-        ":newQuizScore": quizScore/numQuestions,
+        ":newQuizScore": quizScore / numQuestions,
         ":val": 1,
       },
     };

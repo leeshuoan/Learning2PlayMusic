@@ -38,7 +38,7 @@ def handle_content(request_body, course_id, student_id, homework_id, table):
         'PK': f'Course#{course_id}',
         'SK': f'Student#{student_id}Homework#{homework_id}',
     }
-    if request_body['homeworkContent'] != "" :
+    if request_body['homeworkContent'] != "":
 
         table.update_item(
             Key=key,
@@ -64,6 +64,7 @@ def handle_content(request_body, course_id, student_id, homework_id, table):
             }
         )
     return 1
+
 
 def handle_attachment(request_body, course_id, student_id, homework_id, table, increment):
 
@@ -134,13 +135,13 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table, i
                 }
             )
     else:
-            table.update_item(
-                Key=key,
-                UpdateExpression='set SubmissionFileName = :filename, HomeworkAttachment=:attachment, NumAttempts = if_not_exists(NumAttempts, :start) + :increment',
-                ExpressionAttributeValues={
-                    ':filename': "",
-                    ':attachment': "",
-                    ':increment': increment,
-                    ':start': 0,
-                }
-            )
+        table.update_item(
+            Key=key,
+            UpdateExpression='set SubmissionFileName = :filename, HomeworkAttachment=:attachment, NumAttempts = if_not_exists(NumAttempts, :start) + :increment',
+            ExpressionAttributeValues={
+                ':filename': "",
+                ':attachment': "",
+                ':increment': increment,
+                ':start': 0,
+            }
+        )

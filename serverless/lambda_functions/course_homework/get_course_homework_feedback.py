@@ -8,9 +8,12 @@ import decimal
 from global_functions.responses import *
 from global_functions.get_presigned_url import get_presigned_url
 
+
 class Encoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, decimal.Decimal): return float(obj)
+        if isinstance(obj, decimal.Decimal):
+            return float(obj)
+
 
 def lambda_handler(event, context):
 
@@ -29,10 +32,6 @@ def lambda_handler(event, context):
         else:
             return get_all_student_homework(course_id, queryStringParameters, table)
 
-
-
-
-
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")
         exception_type, exception_object, exception_traceback = sys.exc_info()
@@ -43,7 +42,8 @@ def lambda_handler(event, context):
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
         return response_500((str(exception_type) + str(e) + "in line" + str(line_number)))
-    
+
+
 def get_single_student_homework(course_id, student_id, queryStringParameters, table):
 
     # if specific homeworkId is specified
@@ -57,11 +57,10 @@ def get_single_student_homework(course_id, student_id, queryStringParameters, ta
             })
         if "Item" not in response:
             raise Exception("No such courseid/studentid/homeworkid")
-        
+
         items = response["Item"]
         if items['HomeworkAttachment'] != "":
             get_presigned_url(items, "HomeworkAttachment")
-
 
     else:
         response = table.query(
@@ -81,9 +80,10 @@ def get_single_student_homework(course_id, student_id, queryStringParameters, ta
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST,GET,PUT"
     }
-    res["body"] = json.dumps(items, cls = Encoder)
+    res["body"] = json.dumps(items, cls=Encoder)
 
     return res
+
 
 def get_all_student_homework(course_id, queryStringParameters, table):
 
@@ -95,7 +95,7 @@ def get_all_student_homework(course_id, queryStringParameters, table):
             ":SK": f"Course#{course_id}",
             ":PK": "Student#"
         })
-    
+
     students = students_response["Items"]
 
     items = []
@@ -109,7 +109,7 @@ def get_all_student_homework(course_id, queryStringParameters, table):
                     "SK": f"Student#{student_id}Homework#{homework_id}"
                 })
             if "Item" not in response:
-                continue   
+                continue
             items.append(response["Item"])
         for item in items:
             if item['HomeworkAttachment'] != "":
@@ -129,14 +129,13 @@ def get_all_student_homework(course_id, queryStringParameters, table):
             for homework in item:
                 if homework['HomeworkAttachment'] != "":
                     get_presigned_url(item, "HomeworkAttachment")
-    
+
     res["statusCode"] = 200
     res["headers"] = {
         "Access-Control-Allow-Headers": "Content-Type",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST,GET,PUT"
     }
-    res["body"] = json.dumps(items, cls = Encoder)
+    res["body"] = json.dumps(items, cls=Encoder)
 
     return res
-

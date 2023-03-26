@@ -2,7 +2,8 @@ import boto3
 
 from global_functions.responses import *
 
-def lambda_handler(event, context): 
+
+def lambda_handler(event, context):
 
     dynamodb = boto3.resource('dynamodb')
     table_name = "LMS"
@@ -20,7 +21,7 @@ def lambda_handler(event, context):
 
         if quiz_title == "":
             return response_400("quiz title cannot be left blank")
-        
+
         key = {
             "PK": f"Course#{course_id}",
             "SK": f"Quiz#{quiz_id}",
@@ -31,10 +32,10 @@ def lambda_handler(event, context):
             ':quizMaxAttempts': quiz_max_attempts,
             ':quizDescription': quiz_description,
             ':visibility': visibility,
-            }
+        }
 
         table.update_item(
-            Key = key,
+            Key=key,
             UpdateExpression=update_expression,
             ExpressionAttributeValues=expression_attribute_values
         )
