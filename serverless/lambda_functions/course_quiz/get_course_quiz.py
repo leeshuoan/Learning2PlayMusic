@@ -2,6 +2,7 @@ import sys
 import boto3
 import json
 import decimal
+import jwt
 
 from global_functions.responses import *
 
@@ -17,6 +18,10 @@ class Encoder(json.JSONEncoder):
 def lambda_handler(event, context):
 
     queryStringParameters: dict = event["queryStringParameters"]
+    headers: dict = event["headers"]
+    authorization_header = headers.get("Authorization")
+    token = authorization_header.split(" ")[-1]
+
     res = {}
     try:
         dynamodb = boto3.resource("dynamodb")
@@ -26,12 +31,12 @@ def lambda_handler(event, context):
 
         if "studentId" not in queryStringParameters.keys():
             items = handle_general_course_quiz(
-                courseId, table, queryStringParameters)
+                courseId, table, queryStringParameters, token)
 
         else:
             studentId = queryStringParameters["studentId"]
             items = handle_student_course_quiz(
-                courseId, studentId, table, queryStringParameters)
+                courseId, studentId, table, queryStringParameters, token)
 
         res["statusCode"] = 200
         res["headers"] = {
@@ -57,7 +62,7 @@ def lambda_handler(event, context):
         return response_500((str(exception_type) + str(e)))
 
 
-def handle_general_course_quiz(courseId, table, queryStringParameters):
+def handle_general_course_quiz(courseId, table, queryStringParameters, token):
     if "quizId" in queryStringParameters.keys():
         quizId = queryStringParameters["quizId"]
         response = table.get_item(
@@ -68,14 +73,12 @@ def handle_general_course_quiz(courseId, table, queryStringParameters):
         items = response["Item"]
 
     else:
+        expression_attribute_values = generate_expression_attribute_values(
+            token, courseId)
         response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
             FilterExpression='Visibility= :visibility',
-            ExpressionAttributeValues={
-                ":PK": f"Course#{courseId}",
-                ":SK": f"Quiz#",
-                ":visibility": True
-            }
+            ExpressionAttributeValues=expression_attribute_values
 
         )
         items = response["Items"]
@@ -83,7 +86,7 @@ def handle_general_course_quiz(courseId, table, queryStringParameters):
     return items
 
 
-def handle_student_course_quiz(courseId, studentId, table, queryStringParameters):
+def handle_student_course_quiz(courseId, studentId, table, queryStringParameters, token):
     if "quizId" in queryStringParameters.keys():
         quizId = queryStringParameters["quizId"]
         response = table.get_item(
@@ -94,15 +97,28 @@ def handle_student_course_quiz(courseId, studentId, table, queryStringParameters
         items = response["Item"]
 
     else:
+        expression_attribute_values = generate_expression_attribute_values(
+            token, courseId)
         response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
             FilterExpression='Visibility= :visibility',
-            ExpressionAttributeValues={
-                ":PK": f"Course#{courseId}",
-                ":SK": f"Student#{studentId}Quiz#",
-                ":visibility": True
-            },
+            ExpressionAttributeValues=expression_attribute_values
         )
         items = response["Items"]
 
     return items
+
+
+def generate_expression_attribute_values(token, courseId):
+    jwt_payload = jwt.decode(token, verify=False)
+    if jwt_payload["custom:role"] == "User":
+        return {
+            ":PK": f"Course#{courseId}",
+            ":SK": f"Quiz#",
+            ":visibility": True
+        }
+    else:
+        return {
+            ":PK": f"Course#{courseId}",
+            ":SK": f"Quiz#"
+        }

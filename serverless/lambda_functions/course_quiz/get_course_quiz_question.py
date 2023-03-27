@@ -28,6 +28,7 @@ def lambda_handler(event, context):
         quizId = queryStringParameters["quizId"]
 
         # if specific questionid is specified
+        # ADD IN FILTERS 
         if "questionId" in queryStringParameters.keys():
             questionId = queryStringParameters["questionId"]
             response = table.get_item(
