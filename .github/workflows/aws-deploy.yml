@@ -28,6 +28,7 @@ jobs:
           cd serverless
           python -m pip install --upgrade pip
           python -m pip install -r "requirements.txt"
+          python -m pip list
           # install your Python dependencies here
           npm install -g aws-cdk
       - name: Install nodejs dependencies
