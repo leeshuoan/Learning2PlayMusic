@@ -49,18 +49,20 @@ const AdminUserManagement = (userInfo) => {
   const [openDeleteUser, setOpenDeleteUser] = useState(false);
   const [toDeleteUser, setToDeleteUser] = useState("");
 
-  function modalStyle(widthPercent) {
+  function modalStyle(w) {
     return {
       position: "relative",
       top: "50%",
       left: "50%",
       transform: "translate(-50%, -50%)",
-      width: widthPercent + "%",
+      width: w,
       bgcolor: "background.paper",
       borderRadius: 2,
       p: 4,
     };
   }
+  const largeModalWidth = { xs: "90%", sm: "60%", md: "40%", lg: "40%", xl: "40%" };
+  const smallModalWidth = { xs: "60%", sm: "40%", md: "30%", lg: "25%", xl: "20%" };
 
   // list groups ================================================================================================================================================================================================================================================================================
   const listGroups = async () => {
@@ -467,14 +469,14 @@ const AdminUserManagement = (userInfo) => {
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       <Box m={2}>
         {/* create user ========================================================================================== */}
-        <TransitionModal open={openCreateUser} handleClose={() => setOpenCreateUser(false)} style={modalStyle(40)}>
+        <TransitionModal open={openCreateUser} handleClose={() => setOpenCreateUser(false)} style={modalStyle(largeModalWidth)}>
           {<CreateUserForm roles={roles} handleClose={() => createdUser()} />}
         </TransitionModal>
         {/* delete user ========================================================================================== */}
-        <TransitionModal open={openDeleteUser} handleClose={() => setOpenDeleteUser(false)} style={modalStyle(25)}>
+        <TransitionModal open={openDeleteUser} handleClose={() => setOpenDeleteUser(false)} style={modalStyle(smallModalWidth)}>
           <>
             <Grid container spacing={2}>
-              <Grid item xs={10}>
+              <Grid item xs={12}>
                 <Typography align="center" variant="h5">
                   Delete User?
                 </Typography>
@@ -507,10 +509,10 @@ const AdminUserManagement = (userInfo) => {
           </>
         </TransitionModal>
         {/* enable user ========================================================================================== */}
-        <TransitionModal open={openEnableUser} handleClose={() => setOpenEnableUser(false)} style={modalStyle(25)}>
+        <TransitionModal open={openEnableUser} handleClose={() => setOpenEnableUser(false)} style={modalStyle(smallModalWidth)}>
           <>
             <Grid container spacing={2}>
-              <Grid item xs={10}>
+              <Grid item xs={12}>
                 <Typography align="center" variant="h5">
                   Enable User?
                 </Typography>
@@ -540,10 +542,10 @@ const AdminUserManagement = (userInfo) => {
           </>
         </TransitionModal>
         {/* disable user ========================================================================================== */}
-        <TransitionModal open={openDisableUser} handleClose={() => setOpenDisableUser(false)} style={modalStyle(25)}>
+        <TransitionModal open={openDisableUser} handleClose={() => setOpenDisableUser(false)} style={modalStyle(smallModalWidth)}>
           <>
             <Grid container spacing={2}>
-              <Grid item xs={10}>
+              <Grid item xs={12}>
                 <Typography align="center" variant="h5">
                   Disable User?
                 </Typography>
@@ -573,10 +575,10 @@ const AdminUserManagement = (userInfo) => {
           </>
         </TransitionModal>
         {/* un-enrol user from course ========================================================================================== */}
-        <TransitionModal open={openUnEnrolUser} handleClose={() => setOpenUnEnrolUser(false)} style={modalStyle(40)}>
+        <TransitionModal open={openUnEnrolUser} handleClose={() => setOpenUnEnrolUser(false)} style={modalStyle(largeModalWidth)}>
           <>
             <Grid container spacing={2}>
-              <Grid item xs={10}>
+              <Grid item xs={12}>
                 <Typography align="center" variant="h5">
                   Un-enrol the following user from course?
                 </Typography>
@@ -612,7 +614,7 @@ const AdminUserManagement = (userInfo) => {
           </>
         </TransitionModal>
         {/* enrol user ala carte========================================================================================== */}
-        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(40)}>
+        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(largeModalWidth)}>
           <>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -661,10 +663,10 @@ const AdminUserManagement = (userInfo) => {
           </>
         </TransitionModal>
         {/* enrol multiple users========================================================================================== */}
-        <TransitionModal open={openEnrolMultipleUsers} handleClose={() => setOpenEnrolMultipleUser(false)} style={modalStyle(40)}>
+        <TransitionModal open={openEnrolMultipleUsers} handleClose={() => setOpenEnrolMultipleUser(false)} style={modalStyle(largeModalWidth)}>
           <>
             <Grid container spacing={2}>
-              <Grid item xs={10}>
+              <Grid item xs={12}>
                 <Typography align="center" variant="h5">
                   Enrol the following users?
                 </Typography>
@@ -707,10 +709,10 @@ const AdminUserManagement = (userInfo) => {
           </>
         </TransitionModal>
         {/* enrol user ala carte ========================================================================================== */}
-        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(40)}>
+        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(largeModalWidth)}>
           <>
             <Grid container spacing={2}>
-              <Grid item xs={10}>
+              <Grid item xs={12}>
                 <Typography align="center" variant="h5">
                   Enrol User?
                 </Typography>
