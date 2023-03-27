@@ -10,23 +10,24 @@ from global_functions.responses import *
 def lambda_handler(event, context):
 
     try:
-        # print(f".......... 🚀 SUCCESSFUL: Request for Course ID: {courseId} 🚀 ..........")
         # check if userIds are in request body
-        if "userIds" not in event["body"]:
+        request_body = json.loads(event["body"])
+
+        if "userIds" not in request_body:
             return response_400("userIds not in request body.")
         # check if courseId is in request body
-        if "courseId" not in event["body"]:
+        if "courseId" not in request_body:
             return response_400("courseId not in request body.")
-
+        print(request_body)
         # validate course existence
-        courseId = event["body"]["courseId"]
+        courseId = request_body["courseId"]
         if not id_exists("Course", "Course", courseId):
             return response_404("courseId does not exist in database.")
 
         already_enrolled = []
         enrolled = []
         does_not_exist = []
-        userIds = event["body"]["userIds"]
+        userIds = request_body["userIds"]
 
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")

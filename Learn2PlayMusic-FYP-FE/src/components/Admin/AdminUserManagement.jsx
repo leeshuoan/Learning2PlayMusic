@@ -30,6 +30,7 @@ const AdminUserManagement = (userInfo) => {
   const [openEnrolMultipleUsers, setOpenEnrolMultipleUser] = useState(false);
   const [toMultipleEnrolUsers, setToMultipleEnrolUsers] = useState([]);
   const [displayText, setDisplayText] = useState("");
+  const [userNameToIdMap, setUserNameToIdMap] = useState({});
   // create user
   const [openCreateUser, setOpenCreateUser] = useState(false);
   const [roles, setRoles] = useState([]);
@@ -118,8 +119,11 @@ const AdminUserManagement = (userInfo) => {
   function enrolMultipleUsers() {
     let toEnrolUsers = Object.keys(rowSelection).map((key) => data[key]);
     let temp = "";
-
+    let tempMap = {};
     for (let i = 0; i < toEnrolUsers.length; i++) {
+      // add to username & userid mapping
+      tempMap[toEnrolUsers[i].Username] = toEnrolUsers[i].Attributes.Name;
+      // add to display text for confirmation screen
       if (i == toEnrolUsers.length - 1) {
         temp += toEnrolUsers[i].Attributes.Name;
       } else {
@@ -127,11 +131,13 @@ const AdminUserManagement = (userInfo) => {
       }
     }
     setDisplayText(temp);
-
+    setUserNameToIdMap(tempMap);
     setToMultipleEnrolUsers(toEnrolUsers);
     setOpenEnrolMultipleUser(true);
   }
+
   const confirmEnrolMultipleUsers = async () => {
+    setOpen(true);
     if (toEnrolCourse == null) {
       toast.error("Please select a course");
       return;
@@ -148,16 +154,31 @@ const AdminUserManagement = (userInfo) => {
       }),
     };
     let res = await fetch(endpoint, myInit);
-    if (res.status == 202) {
-      toast.warning("Some users have already been enrolled in this course");
-    } else if (res.status == 400) {
-      toast.error("Something went wrong");
-    } else if (res.status == 200) {
-      toast.success("Successfully enrolled users");
+    const response = await res.json();
+    setOpen(false);
+    if (res.status == 200 || (res.status == 202 && response.alreadyEnrolled.length == 0 && response.doesNotExist.length == 0)) {
+      toast.success("Successfully enrolled all the selected users");
+    } else if (res.status == 202) {
+      if (response.alreadyEnrolled.length != 0) {
+        const alreadyEnrolled = response.alreadyEnrolled.map((user) => userNameToIdMap[user]).join(", ");
+        toast.warning(`The following users are already enrolled in the course: ${alreadyEnrolled}`);
+      }
+      if (response.doesNotExist.length != 0) {
+        const doesNotExist = response.doesNotExist.map((usr) => userNameToIdMap[usr].join(", "));
+        toast.error(`The following users with the user IDs do not exist: ${doesNotExist}`);
+      }
+      if (response.enrolled.length != 0) {
+        const successfullyEnrolled = response.enrolled.map((usr) => userNameToIdMap[urs].join(", "));
+        toast.success("Successfully enrolled all these users: " + successEnrolTxt.substring(0, successEnrolTxt.length - 2));
+      }
     } else {
-      toast.error("Something went wrong");
+      toast.error(response.messsage);
     }
+    // reset
     setOpenEnrolMultipleUser(false);
+    setUserNameToIdMap({});
+    setDisplayText("");
+    setToMultipleEnrolUsers([]);
     return;
   };
 
@@ -756,10 +777,10 @@ const AdminUserManagement = (userInfo) => {
           <br />
           2. You cannot enable/disable yourself.
         </Typography>
-        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
       </Box>
+      <Backdrop sx={{ color: "#fff", zIndex: 999}} open={open}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Container>
   );
 };
