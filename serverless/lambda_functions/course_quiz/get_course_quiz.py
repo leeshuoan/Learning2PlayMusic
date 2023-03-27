@@ -32,12 +32,12 @@ def lambda_handler(event, context):
 
         if "studentId" not in queryStringParameters.keys():
             items = handle_general_course_quiz(
-                courseId, table, queryStringParameters, token)
+                courseId, table, queryStringParameters)
 
         else:
             studentId = queryStringParameters["studentId"]
             items = handle_student_course_quiz(
-                courseId, studentId, table, queryStringParameters, token)
+                courseId, studentId, table, queryStringParameters)
 
         res["statusCode"] = 200
         res["headers"] = {
@@ -63,7 +63,7 @@ def lambda_handler(event, context):
         return response_500((str(exception_type) + str(e)))
 
 
-def handle_general_course_quiz(courseId, table, queryStringParameters, token):
+def handle_general_course_quiz(courseId, table, queryStringParameters):
     if "quizId" in queryStringParameters.keys():
         quizId = queryStringParameters["quizId"]
         response = table.get_item(
@@ -89,7 +89,7 @@ def handle_general_course_quiz(courseId, table, queryStringParameters, token):
     return items
 
 
-def handle_student_course_quiz(courseId, studentId, table, queryStringParameters, token):
+def handle_student_course_quiz(courseId, studentId, table, queryStringParameters):
     if "quizId" in queryStringParameters.keys():
         quizId = queryStringParameters["quizId"]
         response = table.get_item(
