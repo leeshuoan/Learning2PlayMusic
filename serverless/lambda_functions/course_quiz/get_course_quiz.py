@@ -20,7 +20,7 @@ def lambda_handler(event, context):
     queryStringParameters: dict = event["queryStringParameters"]
     headers: dict = event["headers"]
     authorization_header = headers.get("Authorization")
-    if token:
+    if authorization_header:
         token = authorization_header.split(" ")[-1]
 
     res = {}
