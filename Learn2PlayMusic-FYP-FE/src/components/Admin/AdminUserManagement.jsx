@@ -1,4 +1,5 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Autocomplete, Backdrop, Box, Button, CircularProgress, Container, Grid, IconButton, Switch, TextField, Tooltip, Typography, useTheme } from "@mui/material";
 import { API, Auth } from "aws-amplify";
@@ -31,6 +32,10 @@ const AdminUserManagement = (userInfo) => {
   const [toMultipleEnrolUsers, setToMultipleEnrolUsers] = useState([]);
   const [displayText, setDisplayText] = useState("");
   const [userNameToIdMap, setUserNameToIdMap] = useState({});
+  //  un-enrol user from course
+  const [openUnEnrolUser, setOpenUnEnrolUser] = useState(false);
+  const [toUnEnrolUser, setToUnEnrolUser] = useState("");
+  const [toUnEnrolCourse, setToUnEnrolCourse] = useState("");
   // create user
   const [openCreateUser, setOpenCreateUser] = useState(false);
   const [roles, setRoles] = useState([]);
@@ -52,7 +57,6 @@ const AdminUserManagement = (userInfo) => {
       transform: "translate(-50%, -50%)",
       width: widthPercent + "%",
       bgcolor: "background.paper",
-      border: "1px solid #000",
       borderRadius: 2,
       p: 4,
     };
@@ -215,6 +219,38 @@ const AdminUserManagement = (userInfo) => {
     setOpenEnrolUser(false);
     return;
   };
+  // UN-enrol user ===============================================================================================================================================================================================================================================================================
+  const unEnrolUser = async (course, user) => {
+    setOpenUnEnrolUser(true);
+    console.log(course);
+    console.log(user);
+    setToUnEnrolCourse(course);
+    setToUnEnrolUser(user);
+  };
+  const confirmUnenrolUserFromCourse = async () => {
+    let endpoint = `${import.meta.env.VITE_API_URL}/user/course?courseId=${toUnEnrolCourse.SK.split("#")[1]}&userId=${toUnEnrolUser.Username}`;
+    let myInit = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    let res = await fetch(endpoint, myInit);
+    let data = await res.json();
+    if (res.status == 202) {
+      toast.warning(toUnEnrolUser.Attributes.Name + " has already been unenrolled from " + toUnEnrolCourse.courseDetails);
+    } else if (res.status == 400) {
+      toast.error(data.message);
+    } else if (res.status == 200) {
+      toast.success(toUnEnrolUser.Attributes.Name + " successfully unenrolled from " + toUnEnrolCourse.courseDetails);
+    }
+    setToUnEnrolCourse("");
+    setToUnEnrolUser("");
+    setReloadData(!reloadData);
+    setOpenUnEnrolUser(false);
+    return;
+  };
+
   // disable user================================================================================================================================================================================================================================================================================
   const disableUser = async (user) => {
     setOpenDisableUser(true);
@@ -332,14 +368,7 @@ const AdminUserManagement = (userInfo) => {
         const courseDetails = course.CourseName + " on " + course.CourseSlot;
         return { id, courseDetails };
       });
-
       setAllCourses(fetchedCourses);
-      console.log(userCoursesEnrolled);
-      // var fetchedUserCoursesEnrolled = userCoursesEnrolled.map((userCourseEnrolled) => {
-      //   return { ...userCourseEnrolled };
-      // });
-      // console.log(fetchedUserCoursesEnrolled);
-      // setUserCoursesEnrolled(fetchedUserCoursesEnrolled);
     }
 
     listUsers();
@@ -438,7 +467,7 @@ const AdminUserManagement = (userInfo) => {
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       <Box m={2}>
         {/* create user ========================================================================================== */}
-        <TransitionModal open={openCreateUser} handleClose={() => setOpenCreateUser(false)} style={modalStyle(50)}>
+        <TransitionModal open={openCreateUser} handleClose={() => setOpenCreateUser(false)} style={modalStyle(40)}>
           {<CreateUserForm roles={roles} handleClose={() => createdUser()} />}
         </TransitionModal>
         {/* delete user ========================================================================================== */}
@@ -458,7 +487,7 @@ const AdminUserManagement = (userInfo) => {
                   <b>Name:</b> {toDeleteUser && toDeleteUser.Attributes.Name}
                 </Box>
                 <Box>
-                  <b>Email</b> {toDeleteUser && toDeleteUser.Attributes.Email}
+                  <b>Email:</b> {toDeleteUser && toDeleteUser.Attributes.Email}
                 </Box>
               </Grid>
               <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
@@ -491,7 +520,7 @@ const AdminUserManagement = (userInfo) => {
                   <b>Name:</b> {toEnableUser && toEnableUser.Attributes.Name}
                 </Box>
                 <Box>
-                  <b>Email</b> {toEnableUser && toEnableUser.Attributes.Email}
+                  <b>Email:</b> {toEnableUser && toEnableUser.Attributes.Email}
                 </Box>
               </Grid>
               <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
@@ -524,7 +553,7 @@ const AdminUserManagement = (userInfo) => {
                   <b>Name:</b> {toDisableUser && toDisableUser.Attributes.Name}
                 </Box>
                 <Box>
-                  <b>Email</b> {toDisableUser && toDisableUser.Attributes.Email}
+                  <b>Email:</b> {toDisableUser && toDisableUser.Attributes.Email}
                 </Box>
               </Grid>
               <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
@@ -543,11 +572,50 @@ const AdminUserManagement = (userInfo) => {
             </Grid>
           </>
         </TransitionModal>
-        {/* enrol user ala carte========================================================================================== */}
-        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(50)}>
+        {/* un-enrol user from course ========================================================================================== */}
+        <TransitionModal open={openUnEnrolUser} handleClose={() => setOpenUnEnrolUser(false)} style={modalStyle(40)}>
           <>
             <Grid container spacing={2}>
               <Grid item xs={10}>
+                <Typography align="center" variant="h5">
+                  Un-enrol the following user from course?
+                </Typography>
+                <Typography align="center" color="error" variant="subtitle1">
+                  Warning: This action cannot be undone and will remove all user data from the course forever.
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sx={{ display: "flex", alignItems: "left", flexDirection: "column" }}>
+                <Box>
+                  <b>Name:</b> {toUnEnrolUser && toUnEnrolUser.Attributes.Name}
+                </Box>
+                <Box>
+                  <b>Email:</b> {toUnEnrolUser && toUnEnrolUser.Attributes.Email}
+                </Box>
+                <Box>
+                  <b>Course to be un-enrolled from:</b> {toUnEnrolCourse ? toUnEnrolCourse.CourseName + " on " + toUnEnrolCourse.CourseSlot : null}
+                </Box>
+              </Grid>
+              <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
+                  onClick={() => {
+                    setOpenUnEnrolUser(false);
+                  }}>
+                  Cancel
+                </Button>
+                <Button variant="contained" sx={{ mr: 1 }} color="error" onClick={() => confirmUnenrolUserFromCourse()}>
+                  Un-enrol
+                </Button>
+              </Grid>
+            </Grid>
+          </>
+        </TransitionModal>
+        {/* enrol user ala carte========================================================================================== */}
+        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(40)}>
+          <>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
                 <Typography align="center" variant="h5">
                   Enrol User?
                 </Typography>
@@ -557,7 +625,7 @@ const AdminUserManagement = (userInfo) => {
                   <b>Name:</b> {toEnrolUser && toEnrolUser.Attributes.Name}
                 </Box>
                 <Box>
-                  <b>Email</b> {toEnrolUser && toEnrolUser.Attributes.Email}
+                  <b>Email:</b> {toEnrolUser && toEnrolUser.Attributes.Email}
                 </Box>
               </Grid>
 
@@ -593,7 +661,7 @@ const AdminUserManagement = (userInfo) => {
           </>
         </TransitionModal>
         {/* enrol multiple users========================================================================================== */}
-        <TransitionModal open={openEnrolMultipleUsers} handleClose={() => setOpenEnrolMultipleUser(false)} style={modalStyle(50)}>
+        <TransitionModal open={openEnrolMultipleUsers} handleClose={() => setOpenEnrolMultipleUser(false)} style={modalStyle(40)}>
           <>
             <Grid container spacing={2}>
               <Grid item xs={10}>
@@ -639,7 +707,7 @@ const AdminUserManagement = (userInfo) => {
           </>
         </TransitionModal>
         {/* enrol user ala carte ========================================================================================== */}
-        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(50)}>
+        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(40)}>
           <>
             <Grid container spacing={2}>
               <Grid item xs={10}>
@@ -652,7 +720,7 @@ const AdminUserManagement = (userInfo) => {
                   <b>Name:</b> {toEnrolUser && toEnrolUser.Attributes.Name}
                 </Box>
                 <Box>
-                  <b>Email</b> {toEnrolUser && toEnrolUser.Attributes.Email}
+                  <b>Email:</b> {toEnrolUser && toEnrolUser.Attributes.Email}
                 </Box>
               </Grid>
 
@@ -733,8 +801,7 @@ const AdminUserManagement = (userInfo) => {
               }}>
               <Typography variant="body2">
                 <b>User Creation Date:</b> {row.original.UserCreateDate}
-              </Typography>
-              <Typography variant="body2">
+                <br />
                 <b>User Status:</b> {row.original.UserStatus}
               </Typography>
               {row.original.Attributes.Role == "Admin" ? null : (
@@ -745,7 +812,10 @@ const AdminUserManagement = (userInfo) => {
                     : userCoursesEnrolled[row.original.Username].map((course) => {
                         return (
                           <span key={course.SK + course.PK}>
-                            <br></br>
+                            <br />
+                            <IconButton onClick={() => unEnrolUser(course, row.original)}>
+                              <CloseIcon fontSize="inherit" color="error"></CloseIcon>
+                            </IconButton>
                             {course.CourseName} on {course.CourseSlot}
                           </span>
                         );
@@ -778,7 +848,7 @@ const AdminUserManagement = (userInfo) => {
           2. You cannot enable/disable yourself.
         </Typography>
       </Box>
-      <Backdrop sx={{ color: "#fff", zIndex: 999}} open={open}>
+      <Backdrop sx={{ color: "#fff", zIndex: 999 }} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </Container>
