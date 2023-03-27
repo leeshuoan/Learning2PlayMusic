@@ -2,7 +2,7 @@ import sys
 import boto3
 import json
 import decimal
-import jwt
+# import jwt
 
 from global_functions.responses import *
 
@@ -73,12 +73,14 @@ def handle_general_course_quiz(courseId, table, queryStringParameters, token):
         items = response["Item"]
 
     else:
-        expression_attribute_values = generate_expression_attribute_values(
-            token, courseId)
         response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
             FilterExpression='Visibility= :visibility',
-            ExpressionAttributeValues=expression_attribute_values
+            ExpressionAttributeValues={
+                ":PK": f"Course#{courseId}",
+                ":SK": f"Quiz#",
+                ":visibility": True
+            }
 
         )
         items = response["Items"]
@@ -97,28 +99,30 @@ def handle_student_course_quiz(courseId, studentId, table, queryStringParameters
         items = response["Item"]
 
     else:
-        expression_attribute_values = generate_expression_attribute_values(
-            token, courseId)
         response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
             FilterExpression='Visibility= :visibility',
-            ExpressionAttributeValues=expression_attribute_values
+            ExpressionAttributeValues={
+                ":PK": f"Course#{courseId}",
+                ":SK": f"Quiz#",
+                ":visibility": True
+            }
         )
         items = response["Items"]
 
     return items
 
 
-def generate_expression_attribute_values(token, courseId):
-    jwt_payload = jwt.decode(token, verify=False)
-    if jwt_payload["custom:role"] == "User":
-        return {
-            ":PK": f"Course#{courseId}",
-            ":SK": f"Quiz#",
-            ":visibility": True
-        }
-    else:
-        return {
-            ":PK": f"Course#{courseId}",
-            ":SK": f"Quiz#"
-        }
+# def generate_expression_attribute_values(token, courseId):
+#     jwt_payload = jwt.decode(token, verify=False)
+#     if jwt_payload["custom:role"] == "User":
+#         return {
+#             ":PK": f"Course#{courseId}",
+#             ":SK": f"Quiz#",
+#             ":visibility": True
+#         }
+#     else:
+#         return {
+#             ":PK": f"Course#{courseId}",
+#             ":SK": f"Quiz#"
+#         }
