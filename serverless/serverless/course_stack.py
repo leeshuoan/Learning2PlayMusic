@@ -352,7 +352,7 @@ class CourseStack(Stack):
                                             image=_lambda.Runtime.PYTHON_3_9.bundling_image,
                                             command=[
                                                 "bash", "-c",
-                                                "pip install --no-cache jwt -t /asset-output && cp -au . /asset-output"
+                                                "pip install --no-cache pyjwt -t /asset-output && cp -au . /asset-output"
                                             ]
                                         )),
             role=LAMBDA_ROLE,
