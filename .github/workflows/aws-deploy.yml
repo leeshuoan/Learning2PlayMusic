@@ -26,8 +26,6 @@ jobs:
       - name: Install Python dependencies and CDK
         run: |
           cd serverless
-          python -m venv .venv
-          source .venv/bin/activate
           python -m pip install --upgrade pip
           python -m pip install -r "requirements.txt"
           python -m pip list
@@ -49,7 +47,6 @@ jobs:
       - name: Diff CourseStack
         run: |
           cd serverless
-          source .venv/bin/activate
           diff=$(cdk diff --stack CourseStack)
           if [ -n "$diff" ]; then
             echo "CourseStack has changes, will deploy"
@@ -61,7 +58,6 @@ jobs:
       - name: Diff UserStack
         run: |
           cd serverless
-          source .venv/bin/activate
           diff=$(cdk diff --stack UserStack)
           if [ -n "$diff" ]; then
             echo "UserStack has changes, will deploy"
@@ -73,7 +69,6 @@ jobs:
       - name: Diff AnnouncementStack
         run: |
           cd serverless
-          source .venv/bin/activate
           diff=$(cdk diff --stack AnnouncementStack)
           if [ -n "$diff" ]; then
             echo "AnnouncementStack has changes, will deploy"
