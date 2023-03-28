@@ -73,10 +73,10 @@ def handle_general_course_quiz(courseId, table, queryStringParameters, token):
         items = response["Item"]
 
     else:
-        expression_values = generate_expression_attribute_values(token, courseId)
+        filter_expression, expression_values = generate_expression_attribute_values(token, courseId)
         response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
-            FilterExpression='Visibility= :visibility',
+            FilterExpression=filter_expression,
             ExpressionAttributeValues=expression_values
 
         )
@@ -96,10 +96,10 @@ def handle_student_course_quiz(courseId, studentId, table, queryStringParameters
         items = response["Item"]
 
     else:
-        expression_values = generate_expression_attribute_values(token, courseId)
+        filter_expression, expression_values = generate_expression_attribute_values(token, courseId)
         response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
-            FilterExpression='Visibility= :visibility',
+            FilterExpression=filter_expression,
             ExpressionAttributeValues=expression_values
         )
         items = response["Items"]
@@ -111,13 +111,13 @@ def generate_expression_attribute_values(token, courseId):
     # jwt_payload = jwt.decode(token, verify=False, algorithms=["RS256"])
     jwt_payload = jwt.decode(token, options={"verify_signature": False})
     if jwt_payload["custom:role"] == "User":
-        return {
+        return ['Visibility= :visibility', {
             ":PK": f"Course#{courseId}",
             ":SK": f"Quiz#",
             ":visibility": True
-        }
+        }]
     else:
-        return {
+        return ["", {
             ":PK": f"Course#{courseId}",
             ":SK": f"Quiz#"
-        }
+        }]
