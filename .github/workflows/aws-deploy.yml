@@ -26,7 +26,7 @@ jobs:
       - name: Install Python dependencies and CDK
         run: |
           cd serverless
-          source.bat
+          python -m venv venv
           python -m pip install --upgrade pip
           python -m pip install -r "requirements.txt"
           python -m pip list
