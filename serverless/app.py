@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-import os
-import sys
-import json
-import decimal
-
-import boto3
 import aws_cdk as cdk
 
 from serverless.course_stack import CourseStack
