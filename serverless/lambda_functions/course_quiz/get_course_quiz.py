@@ -2,7 +2,7 @@ import sys
 import boto3
 import json
 import decimal
-# import jwt
+import jwt
 
 from global_functions.responses import *
 
@@ -18,10 +18,10 @@ class Encoder(json.JSONEncoder):
 def lambda_handler(event, context):
 
     queryStringParameters: dict = event["queryStringParameters"]
-    # headers: dict = event["headers"]
-    # authorization_header = headers.get("Authorization")
-    # if authorization_header:
-    #     token = authorization_header.split(" ")[-1]
+    headers: dict = event["headers"]
+    authorization_header = headers.get("Authorization")
+    if authorization_header:
+        token = authorization_header.split(" ")[-1]
 
     res = {}
     try:
@@ -114,16 +114,16 @@ def handle_student_course_quiz(courseId, studentId, table, queryStringParameters
     return items
 
 
-# def generate_expression_attribute_values(token, courseId):
-#     jwt_payload = jwt.decode(token, verify=False)
-#     if jwt_payload["custom:role"] == "User":
-#         return {
-#             ":PK": f"Course#{courseId}",
-#             ":SK": f"Quiz#",
-#             ":visibility": True
-#         }
-#     else:
-#         return {
-#             ":PK": f"Course#{courseId}",
-#             ":SK": f"Quiz#"
-#         }
+def generate_expression_attribute_values(token, courseId):
+    jwt_payload = jwt.decode(token, verify=False)
+    if jwt_payload["custom:role"] == "User":
+        return {
+            ":PK": f"Course#{courseId}",
+            ":SK": f"Quiz#",
+            ":visibility": True
+        }
+    else:
+        return {
+            ":PK": f"Course#{courseId}",
+            ":SK": f"Quiz#"
+        }

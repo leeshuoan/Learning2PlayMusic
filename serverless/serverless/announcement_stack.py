@@ -76,14 +76,7 @@ class AnnouncementStack(Stack):
             runtime=_lambda.Runtime.PYTHON_3_9,
             handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.get_generalannouncement.lambda_handler",
             code=_lambda.Code.from_asset(
-                FUNCTIONS_FOLDER,
-                bundling=BundlingOptions(
-                    image=_lambda.Runtime.PYTHON_3_9.bundling_image,
-                    command=[
-                        "bash", "-c",
-                        "pip install --no-cache jwt -t /asset-output && cp -au . /asset-output"
-                    ]
-                )
+                FUNCTIONS_FOLDER
             ),
             role=LAMBDA_ROLE,
 

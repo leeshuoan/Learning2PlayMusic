@@ -5,6 +5,7 @@ from aws_cdk import aws_iam
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sns as sns
+from aws_cdk import BundlingOptions
 from constructs import Construct
 
 
@@ -346,7 +347,14 @@ class CourseStack(Stack):
             "getCourseQuiz",
             runtime=_lambda.Runtime.PYTHON_3_9,
             handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz.lambda_handler",
-            code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
+            code=_lambda.Code.from_asset(FUNCTIONS_FOLDER, 
+                                        bundling=BundlingOptions(
+                                            image=_lambda.Runtime.PYTHON_3_9.bundling_image,
+                                            command=[
+                                                "bash", "-c",
+                                                "pip install --no-cache jwt -t /asset-output && cp -au . /asset-output"
+                                            ]
+                                        )),
             role=LAMBDA_ROLE,
         )
 
