@@ -108,7 +108,7 @@ def handle_student_course_quiz(courseId, studentId, table, queryStringParameters
 
 
 def generate_expression_attribute_values(token, courseId):
-    jwt_payload = jwt.decode(token, verify=False)
+    jwt_payload = jwt.decode(token, verify=False, algorithms=["RS256"])
     if jwt_payload["custom:role"] == "User":
         return {
             ":PK": f"Course#{courseId}",
