@@ -40,31 +40,39 @@ class AnnouncementStack(Stack):
         ###########
         ### SNS ###
         ###########
-        #  POST TOPIC ================================================================================
-        # 1. Create an SNS Topic
-        post_topic = sns.Topic(
-            self,
-            "GeneralAnnouncementPostTopic",
-            display_name="GeneralAnnouncementPostTopic",
-        )
+        # #  POST TOPIC ================================================================================
+        # # 1. Create an SNS Topic
+        # post_topic = sns.Topic(
+        #     self,
+        #     "GeneralAnnouncementPostTopic",
+        #     display_name="GeneralAnnouncementPostTopic",
+        # )
 
-        """ Creating the following resources in console because email addresses in Cognito are fake,
-        and it will be easier/not messed up when we need to delete them from console for testing purposes"""
-        # 2. (in SES console) Create verified identities, then confirm email verification
-        # 3. (in SNS console) Link these verified email addresses to the topic <GeneralAnnouncementPostTopic>
+        # """ Creating the following resources in console because email addresses in Cognito are fake,
+        # and it will be easier/not messed up when we need to delete them from console for testing purposes"""
+        # # 2. (in SES console) Create verified identities, then confirm email verification
+        # # 3. (in SNS console) Link these verified email addresses to the topic <GeneralAnnouncementPostTopic>
 
-        # UPDATE TOPIC ================================================================================
+        # # UPDATE TOPIC ================================================================================
+        # # 1. Create an SNS Topic
+        # put_topic = sns.Topic(
+        #     self,
+        #     "GeneralAnnouncementPutTopic",
+        #     display_name="GeneralAnnouncementPutTopic",
+        # )
+
+        # """ Creating the following resources in console because email addresses in Cognito are fake,
+        # and it will be easier/not messed up when we need to delete them from console for testing purposes"""
+        # # 2. (in SES console) Create verified identities, then confirm email verification
+        # # 3. (in SNS console) Link these verified email addresses to the topic <GeneralAnnouncementPutTopic>
+
+        # GENERAL TOPIC ================================================================================
         # 1. Create an SNS Topic
         put_topic = sns.Topic(
             self,
-            "GeneralAnnouncementPutTopic",
-            display_name="GeneralAnnouncementPutTopic",
+            "GeneralAnnouncementTopic",
+            display_name="GeneralAnnouncementTopic",
         )
-
-        """ Creating the following resources in console because email addresses in Cognito are fake,
-        and it will be easier/not messed up when we need to delete them from console for testing purposes"""
-        # 2. (in SES console) Create verified identities, then confirm email verification
-        # 3. (in SNS console) Link these verified email addresses to the topic <GeneralAnnouncementPutTopic>
 
         ########################
         ### LAMBDA FUNCTIONS ###
