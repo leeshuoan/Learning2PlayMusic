@@ -8,6 +8,7 @@ from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_ses as ses
 from aws_cdk import aws_sns as sns
 from aws_cdk import aws_sns_subscriptions as sns_subs
+from aws_cdk import BundlingOptions
 from constructs import Construct
 
 
@@ -33,7 +34,8 @@ class AnnouncementStack(Stack):
         iam = boto3.client("iam")
         role = iam.get_role(RoleName="lambda-general-role")
         role_arn = role["Role"]["Arn"]
-        LAMBDA_ROLE = aws_iam.Role.from_role_arn(self, "lambda-general-role", role_arn)
+        LAMBDA_ROLE = aws_iam.Role.from_role_arn(
+            self, "lambda-general-role", role_arn)
 
         ###########
         ### SNS ###
@@ -73,10 +75,19 @@ class AnnouncementStack(Stack):
             "getGeneralAnnouncement",
             runtime=_lambda.Runtime.PYTHON_3_9,
             handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.get_generalannouncement.lambda_handler",
-            code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
+            code=_lambda.Code.from_asset(
+            FUNCTIONS_FOLDER,
+            bundling=BundlingOptions(
+            image=_lambda.Runtime.PYTHON_3_9.bundling_image,
+            command=[
+                "bash", "-c",
+                "pip install --no-cache jwt -t /asset-output && cp -au . /asset-output"
+            ],
+            ),
             role=LAMBDA_ROLE,
+            )
         )
-        post_generalannouncement = _lambda.Function(
+        post_generalannouncement=_lambda.Function(
             self,
             "postGeneralAnnouncement",
             runtime=_lambda.Runtime.PYTHON_3_9,
@@ -85,7 +96,7 @@ class AnnouncementStack(Stack):
             role=LAMBDA_ROLE,
             environment={"SNS_TOPIC_ARN": post_topic.topic_arn},
         )
-        put_generalannouncement = _lambda.Function(
+        put_generalannouncement=_lambda.Function(
             self,
             "putGeneralAnnouncement",
             runtime=_lambda.Runtime.PYTHON_3_9,
@@ -94,7 +105,7 @@ class AnnouncementStack(Stack):
             role=LAMBDA_ROLE,
             environment={"SNS_TOPIC_ARN": put_topic.topic_arn},
         )
-        delete_generalannouncement = _lambda.Function(
+        delete_generalannouncement=_lambda.Function(
             self,
             "deleteGeneralAnnouncement",
             runtime=_lambda.Runtime.PYTHON_3_9,
@@ -108,11 +119,11 @@ class AnnouncementStack(Stack):
         ##############
 
         # define the attributes of the existing REST API
-        rest_api_id = Fn.import_value("mainApiId")
-        root_resource_id = Fn.import_value("mainApiRootResourceIdOutput")
+        rest_api_id=Fn.import_value("mainApiId")
+        root_resource_id=Fn.import_value("mainApiRootResourceIdOutput")
 
         # Retrieve the Amazon API Gateway REST API
-        main_api = apigw.RestApi.from_rest_api_attributes(
+        main_api=apigw.RestApi.from_rest_api_attributes(
             self, "main", rest_api_id=rest_api_id, root_resource_id=root_resource_id
         )
 
@@ -120,14 +131,15 @@ class AnnouncementStack(Stack):
         ### API GW RESOURCES ###
         ########################
 
-        generalannouncement_resource = main_api.root.add_resource("generalannouncement")
+        generalannouncement_resource=main_api.root.add_resource(
+            "generalannouncement")
 
         ################################
         ### API GW RESOURCES METHODS ###
         ################################
 
         # /generalannouncements
-        model = apigw.Model(
+        model=apigw.Model(
             self,
             "PostGeneralAnnouncementModel",
             rest_api=main_api,
