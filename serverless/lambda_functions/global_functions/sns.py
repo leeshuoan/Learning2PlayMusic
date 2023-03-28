@@ -26,7 +26,7 @@ def publish_general_announcement(subject, content):
     subject = subject
     body_text = content
     # body_html = '<p>Hello from <b>Amazon SES!</b></p>'
-    email_sender = 'g3fyp2023@gmail.com' # will never change, similar to admin@gmail.com
+    email_sender = 'l2pma.addmin@gmail.com' # will never change, similar to admin@gmail.com
 
     for subscriber in subscribers:
         try:
