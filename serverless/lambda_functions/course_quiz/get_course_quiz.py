@@ -63,7 +63,7 @@ def lambda_handler(event, context):
         return response_500((str(exception_type) + str(e)))
 
 
-def handle_general_course_quiz(courseId, table, queryStringParameters):
+def handle_general_course_quiz(courseId, table, queryStringParameters, token):
     if "quizId" in queryStringParameters.keys():
         quizId = queryStringParameters["quizId"]
         response = table.get_item(
@@ -74,14 +74,11 @@ def handle_general_course_quiz(courseId, table, queryStringParameters):
         items = response["Item"]
 
     else:
+        expression_values = generate_expression_attribute_values(token, courseId)
         response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
             FilterExpression='Visibility= :visibility',
-            ExpressionAttributeValues={
-                ":PK": f"Course#{courseId}",
-                ":SK": f"Quiz#",
-                ":visibility": True
-            }
+            ExpressionAttributeValues=expression_values
 
         )
         items = response["Items"]
@@ -89,7 +86,7 @@ def handle_general_course_quiz(courseId, table, queryStringParameters):
     return items
 
 
-def handle_student_course_quiz(courseId, studentId, table, queryStringParameters):
+def handle_student_course_quiz(courseId, studentId, table, queryStringParameters, token):
     if "quizId" in queryStringParameters.keys():
         quizId = queryStringParameters["quizId"]
         response = table.get_item(
@@ -100,14 +97,11 @@ def handle_student_course_quiz(courseId, studentId, table, queryStringParameters
         items = response["Item"]
 
     else:
+        expression_values = generate_expression_attribute_values(token, courseId)
         response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
             FilterExpression='Visibility= :visibility',
-            ExpressionAttributeValues={
-                ":PK": f"Course#{courseId}",
-                ":SK": f"Quiz#",
-                ":visibility": True
-            }
+            ExpressionAttributeValues=expression_values
         )
         items = response["Items"]
 
