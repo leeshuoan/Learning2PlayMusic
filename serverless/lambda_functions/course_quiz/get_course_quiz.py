@@ -52,10 +52,9 @@ def lambda_handler(event, context):
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")
         exception_type, exception_object, exception_traceback = sys.exc_info()
-        filename = exception_traceback.tb_gframe.f_code.co_filename
+
         line_number = exception_traceback.tb_lineno
         print("❗Exception type: ", exception_type)
-        print("❗File name: ", filename)
         print("❗Line number: ", line_number)
         print("❗Error: ", e)
         if exception_type == KeyError:
