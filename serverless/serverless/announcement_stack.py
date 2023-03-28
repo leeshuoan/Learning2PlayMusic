@@ -68,7 +68,7 @@ class AnnouncementStack(Stack):
 
         # GENERAL TOPIC ================================================================================
         # 1. Create an SNS Topic
-        put_topic = sns.Topic(
+        topic = sns.Topic(
             self,
             "GeneralAnnouncementTopic",
             display_name="GeneralAnnouncementTopic",
@@ -96,7 +96,7 @@ class AnnouncementStack(Stack):
             handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.post_generalannouncement.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
-            environment={"SNS_TOPIC_ARN": post_topic.topic_arn},
+            environment={"SNS_TOPIC_ARN": topic.topic_arn},
         )
         put_generalannouncement = _lambda.Function(
             self,
@@ -105,7 +105,7 @@ class AnnouncementStack(Stack):
             handler=f"{GENERALANNOUNCEMENT_FUNCTIONS_FOLDER}.put_generalannouncement.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
-            environment={"SNS_TOPIC_ARN": put_topic.topic_arn},
+            environment={"SNS_TOPIC_ARN": topic.topic_arn},
         )
         delete_generalannouncement = _lambda.Function(
             self,
