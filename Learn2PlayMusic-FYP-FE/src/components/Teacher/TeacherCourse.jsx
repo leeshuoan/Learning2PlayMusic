@@ -287,7 +287,7 @@ const TeacherCourse = (userInfo) => {
       quizDescription: selectedQuiz.QuizDescription,
       quizTitle: selectedQuiz.QuizTitle,
       courseId: courseid,
-    };
+  }
     console.log(newQuizData);
     const res = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
       method: "PUT",

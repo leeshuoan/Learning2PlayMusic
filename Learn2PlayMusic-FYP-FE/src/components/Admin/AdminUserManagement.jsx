@@ -377,7 +377,7 @@ const AdminUserManagement = (userInfo) => {
     listGroups();
     fetchData();
     setOpen(false);
-    return () => {};
+    return () => { };
   }, [reloadData]);
 
   // table columns ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
@@ -447,17 +447,19 @@ const AdminUserManagement = (userInfo) => {
         id: "delete",
         header: "Delete",
         Cell: ({ cell, row }) => (
-          <Tooltip title="Delete user forever" placement="bottom">
-            <IconButton
-              variant="contained"
-              color="error"
-              disabled={row.original.Enabled == "Enabled" ? true : false}
-              onClick={() => {
-                deleteUser(row.original);
-              }}>
-              <DeleteForeverIcon />
-            </IconButton>
-          </Tooltip>
+          row.original.Username != userInfo.userInfo.id ? (
+            <Tooltip title="Delete user forever" placement="bottom">
+              <IconButton
+                variant="contained"
+                color="error"
+                disabled={row.original.Enabled == "Enabled" ? true : false}
+                onClick={() => {
+                  deleteUser(row.original);
+                }}>
+                <DeleteForeverIcon />
+              </IconButton>
+            </Tooltip>
+          ) : null
         ),
         maxSize: 20,
       },
@@ -473,7 +475,7 @@ const AdminUserManagement = (userInfo) => {
           {<CreateUserForm roles={roles} handleClose={() => createdUser()} />}
         </TransitionModal>
         {/* delete user ========================================================================================== */}
-        <TransitionModal open={openDeleteUser} handleClose={() => setOpenDeleteUser(false)} style={modalStyle(smallModalWidth)}>
+        <TransitionModal open={openDeleteUser} handleClose={() => setOpenDeleteUser(false)} style={modalStyle(50)}>
           <>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -509,7 +511,7 @@ const AdminUserManagement = (userInfo) => {
           </>
         </TransitionModal>
         {/* enable user ========================================================================================== */}
-        <TransitionModal open={openEnableUser} handleClose={() => setOpenEnableUser(false)} style={modalStyle(smallModalWidth)}>
+        <TransitionModal open={openEnableUser} handleClose={() => setOpenEnableUser(false)} style={modalStyle(50)}>
           <>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -542,7 +544,7 @@ const AdminUserManagement = (userInfo) => {
           </>
         </TransitionModal>
         {/* disable user ========================================================================================== */}
-        <TransitionModal open={openDisableUser} handleClose={() => setOpenDisableUser(false)} style={modalStyle(smallModalWidth)}>
+        <TransitionModal open={openDisableUser} handleClose={() => setOpenDisableUser(false)} style={modalStyle(50)}>
           <>
             <Grid container spacing={2}>
               <Grid item xs={12}>

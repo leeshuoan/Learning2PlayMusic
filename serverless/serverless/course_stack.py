@@ -346,7 +346,7 @@ class CourseStack(Stack):
             self,
             "getCourseQuiz",
             runtime=_lambda.Runtime.PYTHON_3_9,
-            handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz.lambda_handler",
+            handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz_withJWT.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER, 
                                         bundling=BundlingOptions(
                                             image=_lambda.Runtime.PYTHON_3_9.bundling_image,

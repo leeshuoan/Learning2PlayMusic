@@ -1,6 +1,5 @@
 import sys
 import boto3
-import jwt
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
