@@ -1,16 +1,15 @@
 import { Box, Card, Typography } from "@mui/material";
 
-const HorizontalChart = () => {
+const HorizontalChart = ({questionImage}) => {
   const grey = "#d9d9d9";
+  const optionGrey = "#959595";
   const green = "#98d16c";
-  const optionFont = "#959595";
 
   const baseTheme = {
     borderRadius: 2,
     height: "3rem",
     minWidth: "0.5rem",
   };
-
   const correctTheme = (widthPercent) => {
     return {
       ...baseTheme,
@@ -25,18 +24,6 @@ const HorizontalChart = () => {
       width: widthPercent + "%",
     };
   };
-  const dataTF = [
-    {
-      name: "True",
-      percent: 20,
-      correct: false,
-    },
-    {
-      name: "False",
-      correct: true,
-      percent: 80,
-    },
-  ];
   const data = [
     {
       name: "Option Adasdashdahsdlhasdasdnasdsak",
@@ -62,10 +49,13 @@ const HorizontalChart = () => {
   // }
   return (
     <div>
+      {questionImage && <img src={questionImage} width="400" alt="question" />}
       {data.map((option) => {
+        let fontColor = option.correct ? green : optionGrey;
+        let fontWeight = option.correct ? "h6" : "body1";
         return (
           <Box sx={{ my: 2 }} key={option.name}>
-            <Typography variant="body1" sx={{ color: optionFont, mb: -2 }}>
+            <Typography sx={{ color: fontColor, mb: -2, typography: fontWeight }}>
               {option.name} ({option.percent}%)
             </Typography>
             <br></br>
