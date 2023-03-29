@@ -24,6 +24,7 @@ const QuizSummary = (userInfo) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.userInfo.token}`,
       },
     });
     return response.json();

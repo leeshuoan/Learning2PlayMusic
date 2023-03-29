@@ -48,6 +48,7 @@ const TeacherCourse = (userInfo) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.userInfo.token}`,
       },
     });
     return response.json();
@@ -145,6 +146,7 @@ const TeacherCourse = (userInfo) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.userInfo.token}`,
       },
     }).then((response) => {
       if (response.status === 200) {
@@ -161,6 +163,7 @@ const TeacherCourse = (userInfo) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.userInfo.token}`,
       },
     })
       .then((response) => response.json())
@@ -188,6 +191,7 @@ const TeacherCourse = (userInfo) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.userInfo.token}`,
       },
       body: JSON.stringify({
         courseId: courseid,
@@ -210,6 +214,7 @@ const TeacherCourse = (userInfo) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${userInfo.userInfo.token}`,
         },
       })
         .then((response) => response.json())
@@ -234,6 +239,7 @@ const TeacherCourse = (userInfo) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.userInfo.token}`,
       },
       body: JSON.stringify({
         courseId: courseid,
@@ -259,6 +265,7 @@ const TeacherCourse = (userInfo) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.userInfo.token}`,
       },
       body: JSON.stringify({
         courseId: courseid,
@@ -293,6 +300,7 @@ const TeacherCourse = (userInfo) => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.userInfo.token}`,
       },
       body: JSON.stringify(newQuizData),
     });

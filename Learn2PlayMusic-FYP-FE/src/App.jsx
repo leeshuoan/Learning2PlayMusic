@@ -95,6 +95,7 @@ function App() {
               role: userRole,
               email: session.getIdToken().payload.email,
               profileImage: session.getIdToken().payload["custom:profileImage"],
+              token: session.getIdToken().jwtToken,
             };
             console.log(userInfo);
             setUserInfo(userInfo);
@@ -131,12 +132,12 @@ function App() {
             <Route path="course/:courseid">
               <Route index element={<TeacherCourse userInfo={userInfo} />} />
               <Route path=":category" element={<TeacherCourse userInfo={userInfo} />} />
-              <Route path="announcement/:type/:announcementId?" element={<CourseAnnouncementForm />} />
-              <Route path="material/:type/:materialid?" element={<CourseMaterialsForm />} />
-              <Route path="material/view/:materialid?" element={<ViewCourseMaterialsForm />} />
-              <Route path="material/new" element={<NewCourseMaterialsForm />} />
-              <Route path="material/edit/:materialid?" element={<EditCourseMaterialsForm />} />
-              <Route path="homework/new" element={<NewHomeworkForm />} />
+              <Route path="announcement/:type/:announcementId?" element={<CourseAnnouncementForm userInfo={userInfo} />} />
+              <Route path="material/:type/:materialid?" element={<CourseMaterialsForm userInfo={userInfo} />} />
+              <Route path="material/view/:materialid?" element={<ViewCourseMaterialsForm userInfo={userInfo} />} />
+              <Route path="material/new" element={<NewCourseMaterialsForm userInfo={userInfo} />} />
+              <Route path="material/edit/:materialid?" element={<EditCourseMaterialsForm userInfo={userInfo} />} />
+              <Route path="homework/new" element={<NewHomeworkForm userInfo={userInfo} />} />
               <Route path="homework/:homeworkId">
                 <Route index element={<TeacherHomeworkOverview />} />
                 <Route path="edit" element={<EditHomeworkForm />} />
