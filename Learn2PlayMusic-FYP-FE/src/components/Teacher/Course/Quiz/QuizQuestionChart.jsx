@@ -1,6 +1,6 @@
 import { Box, Card, Typography } from "@mui/material";
 
-const HorizontalChart = ({questionImage}) => {
+const QuizQuestionChart = ({ questionImage, data }) => {
   const grey = "#d9d9d9";
   const optionGrey = "#959595";
   const green = "#98d16c";
@@ -24,29 +24,7 @@ const HorizontalChart = ({questionImage}) => {
       width: widthPercent + "%",
     };
   };
-  const data = [
-    {
-      name: "Option Adasdashdahsdlhasdasdnasdsak",
-      percent: 80,
-      correct: true,
-    },
-    {
-      name: "Option B",
-      percent: 10,
-      correct: false,
-    },
-    {
-      name: "Option C",
-      percent: 5,
-      correct: false,
-    },
-    {
-      name: "Option D",
-      percent: 0,
-      correct: false,
-    },
-  ];
-  // }
+  console.log(data);
   return (
     <div>
       {questionImage && <img src={questionImage} width="400" alt="question" />}
@@ -66,4 +44,4 @@ const HorizontalChart = ({questionImage}) => {
     </div>
   );
 };
-export default HorizontalChart;
+export default QuizQuestionChart;

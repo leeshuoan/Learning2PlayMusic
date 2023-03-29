@@ -567,9 +567,6 @@ const TeacherCourse = (userInfo) => {
             <Typography variant="subtitle2" sx={{ my: 1 }}>
               Date: {course.timeslot}
             </Typography>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Number of students enrolled: {classList.length}
-            </Typography>
           </Box>
         </Box>
       </Card>

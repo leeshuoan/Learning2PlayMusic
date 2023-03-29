@@ -1,9 +1,9 @@
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Accordion, AccordionDetails, AccordionSummary, Backdrop, Box, Button, Card, CircularProgress, Container, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import {useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
-import HorizontalChart from "../../../utils/HorizontalChart";
+import QuizQuestionChart from "./QuizQuestionChart";
 
 const QuizSummary = (userInfo) => {
   const navigate = useNavigate();
@@ -15,7 +15,6 @@ const QuizSummary = (userInfo) => {
   const [course, setCourse] = useState({});
   const [quiz, setQuiz] = useState({ QuizTitle: "" });
   const [quizQuestions, setQuizQuestions] = useState([]);
-  const [classList, setClassList] = useState([]);
   let questionCounter = 0;
 
   // api calls
@@ -33,16 +32,15 @@ const QuizSummary = (userInfo) => {
   const getCourseAPI = request(`/course?courseId=${courseid}`);
   const getQuizAPI = request(`/course/quiz?courseId=${courseid}&quizId=${quizId}`);
   const getQuizQuestionAPI = request(`/course/quiz/question?courseId=${courseid}&quizId=${quizId}`);
-  const getClassListAPI = request(`/course/classlist?courseId=${courseid}`);
 
   useEffect(() => {
     async function fetchData() {
-      let fetchedCourseData = [],
-        fetchedQuizData = [],
-        fetchedQuizQuestionData = [],
-        fetchedClassListData = [];
+      let fetchedCourseData = [];
+      let fetchedQuizData = [];
+      let fetchedQuizQuestionData = [];
+
       try {
-        [fetchedCourseData, fetchedQuizData, fetchedQuizQuestionData, fetchedClassListData] = await Promise.all([getCourseAPI, getQuizAPI, getQuizQuestionAPI, getClassListAPI]);
+        [fetchedCourseData, fetchedQuizData, fetchedQuizQuestionData] = await Promise.all([getCourseAPI, getQuizAPI, getQuizQuestionAPI]);
       } catch (error) {
         console.log(error);
       }
@@ -57,7 +55,7 @@ const QuizSummary = (userInfo) => {
       setCourse(courseData);
 
       let quizData = fetchedQuizData;
-      let quizPerformance = quizData.AverageScore == 0 ? "" : quizData.AverageScore >= 50 ? green : red;
+      let quizPerformance = quizData.AverageScore == 0 ? "" : quizData.AverageScore >= (fetchedQuizQuestionData.length/2) ? green : red;
       quizData = { ...quizData, quizPerformance };
       console.log(quizData);
       setQuiz(quizData);
@@ -66,13 +64,16 @@ const QuizSummary = (userInfo) => {
         let questionId = q.SK.split("Question#")[1];
         let percentCorrect = q.Correct == 0 || q.Attempts == 0 ? 0 : Math.round((q.Correct / q.Attempts) * 10000) / 100;
         let performance = percentCorrect == null ? "black" : percentCorrect >= 50 ? green : red;
-        return { ...q, questionId, percentCorrect, performance };
+        let optionsStats = q.Options.map((o) => {
+          let name = o;
+          let correct = q.Answer == o ? true : false;
+          let percent = q.Attempts == 0 ? 0 : Math.round((q[o] / q.Attempts) * 10000) / 100;
+          return { name, correct, percent };
+        });
+        return { ...q, questionId, percentCorrect, performance, optionsStats };
       });
       console.log(questionsData);
       setQuizQuestions(questionsData);
-
-      console.log(fetchedClassListData);
-      setClassList(fetchedClassListData);
     }
 
     fetchData().then(() => {
@@ -144,7 +145,7 @@ const QuizSummary = (userInfo) => {
           {quizQuestions.map((question) => {
             questionCounter++;
             let questionImage = question.QuestionImage ? question.QuestionImage : null;
-            console.log(questionImage)
+            console.log(questionImage);
             return (
               <Grid item xs={12} sm={12} md={12}>
                 <Accordion id={question.SK} key={question.SK} aria-controls={question.SK} sx={{ border: "1px solid rgba(0,0,0,0.05)", borderRadius: 4 }}>
@@ -161,12 +162,8 @@ const QuizSummary = (userInfo) => {
                   </AccordionSummary>
                   {/* drop down */}
                   <AccordionDetails>
-                    {/* <Typography variant="body1">
-                      <b>Options breakdown</b>&nbsp;{question.QuestionOptionType}
-                    </Typography> */}
                     <Typography>{question.QuestionText}</Typography>
-                    {/* TODO: chart for each accordion detail */}
-                    <HorizontalChart questionImage={questionImage}></HorizontalChart>
+                    <QuizQuestionChart questionImage={questionImage} data={ question.optionsStats}></QuizQuestionChart>
                   </AccordionDetails>
                 </Accordion>
               </Grid>
