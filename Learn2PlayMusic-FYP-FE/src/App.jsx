@@ -43,6 +43,7 @@ import NewCourseMaterialsForm from "./components/Teacher/Course/Materials/NewCou
 import ViewCourseMaterialsForm from "./components/Teacher/Course/Materials/ViewCourseMaterialsForm";
 import EditQuiz from "./components/Teacher/Course/Quiz/EditQuiz";
 import NewQuiz from "./components/Teacher/Course/Quiz/NewQuiz";
+import QuizSummary from "./components/Teacher/Course/Quiz/QuizSummary";
 import BaseProgressReport from "./components/Teacher/Course/Report/BaseProgressReport";
 import TeacherCourse from "./components/Teacher/TeacherCourse";
 import TeacherHome from "./components/Teacher/TeacherHome";
@@ -145,6 +146,7 @@ function App() {
               <Route path="report/:userId/:reportId" element={<BaseProgressReport />} />
               <Route path="quiz/new" element={<NewQuiz userInfo={userInfo} />} />
               <Route path="quiz/edit/:quizId" element={<EditQuiz userInfo={userInfo} />} />
+              <Route path="quiz/summary/:quizId" element={<QuizSummary userInfo={userInfo} />} />
             </Route>
           </Route>
 

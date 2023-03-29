@@ -1,7 +1,7 @@
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Accordion, AccordionDetails, AccordionSummary, Backdrop, Box, Button, Card, CircularProgress, Container, Divider, Grid, Link, MenuItem, Stack, Typography } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
@@ -287,7 +287,7 @@ const TeacherCourse = (userInfo) => {
       quizDescription: selectedQuiz.QuizDescription,
       quizTitle: selectedQuiz.QuizTitle,
       courseId: courseid,
-  }
+    };
     console.log(newQuizData);
     const res = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
       method: "PUT",
@@ -671,7 +671,7 @@ const TeacherCourse = (userInfo) => {
                 </Box>
                 {/* end header */}
 
-                <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => { }}></MaterialReactTable>
+                <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
               </Card>
             </Box>
             {/* quiz ==================================================================================================== */}
@@ -696,7 +696,6 @@ const TeacherCourse = (userInfo) => {
                         {quiz.QuizTitle}
                       </Typography>
                       <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={{ xs: 1, sm: 2 }}>
-                        {/*  todo visibile, edit, delete */}
                         <Typography variant="button">
                           <Link
                             underline="hover"
@@ -744,7 +743,13 @@ const TeacherCourse = (userInfo) => {
                       <Typography variant="body2" sx={{ mt: 1 }}>
                         Max attempts allowed: {quiz.QuizMaxAttempts}
                       </Typography>
-                      <Button variant="contained">View Quiz Summary</Button>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          navigate(`summary/${quiz.id}`);
+                        }}>
+                        View Quiz Summary
+                      </Button>
                     </Box>
                   </Card>
                 ))}
@@ -809,7 +814,7 @@ const TeacherCourse = (userInfo) => {
                           </Typography>
                           <Typography
                             variant="button"
-                          // onclick={() => {
+                            // onclick={() => {
                           >
                             <Link
                               underline="hover"
@@ -835,7 +840,7 @@ const TeacherCourse = (userInfo) => {
                   Class List
                 </Typography>
                 {/* end header */}
-                <MaterialReactTable columns={classListColumns} data={classList} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => { }}></MaterialReactTable>
+                <MaterialReactTable columns={classListColumns} data={classList} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
               </Card>
             </Box>
           </Box>
