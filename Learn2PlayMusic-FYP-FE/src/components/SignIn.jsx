@@ -44,6 +44,12 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
     Auth.signIn(data.get("email"), data.get("password"))
       .then((user) => {
         console.log(user)
+
+        if (user.challengeName == "NEW_PASSWORD_REQUIRED") {
+          navigate("/changepassword");
+          return 
+        }
+
         user.getSession((err, session) => {
           if (err) {
             console.log(err);

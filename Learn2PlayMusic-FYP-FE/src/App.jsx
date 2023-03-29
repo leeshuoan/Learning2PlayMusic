@@ -17,6 +17,7 @@ import ForgotPassword from "./components/ForgotPassword";
 import NotFound from "./components/NotFound";
 import Profile from "./components/Profile";
 import SignIn from "./components/SignIn";
+import ChangePassword from "./components/ChangePassword";
 // user
 import UserClassMaterials from "./components/User/Course/UserClassMaterials";
 import UserHomework from "./components/User/Course/UserHomework";
@@ -30,7 +31,6 @@ import AdminHome from "./components/Admin/AdminHome";
 import AdminUserManagement from "./components/Admin/AdminUserManagement";
 import AdminAnnouncementManagement from "./components/Admin/Announcement/AdminAnnouncementManagement";
 import AdminCourseManagement from "./components/Admin/Course/AdminCourseManagement";
-
 // teacher
 import CourseAnnouncementForm from "./components/Teacher/Course/Announcement/CourseAnnouncementForm";
 import EditHomeworkForm from "./components/Teacher/Course/Homework/EditHomeworkForm";
@@ -167,6 +167,7 @@ function App() {
           <Route path="chat" element={<Chat userInfo={userInfo} />} />
           <Route path="profile" element={<Profile userInfo={userInfo} refreshUserInfo={handleRefreshUserInfo} />}></Route>
           <Route path="resetpassword" element={<ForgotPassword />}></Route>
+          <Route path="changepassword" element={<ChangePassword />}></Route>
           <Route path="*" element={<NotFound userRole={userInfo.role} />} />
         </Routes>
       </ThemeProvider>
