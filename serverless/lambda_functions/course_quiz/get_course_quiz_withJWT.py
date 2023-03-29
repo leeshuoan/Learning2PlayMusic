@@ -120,5 +120,5 @@ def generate_expression_attribute_values(token, courseId):
         filter_expression = 'Visibility = :visibility'
         expression_values[":visibility"] = True
     else:
-        filter_expression = 'attribute_exists(PK)'
+        filter_expression = 'attribute_exists(Visibility)'
     return filter_expression, expression_values
