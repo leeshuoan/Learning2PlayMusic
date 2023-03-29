@@ -12,12 +12,12 @@ import aws_exports from "./aws-exports";
 // general
 import Announcements from "./components/Announcements";
 import DefaultAppBar from "./components/AppBar/DefaultAppBar";
+import ChangePassword from "./components/ChangePassword";
 import Chat from "./components/Chat/Chat";
 import ForgotPassword from "./components/ForgotPassword";
 import NotFound from "./components/NotFound";
 import Profile from "./components/Profile";
 import SignIn from "./components/SignIn";
-import ChangePassword from "./components/ChangePassword";
 // user
 import UserClassMaterials from "./components/User/Course/UserClassMaterials";
 import UserHomework from "./components/User/Course/UserHomework";
@@ -139,11 +139,11 @@ function App() {
               <Route path="material/edit/:materialid?" element={<EditCourseMaterialsForm userInfo={userInfo} />} />
               <Route path="homework/new" element={<NewHomeworkForm userInfo={userInfo} />} />
               <Route path="homework/:homeworkId">
-                <Route index element={<TeacherHomeworkOverview />} />
-                <Route path="edit" element={<EditHomeworkForm />} />
-                <Route path="grade/:userId" element={<TeacherGradeHomework />} />
+                <Route index element={<TeacherHomeworkOverview userInfo={userInfo} />} />
+                <Route path="edit" element={<EditHomeworkForm userInfo={userInfo} />} />
+                <Route path="grade/:userId" element={<TeacherGradeHomework userInfo={userInfo} />} />
               </Route>
-              <Route path="report/:userId" element={<BaseProgressReport />} />
+              <Route path="report/:userId" element={<BaseProgressReport userInfo={userInfo} />} />
               <Route path="report/:userId/:reportId" element={<BaseProgressReport />} />
               <Route path="quiz/new" element={<NewQuiz userInfo={userInfo} />} />
               <Route path="quiz/edit/:quizId" element={<EditQuiz userInfo={userInfo} />} />
@@ -157,7 +157,7 @@ function App() {
             <Route path="course/:courseid">
               <Route index element={<UserCourse userInfo={userInfo} />} />
               <Route path=":category" element={<UserCourse userInfo={userInfo} />} />
-              <Route path="material/:materialId" element={<UserClassMaterials />} />
+              <Route path="material/:materialId" element={<UserClassMaterials userInfo={userInfo} />} />
               <Route path="homework/:homeworkId" element={<UserHomework userInfo={userInfo} />} />
               <Route path="homework/:homeworkId/feedback" element={<UserHomeworkFeedback userInfo={userInfo} />} />
               <Route path="report/:reportId" element={<UserReport userInfo={userInfo} />} />

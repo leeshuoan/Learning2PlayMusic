@@ -12,7 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 
-const CourseMaterialsForm = () => {
+const CourseMaterialsForm = ({ userInfo }) => {
   dayjs.extend(customParseFormat);
   const navigate = useNavigate();
   const { courseid } = useParams();
@@ -132,8 +132,8 @@ const CourseMaterialsForm = () => {
     //  the page is not rendering properly when the data is fetched in the useEffect, help me fix this
 
     async function fetchData() {
-      var data1 = {}
-      var data2 = {}
+      var data1 = {};
+      var data2 = {};
       if (type == "new") {
         data1 = await getCourseAPI;
       } else {

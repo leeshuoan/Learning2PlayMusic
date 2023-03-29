@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 
-const ViewCourseMaterialsForm = () => {
+const ViewCourseMaterialsForm = ({ userInfo }) => {
   dayjs.extend(customParseFormat);
   const navigate = useNavigate();
   const { courseid } = useParams();

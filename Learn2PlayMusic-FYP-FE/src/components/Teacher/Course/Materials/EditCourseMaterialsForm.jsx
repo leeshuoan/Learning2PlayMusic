@@ -12,7 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 
-const EditCourseMaterialsForm = () => {
+const EditCourseMaterialsForm = ({ userInfo }) => {
   dayjs.extend(customParseFormat);
   const navigate = useNavigate();
   const { courseid } = useParams();

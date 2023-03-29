@@ -4,7 +4,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 
-export default function CourseAnnouncementForm() {
+export default function CourseAnnouncementForm({userInfo}) {
   const navigate = useNavigate();
   const { state } = useLocation();
   const [title, setTitle] = useState(state.title);
