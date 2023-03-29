@@ -10,13 +10,11 @@ const s3 = new AWS.S3();
 const bucketName = process.env.QUESTION_IMAGE_BUCKET_NAME;
 
 async function lambda_handler(event, context) {
-
   try {
     let questionCount = 0;
     const requestBody = JSON.parse(event.body);
 
     for (let question of requestBody) {
-
       questionCount++;
       const courseId = question.courseId;
       const quizId = question.quizId;
@@ -24,15 +22,16 @@ async function lambda_handler(event, context) {
       const questionText = question.question;
       const options = question.options;
       const answer = question.answer;
-      const qnNumber = question.qnNumber
+      const qnNumber = question.qnNumber;
+
+      const optionsStats = {};
+      for (let option of options) {
+        optionsStats[option] = 0;
+      }
 
       let uploadedImage;
       let s3Params;
-      if (
-        question &&
-        "questionImage" in question &&
-        question["questionImage"] != ""
-      ) {
+      if (question && "questionImage" in question && question["questionImage"] != "") {
         const base64data = question.questionImage;
         const fileExtension = base64data.split(";")[0].split("/")[1];
         const base64Image = base64data.replace(/^data:image\/\w+;base64,/, "");
@@ -62,21 +61,17 @@ async function lambda_handler(event, context) {
           Answer: answer,
           Attempts: 0,
           Correct: 0,
+          ...optionsStats,
         },
       };
 
-      if (
-        "questionImage" in question &&
-        question["questionImage"] != ""
-      ) {
+      if ("questionImage" in question && question["questionImage"] != "") {
         params.Item.QuestionImage = s3Params.Bucket + "/" + s3Params.Key;
       }
       await dynamodb.put(params).promise();
     }
 
-    return response_200(
-      `Successfully inserted ${questionCount} Question(s)!`
-    );
+    return response_200(`Successfully inserted ${questionCount} Question(s)!`);
   } catch (e) {
     return response_400(e);
   }
