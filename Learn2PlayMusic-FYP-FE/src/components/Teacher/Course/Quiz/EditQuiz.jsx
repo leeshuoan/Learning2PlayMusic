@@ -4,12 +4,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 import NewQuizQuestion from "./NewQuizQuestion";
-import NewQuizQuestion from "./NewQuizQuestion";
 
 const EditQuiz = () => {
   const navigate = useNavigate();
   const { courseid } = useParams();
-  const { quizId } = useParams();
   const { quizId } = useParams();
   const [course, setCourse] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -17,16 +15,6 @@ const EditQuiz = () => {
   const [quizDescription, setQuizDescription] = useState("");
   const [quizMaxAttempts, setQuizMaxAttempts] = useState(1);
   const [visibility, setVisibility] = useState(true);
-  const [quizQuestions, setQuizQuestions] = useState([
-    {
-      qnNumber: 1,
-      question: "",
-      questionOptionType: "MCQ",
-      options: ["", "", "", ""],
-      answer: ""
-    },
-  ]);
-  const [qnNumber, setQnNumber] = useState(2);
   const [quizQuestions, setQuizQuestions] = useState([
     {
       qnNumber: 1,
@@ -57,11 +45,9 @@ const EditQuiz = () => {
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
   const getQuizAPI = request(`/course/quiz?courseId=${courseid}&quizId=${quizId}`);
-  const getQuizAPI = request(`/course/quiz?courseId=${courseid}&quizId=${quizId}`);
 
   useEffect(() => {
     async function fetchData() {
-      let data1 = [], data2 = [], data3 = [];
       let data1 = [], data2 = [], data3 = [];
       try {
         [data1, data2] = await Promise.all([getCourseAPI, getQuizAPI]);
@@ -69,7 +55,6 @@ const EditQuiz = () => {
         console.log(error);
       }
 
-      console.log(data2)
       console.log(data2)
       let courseData = {
         id: data1[0].SK.split("#")[1],
@@ -88,9 +73,6 @@ const EditQuiz = () => {
   async function createQuiz(e) {
     setIsLoading(true);
 
-  async function createQuiz(e) {
-    setIsLoading(true);
-
     e.preventDefault();
     console.log(quizQuestions);
 
@@ -104,7 +86,6 @@ const EditQuiz = () => {
     }
 
     const newQuiz = {
-    const newQuiz = {
       quizTitle: quizTitle,
       quizDescription: quizDescription,
       quizMaxAttempts: quizMaxAttempts,
@@ -112,13 +93,11 @@ const EditQuiz = () => {
       courseId: courseid,
     };
     let newQuizId = null;
-    let newQuizId = null;
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newQuiz),
       body: JSON.stringify(newQuiz),
     });
     if (response.ok) {
