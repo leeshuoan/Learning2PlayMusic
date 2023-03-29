@@ -4,7 +4,6 @@ const { response_200, response_400, response_500 } = require("./responses");
 const dynamodb = new DynamoDB.DocumentClient();
 
 async function lambda_handler(event, context) {
-
   try {
     const requestBody = JSON.parse(event.body);
 
@@ -30,9 +29,7 @@ async function lambda_handler(event, context) {
     }
 
     if (attempts.QuizAttempt >= attempts.QuizMaxAttempt) {
-      throw new Error(
-        "Already attempted max number of times: " + attempts.QuizAttempt
-      );
+      throw new Error("Already attempted max number of times: " + attempts.QuizAttempt);
     }
 
     const getQuestionParam = {
@@ -54,7 +51,7 @@ async function lambda_handler(event, context) {
       let correct = 0;
       if (question.Answer == submissions[submissionKey]) {
         correct = 1;
-        quizScore += 1
+        quizScore += 1;
       }
       const updateQuestionParams = {
         TableName: "LMS",
@@ -62,11 +59,10 @@ async function lambda_handler(event, context) {
           PK: `Course#${courseId}`,
           SK: `Quiz#${quizId}Question#${questionId}`,
         },
-        UpdateExpression:
-          "set Attempts = Attempts + :incr, Correct = Correct + :val",
+        UpdateExpression: `set Attempts = Attempts + :incr, Correct = Correct + :val, ${question.Answer} = ${question.Answer} + :incr`,
         ExpressionAttributeValues: {
           ":val": correct,
-          ":incr": 1
+          ":incr": 1,
         },
       };
       await dynamodb.update(updateQuestionParams).promise();
@@ -80,8 +76,7 @@ async function lambda_handler(event, context) {
         PK: `Course#${courseId}`,
         SK: `Student#${studentId}Quiz#${quizId}`,
       },
-      UpdateExpression:
-        "set QuizScore = :newQuizScore, QuizAttempt = QuizAttempt + :val",
+      UpdateExpression: "set QuizScore = :newQuizScore, QuizAttempt = QuizAttempt + :val",
       ExpressionAttributeValues: {
         ":newQuizScore": quizScorePercentage,
         ":val": 1,
