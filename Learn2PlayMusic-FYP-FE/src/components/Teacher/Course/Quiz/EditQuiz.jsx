@@ -31,6 +31,7 @@ const EditQuiz = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
       },
     });
 
@@ -63,6 +64,12 @@ const EditQuiz = () => {
         teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
+
+      setQuizTitle(data2.QuizTitle);
+      setQuizDescription(data2.QuizDescription);
+      setQuizMaxAttempts(data2.QuizMaxAttempts);
+      setVisibility(data2.Visibility);
+
     }
 
     fetchData().then(() => {
@@ -161,6 +168,10 @@ const EditQuiz = () => {
     setQuizQuestions(newQuizQuestions);
   };
 
+  const handleVisibilityChange = (event) => {
+    setVisibility(event.target.value);
+  };
+
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
@@ -206,7 +217,7 @@ const EditQuiz = () => {
                   </Grid>
                   <Grid item xs={12} sm={4} md={3}>
                     <InputLabel id="visible-label">Visbility *</InputLabel>
-                    <Select labelId="visible-label" value={visibility} onChange={() => setVisibility(event.target.value)} required>
+                    <Select labelId="visible-label" value={visibility} onChange={(e) => handleVisibilityChange(e)} required>
                       <MenuItem value={true}>Shown</MenuItem>
                       <MenuItem value={false}>Hidden</MenuItem>
                     </Select>
