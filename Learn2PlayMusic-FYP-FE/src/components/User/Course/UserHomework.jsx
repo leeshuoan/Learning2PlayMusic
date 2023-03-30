@@ -249,7 +249,7 @@ const UserHomework = (userInfo) => {
               Submission Successful!
             </Typography>
             <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
-              <Button variant="contained" onClick={() => navigate("/home/course/1/homework")}>
+              <Button variant="contained" onClick={() => navigate(`/home/course/${courseId}/homework`)}>
                 Back to Homework
               </Button>
             </Box>
