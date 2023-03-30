@@ -26,10 +26,10 @@ const UserQuiz = (userInfo) => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${userInfo.userInfo.token}`,
     },
   };
   const getCourse = fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, headerConfig);
-
   const getQuizAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}&quizId=${quizId}`, headerConfig);
 
   const getQuizQuestionAPI = fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question?courseId=${courseid}&quizId=${quizId}`, headerConfig);
@@ -57,7 +57,7 @@ const UserQuiz = (userInfo) => {
       .then(async ([courseInfoRes, quizInfoRes, quizQnRes]) => {
         if (quizInfoRes.status === 404 || quizQnRes.status === 404 || courseInfoRes.status === 404) {
           toast.error("Invalid ID");
-          navigate(`/home/course/${courseid}/quiz`);
+          // navigate(`/home/course/${courseid}/quiz`);
           return;
         }
         if (quizInfoRes.status === 500 || quizQnRes.status === 500 || courseInfoRes.status === 500) {
