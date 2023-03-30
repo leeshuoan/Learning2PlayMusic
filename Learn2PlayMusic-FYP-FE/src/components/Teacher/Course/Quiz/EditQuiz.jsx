@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
-import NewQuizQuestion from "./NewQuizQuestion";
+import EditQuizQuestion from "./EditQuizQuestion";
 
-const EditQuiz = () => {
+const EditQuiz = ({userInfo}) => {
   const navigate = useNavigate();
   const { courseid } = useParams();
   const { quizId } = useParams();
@@ -31,7 +31,7 @@ const EditQuiz = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("token")}`
+        "Authorization": `Bearer ${userInfo.token}`
       },
     });
 
@@ -46,17 +46,17 @@ const EditQuiz = () => {
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
   const getQuizAPI = request(`/course/quiz?courseId=${courseid}&quizId=${quizId}`);
+  const getQuizQuestionAPI = request(`/course/quiz/question?courseId=${courseid}&quizId=${quizId}`);
 
   useEffect(() => {
     async function fetchData() {
       let data1 = [], data2 = [], data3 = [];
       try {
-        [data1, data2] = await Promise.all([getCourseAPI, getQuizAPI]);
+        [data1, data2, data3] = await Promise.all([getCourseAPI, getQuizAPI, getQuizQuestionAPI]);
       } catch (error) {
         console.log(error);
       }
 
-      console.log(data2)
       let courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
@@ -70,6 +70,10 @@ const EditQuiz = () => {
       setQuizMaxAttempts(data2.QuizMaxAttempts);
       setVisibility(data2.Visibility);
 
+      for (let i = 0; i < data3.length; i++) {
+        data3[i].qnNumber = i + 1;
+      }
+      setQuizQuestions(data3);
     }
 
     fetchData().then(() => {
@@ -229,7 +233,7 @@ const EditQuiz = () => {
                 <TextField value={quizDescription} onChange={() => setQuizDescription(event.target.value)} fullWidth multiline rows={3} />
               </Box>
               {quizQuestions.map((question, key) => {
-                return <NewQuizQuestion key={key} qnInfo={question} handleQuestionChange={handleQuestionChange} />;
+                return <EditQuizQuestion key={key} qnInfo={question} handleQuestionChange={handleQuestionChange} />;
               })}
               <Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>
                 Add Question
