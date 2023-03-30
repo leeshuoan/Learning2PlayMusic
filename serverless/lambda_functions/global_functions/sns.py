@@ -69,7 +69,7 @@ def publish_course_announcement(subject, content, sender): #sender should be a t
     subject = subject
     body_text = content
     # body_html = '<p>Hello from <b>Amazon SES!</b></p>'
-    email_sender = 'g3fyp2023@gmail.com' # will never change, similar to admin@gmail.com
+    email_sender = 'l2pma.addmin@gmail.com' # will never change, similar to admin@gmail.com
 
     for subscriber in subscribers:
         try:

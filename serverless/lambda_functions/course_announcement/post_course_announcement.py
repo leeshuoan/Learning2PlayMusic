@@ -22,8 +22,6 @@ def lambda_handler(event, context):
 
         # VALIDATION
         # checks that courseId passed in is not an empty string
-        print("event here:")
-        print(event)
         if json.loads(event['body'])['courseId']=="":
             return response_400("courseId is missing")
         
