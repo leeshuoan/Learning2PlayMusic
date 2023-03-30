@@ -245,11 +245,11 @@ const UserHomework = (userInfo) => {
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <img src={celebration}></img>
             </Box>
-            <Typography variant="h5" sx={{ textAlign: "center" }}>
+            <Typography variant="h5" sx={{ textAlign: "center" }}>s
               Submission Successful!
             </Typography>
             <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
-              <Button variant="contained" onClick={() => navigate(`/home/course/${courseId}/homework`)}>
+              <Button variant="contained" onClick={() => navigate(`/home/course/${course.id}/homework`)}>
                 Back to Homework
               </Button>
             </Box>
