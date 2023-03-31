@@ -18,7 +18,7 @@ const NewQuiz = () => {
     {
       qnNumber: 1,
       question: "",
-      questionOptionType: "MCQ",
+      questionOptionType: "multiple-choice",
       options: ["", "", "", ""],
       answer: ""
     },
@@ -120,7 +120,7 @@ const NewQuiz = () => {
 
     let newQuizQuestions = []
     for (let i = 0; i < quizQuestions.length; i++) {
-      const newQuizQuestion = {...quizQuestions[i], courseId: courseid, quizId: newQuizId}
+      const newQuizQuestion = { ...quizQuestions[i], courseId: courseid, quizId: newQuizId }
       newQuizQuestions.push(newQuizQuestion)
     }
 
@@ -150,7 +150,7 @@ const NewQuiz = () => {
     setQuizQuestions([...quizQuestions, {
       qnNumber: qnNumber,
       question: "",
-      questionOptionType: "MCQ",
+      questionOptionType: "multiple-choice",
       options: [", '', '', '"],
       answer: ""
     }])

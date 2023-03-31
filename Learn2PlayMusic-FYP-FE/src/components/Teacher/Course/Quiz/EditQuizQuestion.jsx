@@ -38,6 +38,14 @@ const EditQuizQuestion = ({ qnInfo, handleQuestionChange }) => {
     handleQuestionChange(newQnInfo);
   }, [question, questionType, options, answer, image]);
 
+  // useEffect(() => {
+  //   setQuestion(qnInfo.question)
+  //   setQuestionType(qnInfo.questionOptionType)
+  //   setOptions(qnInfo.options)
+  //   setAnswer(qnInfo.answer)
+  //   setImage(qnInfo.questionImage)
+  // }, [qnInfo.question, qnInfo.questionOptionType, qnInfo.options, qnInfo.answer, qnInfo.questionImage])
+
   const handleQnTypeChange = (event) => {
     setOptions(["", "", "", ""]);
     setQuestionType(event.target.value);
