@@ -1,13 +1,14 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { Autocomplete, Backdrop, Box, Button, CircularProgress, Container, Grid, IconButton, Switch, TextField, Tooltip, Typography, useTheme } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Container, Grid, IconButton, Switch, Tooltip, Typography, useTheme } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import TransitionModal from "../../utils/TransitionModal";
 import CreateUserForm from "./CreateUserForm";
+import EnrolUserForm from "./EnrolUserForm";
 import UserPrompt from "./UserPrompt";
 
 const AdminUserManagement = (userInfo) => {
@@ -21,8 +22,6 @@ const AdminUserManagement = (userInfo) => {
 
   // loading screen
   const [open, setOpen] = useState(true);
-  // all courses -> as options for enroling users to course
-  const [allCourses, setAllCourses] = useState([]);
   // enrol user ala carte
   const [openEnrolUser, setOpenEnrolUser] = useState(false);
   const [toEnrolUser, setToEnrolUser] = useState("");
@@ -85,6 +84,17 @@ const AdminUserManagement = (userInfo) => {
     setRoles(rs);
   };
   // list users ================================================================================================================================================================================================================================================================================
+  async function postAPIWithBody(endpoint, body) {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    return response.json();
+  }
+
   const listUsers = async () => {
     let apiName = "AdminQueries";
     let path = "/listUsers";
@@ -122,6 +132,18 @@ const AdminUserManagement = (userInfo) => {
     console.log(userData);
     setData(userData);
   };
+
+  // enrol user ala carte================================================================================================================================================================================================================================================================================
+  const enrolUser = async (user) => {
+    setOpenEnrolUser(true);
+    setToEnrolUser(user);
+  };
+  const enrolSingleUserSuccessClose = () => {
+    setToEnrolCourse("");
+    setToEnrolUser("");
+    setReloadData(!reloadData);
+    setOpenEnrolUser(false);
+  };
   // enrol multiple users================================================================================================================================================================================================================================================================================
   function enrolMultipleUsers() {
     let toEnrolUsers = Object.keys(rowSelection).map((key) => data[key]);
@@ -142,85 +164,12 @@ const AdminUserManagement = (userInfo) => {
     setToMultipleEnrolUsers(toEnrolUsers);
     setOpenEnrolMultipleUser(true);
   }
-
-  const confirmEnrolMultipleUsers = async () => {
-    setOpen(true);
-    if (toEnrolCourse == null) {
-      toast.error("Please select a course");
-      return;
-    }
-    let endpoint = `${import.meta.env.VITE_API_URL}/user/course/enrol`;
-    let myInit = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        courseId: toEnrolCourse.id,
-        userIds: toMultipleEnrolUsers.map((user) => user.Username),
-      }),
-    };
-    let res = await fetch(endpoint, myInit);
-    const response = await res.json();
-    setOpen(false);
-    if (res.status == 200 || (res.status == 202 && response.alreadyEnrolled.length == 0 && response.doesNotExist.length == 0)) {
-      toast.success("Successfully enrolled all the selected users");
-    } else if (res.status == 202) {
-      if (response.alreadyEnrolled.length != 0) {
-        const alreadyEnrolled = response.alreadyEnrolled.map((user) => userNameToIdMap[user]).join(", ");
-        toast.warning(`The following users are already enrolled in the course: ${alreadyEnrolled}`);
-      }
-      if (response.doesNotExist.length != 0) {
-        const doesNotExist = response.doesNotExist.map((usr) => userNameToIdMap[usr].join(", "));
-        toast.error(`The following users with the user IDs do not exist: ${doesNotExist}`);
-      }
-      if (response.enrolled.length != 0) {
-        const successfullyEnrolled = response.enrolled.map((usr) => userNameToIdMap[urs].join(", "));
-        toast.success("Successfully enrolled all these users: " + successEnrolTxt.substring(0, successEnrolTxt.length - 2));
-      }
-    } else {
-      toast.error(response.messsage);
-    }
-    // reset
+  const enrolMultipleUsersSuccessClose = () => {
     setOpenEnrolMultipleUser(false);
     setUserNameToIdMap({});
     setDisplayText("");
     setToMultipleEnrolUsers([]);
-    return;
-  };
-
-  // enrol user ala carte================================================================================================================================================================================================================================================================================
-  const enrolUser = async (user) => {
-    setOpenEnrolUser(true);
-    setToEnrolUser(user);
-  };
-
-  const confirmEnrolUser = async () => {
-    if (toEnrolCourse == null) {
-      toast.error("Please select a course");
-      return;
-    }
-    let endpoint = `${import.meta.env.VITE_API_URL}/user/course?courseId=${toEnrolCourse.id}&userId=${toEnrolUser.Username}`;
-    let myInit = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    let res = await fetch(endpoint, myInit);
-    let data = await res.json();
-    if (res.status == 202) {
-      toast.warning(toEnrolUser.Attributes.Name + " has already been enrolled  in " + toEnrolCourse.courseDetails);
-    } else if (res.status == 400) {
-      toast.error(data.message);
-    } else if (res.status == 200) {
-      toast.success(toEnrolUser.Attributes.Name + " successfully enrolled in " + toEnrolCourse.courseDetails);
-    }
-    setToEnrolCourse("");
-    setToEnrolUser("");
     setReloadData(!reloadData);
-    setOpenEnrolUser(false);
-    return;
   };
   // UN-enrol user ===============================================================================================================================================================================================================================================================================
   const unEnrolUser = async (course, user) => {
@@ -253,7 +202,6 @@ const AdminUserManagement = (userInfo) => {
     setOpenUnEnrolUser(false);
     return;
   };
-
   // disable user================================================================================================================================================================================================================================================================================
   const openDisableUserModal = async (user) => {
     setOpenDisableUser(true);
@@ -264,7 +212,6 @@ const AdminUserManagement = (userInfo) => {
     setOpenDisableUser(false);
     setReloadData(!reloadData);
   };
-
   // enable user ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
   const openEnableUserModal = async (user) => {
     setOpenEnableUser(true);
@@ -275,7 +222,6 @@ const AdminUserManagement = (userInfo) => {
     setOpenEnableUser(false);
     setReloadData(!reloadData);
   };
-
   // delete user ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
   const openDeleteUserModal = async (user) => {
     setOpenDeleteUser(true);
@@ -285,52 +231,15 @@ const AdminUserManagement = (userInfo) => {
     setOpenDeleteUser(false);
     setReloadData(!reloadData);
   };
-
   // created user ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
   const createUserSuccessClose = () => {
     setOpenCreateUser(false);
     setReloadData(!reloadData);
   };
-
   // useEffect ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
-  async function postAPIWithBody(endpoint, body) {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    return response.json();
-  }
-  async function getAPI(endpoint) {
-    const response = await fetch(endpoint, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return response.json();
-  }
-
-  // const getUserCoursesEnrolledAPI = ;
-  const getCourses = getAPI(`${import.meta.env.VITE_API_URL}/course`);
-
   useEffect(() => {
-    async function fetchData() {
-      const [courses] = await Promise.all([getCourses]);
-      // const [userCoursesEnrolled, courses] = await Promise.all([ getCourses]);
-      var fetchedCourses = courses.map((course) => {
-        const id = course.SK.split("Course#")[1];
-        const courseDetails = course.CourseName + " on " + course.CourseSlot;
-        return { id, courseDetails };
-      });
-      setAllCourses(fetchedCourses);
-    }
-
     listUsers();
     listGroups();
-    fetchData();
     setOpen(false);
     return () => {};
   }, [reloadData]);
@@ -426,20 +335,31 @@ const AdminUserManagement = (userInfo) => {
       <Box m={2}>
         {/* create user ========================================================================================== */}
         <TransitionModal open={openCreateUser} handleClose={() => setOpenCreateUser(false)} style={modalStyle(largeModalWidth)}>
-          {<CreateUserForm roles={roles} handleClose={() => createUserSuccessClose()} />}
+          <CreateUserForm roles={roles} handleClose={() => createUserSuccessClose()} />
         </TransitionModal>
+
         {/* delete user ========================================================================================== */}
         <TransitionModal open={openDeleteUser} handleClose={() => setOpenDeleteUser(false)} style={modalStyle(smallModalWidth)}>
-          <UserPrompt selectedUser={toDeleteUser} handleClose={() => deleteUserSuccessClose()} type="Delete" />
+          <UserPrompt type="Delete" selectedUser={toDeleteUser} handleClose={() => deleteUserSuccessClose()} />
         </TransitionModal>
         {/* enable user ========================================================================================== */}
         <TransitionModal open={openEnableUser} handleClose={() => setOpenEnableUser(false)} style={modalStyle(smallModalWidth)}>
-          <UserPrompt selectedUser={toEnableUser} handleClose={() => enableUserSuccessClose()} type="Enable" />
+          <UserPrompt type="Enable" selectedUser={toEnableUser} handleClose={() => enableUserSuccessClose()} />
         </TransitionModal>
         {/* disable user ========================================================================================== */}
         <TransitionModal open={openDisableUser} handleClose={() => setOpenDisableUser(false)} style={modalStyle(smallModalWidth)}>
-          <UserPrompt selectedUser={toDisableUser} handleClose={() => disableUserSuccessClose()} type="Disable" />
+          <UserPrompt type="Disable" selectedUser={toDisableUser} handleClose={() => disableUserSuccessClose()} />
         </TransitionModal>
+
+        {/* enrol user ala carte========================================================================================== */}
+        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(largeModalWidth)}>
+          <EnrolUserForm type="single" toEnrolUser={toEnrolUser} handleClose={() => enrolSingleUserSuccessClose()} displayText="" userNameToIdMap="" />
+        </TransitionModal>
+        {/* enrol multiple users========================================================================================== */}
+        <TransitionModal open={openEnrolMultipleUsers} handleClose={() => setOpenEnrolMultipleUser(false)} style={modalStyle(largeModalWidth)}>
+          <EnrolUserForm type="multiple" toEnrolUser={toMultipleEnrolUsers} handleClose={() => enrolMultipleUsersSuccessClose()} displayText={displayText} userNameToIdMap={userNameToIdMap} />
+        </TransitionModal>
+
         {/* un-enrol user from course ========================================================================================== */}
         <TransitionModal open={openUnEnrolUser} handleClose={() => setOpenUnEnrolUser(false)} style={modalStyle(largeModalWidth)}>
           <>
@@ -479,150 +399,6 @@ const AdminUserManagement = (userInfo) => {
             </Grid>
           </>
         </TransitionModal>
-        {/* enrol user ala carte========================================================================================== */}
-        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(largeModalWidth)}>
-          <>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography align="center" variant="h5">
-                  Enrol User?
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sx={{ display: "flex", alignItems: "left", flexDirection: "column" }}>
-                <Box>
-                  <b>Name:</b> {toEnrolUser && toEnrolUser.Attributes.Name}
-                </Box>
-                <Box>
-                  <b>Email:</b> {toEnrolUser && toEnrolUser.Attributes.Email}
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} sx={{ display: "flex", justifyContent: "left", mt: 1 }}>
-                <Autocomplete
-                  fullWidth
-                  disablePortal
-                  name="course"
-                  id="course"
-                  options={allCourses}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  getOptionLabel={(option) => option.courseDetails}
-                  renderInput={(params) => <TextField {...params} label="Course *" />}
-                  onChange={(event, newValue) => {
-                    setToEnrolCourse(newValue);
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                <Button
-                  variant="contained"
-                  sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
-                  onClick={() => {
-                    setOpenEnrolUser(false);
-                  }}>
-                  Cancel
-                </Button>
-                <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmEnrolUser()}>
-                  Enrol
-                </Button>
-              </Grid>
-            </Grid>
-          </>
-        </TransitionModal>
-        {/* enrol multiple users========================================================================================== */}
-        <TransitionModal open={openEnrolMultipleUsers} handleClose={() => setOpenEnrolMultipleUser(false)} style={modalStyle(largeModalWidth)}>
-          <>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography align="center" variant="h5">
-                  Enrol the following users?
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sx={{ display: "flex", alignItems: "left", flexDirection: "column" }}>
-                <Box>
-                  <b>Name:</b> {displayText}
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} sx={{ display: "flex", justifyContent: "left", mt: 1 }}>
-                <Autocomplete
-                  fullWidth
-                  disablePortal
-                  name="course"
-                  id="course"
-                  options={allCourses}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  getOptionLabel={(option) => option.courseDetails}
-                  renderInput={(params) => <TextField {...params} label="Course *" />}
-                  onChange={(event, newValue) => {
-                    setToEnrolCourse(newValue);
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                <Button
-                  variant="contained"
-                  sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
-                  onClick={() => {
-                    setOpenEnrolMultipleUser(false);
-                  }}>
-                  Cancel
-                </Button>
-                <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmEnrolMultipleUsers()}>
-                  Enrol
-                </Button>
-              </Grid>
-            </Grid>
-          </>
-        </TransitionModal>
-        {/* enrol user ala carte ========================================================================================== */}
-        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(largeModalWidth)}>
-          <>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography align="center" variant="h5">
-                  Enrol User?
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sx={{ display: "flex", alignItems: "left", flexDirection: "column" }}>
-                <Box>
-                  <b>Name:</b> {toEnrolUser && toEnrolUser.Attributes.Name}
-                </Box>
-                <Box>
-                  <b>Email:</b> {toEnrolUser && toEnrolUser.Attributes.Email}
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} sx={{ display: "flex", justifyContent: "left", mt: 1 }}>
-                <Autocomplete
-                  fullWidth
-                  disablePortal
-                  name="course"
-                  id="course"
-                  options={allCourses}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  getOptionLabel={(option) => option.courseDetails}
-                  renderInput={(params) => <TextField {...params} label="Course *" />}
-                  onChange={(event, newValue) => {
-                    setToEnrolCourse(newValue);
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                <Button
-                  variant="contained"
-                  sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
-                  onClick={() => {
-                    setOpenEnrolUser(false);
-                  }}>
-                  Cancel
-                </Button>
-                <Button variant="contained" sx={{ mr: 1 }} onClick={() => confirmEnrolUser()}>
-                  Enrol
-                </Button>
-              </Grid>
-            </Grid>
-          </>
-        </TransitionModal>
         {/* main ========================================================================================== */}
         <Typography variant="h5" sx={{ m: 1, mt: 4 }}>
           User Management
@@ -632,7 +408,7 @@ const AdminUserManagement = (userInfo) => {
           enableFullScreenToggle={false}
           enableMultiRowSelection={true}
           positionToolbarAlertBanner="bottom"
-          enableRowSelection={true}
+          enableRowSelection={(row) => row.original.Attributes.Role != "Admin"}
           onRowSelectionChange={setRowSelection}
           state={{ rowSelection }}
           enableDensityToggle={false}
@@ -717,7 +493,7 @@ const AdminUserManagement = (userInfo) => {
           2. You cannot enable/disable yourself.
         </Typography>
       </Box>
-      <Backdrop sx={{ color: "#fff", zIndex: 999 }} open={open}>
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </Container>

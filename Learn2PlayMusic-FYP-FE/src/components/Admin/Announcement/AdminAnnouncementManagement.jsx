@@ -96,7 +96,6 @@ const AdminAnnouncementManagement = () => {
               alignItems: "center",
               gap: "2px",
             }}>
-            
             <Tooltip title="Edit" placement="bottom">
               <IconButton
                 onClick={() => {
@@ -131,6 +130,8 @@ const AdminAnnouncementManagement = () => {
     return response.json();
   }
   useEffect(() => {
+    setOpen(true);
+
     //`${import.meta.env.VITE_API_URL}/user/chat/contactlist?userId=${userInfo.userInfo.id}
     getAPI(`${import.meta.env.VITE_API_URL}/generalannouncement`).then((res) => {
       var fetchedData = res.map((announcement) => {
