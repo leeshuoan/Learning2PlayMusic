@@ -185,6 +185,14 @@ class CourseStack(Stack):
                 "HOMEWORK_SUBMISSION_BUCKET_NAME": L2PMA_homework_submission_bucket.bucket_name
             },
         )
+        post_course_homework_feedback = _lambda.Function(
+            self,
+            "postCourseHomeworkFeedback",
+            runtime=_lambda.Runtime.PYTHON_3_9,
+            handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.post_course_homework_feedback.lambda_handler",
+            code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
+            role=S3_DYNAMODB_ROLE,
+        )
 
         # /course/homework/submit function
         post_course_homework_submit = _lambda.Function(
@@ -942,6 +950,33 @@ class CourseStack(Stack):
         course_homework_feedback_resource.add_method(
             "GET",
             apigw.LambdaIntegration(get_course_homework_feedback),
+            request_parameters={
+                "method.request.querystring.courseId": True,
+                "method.request.querystring.studentId": False,
+                "method.request.querystring.homeworkId": False,
+            },
+        )
+        post_course_homework_feedback_resource_model = main_api.add_model(
+            "PostCourseHomeworkFeedbackModel",
+            content_type="application/json",
+            model_name="PostCourseHomeworkFeedbackModel",
+            schema=apigw.JsonSchema(
+                title="PostCourseHomeworkFeedbackModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "homeworkId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "homeworkScore": apigw.JsonSchema(type=apigw.JsonSchemaType.NUMBER),
+                    "teacherComments": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                },
+                required=["courseId", "studentId", "homeworkId", "homeworkScore"],
+            ),
+        )
+        course_homework_feedback_resource.add_method(
+            "POST",
+            apigw.LambdaIntegration(post_course_homework_feedback),
             request_parameters={
                 "method.request.querystring.courseId": True,
                 "method.request.querystring.studentId": False,
