@@ -1,4 +1,3 @@
-import CloseIcon from "@mui/icons-material/Close";
 import { Button, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import * as React from "react";
@@ -54,9 +53,7 @@ export default function CreateUserForm({ roles, handleClose }) {
     try {
       let success = await API.post(apiName, path, myInit);
       if (success.message) {
-        toast.success("User created successfully", {
-          position: toast.POSITION.TOP_CENTER,
-        });
+        toast.success("User created successfully");
         handleClose();
       }
     } catch (error) {
@@ -68,10 +65,7 @@ export default function CreateUserForm({ roles, handleClose }) {
     <div>
       <form noValidate onSubmit={createNewUser}>
         <Grid container spacing={2}>
-          <Grid item xs={1}>
-            <CloseIcon sx={{ "&:hover": { cursor: "pointer" } }} onClick={() => handleClose()} />
-          </Grid>
-          <Grid item xs={10}>
+          <Grid item xs={12}>
             <Typography align="center" variant="h4">
               Create new user
             </Typography>

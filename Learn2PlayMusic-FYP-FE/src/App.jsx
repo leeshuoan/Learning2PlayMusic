@@ -28,7 +28,7 @@ import UserCourse from "./components/User/UserCourse";
 import UserHome from "./components/User/UserHome";
 // admin
 import AdminHome from "./components/Admin/AdminHome";
-import AdminUserManagement from "./components/Admin/AdminUserManagement";
+import AdminUserManagement from "./components/Admin/User/AdminUserManagement";
 import AdminAnnouncementManagement from "./components/Admin/Announcement/AdminAnnouncementManagement";
 import AdminCourseManagement from "./components/Admin/Course/AdminCourseManagement";
 // teacher

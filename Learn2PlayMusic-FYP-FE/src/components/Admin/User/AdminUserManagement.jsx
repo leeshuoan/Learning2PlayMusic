@@ -6,8 +6,9 @@ import { API, Auth } from "aws-amplify";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import TransitionModal from "../utils/TransitionModal";
+import TransitionModal from "../../utils/TransitionModal";
 import CreateUserForm from "./CreateUserForm";
+import UserPrompt from "./UserPrompt";
 
 const AdminUserManagement = (userInfo) => {
   const theme = useTheme();
@@ -254,85 +255,39 @@ const AdminUserManagement = (userInfo) => {
   };
 
   // disable user================================================================================================================================================================================================================================================================================
-  const disableUser = async (user) => {
+  const openDisableUserModal = async (user) => {
     setOpenDisableUser(true);
     setToDisableUser(user);
     console.log(toDisableUser);
   };
-
-  const confirmDisableUser = async () => {
-    let apiName = "AdminQueries";
-    let path = "/disableUser";
-    let myInit = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`,
-      },
-      body: {
-        username: toDisableUser.Username,
-      },
-    };
-    let success = await API.post(apiName, path, myInit);
-    if (success.message) {
-      toast.success("User disabled successfully");
-      setReloadData(!reloadData);
-      setOpenDisableUser(false);
-    }
+  const disableUserSuccessClose = () => {
+    setOpenDisableUser(false);
+    setReloadData(!reloadData);
   };
+
   // enable user ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
-  const enableUser = async (user) => {
+  const openEnableUserModal = async (user) => {
     setOpenEnableUser(true);
     setToEnableUser(user);
     console.log(toEnableUser);
   };
-
-  const confirmEnableUser = async () => {
-    let apiName = "AdminQueries";
-    let path = "/enableUser";
-    let myInit = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`,
-      },
-      body: {
-        username: toEnableUser.Username,
-      },
-    };
-    let success = await API.post(apiName, path, myInit);
-    console.log(success);
-    if (success.message) {
-      toast.success("User enabled successfully");
-      setReloadData(!reloadData);
-      setOpenEnableUser(false);
-    }
+  const enableUserSuccessClose = () => {
+    setOpenEnableUser(false);
+    setReloadData(!reloadData);
   };
+
   // delete user ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
-  const deleteUser = async (user) => {
+  const openDeleteUserModal = async (user) => {
     setOpenDeleteUser(true);
     setToDeleteUser(user);
   };
-
-  const confirmDeleteUser = async () => {
-    let apiName = "AdminQueries";
-    let path = "/deleteUser";
-    let myInit = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`,
-      },
-      body: {
-        username: toDeleteUser.Username,
-      },
-    };
-    let success = await API.post(apiName, path, myInit);
-    if (success.message) {
-      toast.success("User deleted successfully");
-      setReloadData(!reloadData);
-      setOpenDeleteUser(false);
-    }
+  const deleteUserSuccessClose = () => {
+    setOpenDeleteUser(false);
+    setReloadData(!reloadData);
   };
 
-  const createdUser = () => {
+  // created user ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
+  const createUserSuccessClose = () => {
     setOpenCreateUser(false);
     setReloadData(!reloadData);
   };
@@ -377,7 +332,7 @@ const AdminUserManagement = (userInfo) => {
     listGroups();
     fetchData();
     setOpen(false);
-    return () => { };
+    return () => {};
   }, [reloadData]);
 
   // table columns ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
@@ -414,9 +369,9 @@ const AdminUserManagement = (userInfo) => {
                 checked={row.original.Enabled == "Enabled"}
                 onChange={(event) => {
                   if (event.target.checked) {
-                    enableUser(row.original);
+                    openEnableUserModal(row.original);
                   } else {
-                    disableUser(row.original);
+                    openDisableUserModal(row.original);
                   }
                 }}></Switch>
             </Tooltip>
@@ -446,7 +401,7 @@ const AdminUserManagement = (userInfo) => {
         accessorKey: "",
         id: "delete",
         header: "Delete",
-        Cell: ({ cell, row }) => (
+        Cell: ({ cell, row }) =>
           row.original.Username != userInfo.userInfo.id ? (
             <Tooltip title="Delete user forever" placement="bottom">
               <IconButton
@@ -454,13 +409,12 @@ const AdminUserManagement = (userInfo) => {
                 color="error"
                 disabled={row.original.Enabled == "Enabled" ? true : false}
                 onClick={() => {
-                  deleteUser(row.original);
+                  openDeleteUserModal(row.original);
                 }}>
                 <DeleteForeverIcon />
               </IconButton>
             </Tooltip>
-          ) : null
-        ),
+          ) : null,
         maxSize: 20,
       },
     ],
@@ -472,109 +426,19 @@ const AdminUserManagement = (userInfo) => {
       <Box m={2}>
         {/* create user ========================================================================================== */}
         <TransitionModal open={openCreateUser} handleClose={() => setOpenCreateUser(false)} style={modalStyle(largeModalWidth)}>
-          {<CreateUserForm roles={roles} handleClose={() => createdUser()} />}
+          {<CreateUserForm roles={roles} handleClose={() => createUserSuccessClose()} />}
         </TransitionModal>
         {/* delete user ========================================================================================== */}
-        <TransitionModal open={openDeleteUser} handleClose={() => setOpenDeleteUser(false)} style={modalStyle(50)}>
-          <>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography align="center" variant="h5">
-                  Delete User?
-                </Typography>
-                <Typography align="center" color="error" variant="subtitle1">
-                  Warning: This action cannot be undone.
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sx={{ display: "flex", alignItems: "left", flexDirection: "column" }}>
-                <Box>
-                  <b>Name:</b> {toDeleteUser && toDeleteUser.Attributes.Name}
-                </Box>
-                <Box>
-                  <b>Email:</b> {toDeleteUser && toDeleteUser.Attributes.Email}
-                </Box>
-              </Grid>
-              <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                <Button
-                  variant="contained"
-                  sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
-                  onClick={() => {
-                    setOpenDeleteUser(false);
-                  }}>
-                  Cancel
-                </Button>
-                <Button variant="contained" sx={{ mr: 1 }} color="error" onClick={() => confirmDeleteUser()}>
-                  Delete
-                </Button>
-              </Grid>
-            </Grid>
-          </>
+        <TransitionModal open={openDeleteUser} handleClose={() => setOpenDeleteUser(false)} style={modalStyle(smallModalWidth)}>
+          <UserPrompt selectedUser={toDeleteUser} handleClose={() => deleteUserSuccessClose()} type="Delete" />
         </TransitionModal>
         {/* enable user ========================================================================================== */}
-        <TransitionModal open={openEnableUser} handleClose={() => setOpenEnableUser(false)} style={modalStyle(50)}>
-          <>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography align="center" variant="h5">
-                  Enable User?
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sx={{ display: "flex", alignItems: "left", flexDirection: "column" }}>
-                <Box>
-                  <b>Name:</b> {toEnableUser && toEnableUser.Attributes.Name}
-                </Box>
-                <Box>
-                  <b>Email:</b> {toEnableUser && toEnableUser.Attributes.Email}
-                </Box>
-              </Grid>
-              <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                <Button
-                  variant="contained"
-                  sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
-                  onClick={() => {
-                    setOpenEnableUser(false);
-                  }}>
-                  Cancel
-                </Button>
-                <Button variant="contained" sx={{ mr: 1, color: "black" }} color="success" onClick={() => confirmEnableUser()}>
-                  Enable
-                </Button>
-              </Grid>
-            </Grid>
-          </>
+        <TransitionModal open={openEnableUser} handleClose={() => setOpenEnableUser(false)} style={modalStyle(smallModalWidth)}>
+          <UserPrompt selectedUser={toEnableUser} handleClose={() => enableUserSuccessClose()} type="Enable" />
         </TransitionModal>
         {/* disable user ========================================================================================== */}
-        <TransitionModal open={openDisableUser} handleClose={() => setOpenDisableUser(false)} style={modalStyle(50)}>
-          <>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography align="center" variant="h5">
-                  Disable User?
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sx={{ display: "flex", alignItems: "left", flexDirection: "column" }}>
-                <Box>
-                  <b>Name:</b> {toDisableUser && toDisableUser.Attributes.Name}
-                </Box>
-                <Box>
-                  <b>Email:</b> {toDisableUser && toDisableUser.Attributes.Email}
-                </Box>
-              </Grid>
-              <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                <Button
-                  variant="contained"
-                  sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: theme.shadows[10], ":hover": { backgroundColor: "hovergrey" } }}
-                  onClick={() => {
-                    setOpenDisableUser(false);
-                  }}>
-                  Cancel
-                </Button>
-                <Button variant="contained" sx={{ mr: 1 }} color="error" onClick={() => confirmDisableUser()}>
-                  Disable
-                </Button>
-              </Grid>
-            </Grid>
-          </>
+        <TransitionModal open={openDisableUser} handleClose={() => setOpenDisableUser(false)} style={modalStyle(smallModalWidth)}>
+          <UserPrompt selectedUser={toDisableUser} handleClose={() => disableUserSuccessClose()} type="Disable" />
         </TransitionModal>
         {/* un-enrol user from course ========================================================================================== */}
         <TransitionModal open={openUnEnrolUser} handleClose={() => setOpenUnEnrolUser(false)} style={modalStyle(largeModalWidth)}>
@@ -767,6 +631,7 @@ const AdminUserManagement = (userInfo) => {
           enableHiding={false}
           enableFullScreenToggle={false}
           enableMultiRowSelection={true}
+          positionToolbarAlertBanner="bottom"
           enableRowSelection={true}
           onRowSelectionChange={setRowSelection}
           state={{ rowSelection }}
