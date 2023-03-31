@@ -19,8 +19,6 @@ const ViewCourseMaterialsForm = ({ userInfo }) => {
   const [fileName, setFileName] = useState("");
   const [s3Url, setS3Url] = useState(""); // s3 link
 
-  // todo : handle when there is already an s3 link for the material
-
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
       method: "GET",
@@ -34,8 +32,6 @@ const ViewCourseMaterialsForm = ({ userInfo }) => {
   const getMaterialAPI = request(`/course/material?courseId=${courseid}&materialId=${materialid}`);
 
   useEffect(() => {
-    //  the page is not rendering properly when the data is fetched in the useEffect, help me fix this
-
     async function fetchData() {
       const [data1, data2] = await Promise.all([getCourseAPI, getMaterialAPI]);
 

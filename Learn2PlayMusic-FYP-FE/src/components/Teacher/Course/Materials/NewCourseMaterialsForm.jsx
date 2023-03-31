@@ -17,6 +17,7 @@ const NewCourseMaterialsForm = ({ userInfo }) => {
   const navigate = useNavigate();
   const { courseid } = useParams();
 
+
   const [open, setOpen] = useState(true);
   const [course, setCourse] = useState({});
   const [date, setDate] = useState(null);
