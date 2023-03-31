@@ -1,21 +1,22 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { Backdrop, Box, Button, CircularProgress, Container, IconButton, Switch, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Container, IconButton, Switch, Tooltip, Typography } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import MaterialReactTable from "material-react-table";
-import { useEffect, useMemo, useState } from "react";
-import TransitionModal from "../../utils/TransitionModal";
-import CreateUserForm from "./CreateUserForm";
-import EnrolUserForm from "./EnrolUserForm";
-import UnenrolUserForm from "./UnenrolUserForm";
-import UserPrompt from "./UserPrompt";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import Loader from "../../utils/Loader";
+// import TransitionModal from "../../utils/TransitionModal";
+// import CreateUserForm from "./CreateUserForm";
+// import EnrolUserForm from "./EnrolUserForm";
+// import UnenrolUserForm from "./UnenrolUserForm";
+// import UserPrompt from "./UserPrompt";
 
-// const TransitionModal = lazy(() => import("../../utils/TransitionModal"));
-// const CreateUserForm = lazy(() => import("./CreateUserForm"));
-// const EnrolUserForm = lazy(() => import("./EnrolUserForm"));
-// const UnenrolUserForm = lazy(() => import("./UnenrolUserForm"));
-// const UserPrompt = lazy(() => import("./UserPrompt"));
+const TransitionModal = lazy(() => import("../../utils/TransitionModal"));
+const CreateUserForm = lazy(() => import("./CreateUserForm"));
+const EnrolUserForm = lazy(() => import("./EnrolUserForm"));
+const UnenrolUserForm = lazy(() => import("./UnenrolUserForm"));
+const UserPrompt = lazy(() => import("./UserPrompt"));
 
 const AdminUserManagement = (userInfo) => {
   // table data
@@ -136,7 +137,6 @@ const AdminUserManagement = (userInfo) => {
     let userCoursesDict = await postAPIWithBody(`${import.meta.env.VITE_API_URL}/user/course/enrolled`, { userIds: fetchedUserIds });
     setUserCoursesEnrolled(userCoursesDict);
     setData(userData);
-
   };
 
   // enrol user ala carte================================================================================================================================================================================================================================================================================
@@ -222,9 +222,12 @@ const AdminUserManagement = (userInfo) => {
   };
   // useEffect ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
   useEffect(() => {
-    listUsers();
-    listGroups();
-    setOpen(false);
+    let start = new Date().getTime();
+    Promise.all([listUsers(), listGroups()]).then(() => {
+      setOpen(false);
+      console.log("time taken to load users: " + (new Date().getTime() - start) / 1000 + "s");
+    });
+
     return () => {};
   }, [reloadData]);
 
@@ -316,142 +319,128 @@ const AdminUserManagement = (userInfo) => {
   // end table columns ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-      <Box m={2}>
-        {/* create user ========================================================================================== */}
-        <TransitionModal open={openCreateUser} handleClose={() => setOpenCreateUser(false)} style={modalStyle(largeModalWidth)}>
-          <CreateUserForm roles={roles} handleClose={() => createUserSuccessClose()} />
-        </TransitionModal>
+      <Suspense fallback={<Loader open={open} />}>
+        <Box m={2}>
+          {/* create user ========================================================================================== */}
+          <TransitionModal open={openCreateUser} handleClose={() => setOpenCreateUser(false)} style={modalStyle(largeModalWidth)}>
+            <CreateUserForm roles={roles} handleClose={() => createUserSuccessClose()} />
+          </TransitionModal>
 
-        {/* delete user ========================================================================================== */}
-        <TransitionModal open={openDeleteUser} handleClose={() => setOpenDeleteUser(false)} style={modalStyle(smallModalWidth)}>
-          <UserPrompt type="Delete" selectedUser={toDeleteUser} handleClose={() => deleteUserSuccessClose()} />
-        </TransitionModal>
-        {/* enable user ========================================================================================== */}
-        <TransitionModal open={openEnableUser} handleClose={() => setOpenEnableUser(false)} style={modalStyle(smallModalWidth)}>
-          <UserPrompt type="Enable" selectedUser={toEnableUser} handleClose={() => enableUserSuccessClose()} />
-        </TransitionModal>
-        {/* disable user ========================================================================================== */}
-        <TransitionModal open={openDisableUser} handleClose={() => setOpenDisableUser(false)} style={modalStyle(smallModalWidth)}>
-          <UserPrompt type="Disable" selectedUser={toDisableUser} handleClose={() => disableUserSuccessClose()} />
-        </TransitionModal>
+          {/* delete user ========================================================================================== */}
+          <TransitionModal open={openDeleteUser} handleClose={() => setOpenDeleteUser(false)} style={modalStyle(smallModalWidth)}>
+            <UserPrompt type="Delete" selectedUser={toDeleteUser} handleClose={() => deleteUserSuccessClose()} />
+          </TransitionModal>
+          {/* enable user ========================================================================================== */}
+          <TransitionModal open={openEnableUser} handleClose={() => setOpenEnableUser(false)} style={modalStyle(smallModalWidth)}>
+            <UserPrompt type="Enable" selectedUser={toEnableUser} handleClose={() => enableUserSuccessClose()} />
+          </TransitionModal>
+          {/* disable user ========================================================================================== */}
+          <TransitionModal open={openDisableUser} handleClose={() => setOpenDisableUser(false)} style={modalStyle(smallModalWidth)}>
+            <UserPrompt type="Disable" selectedUser={toDisableUser} handleClose={() => disableUserSuccessClose()} />
+          </TransitionModal>
 
-        {/* enrol user ala carte========================================================================================== */}
-        <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(largeModalWidth)}>
-          <EnrolUserForm type="single" toEnrolUser={toEnrolUser} handleClose={() => enrolSingleUserSuccessClose()} displayText="" userNameToIdMap="" />
-        </TransitionModal>
-        {/* enrol multiple users========================================================================================== */}
-        <TransitionModal open={openEnrolMultipleUsers} handleClose={() => setOpenEnrolMultipleUser(false)} style={modalStyle(largeModalWidth)}>
-          <EnrolUserForm type="multiple" toEnrolUser={toMultipleEnrolUsers} handleClose={() => enrolMultipleUsersSuccessClose()} displayText={displayText} userNameToIdMap={userNameToIdMap} />
-        </TransitionModal>
+          {/* enrol user ala carte========================================================================================== */}
+          <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(largeModalWidth)}>
+            <EnrolUserForm type="single" toEnrolUser={toEnrolUser} handleClose={() => enrolSingleUserSuccessClose()} displayText="" userNameToIdMap="" />
+          </TransitionModal>
+          {/* enrol multiple users========================================================================================== */}
+          <TransitionModal open={openEnrolMultipleUsers} handleClose={() => setOpenEnrolMultipleUser(false)} style={modalStyle(largeModalWidth)}>
+            <EnrolUserForm type="multiple" toEnrolUser={toMultipleEnrolUsers} handleClose={() => enrolMultipleUsersSuccessClose()} displayText={displayText} userNameToIdMap={userNameToIdMap} />
+          </TransitionModal>
 
-        {/* un-enrol user from course ========================================================================================== */}
-        <TransitionModal open={openUnEnrolUser} handleClose={() => setOpenUnEnrolUser(false)} style={modalStyle(largeModalWidth)}>
-          <UnenrolUserForm toUnEnrolUser={toUnEnrolUser} toUnEnrolCourse={toUnEnrolCourse} handleClose={() => unEnrolSingleUserSuccessClose()} />
-        </TransitionModal>
+          {/* un-enrol user from course ========================================================================================== */}
+          <TransitionModal open={openUnEnrolUser} handleClose={() => setOpenUnEnrolUser(false)} style={modalStyle(largeModalWidth)}>
+            <UnenrolUserForm toUnEnrolUser={toUnEnrolUser} toUnEnrolCourse={toUnEnrolCourse} handleClose={() => unEnrolSingleUserSuccessClose()} />
+          </TransitionModal>
 
-        {/* main ========================================================================================== */}
-        <Typography variant="h5" sx={{ m: 1, mt: 4 }}>
-          User Management
-        </Typography>
-        <MaterialReactTable
-          enableHiding={false}
-          enableFullScreenToggle={false}
-          enableMultiRowSelection={true}
-          positionToolbarAlertBanner="bottom"
-          enableRowSelection={(row) => row.original.Attributes.Role != "Admin"}
-          onRowSelectionChange={setRowSelection}
-          state={{ rowSelection }}
-          enableDensityToggle={false}
-          columns={columns}
-          data={data}
-          initialState={{
-            density: "compact",
-            sorting: [
-              { id: "role", desc: false },
-              { id: "name", desc: false },
-            ],
-          }}
-          renderTopToolbarCustomActions={({ table }) => {
-            return (
+          {/* main ========================================================================================== */}
+          <Typography variant="h5" sx={{ m: 1, mt: 4 }}>
+            User Management
+          </Typography>
+          <MaterialReactTable
+            enableHiding={false}
+            enableFullScreenToggle={false}
+            enableMultiRowSelection={true}
+            positionToolbarAlertBanner="bottom"
+            enableRowSelection={(row) => row.original.Attributes.Role != "Admin"}
+            onRowSelectionChange={setRowSelection}
+            state={{ rowSelection }}
+            enableDensityToggle={false}
+            columns={columns}
+            data={data}
+            initialState={{
+              density: "compact",
+              sorting: [
+                { id: "role", desc: false },
+                { id: "name", desc: false },
+              ],
+            }}
+            renderTopToolbarCustomActions={({ table }) => {
+              return (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1rem",
+                  }}>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      setOpenCreateUser(true);
+                    }}>
+                    Add User
+                  </Button>
+                  <Button variant="contained" onClick={enrolMultipleUsers} disabled={table.getSelectedRowModel().flatRows.length === 0}>
+                    Enrol User(s)
+                  </Button>
+                </Box>
+              );
+            }}
+            renderDetailPanel={({ row }) => (
               <Box
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "1rem",
+                  display: "grid",
+                  margin: "auto",
+                  gridTemplateColumns: "1fr 1fr",
+                  width: "100%",
                 }}>
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    setOpenCreateUser(true);
-                  }}>
-                  Add User
-                </Button>
-                <Button variant="contained" onClick={enrolMultipleUsers} disabled={table.getSelectedRowModel().flatRows.length === 0}>
-                  Enrol User(s)
-                </Button>
-              </Box>
-            );
-          }}
-          renderDetailPanel={({ row }) => (
-            <Box
-              sx={{
-                display: "grid",
-                margin: "auto",
-                gridTemplateColumns: "1fr 1fr",
-                width: "100%",
-              }}>
-              <Typography variant="body2">
-                <b>User Creation Date:</b> {row.original.UserCreateDate}
-                <br />
-                <b>User Status:</b> {row.original.UserStatus}
-              </Typography>
-              {row.original.Attributes.Role == "Admin" ? null : (
                 <Typography variant="body2">
-                  <b>Courses enrolled in:</b>
-                  {userCoursesEnrolled[row.original.Username].length == 0
-                    ? " None"
-                    : userCoursesEnrolled[row.original.Username].map((course) => {
-                        return (
-                          <span key={course.SK + course.PK}>
-                            <br />
-                            <IconButton onClick={() => unEnrolUser(course, row.original)}>
-                              <CloseIcon fontSize="inherit" color="error"></CloseIcon>
-                            </IconButton>
-                            {course.CourseName} on {course.CourseSlot}
-                          </span>
-                        );
-                      })}
+                  <b>User Creation Date:</b> {row.original.UserCreateDate}
+                  <br />
+                  <b>User Status:</b> {row.original.UserStatus}
                 </Typography>
-              )}
-
-              {/* {data.map((user) => {
-                return (
-                  <Typography variant="body2" key={user.Username}>
-                    {user["CoursesEnrolled"].map((course) => {
-                      return (
-                        <div key={course}>
-                          {course.CourseName} {course.CourseSlot}
-                        </div>
-                      );
-                    })}
+                {row.original.Attributes.Role == "Admin" ? null : (
+                  <Typography variant="body2">
+                    <b>Courses enrolled in:</b>
+                    {userCoursesEnrolled[row.original.Username].length == 0
+                      ? " None"
+                      : userCoursesEnrolled[row.original.Username].map((course) => {
+                          return (
+                            <span key={course.SK + course.PK}>
+                              <br />
+                              <IconButton onClick={() => unEnrolUser(course, row.original)}>
+                                <CloseIcon fontSize="inherit" color="error"></CloseIcon>
+                              </IconButton>
+                              {course.CourseName} on {course.CourseSlot}
+                            </span>
+                          );
+                        })}
                   </Typography>
-                );
-              })} */}
-            </Box>
-          )}></MaterialReactTable>
-        {/* foot note ==========================================================================================*/}
-        <Typography variant="subtitle1" sx={{ mt: 3 }}>
-          <b>NOTE:</b>
-        </Typography>
-        <Typography variant="body2">
-          1. User must be disabled before they can be deleted forever.
-          <br />
-          2. You cannot enable/disable yourself.
-        </Typography>
-      </Box>
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+                )}
+              </Box>
+            )}></MaterialReactTable>
+          {/* foot note ==========================================================================================*/}
+          <Typography variant="subtitle1" sx={{ mt: 3 }}>
+            <b>NOTE:</b>
+          </Typography>
+          <Typography variant="body2">
+            1. User must be disabled before they can be deleted forever.
+            <br />
+            2. You cannot enable/disable yourself.
+          </Typography>
+        </Box>
+
+      </Suspense>
     </Container>
   );
 };
