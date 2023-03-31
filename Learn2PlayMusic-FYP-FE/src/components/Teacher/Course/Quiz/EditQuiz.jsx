@@ -95,20 +95,10 @@ const EditQuiz = ({ userInfo }) => {
     setRefreshData(!refreshData);
   };
 
-  async function createQuiz(e) {
+  async function editQuiz(e) {
     setIsLoading(true);
 
     e.preventDefault();
-    console.log(quizQuestions);
-
-    for (let i = 0; i < quizQuestions.length; i++) {
-      console.log(quizQuestions[i].answer);
-      if (quizQuestions[i].answer === "") {
-        toast.error("Missing answer for question");
-        setIsLoading(false);
-        return;
-      }
-    }
 
     const newQuiz = {
       quizTitle: quizTitle,
@@ -116,48 +106,24 @@ const EditQuiz = ({ userInfo }) => {
       quizMaxAttempts: quizMaxAttempts,
       visibility: visibility,
       courseId: courseid,
+      quizId: quizId,
     };
-    let newQuizId = null;
+    console.log(newQuiz)
+
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newQuiz),
     });
     if (response.ok) {
-      const responseData = await response.json();
-      newQuizId = responseData.message.split("id").splice(1, 1).join().split(" ")[1];
+      navigate(`/teacher/course/${courseid}/quiz`);
+      toast.success("Quiz edited successfully");
     } else {
+      toast.error("Error occurred when editing quiz")
       console.error(`Error: ${response.status} - ${response.statusText}`);
       return;
-    }
-
-    let newQuizQuestions = [];
-    for (let i = 0; i < quizQuestions.length; i++) {
-      const newQuizQuestion = { ...quizQuestions[i], courseId: courseid, quizId: newQuizId };
-      newQuizQuestions.push(newQuizQuestion);
-    }
-
-    try {
-      console.log(newQuizQuestions);
-      fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newQuizQuestions),
-      });
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-      toast.error("An unexpected error occurred during quiz creation");
-      return;
-    }
-
-    if (response) {
-      navigate(`/teacher/course/${courseid}/quiz`);
-      toast.success("Quiz created successfully");
     }
   }
 
@@ -211,7 +177,7 @@ const EditQuiz = ({ userInfo }) => {
             <Typography variant="h5" sx={{ mb: 2 }}>
               New Quiz
             </Typography>
-            <form onSubmit={createQuiz}>
+            <form onSubmit={editQuiz}>
               <Box sx={{ mt: 1 }}>
                 <Grid spacing={2} container>
                   <Grid item xs={12} sm={4} md={3}>

@@ -2,7 +2,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { Box, Button, Card, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
-const EditAddQuizQuestion = ({ qnInfo, handleQuestionChange, setEdit }) => {
+const EditingQuizQuestion = ({ qnInfo, setEdit }) => {
   const [question, setQuestion] = useState("");
   const [file, setFile] = useState(null);
   const [image, setImage] = useState("");
@@ -25,16 +25,13 @@ const EditAddQuizQuestion = ({ qnInfo, handleQuestionChange, setEdit }) => {
   };
 
   useEffect(() => {
-    const newQnInfo = {
-      qnNumber: qnInfo.qnNumber,
-      question: question,
-      questionOptionType: questionType,
-      options: options,
-      answer: answer,
-      questionImage: image,
-    };
-    handleQuestionChange(newQnInfo);
-  }, [question, questionType, options, answer, image]);
+    console.log(qnInfo)
+    setQuestion(qnInfo.question);
+    setQuestionType(qnInfo.questionOptionType);
+    setOptions(qnInfo.options);
+    setAnswer(qnInfo.answer);
+    setImage(qnInfo.questionImage);
+  }, [qnInfo]);
 
   const handleQnTypeChange = (event) => {
     setOptions(["", "", "", ""]);
@@ -116,28 +113,28 @@ const EditAddQuizQuestion = ({ qnInfo, handleQuestionChange, setEdit }) => {
                   <FormControlLabel sx={{ mr: 0 }} value={0} control={<Radio size="small" sx={{ ml: 1 }} />} />
                   <InputLabel id="question-label">Option 1 *</InputLabel>
                 </Box>
-                <TextField id="question" value={options.option1} fullWidth onChange={() => handleOptionChange(0, event)} variant="outlined" required />
+                <TextField id="question" value={options[0]} fullWidth onChange={() => handleOptionChange(0, event)} variant="outlined" required />
               </Grid>
               <Grid item xs={12} md={6}>
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
                   <FormControlLabel sx={{ mr: 0 }} value={1} control={<Radio size="small" sx={{ ml: 1 }} />} />
                   <InputLabel id="question-label">Option 2 *</InputLabel>
                 </Box>
-                <TextField id="question" value={options.option2} fullWidth onChange={() => handleOptionChange(1, event)} variant="outlined" required />
+                <TextField id="question" value={options[1]} fullWidth onChange={() => handleOptionChange(1, event)} variant="outlined" required />
               </Grid>
               <Grid item xs={12} md={6}>
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
                   <FormControlLabel sx={{ mr: 0 }} value={2} control={<Radio size="small" sx={{ ml: 1 }} />} />
                   <InputLabel id="question-label">Option 3 *</InputLabel>
                 </Box>
-                <TextField id="question" value={options.option3} fullWidth onChange={() => handleOptionChange(2, event)} variant="outlined" required />
+                <TextField id="question" value={options[2]} fullWidth onChange={() => handleOptionChange(2, event)} variant="outlined" required />
               </Grid>
               <Grid item xs={12} md={6}>
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
                   <FormControlLabel sx={{ mr: 0 }} value={3} control={<Radio size="small" sx={{ ml: 1 }} />} />
                   <InputLabel id="question-label">Option 4 *</InputLabel>
                 </Box>
-                <TextField id="question" value={options.option4} fullWidth onChange={() => handleOptionChange(3, event)} variant="outlined" required />
+                <TextField id="question" value={options[3]} fullWidth onChange={() => handleOptionChange(3, event)} variant="outlined" required />
               </Grid>
             </Grid>
           </RadioGroup>
@@ -159,4 +156,4 @@ const EditAddQuizQuestion = ({ qnInfo, handleQuestionChange, setEdit }) => {
   );
 };
 
-export default EditAddQuizQuestion;
+export default EditingQuizQuestion;

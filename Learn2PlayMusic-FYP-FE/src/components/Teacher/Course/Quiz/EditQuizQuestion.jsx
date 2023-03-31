@@ -1,21 +1,17 @@
 import { useState } from 'react'
 import { Card, Typography, Grid, Box, Button } from '@mui/material'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import EditAddQuizQuestion from './EditAddQuizQuestion';
+import EditAddQuizQuestion from './EditingQuizQuestion';
 import { useParams } from 'react-router-dom';
 import TransitionModal from '../../../utils/TransitionModal';
 import { toast } from 'react-toastify';
+import EditingQuizQuestion from './EditingQuizQuestion';
 
 const EditQuizQuestion = ({ question, handleRefreshData }) => {
   const [edit, setEdit] = useState(false)
   const { courseid, quizId } = useParams()
 
-  const handleQuestionChange = (qnInfo) => {
-    console.log(qnInfo)
-  }
-
   const deleteQuestion = () => {
-    console.log(question)
     fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
       method: 'DELETE',
       headers: {
@@ -122,7 +118,7 @@ const EditQuizQuestion = ({ question, handleRefreshData }) => {
           </Box>
         </Card>
       ) : (
-        <EditAddQuizQuestion qnInfo={question} handleQuestionChange={handleQuestionChange} setEdit={setEdit} />
+        <EditingQuizQuestion qnInfo={question} setEdit={setEdit} />
       )}
     </>
   )
