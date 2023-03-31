@@ -18,6 +18,23 @@ function checkForNull(...args) {
   }
 }
 
+const checkNumQuestions = async (courseId, quizId) => {
+  const params = {
+    TableName: "my-table",
+    KeyConditionExpression: "PK = :PK and begins_with(SK, :SK)",
+    ExpressionAttributeValues: {
+      ":PK": `Course#${courseId}`,
+      ":SK": `Quiz#${quizId}Question#`
+    }
+  };
+
+  const quizResponse = await dynamodb.query(params).promise();
+
+  if (quizResponse.Count == 1) {
+    throw new Error("Cannot delete question because there is only 1 question in the quiz")
+  } 
+}
+
 async function lambda_handler(event, context) {
   try {
     const requestBody = JSON.parse(event.body);
@@ -26,6 +43,8 @@ async function lambda_handler(event, context) {
     const questionId = requestBody.questionId;
 
     checkForNull(courseId, quizId, questionId);
+
+    checkNumQuestions(courseId, quizId);
 
     const params = {
       TableName: "LMS",
@@ -36,6 +55,7 @@ async function lambda_handler(event, context) {
     };
 
     const result = await dynamodb.get(params).promise();
+
     if (!result.Item) {
       return response_400(`Item with courseId:${courseId} quizId:${quizId} questionId:${questionId} not found`);
     }
