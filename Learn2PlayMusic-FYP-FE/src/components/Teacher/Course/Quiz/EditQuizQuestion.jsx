@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { Card, Typography, Grid, Box, Button } from '@mui/material'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import EditAddQuizQuestion from './EditingQuizQuestion';
+import EditAddQuizQuestion from './EditQuizEditQuestion';
 import { useParams } from 'react-router-dom';
 import TransitionModal from '../../../utils/TransitionModal';
 import { toast } from 'react-toastify';
-import EditingQuizQuestion from './EditingQuizQuestion';
+import EditQuizEditQuestion from './EditQuizEditQuestion';
 
-const EditQuizQuestion = ({ question, handleRefreshData }) => {
+const EditQuizQuestion = ({ userInfo, question, handleRefreshData }) => {
   const [edit, setEdit] = useState(false)
   const { courseid, quizId } = useParams()
 
@@ -118,7 +118,7 @@ const EditQuizQuestion = ({ question, handleRefreshData }) => {
           </Box>
         </Card>
       ) : (
-        <EditingQuizQuestion qnInfo={question} setEdit={setEdit} />
+        <EditQuizEditQuestion userInfo={userInfo} qnInfo={question} setEdit={setEdit} />
       )}
     </>
   )

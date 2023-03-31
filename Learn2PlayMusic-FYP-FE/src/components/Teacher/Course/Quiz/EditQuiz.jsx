@@ -4,6 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 import EditQuizQuestion from "./EditQuizQuestion";
+import EditQuizNewQuestion from "./EditQuizNewQuestion";
+import TransitionModal from "../../../utils/TransitionModal";
+import useAppBarHeight from "../../../utils/AppBarHeight";
 
 const EditQuiz = ({ userInfo }) => {
   const navigate = useNavigate();
@@ -24,7 +27,8 @@ const EditQuiz = ({ userInfo }) => {
       answer: ""
     },
   ]);
-  const [qnNumber, setQnNumber] = useState(2);
+  const [qnNumber, setQnNumber] = useState(0);
+  const [openAddQuestion, setOpenAddQuestion] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
 
   async function request(endpoint) {
@@ -83,6 +87,7 @@ const EditQuiz = ({ userInfo }) => {
           qnImage: qn.QuestionImage,
         };
       });
+      setQnNumber(i)
       setQuizQuestions(quizQuestionData);
     }
 
@@ -128,22 +133,14 @@ const EditQuiz = ({ userInfo }) => {
   }
 
   const addQuestion = () => {
-    setQuizQuestions([
-      ...quizQuestions,
-      {
-        qnNumber: qnNumber,
-        question: "",
-        questionOptionType: "MCQ",
-        options: [", '', '', '"],
-        answer: "",
-      },
-    ]);
-    setQnNumber(qnNumber + 1);
+    setOpenAddQuestion(true)
+    return;
   };
 
   const handleVisibilityChange = (event) => {
     setVisibility(event.target.value);
   };
+
 
   return (
     <>
@@ -203,12 +200,16 @@ const EditQuiz = ({ userInfo }) => {
               </Box>
               {quizQuestions.map((question, key) => {
                 return (
-                  <EditQuizQuestion key={key} question={question} handleRefreshData={handleRefreshData} />
+                  <EditQuizQuestion key={key} question={question} userInfo={userInfo} handleRefreshData={handleRefreshData} />
                 );
               })}
-              <Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>
-                Add Question
-              </Button>
+              {openAddQuestion ?
+                (<EditQuizNewQuestion setOpenAddQuestion={setOpenAddQuestion} qnNumber={qnNumber}/>)
+                :
+                (<Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>
+                  Add Question
+                </Button>)
+              }
               <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
                 <Button
                   variant="outlined"

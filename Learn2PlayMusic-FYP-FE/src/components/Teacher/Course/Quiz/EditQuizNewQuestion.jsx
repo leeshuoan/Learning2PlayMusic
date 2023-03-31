@@ -1,8 +1,12 @@
 import ClearIcon from "@mui/icons-material/Clear";
 import { Box, Button, Card, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const EditingQuizQuestion = ({ qnInfo, setEdit }) => {
+const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber }) => {
+  const { courseid } = useParams();
+  const { quizId } = useParams();
   const [question, setQuestion] = useState("");
   const [file, setFile] = useState(null);
   const [image, setImage] = useState("");
@@ -23,15 +27,6 @@ const EditingQuizQuestion = ({ qnInfo, setEdit }) => {
       };
     }
   };
-
-  useEffect(() => {
-    console.log(qnInfo)
-    setQuestion(qnInfo.question);
-    setQuestionType(qnInfo.questionOptionType);
-    setOptions(qnInfo.options);
-    setAnswer(qnInfo.answer);
-    setImage(qnInfo.questionImage);
-  }, [qnInfo]);
 
   const handleQnTypeChange = (event) => {
     setOptions(["", "", "", ""]);
@@ -63,11 +58,55 @@ const EditingQuizQuestion = ({ qnInfo, setEdit }) => {
     setAnswer(options[event.target.value]);
   };
 
+  const addQuestion = () => {
+    if (answer === "") {
+      toast.error("Please select an answer for the question.");
+      return;
+    }
+    if (question === "") {
+      toast.error("Please enter a question.");
+      return;
+    }
+    if (questionType === "multiple-choice") {
+      if (options[0] === "" || options[1] === "" || options[2] === "" || options[3] === "") {
+        toast.error("Please enter all options for the question.");
+        return;
+      }
+    }
+
+    const newQnInfo = {
+      qnNumber: qnNumber,
+      question: question,
+      questionOptionType: questionType,
+      options: options,
+      answer: answer,
+      questionImage: image,
+      courseId: courseid,
+      quizId: quizId,
+    };
+    console.log(newQnInfo);
+    fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newQnInfo),
+    }).then((res) => {
+      if (res.ok) {
+        setOpenAddQuestion(false);
+        toast.success("Question added successfully!");
+      }
+    }).catch((err) => {
+      console.log(err);
+      toast.error("Error adding question. Please try again later.")
+    });
+  };
+
   return (
     <>
       <Card variant="outlined" sx={{ boxShadow: "none", mt: 3, p: 2 }}>
         <Typography variant="h6" sx={{ mb: 1 }}>
-          Question {qnInfo.qnNumber}
+          Question {qnNumber}
         </Typography>
         <Grid container sx={{ mb: 2 }} spacing={2}>
           <Grid item xs={12} md={6}>
@@ -148,12 +187,12 @@ const EditingQuizQuestion = ({ qnInfo, setEdit }) => {
           </RadioGroup>
         </Box>
         <Box sx={{ display: "flex", mt: 2 }}>
-        <Button variant="outlined" fullWidth sx={{ color: "primary.main" }} onClick={() => setEdit(false)}>Cancel</Button>
-        <Button variant="contained" fullWidth sx={{ ml: 2 }} onClick={() => deleteQuestion(key)}>Edit Question</Button>
+          <Button variant="outlined" fullWidth sx={{ color: "primary.main" }} onClick={() => setOpenAddQuestion(false)}>Cancel</Button>
+          <Button variant="contained" fullWidth sx={{ ml: 2 }} onClick={() => addQuestion()}>Add Question</Button>
         </Box>
       </Card>
     </>
   );
 };
 
-export default EditingQuizQuestion;
+export default EditQuizNewQuestion;

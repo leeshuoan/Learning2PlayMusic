@@ -190,7 +190,7 @@ function Chat(userInfo) {
             pt: 2,
             display: "flex",
             flexDirection: "column",
-            height: `calc(100vh - ${useAppBarHeight() + 96}px)`, // NEED TO FIX
+            height: `calc(100vh - ${useAppBarHeight() + 96}px)`, 
             overflow: "hidden",
             overflowY: "scroll",
           }}>
