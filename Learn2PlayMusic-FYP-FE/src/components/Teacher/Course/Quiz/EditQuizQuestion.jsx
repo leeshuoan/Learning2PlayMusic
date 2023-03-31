@@ -43,9 +43,9 @@ const EditQuizQuestion = ({ userInfo, question, handleRefreshData }) => {
           <Grid container spacing={0}>
             <Grid item xs={12} sm={9}>
               <Box sx={{ display: "flex", mb: 1 }}>
-                {question.qnImage && (
+                {question.questionImage && (
                   <Box sx={{ mr: 2 }}>
-                    <img src={question.qnImage} height="100" width="100" />
+                    <img src={question.questionImage} height="100" width="100" />
                   </Box>
                 )}
                 <Box>

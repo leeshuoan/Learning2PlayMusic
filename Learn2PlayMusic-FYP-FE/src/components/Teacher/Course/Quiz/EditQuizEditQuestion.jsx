@@ -25,6 +25,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
   };
 
   useEffect(() => {
+    console.log(qnInfo)
     setQuestion(qnInfo.question);
     setQuestionType(qnInfo.questionOptionType);
     setOptions(qnInfo.options);
@@ -101,22 +102,39 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
           </Grid>
           <Grid item xs={12} md={6}>
             <InputLabel id="question-image-label">Image [Optional]</InputLabel>
-            {file == null ? (
+            {console.log(file)}
+            {console.log(image)}
+            {(file == null && image == null) ? (
               <Button variant="contained" sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: "none", ":hover": { backgroundColor: "hovergrey" } }} component="label">
                 ADD A FILE
                 <input hidden accept="image/*" multiple type="file" onChange={fileUploaded} />
               </Button>
             ) : (
               <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <IconButton
-                  sx={{ pl: 0 }}
-                  onClick={() => {
-                    setFile(null);
-                    setImage("");
-                  }}>
-                  <ClearIcon />
-                </IconButton>
-                <Typography>{file.name}</Typography>
+                {file ? (
+                  <>
+                    <IconButton
+                      sx={{ pl: 0 }}
+                      onClick={() => {
+                        setFile(null);
+                        setImage("");
+                      }}>
+                      <ClearIcon />
+                    </IconButton>
+                    <Typography>{file.name}</Typography>
+                  </>
+                ) : (
+                  <>
+                    <IconButton
+                      sx={{ pl: 0 }}
+                      onClick={() => {
+                        setImage(null);
+                      }}>
+                      <ClearIcon />
+                    </IconButton>
+                    <Typography>Uploaded Image</Typography>
+                  </>
+                )}
               </Box>
             )}
           </Grid>
@@ -168,8 +186,8 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
         <Box sx={{ display: questionType === "true-false" ? "block" : "none" }}>
           <InputLabel sx={{ mt: 2 }}>Correct Option</InputLabel>
           <RadioGroup onChange={(e) => handleTrueFalseChange(e)}>
-            <FormControlLabel sx={{ mr: 0 }} value="True" control={<Radio size="small" />} label="True" />
-            <FormControlLabel sx={{ mr: 0 }} value="False" control={<Radio size="small" />} label="False" />
+            <FormControlLabel sx={{ mr: 0 }} value="True" control={<Radio size="small" checked={answer == "True"} />} label="True" />
+            <FormControlLabel sx={{ mr: 0 }} value="False" control={<Radio size="small" checked={answer == "False"} />} label="False" />
           </RadioGroup>
         </Box>
         <Box sx={{ display: "flex", mt: 2 }}>

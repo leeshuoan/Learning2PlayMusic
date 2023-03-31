@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber }) => {
+const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber, handleRefreshData }) => {
   const { courseid } = useParams();
   const { quizId } = useParams();
   const [question, setQuestion] = useState("");
@@ -74,7 +74,7 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber }) => {
       }
     }
 
-    const newQnInfo = {
+    const newQnInfo = [{
       qnNumber: qnNumber,
       question: question,
       questionOptionType: questionType,
@@ -83,8 +83,8 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber }) => {
       questionImage: image,
       courseId: courseid,
       quizId: quizId,
-    };
-    console.log(newQnInfo);
+    }];
+
     fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
       method: "POST",
       headers: {
@@ -94,6 +94,7 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber }) => {
     }).then((res) => {
       if (res.ok) {
         setOpenAddQuestion(false);
+        handleRefreshData()
         toast.success("Question added successfully!");
       }
     }).catch((err) => {

@@ -84,7 +84,7 @@ const EditQuiz = ({ userInfo }) => {
           questionOptionType: qn.QuestionOptionType,
           options: qn.Options,
           answer: qn.Answer,
-          qnImage: qn.QuestionImage,
+          questionImage: qn.QuestionImage,
         };
       });
       setQnNumber(i)
@@ -204,7 +204,7 @@ const EditQuiz = ({ userInfo }) => {
                 );
               })}
               {openAddQuestion ?
-                (<EditQuizNewQuestion setOpenAddQuestion={setOpenAddQuestion} qnNumber={qnNumber}/>)
+                (<EditQuizNewQuestion setOpenAddQuestion={setOpenAddQuestion} handleRefreshData={handleRefreshData} qnNumber={qnNumber}/>)
                 :
                 (<Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>
                   Add Question
