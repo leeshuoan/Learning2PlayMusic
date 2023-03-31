@@ -11,7 +11,7 @@ import CustomBreadcrumbs from "../utils/CustomBreadcrumbs";
 import Loader from "../utils/Loader";
 import TransitionModal from "../utils/TransitionModal";
 
-const TeacherCourse = (userInfo) => {
+const TeacherCourse = ({ userInfo }) => {
   const [open, setOpen] = useState(true);
   const [course, setCourse] = useState({});
   const [courseHomework, setCourseHomework] = useState([]);
@@ -49,7 +49,7 @@ const TeacherCourse = (userInfo) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.userInfo.token}`,
+        Authorization: `Bearer ${userInfo.token}`,
       },
     });
     return response.json();
@@ -147,7 +147,7 @@ const TeacherCourse = (userInfo) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.userInfo.token}`,
+        Authorization: `Bearer ${userInfo.token}`,
       },
     }).then((response) => {
       if (response.status === 200) {
@@ -164,7 +164,7 @@ const TeacherCourse = (userInfo) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.userInfo.token}`,
+        Authorization: `Bearer ${userInfo.token}`,
       },
     })
       .then((response) => response.json())
@@ -192,7 +192,7 @@ const TeacherCourse = (userInfo) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.userInfo.token}`,
+        Authorization: `Bearer ${userInfo.token}`,
       },
       body: JSON.stringify({
         courseId: courseid,
@@ -215,7 +215,7 @@ const TeacherCourse = (userInfo) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${userInfo.userInfo.token}`,
+          Authorization: `Bearer ${userInfo.token}`,
         },
       })
         .then((response) => response.json())
@@ -240,7 +240,7 @@ const TeacherCourse = (userInfo) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.userInfo.token}`,
+        Authorization: `Bearer ${userInfo.token}`,
       },
       body: JSON.stringify({
         courseId: courseid,
@@ -266,7 +266,7 @@ const TeacherCourse = (userInfo) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.userInfo.token}`,
+        Authorization: `Bearer ${userInfo.token}`,
       },
       body: JSON.stringify({
         courseId: courseid,
@@ -301,7 +301,7 @@ const TeacherCourse = (userInfo) => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.userInfo.token}`,
+        Authorization: `Bearer ${userInfo.token}`,
       },
       body: JSON.stringify(newQuizData),
     });

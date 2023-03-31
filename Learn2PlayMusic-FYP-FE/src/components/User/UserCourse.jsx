@@ -9,7 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../utils/Loader";
 
-const UserCourse = (userInfo) => {
+const UserCourse = ({ userInfo }) => {
   const [open, setOpen] = useState(true);
   const [course, setCourse] = useState({});
   const [courseHomework, setCourseHomework] = useState([]);
@@ -35,7 +35,7 @@ const UserCourse = (userInfo) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.userInfo.token}`,
+        Authorization: `Bearer ${userInfo.token}`,
       },
     });
     return response.json();
@@ -43,10 +43,10 @@ const UserCourse = (userInfo) => {
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
   const getCourseAnnouncementsAPI = request(`/course/announcement?courseId=${courseid}`);
-  const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
+  const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&studentId=${userInfo.id}`);
   const getMaterialAPI = request(`/course/material?courseId=${courseid}`);
-  const getQuizAPI = request(`/course/quiz?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
-  const getProgressReportAPI = request(`/course/report?courseId=${courseid}&studentId=${userInfo.userInfo.id}`);
+  const getQuizAPI = request(`/course/quiz?courseId=${courseid}&studentId=${userInfo.id}`);
+  const getProgressReportAPI = request(`/course/report?courseId=${courseid}&studentId=${userInfo.id}`);
 
   const columns = useMemo(
     () => [
@@ -108,7 +108,7 @@ const UserCourse = (userInfo) => {
       }
 
       async function fetchHomeworkFeedback(id) {
-        const data = await request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${id}&studentId=${userInfo.userInfo.id}`);
+        const data = await request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${id}&studentId=${userInfo.id}`);
         const homeworkFeedback = {
           Marked: data.Marked,
           NumAttempts: data.NumAttempts != 0 ? data.NumAttempts : "",

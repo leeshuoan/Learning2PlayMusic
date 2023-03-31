@@ -27,7 +27,7 @@ const UserQuiz = (userInfo) => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${userInfo.userInfo.token}`,
+      Authorization: `Bearer ${userInfo.token}`,
     },
   };
   const getCourse = fetch(`${import.meta.env.VITE_API_URL}/course?courseId=${courseid}`, headerConfig);
