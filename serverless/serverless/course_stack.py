@@ -977,10 +977,8 @@ class CourseStack(Stack):
         course_homework_feedback_resource.add_method(
             "POST",
             apigw.LambdaIntegration(post_course_homework_feedback),
-            request_parameters={
-                "method.request.querystring.courseId": True,
-                "method.request.querystring.studentId": False,
-                "method.request.querystring.homeworkId": False,
+            request_models={
+                "application/json": post_course_homework_feedback_resource_model
             },
         )
 
