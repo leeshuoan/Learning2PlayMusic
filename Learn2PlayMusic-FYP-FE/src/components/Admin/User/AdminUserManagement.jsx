@@ -11,6 +11,12 @@ import EnrolUserForm from "./EnrolUserForm";
 import UnenrolUserForm from "./UnenrolUserForm";
 import UserPrompt from "./UserPrompt";
 
+// const TransitionModal = lazy(() => import("../../utils/TransitionModal"));
+// const CreateUserForm = lazy(() => import("./CreateUserForm"));
+// const EnrolUserForm = lazy(() => import("./EnrolUserForm"));
+// const UnenrolUserForm = lazy(() => import("./UnenrolUserForm"));
+// const UserPrompt = lazy(() => import("./UserPrompt"));
+
 const AdminUserManagement = (userInfo) => {
   // table data
   const [data, setData] = useState([]);
@@ -106,29 +112,31 @@ const AdminUserManagement = (userInfo) => {
     let users = await API.get(apiName, path, myInit);
     let userData = users.Users;
     let fetchedUserIds = [];
-    for (let idx in userData) {
-      fetchedUserIds.push(userData[idx].Username);
-      for (let attributeIdx in userData[idx]["Attributes"]) {
-        if (userData[idx]["Attributes"][attributeIdx]["Name"] == "email") {
-          userData[idx]["Attributes"].Email = userData[idx]["Attributes"][attributeIdx]["Value"];
-        } else if (userData[idx]["Attributes"][attributeIdx]["Name"] == "custom:name") {
-          userData[idx]["Attributes"].Name = userData[idx]["Attributes"][attributeIdx]["Value"];
-        } else if (userData[idx]["Attributes"][attributeIdx]["Name"] == "custom:role") {
-          userData[idx]["Attributes"].Role = userData[idx]["Attributes"][attributeIdx]["Value"];
-        }
-      }
-      userData[idx]["Enabled"] = userData[idx]["Enabled"] ? "Enabled" : "Disabled";
-      userData[idx]["UserStatus"] = userData[idx]["UserStatus"] == "FORCE_CHANGE_PASSWORD" ? "Change Password" : "Confirmed";
+    userData.forEach((user) => {
+      fetchedUserIds.push(user.Username);
 
-      let date = new Date(userData[idx]["UserCreateDate"]);
+      user.Attributes.forEach((attribute) => {
+        if (attribute.Name == "email") {
+          user.Attributes.Email = attribute.Value;
+        } else if (attribute.Name == "custom:name") {
+          user.Attributes.Name = attribute.Value;
+        } else if (attribute.Name == "custom:role") {
+          user.Attributes.Role = attribute.Value;
+        }
+      });
+
+      user.Enabled = user.Enabled ? "Enabled" : "Disabled";
+      user.UserStatus = user.UserStatus == "FORCE_CHANGE_PASSWORD" ? "Change Password" : "Confirmed";
+
+      let date = new Date(user.UserCreateDate);
       let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-      userData[idx]["UserCreateDate"] = formattedDate;
-    }
+      user.UserCreateDate = formattedDate;
+    });
     // settle courses user is enrolled in
     let userCoursesDict = await postAPIWithBody(`${import.meta.env.VITE_API_URL}/user/course/enrolled`, { userIds: fetchedUserIds });
     setUserCoursesEnrolled(userCoursesDict);
-    console.log(userData);
     setData(userData);
+
   };
 
   // enrol user ala carte================================================================================================================================================================================================================================================================================
@@ -171,8 +179,6 @@ const AdminUserManagement = (userInfo) => {
   // UN-enrol user ===============================================================================================================================================================================================================================================================================
   const unEnrolUser = async (course, user) => {
     setOpenUnEnrolUser(true);
-    console.log(course);
-    console.log(user);
     setToUnEnrolCourse(course);
     setToUnEnrolUser(user);
   };
@@ -186,7 +192,6 @@ const AdminUserManagement = (userInfo) => {
   const openDisableUserModal = async (user) => {
     setOpenDisableUser(true);
     setToDisableUser(user);
-    console.log(toDisableUser);
   };
   const disableUserSuccessClose = () => {
     setOpenDisableUser(false);
@@ -196,7 +201,6 @@ const AdminUserManagement = (userInfo) => {
   const openEnableUserModal = async (user) => {
     setOpenEnableUser(true);
     setToEnableUser(user);
-    console.log(toEnableUser);
   };
   const enableUserSuccessClose = () => {
     setOpenEnableUser(false);
