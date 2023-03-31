@@ -360,7 +360,13 @@ const AdminUserManagement = (userInfo) => {
           enableDensityToggle={false}
           columns={columns}
           data={data}
-          initialState={{ density: "compact" }}
+          initialState={{
+            density: "compact",
+            sorting: [
+              { id: "role", desc: false },
+              { id: "name", desc: false },
+            ],
+          }}
           renderTopToolbarCustomActions={({ table }) => {
             return (
               <Box
