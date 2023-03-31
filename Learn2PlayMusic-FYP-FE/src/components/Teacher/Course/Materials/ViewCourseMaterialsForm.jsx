@@ -1,9 +1,10 @@
-import { Backdrop, Box, Button, Card, CircularProgress, Container, Typography } from "@mui/material";
+import { Box, Button, Card, Container, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
+import Loader from "../../../utils/Loader";
 
 const ViewCourseMaterialsForm = ({ userInfo }) => {
   dayjs.extend(customParseFormat);
@@ -134,9 +135,7 @@ const ViewCourseMaterialsForm = ({ userInfo }) => {
           </Container>
         </Box>
       </Card>
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={open} />
     </Container>
   );
 };

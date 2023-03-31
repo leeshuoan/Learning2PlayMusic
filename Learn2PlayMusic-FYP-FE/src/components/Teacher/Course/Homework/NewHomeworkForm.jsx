@@ -1,4 +1,4 @@
-import { Backdrop, Box, Button, Card, CircularProgress, Container, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, Container, TextField, Typography } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -6,8 +6,9 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 import { toast } from "react-toastify";
+import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
+import Loader from "../../../utils/Loader";
 
 const NewHomeworkForm = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const NewHomeworkForm = () => {
 
   const createHomework = (e) => {
     e.preventDefault();
-    if (value ==  null) {
+    if (value == null) {
       toast.error("Please select a due date!");
       return;
     }
@@ -57,28 +58,28 @@ const NewHomeworkForm = () => {
       toast.error("Due date cannot be in the past!");
       return;
     }
-    const newHomework = { 
+    const newHomework = {
       homeworkTitle: homeworkTitle,
       homeworkDescription: homeworkDescription,
       homeworkDueDate: value.toISOString(),
       homeworkAssignedDate: new Date().toISOString(),
       courseId: courseid,
     };
-    console.log(newHomework)
+    console.log(newHomework);
     const res = fetch(`${import.meta.env.VITE_API_URL}/course/homework`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newHomework),
-      });
+      },
+      body: JSON.stringify(newHomework),
+    });
     if (res) {
       toast.success("Homework created successfully!");
       navigate(`/teacher/course/${courseid}/homework`);
     } else {
       toast.error("An unexpected error occured during homework creation");
     }
-  }
+  };
 
   return (
     <>
@@ -133,15 +134,15 @@ const NewHomeworkForm = () => {
                 }}>
                 Cancel
               </Button>
-              <Button variant="contained" type="submit" >Create</Button>
+              <Button variant="contained" type="submit">
+                Create
+              </Button>
             </Box>
           </form>
         </Card>
       </Container>
 
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={open} />
     </>
   );
 };

@@ -1,7 +1,7 @@
 import ClearIcon from "@mui/icons-material/Clear";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import InsertLinkIcon from "@mui/icons-material/InsertLink";
-import { Backdrop, Box, Button, Card, CircularProgress, Container, IconButton, InputAdornment, Link, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, Container, IconButton, InputAdornment, Link, TextField, Typography } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
+import Loader from "../../../utils/Loader";
 
 const EditCourseMaterialsForm = ({ userInfo }) => {
   dayjs.extend(customParseFormat);
@@ -312,9 +313,7 @@ const EditCourseMaterialsForm = ({ userInfo }) => {
           </Container>
         </Box>
       </Card>
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={open} />
     </Container>
   );
 };

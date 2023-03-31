@@ -1,10 +1,10 @@
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Accordion, AccordionDetails, AccordionSummary, Backdrop, Box, Button, Card, CircularProgress, Container, Grid, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, Container, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
+import Loader from "../../../utils/Loader";
 import QuizQuestionChart from "./QuizQuestionChart";
-
 const QuizSummary = (userInfo) => {
   const navigate = useNavigate();
   const green = "#4caf50";
@@ -55,7 +55,7 @@ const QuizSummary = (userInfo) => {
       setCourse(courseData);
 
       let quizData = fetchedQuizData;
-      let quizPerformance = quizData.AverageScore == 0 ? "" : quizData.AverageScore >= (fetchedQuizQuestionData.length/2) ? green : red;
+      let quizPerformance = quizData.AverageScore == 0 ? "" : quizData.AverageScore >= fetchedQuizQuestionData.length / 2 ? green : red;
       quizData = { ...quizData, quizPerformance };
       console.log(quizData);
       setQuiz(quizData);
@@ -163,7 +163,7 @@ const QuizSummary = (userInfo) => {
                   {/* drop down */}
                   <AccordionDetails>
                     <Typography>{question.QuestionText}</Typography>
-                    <QuizQuestionChart questionImage={questionImage} data={ question.optionsStats}></QuizQuestionChart>
+                    <QuizQuestionChart questionImage={questionImage} data={question.optionsStats}></QuizQuestionChart>
                   </AccordionDetails>
                 </Accordion>
               </Grid>
@@ -189,9 +189,7 @@ const QuizSummary = (userInfo) => {
       </Box>
 
       {/* Backdrop for loading */}
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={isLoading} />
     </Container>
   );
 };

@@ -1,10 +1,11 @@
 import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import { Backdrop, Box, Breadcrumbs, Button, Card, CircularProgress, Container, Grid, Link, Typography, useTheme } from "@mui/material";
+import { Box, Breadcrumbs, Button, Card, Container, Grid, Link, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import celebration from "../../../assets/celebration.png";
+import Loader from "../../utils/Loader";
 import TransitionModal from "../../utils/TransitionModal";
 import QuizCard from "./QuizCard";
 
@@ -70,7 +71,7 @@ const UserQuiz = (userInfo) => {
         let quizQns = [];
         [courseInfo, quizInfo, quizQns] = await Promise.all([courseInfoRes.json(), quizInfoRes.json(), quizQnRes.json()]);
 
-        console.log(quizQns)
+        console.log(quizQns);
         let courseData = {
           id: courseInfo[0].SK.split("#")[1],
           name: courseInfo[0].CourseName,
@@ -139,7 +140,7 @@ const UserQuiz = (userInfo) => {
       quizId: quizId,
       submissions: selectedOptions,
     };
-    console.log(requestBody)
+    console.log(requestBody);
     // submit
     try {
       const submitQuizData = await submitQuiz(requestBody);
@@ -310,9 +311,7 @@ const UserQuiz = (userInfo) => {
           </Card>
         </Box>
 
-        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
+        <Loader open={open} />
       </Container>
     </>
   );

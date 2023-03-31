@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { Box, Button, Card, Container, Grid, Link, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Typography, Container, Grid, Card, Box, Link, Button, Backdrop,  CircularProgress } from "@mui/material";
+import Loader from "../utils/Loader";
 
 const TeacherHome = ({ userInfo }) => {
   const [open, setOpen] = useState(true);
@@ -24,26 +25,21 @@ const TeacherHome = ({ userInfo }) => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [courses, announcements] = await Promise.all([
-          fetchCourses,
-          fetchAnnouncements,
-        ]);
+        const [courses, announcements] = await Promise.all([fetchCourses, fetchAnnouncements]);
         const announcementsData = announcements.slice(0, 3).map((a) => ({
           ...a,
           date: new Date(a.SK.split("Date#")[1]).toLocaleDateString(),
         }));
-        console.log(announcementsData)
+        console.log(announcementsData);
         setAnnouncements(announcementsData);
 
-        if (
-          courses.message === "[ERROR] studentId does not exist in database"
-        ) {
+        if (courses.message === "[ERROR] studentId does not exist in database") {
           setUnEnrolled(true);
         } else {
           setMyCourses(courses);
         }
         console.log(courses);
-        setOpen(false)
+        setOpen(false);
       } catch (error) {
         console.error(error);
       }
@@ -98,16 +94,9 @@ const TeacherHome = ({ userInfo }) => {
             <Card sx={{ py: 3, px: 4 }}>
               <Typography variant="h6">Annoucements</Typography>
               {announcements.map((announcement, index) => (
-                <Card
-                  variant="outlined"
-                  sx={{ boxShadow: "none", my: 1, p: 2 }}
-                  key={index}>
-                  <Typography variant="subtitle2">
-                    {announcement.Title}
-                  </Typography>
-                  <Typography variant="subsubtitle">
-                    Posted {announcement.date}
-                  </Typography>
+                <Card variant="outlined" sx={{ boxShadow: "none", my: 1, p: 2 }} key={index}>
+                  <Typography variant="subtitle2">{announcement.Title}</Typography>
+                  <Typography variant="subsubtitle">Posted {announcement.date}</Typography>
                   <Typography variant="body2" sx={{ mt: 1 }}>
                     {announcement.Content}
                   </Typography>
@@ -135,12 +124,7 @@ const TeacherHome = ({ userInfo }) => {
             </Card>
           </Grid> */}
         </Grid>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
+        <Loader open={open} />
       </Container>
     </>
   );

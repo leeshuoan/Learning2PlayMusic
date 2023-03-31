@@ -1,12 +1,11 @@
-import { Backdrop, Box, Button, Card, CircularProgress, Container, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, Container, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
-import EditQuizQuestion from "./EditQuizQuestion";
+import Loader from "../../../utils/Loader";
 import EditQuizNewQuestion from "./EditQuizNewQuestion";
-import TransitionModal from "../../../utils/TransitionModal";
-import useAppBarHeight from "../../../utils/AppBarHeight";
+import EditQuizQuestion from "./EditQuizQuestion";
 
 const EditQuiz = ({ userInfo }) => {
   const navigate = useNavigate();
@@ -24,7 +23,7 @@ const EditQuiz = ({ userInfo }) => {
       question: "",
       questionOptionType: "MCQ",
       options: ["", "", "", ""],
-      answer: ""
+      answer: "",
     },
   ]);
   const [qnNumber, setQnNumber] = useState(0);
@@ -36,7 +35,7 @@ const EditQuiz = ({ userInfo }) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${userInfo.token}`
+        Authorization: `Bearer ${userInfo.token}`,
       },
     });
 
@@ -55,7 +54,9 @@ const EditQuiz = ({ userInfo }) => {
 
   useEffect(() => {
     async function fetchData() {
-      let data1 = [], data2 = [], data3 = [];
+      let data1 = [],
+        data2 = [],
+        data3 = [];
       try {
         [data1, data2, data3] = await Promise.all([getCourseAPI, getQuizAPI, getQuizQuestionAPI]);
       } catch (error) {
@@ -75,7 +76,7 @@ const EditQuiz = ({ userInfo }) => {
       setQuizMaxAttempts(data2.QuizMaxAttempts);
       setVisibility(data2.Visibility);
 
-      let i = 1
+      let i = 1;
       const quizQuestionData = data3.map((qn) => {
         return {
           qnId: qn.SK.split("Question#")[1],
@@ -87,7 +88,7 @@ const EditQuiz = ({ userInfo }) => {
           questionImage: qn.QuestionImage,
         };
       });
-      setQnNumber(i)
+      setQnNumber(i);
       setQuizQuestions(quizQuestionData);
     }
 
@@ -113,7 +114,7 @@ const EditQuiz = ({ userInfo }) => {
       courseId: courseid,
       quizId: quizId,
     };
-    console.log(newQuiz)
+    console.log(newQuiz);
 
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
       method: "PUT",
@@ -126,21 +127,20 @@ const EditQuiz = ({ userInfo }) => {
       navigate(`/teacher/course/${courseid}/quiz`);
       toast.success("Quiz edited successfully");
     } else {
-      toast.error("Error occurred when editing quiz")
+      toast.error("Error occurred when editing quiz");
       console.error(`Error: ${response.status} - ${response.statusText}`);
       return;
     }
   }
 
   const addQuestion = () => {
-    setOpenAddQuestion(true)
+    setOpenAddQuestion(true);
     return;
   };
 
   const handleVisibilityChange = (event) => {
     setVisibility(event.target.value);
   };
-
 
   return (
     <>
@@ -199,17 +199,15 @@ const EditQuiz = ({ userInfo }) => {
                 <TextField value={quizDescription} onChange={() => setQuizDescription(event.target.value)} fullWidth multiline rows={3} />
               </Box>
               {quizQuestions.map((question, key) => {
-                return (
-                  <EditQuizQuestion key={key} question={question} userInfo={userInfo} handleRefreshData={handleRefreshData} />
-                );
+                return <EditQuizQuestion key={key} question={question} userInfo={userInfo} handleRefreshData={handleRefreshData} />;
               })}
-              {openAddQuestion ?
-                (<EditQuizNewQuestion setOpenAddQuestion={setOpenAddQuestion} handleRefreshData={handleRefreshData} qnNumber={qnNumber}/>)
-                :
-                (<Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>
+              {openAddQuestion ? (
+                <EditQuizNewQuestion setOpenAddQuestion={setOpenAddQuestion} handleRefreshData={handleRefreshData} qnNumber={qnNumber} />
+              ) : (
+                <Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>
                   Add Question
-                </Button>)
-              }
+                </Button>
+              )}
               <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
                 <Button
                   variant="outlined"
@@ -226,10 +224,7 @@ const EditQuiz = ({ userInfo }) => {
             </form>
           </Card>
         </Box>
-
-        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
+        <Loader open={isLoading} />
       </Container>
     </>
   );

@@ -2,12 +2,13 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { Accordion, AccordionDetails, AccordionSummary, Backdrop, Box, Button, Card, CircularProgress, Container, Divider, Grid, Link, MenuItem, Stack, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, Container, Divider, Grid, Link, MenuItem, Stack, Typography } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../utils/CustomBreadcrumbs";
+import Loader from "../utils/Loader";
 import TransitionModal from "../utils/TransitionModal";
 
 const TeacherCourse = (userInfo) => {
@@ -854,9 +855,7 @@ const TeacherCourse = (userInfo) => {
           </Box>
         </Grid>
       </Grid>
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={open} />
     </Container>
   );
 };

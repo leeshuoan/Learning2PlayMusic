@@ -3,10 +3,11 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
-import { Accordion, AccordionDetails, AccordionSummary, Backdrop, Box, Breadcrumbs, Button, Card, CircularProgress, Container, Grid, Link, MenuItem, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Breadcrumbs, Button, Card, Container, Grid, Link, MenuItem, Typography } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Loader from "../utils/Loader";
 
 const UserCourse = (userInfo) => {
   const [open, setOpen] = useState(true);
@@ -443,9 +444,7 @@ const UserCourse = (userInfo) => {
           </Box>
         </Grid>
       </Grid>
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={open} />
     </Container>
   );
 };

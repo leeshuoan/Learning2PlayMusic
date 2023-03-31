@@ -1,8 +1,9 @@
-import { Backdrop, Box, Button, Card, CircularProgress, Container, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, Container, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
+import Loader from "../../../utils/Loader";
 import NewQuizQuestion from "./NewQuizQuestion";
 
 const NewQuiz = () => {
@@ -20,7 +21,7 @@ const NewQuiz = () => {
       question: "",
       questionOptionType: "multiple-choice",
       options: ["", "", "", ""],
-      answer: ""
+      answer: "",
     },
   ]);
   const [qnNumber, setQnNumber] = useState(2);
@@ -46,7 +47,9 @@ const NewQuiz = () => {
 
   useEffect(() => {
     async function fetchData() {
-      let data1 = [], data2 = [], data3 = [];
+      let data1 = [],
+        data2 = [],
+        data3 = [];
       try {
         [data1] = await Promise.all([getCourseAPI]);
       } catch (error) {
@@ -71,28 +74,26 @@ const NewQuiz = () => {
     setIsLoading(true);
 
     e.preventDefault();
-    console.log(quizQuestions)
-
-
+    console.log(quizQuestions);
 
     // check the other fields
-    let errorMsg = ""
+    let errorMsg = "";
     if (quizTitle === "") {
-      errorMsg = "Missing quiz title"
+      errorMsg = "Missing quiz title";
     }
     if (quizMaxAttempts === "") {
-      errorMsg = "Missing quiz max attempts"
+      errorMsg = "Missing quiz max attempts";
     }
     for (let i = 0; i < quizQuestions.length; i++) {
-      console.log(quizQuestions[i].answer)
+      console.log(quizQuestions[i].answer);
       if (quizQuestions[i].answer === "") {
-        errorMsg = "Missing answer for question"
+        errorMsg = "Missing answer for question";
       }
     }
     if (errorMsg !== "") {
-      setIsLoading(false)
-      toast.error(errorMsg)
-      return
+      setIsLoading(false);
+      toast.error(errorMsg);
+      return;
     }
 
     const newQuiz = {
@@ -118,26 +119,26 @@ const NewQuiz = () => {
       return;
     }
 
-    let newQuizQuestions = []
+    let newQuizQuestions = [];
     for (let i = 0; i < quizQuestions.length; i++) {
-      const newQuizQuestion = { ...quizQuestions[i], courseId: courseid, quizId: newQuizId }
-      newQuizQuestions.push(newQuizQuestion)
+      const newQuizQuestion = { ...quizQuestions[i], courseId: courseid, quizId: newQuizId };
+      newQuizQuestions.push(newQuizQuestion);
     }
 
     try {
-      console.log(newQuizQuestions)
+      console.log(newQuizQuestions);
       fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newQuizQuestions),
-      })
+      });
     } catch (error) {
-      console.log(error)
-      setIsLoading(false)
-      toast.error("An unexpected error occurred during quiz creation")
-      return
+      console.log(error);
+      setIsLoading(false);
+      toast.error("An unexpected error occurred during quiz creation");
+      return;
     }
 
     if (response) {
@@ -147,15 +148,18 @@ const NewQuiz = () => {
   }
 
   const addQuestion = () => {
-    setQuizQuestions([...quizQuestions, {
-      qnNumber: qnNumber,
-      question: "",
-      questionOptionType: "multiple-choice",
-      options: [", '', '', '"],
-      answer: ""
-    }])
-    setQnNumber(qnNumber + 1)
-  }
+    setQuizQuestions([
+      ...quizQuestions,
+      {
+        qnNumber: qnNumber,
+        question: "",
+        questionOptionType: "multiple-choice",
+        options: [", '', '', '"],
+        answer: "",
+      },
+    ]);
+    setQnNumber(qnNumber + 1);
+  };
 
   const handleQuestionChange = (qnInfo) => {
     const newQuizQuestions = quizQuestions.map((qn) => {
@@ -164,7 +168,7 @@ const NewQuiz = () => {
         return qnInfo;
       }
       return qn;
-    })
+    });
     setQuizQuestions(newQuizQuestions);
   };
 
@@ -251,9 +255,7 @@ const NewQuiz = () => {
           </Card>
         </Box>
 
-        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
+        <Loader open={isLoading} />
       </Container>
     </>
   );

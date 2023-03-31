@@ -1,7 +1,7 @@
 import HomeIcon from "@mui/icons-material/Home";
 import MenuIcon from "@mui/icons-material/Menu";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import { Box, Breadcrumbs, Button, Card, Divider, Drawer, Grid, IconButton, InputBase, Link, List, ListItem, ListItemButton,ListItemText, Toolbar, Typography, CircularProgress, Backdrop } from "@mui/material";
+import { Box, Breadcrumbs, Button, Card, Divider, Drawer, Grid, IconButton, InputBase, Link, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography } from "@mui/material";
 import { addDoc, collection, limit, orderBy, query } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import useAppBarHeight from "../utils/AppBarHeight";
 import CustomBreadcrumbs from "../utils/CustomBreadcrumbs";
 import { db } from "../utils/firebase";
+import Loader from "../utils/Loader";
 import ChatMessage from "./ChatMessage";
 const drawerWidth = 240;
 
@@ -93,7 +94,7 @@ function Chat(userInfo) {
       const [res] = await Promise.all([getAPI(contactListAPI)]);
       console.log(res);
       var fetchedData = res.map((contact) => {
-        console.log(contact)
+        console.log(contact);
         let contactKeys = Object.keys(contact);
         let id = "";
         let name = "";
@@ -190,7 +191,7 @@ function Chat(userInfo) {
             pt: 2,
             display: "flex",
             flexDirection: "column",
-            height: `calc(100vh - ${useAppBarHeight() + 96}px)`, 
+            height: `calc(100vh - ${useAppBarHeight() + 96}px)`,
             overflow: "hidden",
             overflowY: "scroll",
           }}>
@@ -227,9 +228,7 @@ function Chat(userInfo) {
           </Box>
         </Box>
       </Box>
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={openLoading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={openLoading} />
     </Box>
   );
 }

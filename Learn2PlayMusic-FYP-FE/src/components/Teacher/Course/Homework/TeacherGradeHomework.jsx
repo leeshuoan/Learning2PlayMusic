@@ -1,7 +1,8 @@
-import { Backdrop, Box, Button, Card, CircularProgress, Container, Divider, FormControlLabel, FormLabel, InputLabel, Link, Radio, RadioGroup, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Button, Card, Container, Divider, FormControlLabel, FormLabel, InputLabel, Link, Radio, RadioGroup, TextField, Typography, useTheme } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
+import Loader from "../../../utils/Loader";
 
 const TeacherHomeworkOverview = () => {
   const theme = useTheme();
@@ -161,10 +162,7 @@ const TeacherHomeworkOverview = () => {
           </Card>
         </Box>
         <br />
-
-        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
+        <Loader open={isLoading} />
       </Container>
     </>
   );

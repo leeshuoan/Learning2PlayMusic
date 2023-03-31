@@ -1,7 +1,8 @@
-import { Backdrop, Box, Card, CircularProgress, Container, FormControl, InputLabel, MenuItem, Select, Typography, useTheme } from "@mui/material";
+import { Box, Card, Container, FormControl, InputLabel, MenuItem, Select, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
+import Loader from "../../../utils/Loader";
 import StudentProgressReport from "./StudentProgressReport";
 
 const BaseProgressReport = () => {
@@ -142,9 +143,7 @@ const BaseProgressReport = () => {
         </Box>
         <br />
 
-        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
+        <Loader open={isLoading} />
       </Container>
     </>
   );

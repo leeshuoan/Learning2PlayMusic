@@ -1,4 +1,4 @@
-import { Backdrop, Box, Button, Card, CircularProgress, Container, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, Container, TextField, Typography } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -6,8 +6,9 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 import { toast } from "react-toastify";
+import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
+import Loader from "../../../utils/Loader";
 
 const EditHomeworkForm = () => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const EditHomeworkForm = () => {
       setCourse(courseData);
       setHomeworkTitle(data2.HomeworkTitle);
       setHomeworkDescription(data2.HomeworkDescription);
-      setHomeworkAssignedDate(data2.HomeworkAssignedDate)
+      setHomeworkAssignedDate(data2.HomeworkAssignedDate);
       dayjs.extend(customParseFormat);
       setValue(dayjs(data2.HomeworkDueDate));
     }
@@ -56,7 +57,7 @@ const EditHomeworkForm = () => {
 
   const updateHomework = async (e) => {
     e.preventDefault();
-    if (value ==  null) {
+    if (value == null) {
       toast.error("Please select a due date!");
       return;
     }
@@ -71,7 +72,7 @@ const EditHomeworkForm = () => {
       homeworkDueDate: value.toISOString(),
       homeworkAssignedDate: homeworkAssignedDate,
       courseId: courseid,
-    }
+    };
     console.log(updatedHomework);
     const res = await fetch(`${import.meta.env.VITE_API_URL}/course/homework`, {
       method: "PUT",
@@ -86,7 +87,7 @@ const EditHomeworkForm = () => {
     } else {
       toast.error("An unexpected error occured when updating homework");
     }
-  }
+  };
 
   return (
     <>
@@ -141,15 +142,14 @@ const EditHomeworkForm = () => {
                 }}>
                 Cancel
               </Button>
-              <Button variant="contained" type="submit">Update</Button>
+              <Button variant="contained" type="submit">
+                Update
+              </Button>
             </Box>
           </form>
         </Card>
       </Container>
-
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={open} />
     </>
   );
 };
