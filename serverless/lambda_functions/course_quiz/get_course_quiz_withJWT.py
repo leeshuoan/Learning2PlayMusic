@@ -99,6 +99,7 @@ def handle_student_course_quiz(courseId, studentId, table, queryStringParameters
     else:
         filter_expression, expression_values = generate_expression_attribute_values(
             token, courseId)
+        expression_values[":SK"] = f"Student#{studentId}Quiz#"
         response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",
             FilterExpression=filter_expression,
