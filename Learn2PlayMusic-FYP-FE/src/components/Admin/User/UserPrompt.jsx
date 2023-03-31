@@ -1,11 +1,15 @@
 import { Box, Button, Grid, Typography, useTheme } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import { toast } from "react-toastify";
+import { useState } from "react";
+import Loader from "../../utils/Loader";
 
 export default function UserPrompt({ selectedUser, handleClose, type }) {
   const theme = useTheme();
+  const [open, setOpen] = useState(false);
   // delete user
   const confirmDeleteUser = async () => {
+    setOpen(true);
     let apiName = "AdminQueries";
     let path = "/deleteUser";
     let myInit = {
@@ -20,11 +24,13 @@ export default function UserPrompt({ selectedUser, handleClose, type }) {
     let success = await API.post(apiName, path, myInit);
     if (success.message) {
       toast.success("User deleted successfully");
+      setOpen(false);
       handleClose();
     }
   };
   // enable user
   const confirmEnableUser = async () => {
+    setOpen(true);
     let apiName = "AdminQueries";
     let path = "/enableUser";
     let myInit = {
@@ -40,12 +46,14 @@ export default function UserPrompt({ selectedUser, handleClose, type }) {
     console.log(success);
     if (success.message) {
       toast.success("User enabled successfully");
+      setOpen;
       handleClose();
     }
   };
   // disable user
 
   const confirmDisableUser = async () => {
+    setOpen(true);
     let apiName = "AdminQueries";
     let path = "/disableUser";
     let myInit = {
@@ -60,6 +68,7 @@ export default function UserPrompt({ selectedUser, handleClose, type }) {
     let success = await API.post(apiName, path, myInit);
     if (success.message) {
       toast.success("User disabled successfully");
+      setOpen;
       handleClose();
     }
   };
@@ -110,6 +119,7 @@ export default function UserPrompt({ selectedUser, handleClose, type }) {
           )}
         </Grid>
       </Grid>
+      <Loader open={open} />
     </>
   );
 }

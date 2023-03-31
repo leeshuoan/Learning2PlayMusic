@@ -1,6 +1,7 @@
-import { Autocomplete, Backdrop, Box, Button, CircularProgress, Grid, TextField, Typography, useTheme } from "@mui/material";
+import { Autocomplete, Box, Button, Grid, TextField, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import Loader from "../../utils/Loader";
 
 export default function CreateCourseForm({ handleCloseModal, handleCloseModalSuccess }) {
   const theme = useTheme();
@@ -33,7 +34,7 @@ export default function CreateCourseForm({ handleCloseModal, handleCloseModalSuc
       setOpen(false);
       return;
     }
-    let response
+    let response;
     try {
       response = await fetch(courseEndpoint, {
         method: "POST",
@@ -147,9 +148,7 @@ export default function CreateCourseForm({ handleCloseModal, handleCloseModalSuc
           Create
         </Button>
       </Box>
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={open} />
     </form>
   );
 }

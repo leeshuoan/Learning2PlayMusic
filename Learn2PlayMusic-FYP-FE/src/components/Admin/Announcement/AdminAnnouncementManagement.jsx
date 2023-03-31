@@ -1,8 +1,9 @@
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
-import { Backdrop, Box, Button, CircularProgress, Container, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Container, IconButton, Tooltip, Typography } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
+import Loader from "../../utils/Loader";
 import TransitionModal from "../../utils/TransitionModal";
 import CreateAnnouncementForm from "./CreateAnnouncementForm";
 import DeleteAnnouncementForm from "./DeleteAnnouncementForm";
@@ -207,10 +208,7 @@ const AdminAnnouncementManagement = () => {
             </Box>
           );
         }}></MaterialReactTable>
-
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={open}/>
     </Container>
   );
 };

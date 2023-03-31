@@ -3,11 +3,14 @@ import { API, Auth } from "aws-amplify";
 import * as React from "react";
 import { toast } from "react-toastify";
 import uuid from "react-uuid";
+import Loader from "../../utils/Loader";
+
 
 export default function CreateUserForm({ roles, handleClose }) {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [role, setRole] = React.useState("");
+  const [open, setOpen] = React.useState(false);
 
   const handleNameChange = (event) => {
     setName(event.target.value);
@@ -20,6 +23,7 @@ export default function CreateUserForm({ roles, handleClose }) {
   };
 
   const createNewUser = async (event) => {
+    setOpen(true);
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     var email = data.get("email");
@@ -54,9 +58,11 @@ export default function CreateUserForm({ roles, handleClose }) {
       let success = await API.post(apiName, path, myInit);
       if (success.message) {
         toast.success("User created successfully");
+        setOpen(false);
         handleClose();
       }
     } catch (error) {
+      setOpen(false);
       console.log(error.message);
       toast.error("Error creating user");
     }
@@ -99,6 +105,7 @@ export default function CreateUserForm({ roles, handleClose }) {
           Create
         </Button>
       </form>
+      <Loader open={open} />
     </div>
   );
 }

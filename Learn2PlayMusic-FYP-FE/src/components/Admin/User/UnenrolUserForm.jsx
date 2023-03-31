@@ -1,10 +1,13 @@
 import { Box, Button, Grid, Typography, useTheme } from "@mui/material";
+import { useState } from "react";
 import { toast } from "react-toastify";
+import Loader from "../../utils/Loader";
 
 export default function UnenrolUserForm({ toUnEnrolCourse, toUnEnrolUser, handleClose }) {
   const theme = useTheme();
-
+  const [open, setOpen] = useState(false);
   const confirmUnenrolUserFromCourse = async () => {
+    setOpen(true);
     let endpoint = `${import.meta.env.VITE_API_URL}/user/course?courseId=${toUnEnrolCourse.SK.split("#")[1]}&userId=${toUnEnrolUser.Username}`;
     let myInit = {
       method: "DELETE",
@@ -22,6 +25,7 @@ export default function UnenrolUserForm({ toUnEnrolCourse, toUnEnrolUser, handle
       toast.success(toUnEnrolUser.Attributes.Name + " successfully unenrolled from " + toUnEnrolCourse.courseDetails);
     }
     handleClose();
+    setOpen(false);
     return;
   };
   return (
@@ -60,6 +64,7 @@ export default function UnenrolUserForm({ toUnEnrolCourse, toUnEnrolUser, handle
           </Button>
         </Grid>
       </Grid>
+      <Loader open={open} />
     </>
   );
 }

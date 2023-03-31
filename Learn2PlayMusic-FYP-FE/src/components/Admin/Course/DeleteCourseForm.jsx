@@ -1,6 +1,7 @@
-import { Backdrop, Box, Button, CircularProgress, Grid, Typography, useTheme } from "@mui/material";
+import { Box, Button, Grid, Typography, useTheme } from "@mui/material";
+import { useState } from "react";
 import { toast } from "react-toastify";
-import { useState } from "react"; 
+import Loader from "../../utils/Loader";
 
 export default function DeleteCourseForm({ courseId, courseName, timeSlot, teacherName, handleCloseDeleteModal, handleCloseDeleteModalSuccess }) {
   const theme = useTheme();
@@ -80,9 +81,7 @@ export default function DeleteCourseForm({ courseId, courseName, timeSlot, teach
         <Button variant="contained" color="error" onClick={handleDelete}>
           Delete
         </Button>
-        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
+        <Loader open={open} />
       </Box>
     </>
   );

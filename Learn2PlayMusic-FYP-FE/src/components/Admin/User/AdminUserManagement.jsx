@@ -439,7 +439,7 @@ const AdminUserManagement = (userInfo) => {
             2. You cannot enable/disable yourself.
           </Typography>
         </Box>
-
+        <Loader open={open} />
       </Suspense>
     </Container>
   );

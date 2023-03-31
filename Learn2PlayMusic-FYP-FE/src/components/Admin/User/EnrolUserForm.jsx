@@ -1,6 +1,7 @@
-import { Autocomplete, Backdrop, Box, Button, CircularProgress, Grid, TextField, Typography, useTheme } from "@mui/material";
+import { Autocomplete, Box, Button, Grid, TextField, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import Loader from "../../utils/Loader";
 
 export default function EnrolUserForm({ toEnrolUser, handleClose, displayText, userNameToIdMap, type }) {
   const theme = useTheme();
@@ -39,10 +40,10 @@ export default function EnrolUserForm({ toEnrolUser, handleClose, displayText, u
 
   // multiple users ===========================================================
   const confirmEnrolMultipleUsers = async () => {
-    console.log(toEnrolUser);
     setOpen(true);
     if (toEnrolCourse == null) {
       toast.error("Please select a course");
+      setOpen(false);
       return;
     }
     let endpoint = `${import.meta.env.VITE_API_URL}/user/course/enrol`;
@@ -167,9 +168,8 @@ export default function EnrolUserForm({ toEnrolUser, handleClose, displayText, u
             </Button>
           )}
         </Grid>
-        <Backdrop sx={{ color: "#fff", zIndex: 999 }} open={open}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
+
+        <Loader open={open} />
       </Grid>
     </>
   );

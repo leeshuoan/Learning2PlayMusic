@@ -1,6 +1,7 @@
-import { Backdrop, Box, Button, CircularProgress, Grid, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Button, Grid, TextField, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import Loader from "../../utils/Loader";
 
 export default function CreateAnnouncementForm({ handleCloseModal, handleCloseModalSuccess }) {
   const theme = useTheme();
@@ -89,9 +90,7 @@ export default function CreateAnnouncementForm({ handleCloseModal, handleCloseMo
           Create
         </Button>
       </Box>
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={open} />
     </form>
   );
 }

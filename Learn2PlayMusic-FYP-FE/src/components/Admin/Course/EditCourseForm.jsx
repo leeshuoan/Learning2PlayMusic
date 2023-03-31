@@ -1,6 +1,7 @@
-import { Autocomplete, Backdrop, Box, Button, CircularProgress, Grid, TextField, Typography, useTheme } from "@mui/material";
+import { Autocomplete, Box, Button, Grid, TextField, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import Loader from "../../utils/Loader";
 
 export default function EditCourseForm({ courseId, ogCourseName, ogTimeSlot, ogTeacherName, ogTeacherId, handleCloseEditModal, handleCloseEditModalSuccess }) {
   const theme = useTheme();
@@ -165,9 +166,7 @@ export default function EditCourseForm({ courseId, ogCourseName, ogTimeSlot, ogT
           Create
         </Button>
       </Box>
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Loader open={open} />
     </form>
   );
 }
