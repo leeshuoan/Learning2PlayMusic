@@ -48,7 +48,7 @@ const TeacherCourse = (userInfo) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${userInfo.userInfo.token}`,
+        Authorization: `Bearer ${userInfo.userInfo.token}`,
       },
     });
     return response.json();
@@ -67,7 +67,7 @@ const TeacherCourse = (userInfo) => {
         accessorKey: "MaterialTitle",
         id: "title",
         header: "Title",
-        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/material/view/${row.original.id}`, { state: { material: row.original, course: course } })}>{row.original.MaterialTitle}</Link>,
+        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/material/view/${row.original.id}`)}>{row.original.MaterialTitle}</Link>,
       },
       {
         accessorKey: "MaterialType",
@@ -90,7 +90,7 @@ const TeacherCourse = (userInfo) => {
             <Typography
               variant="button"
               onClick={() => {
-                navigate(`/teacher/course/${courseid}/material/edit/${row.original.id}`, { state: { material: row.original, course: course } });
+                navigate(`/teacher/course/${courseid}/material/edit/${row.original.id}`);
               }}>
               <Link underline="hover">Edit</Link>
             </Typography>
@@ -294,7 +294,7 @@ const TeacherCourse = (userInfo) => {
       quizDescription: selectedQuiz.QuizDescription,
       quizTitle: selectedQuiz.QuizTitle,
       courseId: courseid,
-  }
+    };
     console.log(newQuizData);
     const res = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
       method: "PUT",
@@ -375,7 +375,7 @@ const TeacherCourse = (userInfo) => {
     fetchData().then(() => {
       setOpen(false);
     });
-  }, [refreshUseEffect]);
+  }, [refreshUseEffect, userInfo]);
 
   const menuNavigate = (option) => {
     if (option == "Announcements") navigate(`/teacher/course/${course.id}/announcement`);
@@ -625,7 +625,7 @@ const TeacherCourse = (userInfo) => {
                   variant="contained"
                   onClick={() => {
                     var endpt = category == "announcement" ? "new" : "announcement/new";
-                    navigate(endpt, { state: { course: course, title: "", content: "" } });
+                    navigate(endpt);
                   }}>
                   +&nbsp;New
                 </Button>
@@ -642,7 +642,7 @@ const TeacherCourse = (userInfo) => {
                         variant="button"
                         onClick={() => {
                           var endpt = category == "announcement" ? `edit/${announcement.id}` : `announcement/edit/${announcement.id}`;
-                          navigate(endpt, { state: { course: course, title: announcement.Title, content: announcement.Content } });
+                          navigate(endpt);
                         }}>
                         <Link underline="hover">Edit</Link>
                       </Typography>
@@ -672,7 +672,7 @@ const TeacherCourse = (userInfo) => {
                   <Button
                     variant="contained"
                     onClick={() => {
-                      navigate("new", { state: { material: {}, course: course } });
+                      navigate("new");
                     }}>
                     +&nbsp;New
                   </Button>
@@ -691,7 +691,7 @@ const TeacherCourse = (userInfo) => {
                   <Button
                     variant="contained"
                     onClick={() => {
-                      navigate("new", { state: { material: {}, course: course } });
+                      navigate("new");
                     }}>
                     +&nbsp;New
                   </Button>
