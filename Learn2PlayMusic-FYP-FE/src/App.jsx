@@ -78,7 +78,6 @@ function App() {
           }
 
           let groups = session.getIdToken().payload["cognito:groups"];
-          console.log(session.getIdToken().jwtToken);
           let userRole = null;
           if (groups.includes("Admins")) {
             userRole = "Admin";

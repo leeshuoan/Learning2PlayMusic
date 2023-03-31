@@ -90,7 +90,6 @@ const EditQuizQuestion = ({ userInfo, question, handleRefreshData }) => {
               {question.questionOptionType == "true-false" && (
                 <Grid item xs={12} sm={12} md={12}>
                   <Typography variant="subsubtitle" sx={{ mb: 1 }}>Question Options</Typography>
-                  <Typography variant="body1" sx={{ mb: 1 }}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="body1" sx={{ mr: 1 }}>
                         True
@@ -107,7 +106,6 @@ const EditQuizQuestion = ({ userInfo, question, handleRefreshData }) => {
                         <CheckCircleOutlineIcon sx={{ color: "success.main" }} />
                       )}
                     </Box>
-                  </Typography>
                 </Grid>
               )}
             </Grid>
