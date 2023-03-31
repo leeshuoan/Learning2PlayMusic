@@ -4,7 +4,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 import EditQuizQuestion from "./EditQuizQuestion";
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 const EditQuiz = ({ userInfo }) => {
   const navigate = useNavigate();
@@ -26,6 +25,7 @@ const EditQuiz = ({ userInfo }) => {
     },
   ]);
   const [qnNumber, setQnNumber] = useState(2);
+  const [refreshData, setRefreshData] = useState(false);
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
@@ -89,7 +89,11 @@ const EditQuiz = ({ userInfo }) => {
     fetchData().then(() => {
       setIsLoading(false);
     });
-  }, []);
+  }, [refreshData]);
+
+  const handleRefreshData = () => {
+    setRefreshData(!refreshData);
+  };
 
   async function createQuiz(e) {
     setIsLoading(true);
@@ -171,17 +175,6 @@ const EditQuiz = ({ userInfo }) => {
     setQnNumber(qnNumber + 1);
   };
 
-  const handleQuestionChange = (qnInfo) => {
-    const newQuizQuestions = quizQuestions.map((qn) => {
-      console.log(qnInfo);
-      if (qn.qnNumber === qnInfo.qnNumber) {
-        return qnInfo;
-      }
-      return qn;
-    });
-    setQuizQuestions(newQuizQuestions);
-  };
-
   const handleVisibilityChange = (event) => {
     setVisibility(event.target.value);
   };
@@ -243,94 +236,8 @@ const EditQuiz = ({ userInfo }) => {
                 <TextField value={quizDescription} onChange={() => setQuizDescription(event.target.value)} fullWidth multiline rows={3} />
               </Box>
               {quizQuestions.map((question, key) => {
-                console.log(question)
                 return (
-                  <>
-                    <Card variant="outlined" sx={{ boxShadow: "none", mt: 3, p: 2 }}>
-                      <Typography variant="h6" sx={{ mb: 1 }}>
-                        Question {question.qnNumber}
-                      </Typography>
-                      <Grid container spacing={0}>
-                        <Grid item xs={12} sm={9}>
-                          <Box sx={{ display: "flex", mb: 1 }}>
-                            <Box sx={{ mr: 2 }}>
-                              {/* <Typography variant="subsubtitle" sx={{ mb: 1 }}>Question Image</Typography> */}
-                              {question.qnImage && (
-                                <img src={question.qnImage} height="100" width="100" />
-                              )}
-                            </Box>
-                            <Box>
-                              <Typography variant="subsubtitle">Question</Typography>
-                              <Typography variant="body1">
-                                {question.question}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={6}>
-                          <Typography variant="subsubtitle" sx={{ mb: 1 }}>Question Type</Typography>
-                          <Typography variant="body1" sx={{ mb: 1 }}>
-                            {question.questionOptionType == "multiple-choice" ? "Multiple Choice" : question.questionOptionType == "true-false" ? "True or False" : ""}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={6}>
-                          <Typography variant="subsubtitle" sx={{ mb: 1 }}>Question Answer</Typography>
-                          <Typography variant="body1" sx={{ mb: 1 }}>
-                            {question.answer}
-                          </Typography>
-                        </Grid>
-
-                      <Grid item xs={12}>
-                        {question.questionOptionType == "multiple-choice" && (
-                          <Grid item xs={12} sm={12} md={12}>
-                            <Typography variant="subsubtitle" sx={{ mb: 1 }}>Question Options</Typography>
-                            <Typography variant="body1" sx={{ mb: 1 }}>
-                              {question.options.map((option, key) => {
-                                return (
-                                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <Typography variant="body1" sx={{ mr: 1 }}>
-                                      {option}
-                                    </Typography>
-                                    {question.answer == option && (
-                                      <CheckCircleOutlineIcon sx={{ color: "success.main" }} />
-                                    )}
-                                  </Box>
-                                );
-                              })}
-                            </Typography>
-                          </Grid>
-                        )}
-                        {question.questionOptionType == "true-false" && (
-                          <Grid item xs={12} sm={12} md={12}>
-                            <Typography variant="subsubtitle" sx={{ mb: 1 }}>Question Options</Typography>
-                            <Typography variant="body1" sx={{ mb: 1 }}>
-                              <Box sx={{ display: "flex", alignItems: "center" }}>
-                                <Typography variant="body1" sx={{ mr: 1 }}>
-                                  True
-                                </Typography>
-                                {question.answer == "True" && (
-                                  <CheckCircleOutlineIcon sx={{ color: "success.main" }} />
-                                )}
-                              </Box>
-                              <Box sx={{ display: "flex", alignItems: "center" }}>
-                                <Typography variant="body1" sx={{ mr: 1 }}>
-                                  False
-                                </Typography>
-                                {question.answer == "False" && (
-                                  <CheckCircleOutlineIcon sx={{ color: "success.main" }} />
-                                )}
-                              </Box>
-                            </Typography>
-                          </Grid>
-                        )}
-                      </Grid>
-                      </Grid>
-                      <Box sx={{ display: "flex", flexDirection: "row", mt: 2 }}>
-                        <Button variant="outlined" fullWidth sx={{ color: "primary.main" }} onClick={() => editQuestion(key)}>Edit Question</Button>
-                        <Button variant="outlined" fullWidth color="error" sx={{ ml: 2,  color: "error.main" }} onClick={() => deleteQuestion(key)}>Delete Question</Button>
-                      </Box>
-                    </Card>
-                  </>
+                  <EditQuizQuestion key={key} question={question} handleRefreshData={handleRefreshData} />
                 );
               })}
               <Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>

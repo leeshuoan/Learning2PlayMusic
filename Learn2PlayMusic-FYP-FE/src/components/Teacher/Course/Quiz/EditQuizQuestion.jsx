@@ -1,168 +1,131 @@
-import ClearIcon from "@mui/icons-material/Clear";
-import { Box, Button, Card, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from 'react'
+import { Card, Typography, Grid, Box, Button } from '@mui/material'
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import EditAddQuizQuestion from './EditAddQuizQuestion';
+import { useParams } from 'react-router-dom';
+import TransitionModal from '../../../utils/TransitionModal';
+import { toast } from 'react-toastify';
 
-const EditQuizQuestion = ({ qnInfo, handleQuestionChange }) => {
-  console.log(qnInfo)
-  const [question, setQuestion] = useState("");
-  const [file, setFile] = useState(null);
-  const [image, setImage] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [questionType, setQuestionType] = useState("multiple-choice");
-  const [options, setOptions] = useState(["", "", "", ""]);
+const EditQuizQuestion = ({ question, handleRefreshData }) => {
+  const [edit, setEdit] = useState(false)
+  const { courseid, quizId } = useParams()
 
-  const fileUploaded = async (e) => {
-    setFile(e.target.files[0]);
+  const handleQuestionChange = (qnInfo) => {
+    console.log(qnInfo)
+  }
 
-    if (e.target.files[0]) {
-      const reader = new FileReader();
-      reader.readAsBinaryString(e.target.files[0]);
-
-      reader.onload = (event) => {
-        const uploadedImage = `data:${e.target.files[0].type};base64,${btoa(event.target.result)}`;
-        setImage(uploadedImage);
-      };
-    }
-  };
-
-  console.log(qnInfo)
-  useEffect(() => {
-    const newQnInfo = {
-      qnNumber: qnInfo.qnNumber,
-      question: question,
-      questionOptionType: questionType,
-      options: options,
-      answer: answer,
-      questionImage: image,
-    };
-    handleQuestionChange(newQnInfo);
-  }, [question, questionType, options, answer, image]);
-
-  // useEffect(() => {
-  //   setQuestion(qnInfo.question)
-  //   setQuestionType(qnInfo.questionOptionType)
-  //   setOptions(qnInfo.options)
-  //   setAnswer(qnInfo.answer)
-  //   setImage(qnInfo.questionImage)
-  // }, [qnInfo.question, qnInfo.questionOptionType, qnInfo.options, qnInfo.answer, qnInfo.questionImage])
-
-  const handleQnTypeChange = (event) => {
-    setOptions(["", "", "", ""]);
-    setQuestionType(event.target.value);
-  };
-
-  const handleQnChange = (event) => {
-    setQuestion(event.target.value);
-  };
-
-  const handleOptionChange = (idx, event) => {
-    setOptions(
-      options.map((option, index) => {
-        if (idx === index) {
-          return event.target.value;
-        } else {
-          return option;
+  const deleteQuestion = () => {
+    console.log(question)
+    fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        questionId: question.qnId,
+        quizId: quizId,
+        courseId: courseid,
+      }),
+    })
+      .then(res => {
+        if (!res.ok) {
+          toast.error("An error occured while deleting the question")
+          return
         }
+        toast.success('Question deleted successfully')
+        handleRefreshData()
       })
-    );
-  };
-
-  const handleTrueFalseChange = (event) => {
-    setOptions(["True", "False"]);
-    setAnswer(event.target.value);
-  };
-
-  const handleAnswerChange = (event) => {
-    setAnswer(options[event.target.value]);
-  };
+  }
 
   return (
     <>
-      <Card variant="outlined" sx={{ boxShadow: "none", mt: 3, p: 2 }}>
-        <Typography variant="h6" sx={{ mb: 1 }}>
-          Question {qnInfo.qnNumber}
-        </Typography>
-        <Grid container sx={{ mb: 2 }} spacing={2}>
-          <Grid item xs={12} md={6}>
-            <InputLabel id="question-label">Question *</InputLabel>
-            <TextField id="question" value={question} fullWidth onChange={handleQnChange} variant="outlined" required />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <InputLabel id="question-image-label">Image [Optional]</InputLabel>
-            {file == null ? (
-              <Button variant="contained" sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: "none", ":hover": { backgroundColor: "hovergrey" } }} component="label">
-                ADD A FILE
-                <input hidden accept="image/*" multiple type="file" onChange={fileUploaded} />
-              </Button>
-            ) : (
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <IconButton
-                  sx={{ pl: 0 }}
-                  onClick={() => {
-                    setFile(null);
-                    setImage("");
-                  }}>
-                  <ClearIcon />
-                </IconButton>
-                <Typography>{file.name}</Typography>
+      {!edit ? (
+        <Card variant="outlined" sx={{ boxShadow: "none", mt: 3, p: 2 }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            Question {question.qnNumber}
+          </Typography>
+          <Grid container spacing={0}>
+            <Grid item xs={12} sm={9}>
+              <Box sx={{ display: "flex", mb: 1 }}>
+                {question.qnImage && (
+                  <Box sx={{ mr: 2 }}>
+                    <img src={question.qnImage} height="100" width="100" />
+                  </Box>
+                )}
+                <Box>
+                  <Typography variant="subsubtitle">Question</Typography>
+                  <Typography variant="body1">
+                    {question.question}
+                  </Typography>
+                </Box>
               </Box>
-            )}
-          </Grid>
-        </Grid>
-        <InputLabel id="question-label">Question Type *</InputLabel>
-        <Grid container columnSpacing={2}>
-          <Grid item xs={12} md={6}>
-            <Select labelId="question-label" id="questionType" fullWidth value={questionType} onChange={handleQnTypeChange}>
-              <MenuItem value="multiple-choice">Multiple Choice</MenuItem>
-              <MenuItem value="true-false">True or False</MenuItem>
-            </Select>
-          </Grid>
-        </Grid>
-        <Box sx={{ display: questionType === "multiple-choice" ? "block" : "none" }}>
-          <RadioGroup onChange={(e) => handleAnswerChange(e)}>
-            <Grid container columnSpacing={2} sx={{ mt: 1 }}>
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <FormControlLabel sx={{ mr: 0 }} value={0} control={<Radio size="small" sx={{ ml: 1 }} />} />
-                  <InputLabel id="question-label">Option 1 *</InputLabel>
-                </Box>
-                <TextField id="question" value={options.option1} fullWidth onChange={() => handleOptionChange(0, event)} variant="outlined" required />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <FormControlLabel sx={{ mr: 0 }} value={1} control={<Radio size="small" sx={{ ml: 1 }} />} />
-                  <InputLabel id="question-label">Option 2 *</InputLabel>
-                </Box>
-                <TextField id="question" value={options.option2} fullWidth onChange={() => handleOptionChange(1, event)} variant="outlined" required />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <FormControlLabel sx={{ mr: 0 }} value={2} control={<Radio size="small" sx={{ ml: 1 }} />} />
-                  <InputLabel id="question-label">Option 3 *</InputLabel>
-                </Box>
-                <TextField id="question" value={options.option3} fullWidth onChange={() => handleOptionChange(2, event)} variant="outlined" required />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <FormControlLabel sx={{ mr: 0 }} value={3} control={<Radio size="small" sx={{ ml: 1 }} />} />
-                  <InputLabel id="question-label">Option 4 *</InputLabel>
-                </Box>
-                <TextField id="question" value={options.option4} fullWidth onChange={() => handleOptionChange(3, event)} variant="outlined" required />
-              </Grid>
             </Grid>
-          </RadioGroup>
-          <Typography variant="subsubtitle">Select the correct option using the radio buttons</Typography>
-        </Box>
-        <Box sx={{ display: questionType === "true-false" ? "block" : "none" }}>
-          <InputLabel sx={{ mt: 2 }}>Correct Option</InputLabel>
-          <RadioGroup onChange={(e) => handleTrueFalseChange(e)}>
-            <FormControlLabel sx={{ mr: 0 }} value="True" control={<Radio size="small" />} label="True" />
-            <FormControlLabel sx={{ mr: 0 }} value="False" control={<Radio size="small" />} label="False" />
-          </RadioGroup>
-        </Box>
-      </Card>
-    </>
-  );
-};
+            <Grid item xs={12} sm={6} md={6}>
+              <Typography variant="subsubtitle" sx={{ mb: 1 }}>Question Type</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {question.questionOptionType == "multiple-choice" ? "Multiple Choice" : question.questionOptionType == "true-false" ? "True or False" : ""}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={6}>
+              <Typography variant="subsubtitle" sx={{ mb: 1 }}>Question Answer</Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {question.answer}
+              </Typography>
+            </Grid>
 
-export default EditQuizQuestion;
+            <Grid item xs={12}>
+              {question.questionOptionType == "multiple-choice" && (
+                <Grid item xs={12} sm={12} md={12}>
+                  <Typography variant="subsubtitle" sx={{ mb: 1 }}>Question Options</Typography>
+                  {question.options.map((option, key) => {
+                    return (
+                      <Box key={key} sx={{ display: "flex", alignItems: "center" }}>
+                        <Typography variant="body1" sx={{ mr: 1 }}>
+                          {option}
+                        </Typography>
+                        {question.answer == option && (
+                          <CheckCircleOutlineIcon sx={{ color: "success.main" }} />
+                        )}
+                      </Box>
+                    );
+                  })}
+                </Grid>
+              )}
+              {question.questionOptionType == "true-false" && (
+                <Grid item xs={12} sm={12} md={12}>
+                  <Typography variant="subsubtitle" sx={{ mb: 1 }}>Question Options</Typography>
+                  <Typography variant="body1" sx={{ mb: 1 }}>
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Typography variant="body1" sx={{ mr: 1 }}>
+                        True
+                      </Typography>
+                      {question.answer == "True" && (
+                        <CheckCircleOutlineIcon sx={{ color: "success.main" }} />
+                      )}
+                    </Box>
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Typography variant="body1" sx={{ mr: 1 }}>
+                        False
+                      </Typography>
+                      {question.answer == "False" && (
+                        <CheckCircleOutlineIcon sx={{ color: "success.main" }} />
+                      )}
+                    </Box>
+                  </Typography>
+                </Grid>
+              )}
+            </Grid>
+          </Grid>
+          <Box sx={{ display: "flex", flexDirection: "row", mt: 2 }}>
+            <Button variant="outlined" fullWidth sx={{ color: "primary.main" }} onClick={() => setEdit(true)}>Edit Question</Button>
+            <Button variant="outlined" fullWidth color="error" sx={{ ml: 2, color: "error.main" }} onClick={() => deleteQuestion()}>Delete Question</Button>
+          </Box>
+        </Card>
+      ) : (
+        <EditAddQuizQuestion qnInfo={question} handleQuestionChange={handleQuestionChange} setEdit={setEdit} />
+      )}
+    </>
+  )
+}
+
+export default EditQuizQuestion
