@@ -43,6 +43,7 @@ const TeacherCourse = ({ userInfo }) => {
     homework: "Homework",
     classlist: "Class List",
   };
+
   // api calls
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {

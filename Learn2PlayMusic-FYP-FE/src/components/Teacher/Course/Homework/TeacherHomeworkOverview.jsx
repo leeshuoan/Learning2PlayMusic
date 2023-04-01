@@ -25,11 +25,14 @@ const TeacherHomeworkOverview = () => {
   }
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
+  const getCourseStudentsAPI = request(`/course/student?courseId=${courseid}`);
   const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&homeworkId=${homeworkId}`);
+  const getHomeworkFeedbackAPI = request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${homeworkId}`);
 
-  useEffect(() => {
+
+  https: useEffect(() => {
     async function fetchData() {
-      const [data1, data2] = await Promise.all([getCourseAPI, getHomeworkAPI]);
+      const [data1, data2, data3, data4] = await Promise.all([getCourseAPI, getHomeworkAPI, getHomeworkFeedbackAPI, getCourseStudentsAPI]);
 
       let courseData = {
         id: data1[0].SK.split("#")[1],
@@ -48,8 +51,24 @@ const TeacherHomeworkOverview = () => {
         description: data2.HomeworkDescription,
         dueDate: formattedDueDate,
         assignedDate: formattedAssignedDate,
+        totalSubmissions: data3.length,
+        totalExpectedSubmissions: data4.length,
+        percentageSubmission: +((data3.length/data4.length)*100).toFixed(2)
       };
       setHomework(homeworkData);
+
+      console.log("data2: ", data2)
+      console.log("data3: ", data3);
+      const data = data3.map((homework) => {
+        const studentName = homework.StudentName;
+        const homeworkScore = homework.HomeworkScore==0 ? "-" : homework.HomeworkScore; // assuming that no students will get 0 (otherwise will need change db :/)
+        const lastSubmissionDate = new Date(homework.LastSubmissionDate);
+        const formattedLastSubmissionDate = `${lastSubmissionDate.toLocaleDateString()} ${lastSubmissionDate.toLocaleTimeString()}`;
+        return { ...homework, LastSubmissionDate: formattedLastSubmissionDate, StudentName: studentName, HomeworkScore: homeworkScore };
+      });
+      setData(data);
+      console.log("data: ", data)
+
     }
 
     fetchData().then(() => {
@@ -65,17 +84,17 @@ const TeacherHomeworkOverview = () => {
         header: "Student Name",
       },
       {
-        accessorKey: "SubmissionDate",
+        accessorKey: "LastSubmissionDate",
         id: "submissionDate",
-        header: "SubmissionDate",
+        header: "Submission Date",
       },
       {
-        accessorKey: "Score",
+        accessorKey: "HomeworkScore",
         id: "score",
         header: "Score",
       },
       {
-        accessorKey: "ReviewDate",
+        accessorKey: "ReviewDate" ,
         id: "reviewDate",
         header: "Review Date",
       },
@@ -114,7 +133,7 @@ const TeacherHomeworkOverview = () => {
         <Box>
           <Card sx={{ py: 3, px: 5, mt: 2 }}>
             <Typography variant="h6" sx={{ mb: 1 }}>
-              {homework.title} - Overview
+              Homework Title: {homework.title}
             </Typography>
             <Typography variant="body2">{homework.description}</Typography>
             <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-start" }}>
@@ -134,7 +153,7 @@ const TeacherHomeworkOverview = () => {
             <Typography variant="subtitle2" sx={{ mt: 2, mb: 0.5 }}>
               NUMBER OF SUBMISSIONS
             </Typography>
-            <Typography variant="body2">0/1000 (0%)</Typography>
+            <Typography variant="body2">{homework.totalSubmissions}/{homework.totalExpectedSubmissions} ({homework.percentageSubmission}%)</Typography>
             <Divider sx={{ my: 3 }}></Divider>
 
             <MaterialReactTable columns={columns} data={data} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>

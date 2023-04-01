@@ -117,7 +117,7 @@ const UserHomework = (userInfo) => {
   const submit = () => {
     console.log(file);
 
-    let homeworkAttachment = "";
+    // let homeworkAttachment = "";
 
     // if (file) {
     //   const reader = new FileReader();
@@ -139,7 +139,7 @@ const UserHomework = (userInfo) => {
       body: buildRequestBody(),
     })
       .then((response) => {
-        console.log("response here: ", response);
+        console.log(response);
         setSubmitted(true);
         setOpen(false);
       })
