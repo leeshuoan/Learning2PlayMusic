@@ -4,23 +4,9 @@ const { response_200, response_400, response_500 } = require("./responses");
 
 const dynamodb = new DynamoDB.DocumentClient();
 
-function checkForNull(...args) {
-  const arguments = [
-    "courseId",
-    "quizId",
-    "qnNumber",
-  ];
-
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === undefined || args[i] === "") {
-      throw new Error(`Argument ${arguments[i]} cannot be empty`);
-    }
-  }
-}
-
 const checkNumQuestions = async (courseId, quizId) => {
   const params = {
-    TableName: "my-table",
+    TableName: "LMS",
     KeyConditionExpression: "PK = :PK and begins_with(SK, :SK)",
     ExpressionAttributeValues: {
       ":PK": `Course#${courseId}`,
@@ -41,8 +27,6 @@ async function lambda_handler(event, context) {
     const courseId = requestBody.courseId;
     const quizId = requestBody.quizId;
     const qnNumber = requestBody.qnNumber;
-
-    checkForNull(courseId, quizId, qnNumber);
 
     checkNumQuestions(courseId, quizId);
 
