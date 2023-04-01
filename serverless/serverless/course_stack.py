@@ -847,7 +847,7 @@ class CourseStack(Stack):
             request_parameters={
                 "method.request.querystring.courseId": True,
                 "method.request.querystring.quizId": True,
-                "method.request.querystring.questionId": False,
+                "method.request.querystring.qnNumber": False,
             },
         )
         course_quiz_question_resource.add_method(
