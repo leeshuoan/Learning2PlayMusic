@@ -92,7 +92,7 @@ export default function UserPrompt({ selectedUser, handleClose, type }) {
             <b>Name:</b> {selectedUser && selectedUser.Attributes.Name}
           </Box>
           <Box>
-            <b>Email:</b> {selectedUser && selectedUser.Attributes.Email}
+            <b>Email:</b> {selectedUser && selectedUser.Attributes.email}
           </Box>
         </Grid>
         <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>

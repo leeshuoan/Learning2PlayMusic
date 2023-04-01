@@ -28,9 +28,10 @@ import UserCourse from "./components/User/UserCourse";
 import UserHome from "./components/User/UserHome";
 // admin
 import AdminHome from "./components/Admin/AdminHome";
-import AdminUserManagement from "./components/Admin/User/AdminUserManagement";
 import AdminAnnouncementManagement from "./components/Admin/Announcement/AdminAnnouncementManagement";
 import AdminCourseManagement from "./components/Admin/Course/AdminCourseManagement";
+import AdminEnrolmentManagement from "./components/Admin/Enrolment/AdminEnrolmentManagement";
+import AdminUserManagement from "./components/Admin/User/AdminUserManagement";
 // teacher
 import CourseAnnouncementForm from "./components/Teacher/Course/Announcement/CourseAnnouncementForm";
 import EditHomeworkForm from "./components/Teacher/Course/Homework/EditHomeworkForm";
@@ -120,9 +121,9 @@ function App() {
           <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}>
             <Route index element={<AdminHome userInfo={userInfo} />} />
             <Route path="users" element={<AdminUserManagement userInfo={userInfo} />} />
-            <Route path="announcements" element={<AdminAnnouncementManagement />} />
-            <Route path="courses" element={<AdminCourseManagement />} />
-            {/* <Route path=":category" element={<AdminHome userInfo={userInfo} />} /> */}
+            <Route path="announcements" element={<AdminAnnouncementManagement userInfo={userInfo} />} />
+            <Route path="courses" element={<AdminCourseManagement userInfo={userInfo} />} />
+            <Route path="enrolments" element={<AdminEnrolmentManagement userInfo={userInfo} />} />
           </Route>
 
           <Route path="teacher" element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>

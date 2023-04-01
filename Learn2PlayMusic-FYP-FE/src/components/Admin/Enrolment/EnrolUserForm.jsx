@@ -17,15 +17,15 @@ export default function EnrolUserForm({ toEnrolUser, handleClose, displayText, u
       toast.error("Please select a course");
       return;
     }
-    let endpoint = `${import.meta.env.VITE_API_URL}/user/course?courseId=${toEnrolCourse.id}&userId=${toEnrolUser.Username}`;
-    let myInit = {
+    const endpoint = `${import.meta.env.VITE_API_URL}/user/course?courseId=${toEnrolCourse.id}&userId=${toEnrolUser.Username}`;
+    const myInit = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
     };
-    let res = await fetch(endpoint, myInit);
-    let data = await res.json();
+    const res = await fetch(endpoint, myInit);
+    const data = await res.json();
     if (res.status == 202) {
       toast.warning(toEnrolUser.Attributes.Name + " has already been enrolled  in " + toEnrolCourse.courseDetails);
     } else if (res.status == 400) {
@@ -41,13 +41,15 @@ export default function EnrolUserForm({ toEnrolUser, handleClose, displayText, u
   // multiple users ===========================================================
   const confirmEnrolMultipleUsers = async () => {
     setOpen(true);
-    if (toEnrolCourse == null) {
+
+    if (!toEnrolCourse) {
       toast.error("Please select a course");
       setOpen(false);
       return;
     }
-    let endpoint = `${import.meta.env.VITE_API_URL}/user/course/enrol`;
-    let myInit = {
+
+    const endpoint = `${import.meta.env.VITE_API_URL}/user/course/enrol`;
+    const myInit = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -57,27 +59,39 @@ export default function EnrolUserForm({ toEnrolUser, handleClose, displayText, u
         userIds: toEnrolUser.map((user) => user.Username),
       }),
     };
-    let response = await fetch(endpoint, myInit);
+    let response;
+    try {
+      response = await fetch(endpoint, myInit);
+    } catch (error) {
+      toast.error("Something went wrong, try enrolling the users again!");
+      setOpen(false);
+      handleClose();
+      return;
+    }
     const data = await response.json();
     setOpen(false);
-    if (response.status == 200 || (response.status == 202 && data.alreadyEnrolled.length == 0 && data.doesNotExist.length == 0)) {
+
+    if (response.status === 200 || (response.status === 202 && !data.alreadyEnrolled.length && !data.doesNotExist.length)) {
       toast.success("Successfully enrolled all the selected users");
-    } else if (response.status == 202) {
-      if (data.alreadyEnrolled.length != 0) {
-        const alreadyEnrolled = data.alreadyEnrolled.map((user) => userNameToIdMap[user]).join(", ");
-        toast.warning(`The following users are already enrolled in the course: ${alreadyEnrolled}`);
+    } else if (response.status === 202) {
+      const { alreadyEnrolled, doesNotExist, enrolled } = data;
+
+      if (alreadyEnrolled.length) {
+        const alreadyEnrolledIds = alreadyEnrolled.map((user) => userNameToIdMap[user]).join(", ");
+        toast.warning(`The following users are already enrolled in the course: ${alreadyEnrolledIds}`);
       }
-      if (data.doesNotExist.length != 0) {
-        const doesNotExist = data.doesNotExist.map((usr) => userNameToIdMap[usr].join(", "));
-        toast.error(`The following users with the user IDs do not exist: ${doesNotExist}`);
+      if (doesNotExist.length) {
+        const doesNotExistIds = doesNotExist.map((user) => userNameToIdMap[user]).join(", ");
+        toast.error(`The following users with the user IDs do not exist: ${doesNotExistIds}`);
       }
-      if (data.enrolled.length != 0) {
-        const successfullyEnrolled = data.enrolled.map((usr) => userNameToIdMap[urs].join(", "));
-        toast.success("Successfully enrolled all these users: " + successfullyEnrolled);
+      if (enrolled.length) {
+        const enrolledIds = enrolled.map((user) => userNameToIdMap[user]).join(", ");
+        toast.success(`Successfully enrolled all these users: ${enrolledIds}`);
       }
     } else {
-      toast.error(data.messsage);
+      toast.error(data.message);
     }
+
     // reset
     setToEnrolCourse("");
     handleClose();
@@ -123,7 +137,7 @@ export default function EnrolUserForm({ toEnrolUser, handleClose, displayText, u
               <b>Name:</b> {toEnrolUser && toEnrolUser.Attributes.Name}
             </Box>
             <Box>
-              <b>Email:</b> {toEnrolUser && toEnrolUser.Attributes.Email}
+              <b>Email:</b> {toEnrolUser && toEnrolUser.Attributes.email}
             </Box>
           </Grid>
         ) : (
