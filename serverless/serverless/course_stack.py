@@ -438,6 +438,16 @@ class CourseStack(Stack):
             ),
             role=S3_DYNAMODB_ROLE,
         )
+        put_course_quiz_question = _lambda.Function(
+            self,
+            "putCourseQuizQuestion",
+            runtime=_lambda.Runtime.NODEJS_16_X,
+            handler=f"put_course_quiz_question.lambda_handler",
+            code=_lambda.Code.from_asset(
+                f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"
+            ),
+            role=S3_DYNAMODB_ROLE,
+        )
         # /course/report Functions
         get_course_report = _lambda.Function(
             self,
@@ -809,9 +819,25 @@ class CourseStack(Stack):
                 properties={
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "questionId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "qnNumber": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
-                required=["courseId", "quizId", "questionId"],
+                required=["courseId", "quizId", "qnNumber"],
+            ),
+        )
+        put_course_quiz_question_model = main_api.add_model(
+            "PutCourseQuizQuestionModel",
+            content_type="application/json",
+            model_name="PutCourseQuizQuestionModel",
+            schema=apigw.JsonSchema(
+                title="PutCourseQuizQuestionModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "qnNumber": apigw.JsonSchema(type=apigw.JsonSchemaType.INTEGER),
+                },
+                required=["courseId", "quizId", "qnNumber"],
             ),
         )
 
@@ -833,6 +859,11 @@ class CourseStack(Stack):
             "POST",
             apigw.LambdaIntegration(post_course_quiz_question),
             request_models={"application/json": post_course_quiz_question_model},
+        )
+        course_quiz_question_resource.add_method(
+            "PUT",
+            apigw.LambdaIntegration(put_course_quiz_question),
+            request_models={"application/json": put_course_quiz_question_model},
         )
         # /course/quiz/question/submit
         post_course_quiz_submit_resource_model = main_api.add_model(
