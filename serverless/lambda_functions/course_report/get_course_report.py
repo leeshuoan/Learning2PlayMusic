@@ -33,7 +33,7 @@ def lambda_handler(event, context):
             return response_404("courseId does not exist in database")
 
         # check if <studentId> has been registered with <courseId>
-        if not combination_id_exists("Course", courseId, "Student", studentId):
+        if not combination_id_exists("Student", studentId, "Course", courseId):
             return response_404("studentId is not registered with the course. To do so, please use /user/course to register")
 
 
