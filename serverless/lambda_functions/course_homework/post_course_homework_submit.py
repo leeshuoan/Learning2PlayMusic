@@ -3,6 +3,8 @@ import boto3
 import json
 import uuid
 import os
+from datetime import datetime
+import dateutil.tz
 
 from global_functions.responses import *
 
@@ -11,6 +13,8 @@ table_name = "LMS"
 table = dynamodb.Table(table_name)
 bucket_name = os.environ['HOMEWORK_SUBMISSION_BUCKET_NAME']
 s3 = boto3.client('s3')
+sg_timezone = dateutil.tz.gettz('Asia/Singapore')
+date = datetime.now(tz=sg_timezone).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def lambda_handler(event, context):
@@ -42,12 +46,13 @@ def handle_content(request_body, course_id, student_id, homework_id, table):
 
         table.update_item(
             Key=key,
-            UpdateExpression=f"SET NumAttempts = if_not_exists(NumAttempts, :start) + :increment, Marked = if_not_exists(Marked, :marked), HomeworkContent = :homeworkContent, HomeworkScore = if_not_exists(HomeworkScore, :start)",
+            UpdateExpression=f"SET NumAttempts = if_not_exists(NumAttempts, :start) + :increment, Marked = if_not_exists(Marked, :marked), HomeworkContent = :homeworkContent, HomeworkScore = if_not_exists(HomeworkScore, :start), LastSubmissionDate = :lastSubmissionDate",
             ExpressionAttributeValues={
                 ':start': 0,
                 ':increment': 1,
                 ':marked': False,
-                ':homeworkContent': request_body['homeworkContent']
+                ':homeworkContent': request_body['homeworkContent'],
+                ':lastSubmissionDate': date
             }
         )
 
@@ -55,12 +60,13 @@ def handle_content(request_body, course_id, student_id, homework_id, table):
     else:
         table.update_item(
             Key=key,
-            UpdateExpression=f"SET NumAttempts = if_not_exists(NumAttempts, :start) + :increment, Marked = if_not_exists(Marked, :marked), HomeworkContent = :homeworkContent, HomeworkScore = if_not_exists(HomeworkScore, :start)",
+            UpdateExpression=f"SET NumAttempts = if_not_exists(NumAttempts, :start) + :increment, Marked = if_not_exists(Marked, :marked), HomeworkContent = :homeworkContent, HomeworkScore = if_not_exists(HomeworkScore, :start), LastSubmissionDate = :lastSubmissionDate",
             ExpressionAttributeValues={
                 ':start': 0,
                 ':increment': 1,
                 ':marked': False,
-                ':homeworkContent': ""
+                ':homeworkContent': "",
+                ':lastSubmissionDate': date
             }
         )
     return 1
@@ -117,12 +123,13 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table, i
             # The item already exists, update it
             table.update_item(
                 Key=key,
-                UpdateExpression='set SubmissionFileName = :filename, HomeworkAttachment=:attachment, NumAttempts = if_not_exists(NumAttempts, :start) + :increment',
+                UpdateExpression='set SubmissionFileName = :filename, HomeworkAttachment=:attachment, NumAttempts = if_not_exists(NumAttempts, :start) + :increment, LastSubmissionDate = :lastSubmissionDate',
                 ExpressionAttributeValues={
                     ':filename': item['FileName'],
                     ':attachment': item['HomeworkAttachment'],
                     ':increment': increment,
                     ':start': 0,
+                    ':lastSubmissionDate': date
                 }
             ),
 
@@ -136,17 +143,19 @@ def handle_attachment(request_body, course_id, student_id, homework_id, table, i
                     'Marked': False,
                     'SubmissionFileName': item['FileName'],
                     'HomeworkAttachment': item['HomeworkAttachment'],
-                    'HomeworkScore': 0
+                    'HomeworkScore': 0,
+                    'LastSubmissionDate': date
                 }
             )
     else:
         table.update_item(
             Key=key,
-            UpdateExpression='set SubmissionFileName = :filename, HomeworkAttachment=:attachment, NumAttempts = if_not_exists(NumAttempts, :start) + :increment',
+            UpdateExpression='set SubmissionFileName = :filename, HomeworkAttachment=:attachment, NumAttempts = if_not_exists(NumAttempts, :start) + :increment, LastSubmissionDate = :lastSubmissionDate',
             ExpressionAttributeValues={
                 ':filename': "",
                 ':attachment': "",
                 ':increment': increment,
                 ':start': 0,
+                ':lastSubmissionDate': date
             }
         )
