@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 
 const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
-  const pages = ["Announcements", "Courses", "Users"];
+  const pages = ["Announcements", "Courses", "Users", "Enrolments"];
   const { category } = useParams();
   const theme = useTheme();
   const navigate = useNavigate();

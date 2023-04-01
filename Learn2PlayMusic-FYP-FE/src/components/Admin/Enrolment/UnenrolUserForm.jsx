@@ -44,7 +44,7 @@ export default function UnenrolUserForm({ toUnEnrolCourse, toUnEnrolUser, handle
             <b>Name:</b> {toUnEnrolUser && toUnEnrolUser.Attributes.Name}
           </Box>
           <Box>
-            <b>Email:</b> {toUnEnrolUser && toUnEnrolUser.Attributes.Email}
+            <b>Email:</b> {toUnEnrolUser && toUnEnrolUser.Attributes.email}
           </Box>
           <Box>
             <b>Course to be un-enrolled from:</b> {toUnEnrolCourse ? toUnEnrolCourse.CourseName + " on " + toUnEnrolCourse.CourseSlot : null}

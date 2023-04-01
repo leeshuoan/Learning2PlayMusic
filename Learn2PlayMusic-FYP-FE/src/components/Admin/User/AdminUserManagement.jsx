@@ -1,46 +1,20 @@
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import CloseIcon from "@mui/icons-material/Close";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Box, Button, Container, IconButton, Switch, Tooltip, Typography } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import MaterialReactTable from "material-react-table";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import Loader from "../../utils/Loader";
-// import TransitionModal from "../../utils/TransitionModal";
-// import CreateUserForm from "./CreateUserForm";
-// import EnrolUserForm from "./EnrolUserForm";
-// import UnenrolUserForm from "./UnenrolUserForm";
-// import UserPrompt from "./UserPrompt";
 
 const TransitionModal = lazy(() => import("../../utils/TransitionModal"));
 const CreateUserForm = lazy(() => import("./CreateUserForm"));
-const EnrolUserForm = lazy(() => import("./EnrolUserForm"));
-const UnenrolUserForm = lazy(() => import("./UnenrolUserForm"));
 const UserPrompt = lazy(() => import("./UserPrompt"));
 
 const AdminUserManagement = (userInfo) => {
   // table data
   const [data, setData] = useState([]);
   const [reloadData, setReloadData] = useState(false);
-  // const [userIds, setUserIds] = useState([]); // all userIds of users in table (used to fetch for courses the user is enrolled in)
-  const [userCoursesEnrolled, setUserCoursesEnrolled] = useState([{ userid: [{ PK: "", SK: "", CourseSlot: "", CourseName: "", TeacherId: "" }] }]);
-  // const [userCoursesEnrolled, setUserCoursesEnrolled] = useState([{ userid: "", CourseSlot: "", CourseName: "", }]);
-
   // loading screen
   const [open, setOpen] = useState(true);
-  // enrol user ala carte
-  const [openEnrolUser, setOpenEnrolUser] = useState(false);
-  const [toEnrolUser, setToEnrolUser] = useState("");
-  // enrol multiple users;
-  const [rowSelection, setRowSelection] = useState([]);
-  const [openEnrolMultipleUsers, setOpenEnrolMultipleUser] = useState(false);
-  const [toMultipleEnrolUsers, setToMultipleEnrolUsers] = useState([]);
-  const [displayText, setDisplayText] = useState("");
-  const [userNameToIdMap, setUserNameToIdMap] = useState({});
-  //  un-enrol user from course
-  const [openUnEnrolUser, setOpenUnEnrolUser] = useState(false);
-  const [toUnEnrolUser, setToUnEnrolUser] = useState("");
-  const [toUnEnrolCourse, setToUnEnrolCourse] = useState("");
   // create user
   const [openCreateUser, setOpenCreateUser] = useState(false);
   const [roles, setRoles] = useState([]);
@@ -89,16 +63,6 @@ const AdminUserManagement = (userInfo) => {
     setRoles(rs);
   };
   // list users ================================================================================================================================================================================================================================================================================
-  async function postAPIWithBody(endpoint, body) {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    return response.json();
-  }
 
   const listUsers = async () => {
     let apiName = "AdminQueries";
@@ -112,82 +76,30 @@ const AdminUserManagement = (userInfo) => {
     };
     let users = await API.get(apiName, path, myInit);
     let userData = users.Users;
-    let fetchedUserIds = [];
+    let parsedUserData = [];
     userData.forEach((user) => {
-      fetchedUserIds.push(user.Username);
-
-      user.Attributes.forEach((attribute) => {
-        if (attribute.Name == "email") {
-          user.Attributes.Email = attribute.Value;
-        } else if (attribute.Name == "custom:name") {
-          user.Attributes.Name = attribute.Value;
-        } else if (attribute.Name == "custom:role") {
-          user.Attributes.Role = attribute.Value;
+      const userAttributes = user.Attributes.reduce((usr, { Name, Value }) => {
+        if (Name.startsWith("custom:")) {
+          let k = Name.split(":")[1];
+          usr[k.charAt(0).toUpperCase() + k.slice(1)] = Value;
+        } else {
+          usr[Name] = Value;
         }
-      });
-
+        return usr;
+      }, {});
+      user.Attributes = userAttributes;
       user.Enabled = user.Enabled ? "Enabled" : "Disabled";
       user.UserStatus = user.UserStatus == "FORCE_CHANGE_PASSWORD" ? "Change Password" : "Confirmed";
 
       let date = new Date(user.UserCreateDate);
       let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
       user.UserCreateDate = formattedDate;
+      parsedUserData.push(user);
     });
-    // settle courses user is enrolled in
-    let userCoursesDict = await postAPIWithBody(`${import.meta.env.VITE_API_URL}/user/course/enrolled`, { userIds: fetchedUserIds });
-    setUserCoursesEnrolled(userCoursesDict);
-    setData(userData);
+
+    setData(parsedUserData);
   };
 
-  // enrol user ala carte================================================================================================================================================================================================================================================================================
-  const enrolUser = async (user) => {
-    setOpenEnrolUser(true);
-    setToEnrolUser(user);
-  };
-  const enrolSingleUserSuccessClose = () => {
-    setToEnrolUser("");
-    setReloadData(!reloadData);
-    setOpenEnrolUser(false);
-  };
-  // enrol multiple users================================================================================================================================================================================================================================================================================
-  function enrolMultipleUsers() {
-    let toEnrolUsers = Object.keys(rowSelection).map((key) => data[key]);
-    let temp = "";
-    let tempMap = {};
-    for (let i = 0; i < toEnrolUsers.length; i++) {
-      // add to username & userid mapping
-      tempMap[toEnrolUsers[i].Username] = toEnrolUsers[i].Attributes.Name;
-      // add to display text for confirmation screen
-      if (i == toEnrolUsers.length - 1) {
-        temp += toEnrolUsers[i].Attributes.Name;
-      } else {
-        temp += toEnrolUsers[i].Attributes.Name + ", ";
-      }
-    }
-    setDisplayText(temp);
-    setUserNameToIdMap(tempMap);
-    setToMultipleEnrolUsers(toEnrolUsers);
-    setOpenEnrolMultipleUser(true);
-  }
-  const enrolMultipleUsersSuccessClose = () => {
-    setOpenEnrolMultipleUser(false);
-    setUserNameToIdMap({});
-    setDisplayText("");
-    setToMultipleEnrolUsers([]);
-    setReloadData(!reloadData);
-  };
-  // UN-enrol user ===============================================================================================================================================================================================================================================================================
-  const unEnrolUser = async (course, user) => {
-    setOpenUnEnrolUser(true);
-    setToUnEnrolCourse(course);
-    setToUnEnrolUser(user);
-  };
-  const unEnrolSingleUserSuccessClose = () => {
-    setToUnEnrolCourse("");
-    setToUnEnrolUser("");
-    setReloadData(!reloadData);
-    setOpenUnEnrolUser(false);
-  };
   // disable user================================================================================================================================================================================================================================================================================
   const openDisableUserModal = async (user) => {
     setOpenDisableUser(true);
@@ -241,7 +153,7 @@ const AdminUserManagement = (userInfo) => {
         minSize: 100,
       },
       {
-        accessorKey: "Attributes.Email",
+        accessorKey: "Attributes.email",
         id: "email",
         header: "Email",
         minSize: 100,
@@ -272,26 +184,6 @@ const AdminUserManagement = (userInfo) => {
                 }}></Switch>
             </Tooltip>
           ) : null,
-      },
-      {
-        accessorKey: "",
-        id: "enrol",
-        header: "Enrol",
-        Cell: ({ cell, row }) =>
-          row.original.Attributes.Role != "Admin" ? (
-            <Tooltip title="Enrol user to course" placement="bottom">
-              <IconButton
-                variant="contained"
-                color="info"
-                disabled={row.original.Enabled == "Enabled" ? false : true}
-                onClick={() => {
-                  enrolUser(row.original);
-                }}>
-                <AddCircleIcon />
-              </IconButton>
-            </Tooltip>
-          ) : null,
-        maxSize: 20,
       },
       {
         accessorKey: "",
@@ -339,20 +231,6 @@ const AdminUserManagement = (userInfo) => {
             <UserPrompt type="Disable" selectedUser={toDisableUser} handleClose={() => disableUserSuccessClose()} />
           </TransitionModal>
 
-          {/* enrol user ala carte========================================================================================== */}
-          <TransitionModal open={openEnrolUser} handleClose={() => setOpenEnrolUser(false)} style={modalStyle(largeModalWidth)}>
-            <EnrolUserForm type="single" toEnrolUser={toEnrolUser} handleClose={() => enrolSingleUserSuccessClose()} displayText="" userNameToIdMap="" />
-          </TransitionModal>
-          {/* enrol multiple users========================================================================================== */}
-          <TransitionModal open={openEnrolMultipleUsers} handleClose={() => setOpenEnrolMultipleUser(false)} style={modalStyle(largeModalWidth)}>
-            <EnrolUserForm type="multiple" toEnrolUser={toMultipleEnrolUsers} handleClose={() => enrolMultipleUsersSuccessClose()} displayText={displayText} userNameToIdMap={userNameToIdMap} />
-          </TransitionModal>
-
-          {/* un-enrol user from course ========================================================================================== */}
-          <TransitionModal open={openUnEnrolUser} handleClose={() => setOpenUnEnrolUser(false)} style={modalStyle(largeModalWidth)}>
-            <UnenrolUserForm toUnEnrolUser={toUnEnrolUser} toUnEnrolCourse={toUnEnrolCourse} handleClose={() => unEnrolSingleUserSuccessClose()} />
-          </TransitionModal>
-
           {/* main ========================================================================================== */}
           <Typography variant="h5" sx={{ m: 1, mt: 4 }}>
             User Management
@@ -360,11 +238,7 @@ const AdminUserManagement = (userInfo) => {
           <MaterialReactTable
             enableHiding={false}
             enableFullScreenToggle={false}
-            enableMultiRowSelection={true}
             positionToolbarAlertBanner="bottom"
-            enableRowSelection={(row) => row.original.Attributes.Role != "Admin"}
-            onRowSelectionChange={setRowSelection}
-            state={{ rowSelection }}
             enableDensityToggle={false}
             columns={columns}
             data={data}
@@ -390,45 +264,9 @@ const AdminUserManagement = (userInfo) => {
                     }}>
                     Add User
                   </Button>
-                  <Button variant="contained" onClick={enrolMultipleUsers} disabled={table.getSelectedRowModel().flatRows.length === 0}>
-                    Enrol User(s)
-                  </Button>
                 </Box>
               );
-            }}
-            renderDetailPanel={({ row }) => (
-              <Box
-                sx={{
-                  display: "grid",
-                  margin: "auto",
-                  gridTemplateColumns: "1fr 1fr",
-                  width: "100%",
-                }}>
-                <Typography variant="body2">
-                  <b>User Creation Date:</b> {row.original.UserCreateDate}
-                  <br />
-                  <b>User Status:</b> {row.original.UserStatus}
-                </Typography>
-                {row.original.Attributes.Role == "Admin" ? null : (
-                  <Typography variant="body2">
-                    <b>Courses enrolled in:</b>
-                    {userCoursesEnrolled[row.original.Username].length == 0
-                      ? " None"
-                      : userCoursesEnrolled[row.original.Username].map((course) => {
-                          return (
-                            <span key={course.SK + course.PK}>
-                              <br />
-                              <IconButton onClick={() => unEnrolUser(course, row.original)}>
-                                <CloseIcon fontSize="inherit" color="error"></CloseIcon>
-                              </IconButton>
-                              {course.CourseName} on {course.CourseSlot}
-                            </span>
-                          );
-                        })}
-                  </Typography>
-                )}
-              </Box>
-            )}></MaterialReactTable>
+            }}></MaterialReactTable>
           {/* foot note ==========================================================================================*/}
           <Typography variant="subtitle1" sx={{ mt: 3 }}>
             <b>NOTE:</b>
