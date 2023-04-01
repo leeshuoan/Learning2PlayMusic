@@ -53,7 +53,6 @@ def get_single_student_homework(course_id, student_id, queryStringParameters, ta
             })
         if "Item" not in response:
             raise Exception("No such courseid/studentid/homeworkid")
-        response['Item']['StudentName'] = get_student_name(student_id) # not tested
         items = response["Item"]
         if items['HomeworkAttachment'] != "":
             get_presigned_url(items, "HomeworkAttachment")
@@ -67,7 +66,6 @@ def get_single_student_homework(course_id, student_id, queryStringParameters, ta
             })
         items = response["Items"]
         for item in items:
-            item['StudentName'] = get_student_name(student_id) # not tested
             if item['HomeworkAttachment'] != "":
                 get_presigned_url(item, "HomeworkAttachment")
 
@@ -107,8 +105,7 @@ def get_all_student_homework(course_id, queryStringParameters, table):
                 })
             if "Item" not in response:
                 continue
-            for response_item in response['Items']: # add student's name to each item
-                response_item['StudentName'] = get_student_name(student_id)
+            response['Item']['StudentName'] = get_student_name(student_id) # add student's name to the item
             items.append(response["Item"])
         for item in items:
             if item['HomeworkAttachment'] != "":
