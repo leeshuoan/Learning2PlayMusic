@@ -39,7 +39,6 @@ async function lambda_handler(event, context) {
         Body: imageBuffer,
         ContentType: "image/" + fileExtension,
       };
-
       uploadedImage = await s3.putObject(s3Params).promise();
     }
 
