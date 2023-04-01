@@ -18,7 +18,6 @@ def lambda_handler(event, context):
         # check if courseId is in request body
         if "courseId" not in request_body:
             return response_400("courseId not in request body.")
-        print(request_body)
         # validate course existence
         courseId = request_body["courseId"]
         if not id_exists("Course", "Course", courseId):
@@ -31,14 +30,10 @@ def lambda_handler(event, context):
 
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
-        with table.batch_writer() as batch:
+        with table.batch_write_items() as batch:
             for userId in userIds:
-                response = {}
-                response["userId"] = userId
-
                 user = get_user(userId)
                 if not user:
-                    response["isSuccessful"] = False
                     does_not_exist.append(userId)
                 # check user type
                 if "studentId" in user:
