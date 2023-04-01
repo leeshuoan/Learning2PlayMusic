@@ -5,6 +5,7 @@ import decimal
 
 from global_functions.responses import *
 from global_functions.get_presigned_url import get_presigned_url
+from global_functions.cognito import *
 
 
 class Encoder(json.JSONEncoder):
@@ -52,7 +53,7 @@ def get_single_student_homework(course_id, student_id, queryStringParameters, ta
             })
         if "Item" not in response:
             raise Exception("No such courseid/studentid/homeworkid")
-
+        response['Item']['StudentName'] = get_student_name(student_id) # not tested
         items = response["Item"]
         if items['HomeworkAttachment'] != "":
             get_presigned_url(items, "HomeworkAttachment")
@@ -66,6 +67,7 @@ def get_single_student_homework(course_id, student_id, queryStringParameters, ta
             })
         items = response["Items"]
         for item in items:
+            item['StudentName'] = get_student_name(student_id) # not tested
             if item['HomeworkAttachment'] != "":
                 get_presigned_url(item, "HomeworkAttachment")
 
@@ -105,6 +107,8 @@ def get_all_student_homework(course_id, queryStringParameters, table):
                 })
             if "Item" not in response:
                 continue
+            for response_item in response['Items']: # add student's name to each item
+                response_item['StudentName'] = get_student_name(student_id)
             items.append(response["Item"])
         for item in items:
             if item['HomeworkAttachment'] != "":
@@ -119,6 +123,8 @@ def get_all_student_homework(course_id, queryStringParameters, table):
                     ":PK": f"Course#{course_id}",
                     ":SK": f"Student#{student_id}Homework#"
                 })
+            for response_item in response['Items']:
+                response_item['StudentName'] = get_student_name(student_id)
             items.append(response["Items"])
         for item in items:
             for homework in item:
@@ -134,3 +140,11 @@ def get_all_student_homework(course_id, queryStringParameters, table):
     res["body"] = json.dumps(items, cls=Encoder)
 
     return res
+
+def get_student_name(student_id):
+    # get all students from Cognito
+    students = get_users('Users')
+
+    for student in students:
+        if student_id == student['studentId']:
+            return student['studentName']
