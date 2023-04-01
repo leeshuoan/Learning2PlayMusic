@@ -8,7 +8,7 @@ function checkForNull(...args) {
   const arguments = [
     "courseId",
     "quizId",
-    "questionId",
+    "qnNumber",
   ];
 
   for (let i = 0; i < args.length; i++) {
@@ -40,9 +40,9 @@ async function lambda_handler(event, context) {
     const requestBody = JSON.parse(event.body);
     const courseId = requestBody.courseId;
     const quizId = requestBody.quizId;
-    const questionId = requestBody.questionId;
+    const qnNumber = requestBody.qnNumber;
 
-    checkForNull(courseId, quizId, questionId);
+    checkForNull(courseId, quizId, qnNumber);
 
     checkNumQuestions(courseId, quizId);
 
@@ -50,19 +50,19 @@ async function lambda_handler(event, context) {
       TableName: "LMS",
       Key: {
         PK: `Course#${courseId}`,
-        SK: `Quiz#${quizId}Question#${questionId}`,
+        SK: `Quiz#${quizId}Question#${qnNumber}`,
       },
     };
 
     const result = await dynamodb.get(params).promise();
 
     if (!result.Item) {
-      return response_400(`Item with courseId:${courseId} quizId:${quizId} questionId:${questionId} not found`);
+      return response_400(`Item with courseId:${courseId} quizId:${quizId} qnNumber:${qnNumber} not found`);
     }
 
     await dynamodb.delete(params).promise();
 
-    return response_200(`Successfully deleted item with courseId:${courseId} quizId:${quizId} questionId:${questionId}!`);
+    return response_200(`Successfully deleted item with courseId:${courseId} quizId:${quizId} qnNumber:${qnNumber}!`);
 
   } catch (e) {
     return response_400(e);
