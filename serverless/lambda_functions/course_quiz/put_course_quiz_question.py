@@ -32,7 +32,7 @@ def lambda_handler(event, context):
                 data = response.read()
             else:
                 data = request_body["questionImage"]
-                
+
             base64_data = base64.b64encode(data).decode("utf-8")
             file_extension = base64_data.split(";")[0].split("/")[1]
             base64_image = base64_data.replace("data:image/{0};base64,".format(file_extension), "")
@@ -64,7 +64,7 @@ def lambda_handler(event, context):
 
         dynamodb.put_item(TableName="LMS", Item=item)
 
-        return response_200_items("Successfully updated {0} Question(s)!".format(question_id))
+        return response_200_items("Successfully updated  Question {0}!".format(question_id))
 
     except Exception as e:
         return response_400(str(e))
