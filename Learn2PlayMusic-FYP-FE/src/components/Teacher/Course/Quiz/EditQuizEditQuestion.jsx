@@ -1,8 +1,11 @@
 import ClearIcon from "@mui/icons-material/Clear";
 import { Box, Button, Card, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
+  const { courseid } = useParams();
+  const { quizId } = useParams();
   const [question, setQuestion] = useState("");
   const [file, setFile] = useState(null);
   const [image, setImage] = useState("");
@@ -62,6 +65,8 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
       options: options,
       answer: answer,
       questionImage: image,
+      courseId: courseid,
+      quizId: quizId
     };
     fetch(`${import.meta.env.VITE_API_URL}/teacher/course/quiz`, {
       method: "PUT",
