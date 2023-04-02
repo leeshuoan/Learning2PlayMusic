@@ -5,6 +5,7 @@ from aws_cdk import aws_iam
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sns as sns
+from aws_cdk.core import Duration
 from constructs import Construct
 
 
@@ -273,7 +274,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_FUNCTIONS_FOLDER}.delete_course.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
-            timeout=840,
+            timeout=Duration.seconds(840),
         )
 
         # /course/student

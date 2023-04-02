@@ -3,6 +3,7 @@ from aws_cdk import Fn, Stack
 from aws_cdk import aws_apigateway as apigw
 from aws_cdk import aws_iam
 from aws_cdk import aws_lambda as _lambda
+from aws_cdk.core import Duration
 from constructs import Construct
 
 
@@ -113,7 +114,7 @@ class UserStack(Stack):
             handler=f"{USER_COURSE_ENROL_FUNCTIONS_FOLDER}.post_user_course_enrol.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
-            timeout=840,
+            timeout=Duration.seconds(840),
         )
 
         ########################
