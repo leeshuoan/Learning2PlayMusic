@@ -33,6 +33,8 @@ def lambda_handler(event, context):
                   ":PK": f"Student#{userId}",
               })
           items = response["Items"]
+          print(items)
+          print(get_user(userId))
 
         # if FE passes in teacherId
         if 'teacherId' in user:
@@ -62,6 +64,24 @@ def lambda_handler(event, context):
                   ":SK": f"Admin#{userId}"
               })
           items = response["Items"]
+
+        # {'studentId': '81c2ca2f-6a04-4e79-a41c-97aa85cf9edb', 'studentName': 'James'}
+
+        for item in items:
+            if userId in item['PK']:
+              receiverId = item['SK'].split("#")[1]
+            elif userId in item['SK']:
+              receiverId = item['PK'].split("#")[1]
+
+            receiver = get_user(receiverId)
+            if 'adminId' in receiver:
+                receiverName = receiver['adminName']
+            elif 'teacherId' in receiver:
+                receiverName = receiver['teacherName']
+            elif 'studentId' in receiver:
+                receiverName = receiver['studentName']
+            item['receiverId'] = receiverId
+            item['receiverName'] = receiverName
 
         return response_200_items(items)
 
