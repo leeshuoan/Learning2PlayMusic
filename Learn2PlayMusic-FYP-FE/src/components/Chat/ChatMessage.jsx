@@ -4,7 +4,7 @@ import { Grid, ListItemText, Divider } from '@mui/material'
 const ChatMessage = ({message, userInfo}) => {
   const chatTimestamp = message.createdAt.toDate().toLocaleDateString() + " " + message.createdAt.toDate().toLocaleTimeString()
   let msgAlign = "right"
-  if (userInfo.userInfo.id != message.uid) {
+  if (userInfo.id != message.uid) {
     msgAlign = "left"
   } 
 
