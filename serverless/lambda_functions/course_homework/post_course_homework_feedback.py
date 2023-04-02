@@ -1,11 +1,16 @@
 import json
 import boto3
+from datetime import datetime
+import dateutil.tz
 
-from serverless.lambda_functions.global_functions.responses import response_200_msg, response_400
+from global_functions.responses import response_200_msg, response_400
 
 dynamodb = boto3.resource('dynamodb')
 table_name = "LMS"
 table = dynamodb.Table(table_name)
+sg_timezone = dateutil.tz.gettz('Asia/Singapore')
+date = datetime.now(tz=sg_timezone).strftime("%Y-%m-%dT%H:%M:%SZ")
+print("date generated: ", date)
 
 def lambda_handler(event, context) :
     try:
@@ -24,15 +29,16 @@ def lambda_handler(event, context) :
 
         table.update_item(
             Key = key,
-            UpdateExpression= f"SET Marked = :marked, HomeworkScore = :homeworkScore, TeacherComments = :teacherComments",
+            UpdateExpression= f"SET Marked = :marked, HomeworkScore = :homeworkScore, TeacherComments = :teacherComments, ReviewDate = :reviewDate",
             ExpressionAttributeValues = {
                 ":marked": True,
                 ":homeworkScore": homework_score,
-                ":teacherComments": teacher_comments
+                ":teacherComments": teacher_comments,
+                ":reviewDate": date,
             }
         )
         
-        return response_200_msg(f"Homework {homework_id} for student {student_id} marked!")
+        return response_200_msg(f"Homework {homework_id} for student {student_id} marked on {date}!")
 
     except Exception as e:
         return response_400(str(e))
