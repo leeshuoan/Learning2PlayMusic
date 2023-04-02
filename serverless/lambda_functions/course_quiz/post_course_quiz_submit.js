@@ -19,16 +19,16 @@ async function lambda_handler(event, context) {
         PK: `Course#${courseId}`,
         SK: `Student#${studentId}Quiz#${quizId}`,
       },
-      AttributesToGet: ["QuizAttempt", "QuizMaxAttempt"],
+      AttributesToGet: ["QuizAttempt", "QuizMaxAttempts"],
     };
 
     const attemptsResponse = await dynamodb.get(getAttemptsParams).promise();
     const attempts = attemptsResponse.Item;
-    if (!attempts || !attempts.QuizAttempt || !attempts.QuizMaxAttempt) {
+    if (!attempts || !attempts.QuizAttempt || !attempts.QuizMaxAttempts) {
       throw new Error("Invalid response from DynamoDB");
     }
 
-    if (attempts.QuizAttempt >= attempts.QuizMaxAttempt) {
+    if (attempts.QuizAttempt >= attempts.QuizMaxAttempts) {
       throw new Error("Already attempted max number of times: " + attempts.QuizAttempt);
     }
 
