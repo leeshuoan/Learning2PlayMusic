@@ -121,7 +121,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
 
   return (
     <>
-      <Card variant="outlined" raise={true} sx={{ boxShadow: "none", mt: 3, p: 2, border: 4, borderColor: "primary.main" }}>
+      <Card variant="outlined" sx={{ boxShadow: "none", mt: 3, p: 2, border: 4, borderColor: "primary.main" }}>
         <Typography variant="h6" sx={{ mb: 1 }}>
           Question {questionNumber}
         </Typography>
