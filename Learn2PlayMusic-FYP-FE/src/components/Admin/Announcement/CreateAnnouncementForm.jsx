@@ -56,7 +56,7 @@ export default function CreateAnnouncementForm({ handleCloseModal, handleCloseMo
   return (
     <form noValidate onSubmit={submitForm}>
       <Grid container spacing={2}>
-        <Grid item xs={10}>
+        <Grid item xs={12}>
           <Typography variant="h5">Create new general announcement</Typography>
         </Grid>
         <Grid item xs={12} sm={12} sx={{ mt: 2 }}>
