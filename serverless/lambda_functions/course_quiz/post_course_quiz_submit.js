@@ -59,7 +59,10 @@ async function lambda_handler(event, context) {
           PK: `Course#${courseId}`,
           SK: `Quiz#${quizId}Question#${questionId}`,
         },
-        UpdateExpression: `set Attempts = Attempts + :incr, Correct = Correct + :val, ${question.Answer} = ${question.Answer} + :incr`,
+        UpdateExpression: `set Attempts = Attempts + :incr, Correct = Correct + :val, #answer = #answer + :incr`,
+        ExpressionAttributeNames: {
+          "#answer": question.Answer,
+        },
         ExpressionAttributeValues: {
           ":val": correct,
           ":incr": 1,
