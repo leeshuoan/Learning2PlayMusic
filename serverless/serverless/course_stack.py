@@ -1,11 +1,10 @@
 import boto3
-from aws_cdk import CfnOutput, Stack
+from aws_cdk import BundlingOptions, CfnOutput, Stack
 from aws_cdk import aws_apigateway as apigw
 from aws_cdk import aws_iam
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sns as sns
-from aws_cdk import BundlingOptions
 from constructs import Construct
 
 
@@ -805,6 +804,7 @@ class CourseStack(Stack):
                     "question": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "options": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY),
                     "answer": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "questionImage": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
                 required=["courseId", "quizId", "question", "options", "answer"],
             ),
@@ -822,6 +822,14 @@ class CourseStack(Stack):
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "questionId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "question": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "options": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY),
+                    "answer": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "questionImage": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "questionOptionType": apigw.JsonSchema(
+                        type=apigw.JsonSchemaType.STRING
+                    ),
+
                 },
                 required=["courseId", "quizId", "questionId"],
             ),
@@ -837,7 +845,7 @@ class CourseStack(Stack):
                 properties={
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "questionId": apigw.JsonSchema(type=apigw.JsonSchemaType.INTEGER),
+                    "questionId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
                 required=["courseId", "quizId", "questionId"],
             ),

@@ -30,9 +30,7 @@ const EditQuiz = ({ userInfo }) => {
   const [openAddQuestion, setOpenAddQuestion] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
   let questionNumber = 0;
-  const questionNumberDecrease = () => {
-    questionNumber--;
-  };
+
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
       method: "GET",

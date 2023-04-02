@@ -131,7 +131,7 @@ const EditQuizQuestion = ({ userInfo, question, questionNumber, handleRefreshDat
           </Box>
         </Card>
       ) : (
-        <EditQuizEditQuestion userInfo={userInfo} qnInfo={question} setEdit={setEdit} handleDisableEditQuizButton={handleDisableEditQuizButton} />
+        <EditQuizEditQuestion userInfo={userInfo} qnInfo={question} setEdit={setEdit} questionNumber={questionNumber} handleDisableEditQuizButton={handleDisableEditQuizButton} />
       )}
     </>
   );
