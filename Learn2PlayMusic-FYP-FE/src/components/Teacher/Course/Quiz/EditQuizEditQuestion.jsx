@@ -1,8 +1,8 @@
 import ClearIcon from "@mui/icons-material/Clear";
 import { Box, Button, Card, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
   const { courseid } = useParams();
@@ -67,6 +67,16 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
       toast.error("Please make changes before updating!");
       return;
     }
+    if (questionType === "multiple-choice") {
+      options.map((option) => {
+        return option.trim();
+      });
+      if (options[0] === options[1] || options[0] === options[2] || options[0] === options[3] || options[1] === options[2] || options[1] === options[3] || options[2] === options[3]) {
+        toast.error("Please enter different options for the question.");
+        return;
+      }
+    }
+
     const newQnInfo = {
       qnNumber: qnInfo.qnNumber,
       question: question,
@@ -75,7 +85,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
       answer: answer,
       questionImage: image,
       courseId: courseid,
-      quizId: quizId
+      quizId: quizId,
     };
     console.log(newQnInfo);
     fetch(`${import.meta.env.VITE_API_URL}/teacher/course/quiz`, {
