@@ -29,12 +29,12 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
   };
 
   useEffect(() => {
-    console.log(qnInfo);
     setQuestion(qnInfo.question);
     setQuestionType(qnInfo.questionOptionType);
     setOptions(qnInfo.options);
     setAnswer(qnInfo.answer);
-    setImage(qnInfo.questionImage);
+    setImage(qnInfo.questionImage == undefined ? "" : qnInfo.questionImage);
+    console.log(qnInfo);
   }, [qnInfo]);
 
   const handleQnTypeChange = (event) => {
@@ -85,9 +85,10 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
       questionImage: image,
       courseId: courseid,
       quizId: quizId,
+      questionId: qnInfo.questionId,
     };
     console.log(newQnInfo);
-    fetch(`${import.meta.env.VITE_API_URL}/teacher/course/quiz`, {
+    fetch(`${import.meta.env.VITE_API_URL}/teacher/course/quiz/question`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
