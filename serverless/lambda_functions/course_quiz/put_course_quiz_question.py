@@ -65,7 +65,7 @@ def lambda_handler(event, context):
         if s3_params is not None:
             item["QuestionImage"] = "{0}/{1}".format(s3_params["Bucket"], s3_params["Key"])
 
-        dynamodb.put_item(Item=item)
+        table.put_item(Item=item)
 
         return response_200_items("Successfully updated  Question {0}!".format(question_id))
 
