@@ -447,6 +447,9 @@ class CourseStack(Stack):
                 f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"
             ),
             role=S3_DYNAMODB_ROLE,
+            environment={
+                "QUESTION_IMAGE_BUCKET_NAME": L2PMA_question_image_bucket.bucket_name
+            }
         )
         # /course/report Functions
         get_course_report = _lambda.Function(
@@ -847,7 +850,7 @@ class CourseStack(Stack):
             request_parameters={
                 "method.request.querystring.courseId": True,
                 "method.request.querystring.quizId": True,
-                "method.request.querystring.qnNumber": False,
+                "method.request.querystring.questionId": False,
             },
         )
         course_quiz_question_resource.add_method(
