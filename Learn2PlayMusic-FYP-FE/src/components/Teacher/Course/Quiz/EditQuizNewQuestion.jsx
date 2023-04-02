@@ -73,17 +73,27 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber, handleRefreshData }
         return;
       }
     }
-
-    const newQnInfo = [{
-      qnNumber: qnNumber,
-      question: question,
-      questionOptionType: questionType,
-      options: options,
-      answer: answer,
-      questionImage: image,
-      courseId: courseid,
-      quizId: quizId,
-    }];
+    if (questionType === "multiple-choice") {
+      options.map((option) => {
+        return option.trim();
+      });
+      if (options[0] === options[1] || options[0] === options[2] || options[0] === options[3] || options[1] === options[2] || options[1] === options[3] || options[2] === options[3]) {
+        toast.error("Please enter different options for the question.");
+        return;
+      }
+    }
+    const newQnInfo = [
+      {
+        qnNumber: qnNumber,
+        question: question,
+        questionOptionType: questionType,
+        options: options,
+        answer: answer,
+        questionImage: image,
+        courseId: courseid,
+        quizId: quizId,
+      },
+    ];
 
     fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
       method: "POST",
@@ -91,16 +101,18 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber, handleRefreshData }
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newQnInfo),
-    }).then((res) => {
-      if (res.ok) {
-        setOpenAddQuestion(false);
-        handleRefreshData()
-        toast.success("Question added successfully!");
-      }
-    }).catch((err) => {
-      console.log(err);
-      toast.error("Error adding question. Please try again later.")
-    });
+    })
+      .then((res) => {
+        if (res.ok) {
+          setOpenAddQuestion(false);
+          handleRefreshData();
+          toast.success("Question added successfully!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Error adding question. Please try again later.");
+      });
   };
 
   return (
@@ -188,8 +200,12 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber, handleRefreshData }
           </RadioGroup>
         </Box>
         <Box sx={{ display: "flex", mt: 2 }}>
-          <Button variant="outlined" fullWidth sx={{ color: "primary.main" }} onClick={() => setOpenAddQuestion(false)}>Cancel</Button>
-          <Button variant="contained" fullWidth sx={{ ml: 2 }} onClick={() => addQuestion()}>Add Question</Button>
+          <Button variant="outlined" fullWidth sx={{ color: "primary.main" }} onClick={() => setOpenAddQuestion(false)}>
+            Cancel
+          </Button>
+          <Button variant="contained" fullWidth sx={{ ml: 2 }} onClick={() => addQuestion()}>
+            Add Question
+          </Button>
         </Box>
       </Card>
     </>
