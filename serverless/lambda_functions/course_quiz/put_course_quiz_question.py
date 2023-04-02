@@ -26,9 +26,13 @@ def lambda_handler(event, context):
 
         s3_params = None
         if "questionImage" in request_body and request_body["questionImage"] != "":
-            url = request_body["questionImage"]
-            response = urllib.request.urlopen(url)
-            data = response.read()
+            if request_body["questionImage"].startswith("https"):
+                url = request_body["questionImage"]
+                response = urllib.request.urlopen(url)
+                data = response.read()
+            else:
+                data = request_body["questionImage"]
+                
             base64_data = base64.b64encode(data).decode("utf-8")
             file_extension = base64_data.split(";")[0].split("/")[1]
             base64_image = base64_data.replace("data:image/{0};base64,".format(file_extension), "")
