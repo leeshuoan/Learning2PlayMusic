@@ -17,6 +17,7 @@ function Chat({ userInfo }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openLoading, setOpenLoading] = useState(true);
   const [selectedChat, setSelectedChat] = useState(contacts[0]);
+  const [reload, setReload] = useState(false);
   const [openContactList, setOpenContactList] = useState(false);
   const [root, setRoot] = useState(userInfo.role == "Admin" ? "/admin" : userInfo.role == "User" ? "/home" : userInfo.role == "SuperAdmin" ? "/superadmin" : "/teacher");
   const navigate = useNavigate();
@@ -77,52 +78,58 @@ function Chat({ userInfo }) {
       const [res1, res2] = await Promise.all([contactListAPI, openChatAPI]);
 
       let contactIds = [];
-      const newChatData = res2.map((chat) => {
-        if (!contactIds.includes(chat.ChatId)) {
-          return {
-            chatId: chat.ChatId,
-            name: chat.ChatName,
-            role: chat.ChatRole
-          }
-        }
-      });
-
-      const contactData = res1.filter((contact) => {
-        let contactKeys = Object.keys(contact);
-        let id = "";
-        for (let k of contactKeys) {
-          if (k.endsWith("Id")) {
-            id = contact[k];
-          }
-        }
-        return !contactIds.includes(id);
-      }).map((contact) => {
-        let contactKeys = Object.keys(contact);
-        let id = "";
-        let name = "";
-        let role = "";
-        for (let k of contactKeys) {
-          if (k.endsWith("Id")) {
-            id = contact[k];
-            role = k.split("Id")[0];
-            role = role.charAt(0).toUpperCase() + role.slice(1);
-          }
-          if (k.endsWith("Name")) {
-            name = contact[k];
-          }
+      const chatData = res2.map((chat) => {
+        contactIds.push(chat.receiverId);
+        let receiverRole = "";
+        if (chat.PK.includes(userInfo.id)) {
+          receiverRole = chat.SK.split(`#${chat.receiverId}`)[0];
+        } else {
+          receiverRole = chat.PK.split(`#${chat.receiverId}`)[0];
         }
         return {
-          id: id,
-          name: name,
-          role: role,
+          id: chat.ChatId,
+          receiverId: chat.receiverId,
+          receiverName: chat.receiverName,
+          receiverRole: receiverRole,
         };
       });
 
-      setContacts(contactData);
-      setChats(res2)
+      const contactData = res1
+        .filter((contact) => {
+          let contactKeys = Object.keys(contact);
+          let id = "";
+          for (let k of contactKeys) {
+            if (k.endsWith("Id")) {
+              id = contact[k];
+            }
+          }
+          return !contactIds.includes(id);
+        })
+        .map((contact) => {
+          let contactKeys = Object.keys(contact);
+          let id = "";
+          let name = "";
+          let role = "";
+          for (let k of contactKeys) {
+            if (k.endsWith("Id")) {
+              id = contact[k];
+              role = k.split("Id")[0];
+              role = role.charAt(0).toUpperCase() + role.slice(1);
+            }
+            if (k.endsWith("Name")) {
+              name = contact[k];
+            }
+          }
+          return {
+            id: id,
+            name: name,
+            role: role,
+          };
+        });
 
+      setContacts(contactData);
+      setChats(chatData);
     }
-    console.log(userInfo)
     fetchContacts().then(() => {
       setOpenLoading(false);
     });
@@ -134,7 +141,7 @@ function Chat({ userInfo }) {
     const newChat = {
       firstUserId: userInfo.id,
       secondUserId: contact.id,
-    }
+    };
 
     fetch(`${import.meta.env.VITE_API_URL}/user/chat?firstUserId=${userInfo.id}&secondUserId=${contact.id}`, {
       method: "POST",
@@ -143,22 +150,26 @@ function Chat({ userInfo }) {
         Authorization: `Bearer ${userInfo.token}`,
       },
       body: JSON.stringify(newChat),
-    }).then((res) => {
-      res.json().then((data) => {
-        navigate(`/chat/${data.item.ChatId}`);
-        setReload(!reload);
-      })
-    }).catch((err) => {
-      console.log(err);
-      setOpenLoading(false)
     })
-  }
+      .then((res) => {
+        res.json().then((data) => {
+          navigate(`/chat/${data.item.ChatId}`);
+          setReload(!reload);
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        setOpenLoading(false);
+      });
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
       <TransitionModal open={openContactList} style={modalStyle}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography variant="h6" sx={{ ml: 2 }}>New Chat</Typography>
+          <Typography variant="h6" sx={{ ml: 2 }}>
+            New Chat
+          </Typography>
           <IconButton onClick={() => setOpenContactList(false)}>
             <CloseIcon />
           </IconButton>
@@ -216,24 +227,26 @@ function Chat({ userInfo }) {
         <Box sx={{ overflow: "auto" }}>
           <Toolbar />
           <Box sx={{ overflow: "auto" }}>
-          <Box sx={{ ml: 1 }}>
-            <CustomBreadcrumbs root={root} breadcrumbEnding={"Chat"} />
+            <Box sx={{ ml: 1 }}>
+              <CustomBreadcrumbs root={root} breadcrumbEnding={"Chat"} />
+            </Box>
+            <Divider sx={{ mt: 2 }} />
+            <Box sx={{ display: "flex", justifyContent: "center", my: 1 }} onClick={() => setOpenContactList(true)}>
+              <Button variant="contained" sx={{ width: "90%" }}>
+                New Chat
+              </Button>
+            </Box>
+            <List sx={{ p: 0 }}>
+              {chats.map((chat, key) => (
+                <Box key={key}>
+                  <ListItem onClick={() => navigate(`/chat/${chat.id}`)} disablePadding>
+                    <ListItemButton selected={chatId == chat.id}>{<ListItemText primary="Jeff" />}</ListItemButton>
+                  </ListItem>
+                  <Divider />
+                </Box>
+              ))}
+            </List>
           </Box>
-          <Divider sx={{ mt: 2 }} />
-          <Box sx={{ display: "flex", justifyContent: "center", my: 1 }} onClick={() => setOpenContactList(true)}>
-            <Button variant="contained" sx={{ width: "90%" }} >New Chat</Button>
-          </Box>
-          <List sx={{ p: 0 }}>
-            {chats.map((chat, key) => (
-              <Box key={key}>
-                <ListItem onClick={() => navigate(`/chat/${chat.ChatId}`)} disablePadding>
-                  <ListItemButton selected={chatId == chat.ChatId}>{<ListItemText primary="Jeff" />}</ListItemButton>
-                </ListItem>
-                <Divider />
-              </Box>
-            ))}
-          </List>
-        </Box>
         </Box>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, width: { sm: `calc(100% - ${drawerWidth}px)` }, pb: 10 }}>
@@ -262,7 +275,7 @@ function Chat({ userInfo }) {
           <Typography variant="h6" sx={{ textAlign: "center", display: { xs: "none", md: "block" } }}>
             {/* {selectedChat.name} */}
           </Typography>
-          <ChatUser chatId={1} userInfo={userInfo}/>
+          <ChatUser chatId={chatId} userInfo={userInfo} />
         </Box>
       </Box>
       <Loader open={openLoading} />
