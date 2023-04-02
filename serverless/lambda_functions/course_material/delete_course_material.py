@@ -10,6 +10,7 @@ from global_functions.exists_in_db import *
 s3 = boto3.client('s3')
 bucket_name = os.environ['MATERIAL_ATTACHMENT_BUCKET_NAME']
 
+
 def lambda_handler(event, context):
 
     try:
@@ -29,20 +30,21 @@ def lambda_handler(event, context):
             return response_404("materialId does not exist in database")
 
         response = table.delete_item(
-            Key= {
+            Key={
                 "PK": f"Course#{course_id}",
                 "SK": f"Material#{material_id}"
             },
             ReturnValues="ALL_OLD"
-            )
-        
+        )
+
         deleted_item = response.get('Attributes', {})
         material_attachment = deleted_item.get('MaterialAttachment', '')
+        bucket_name, object_key = material_attachment.split("/", 1)
+
         if material_attachment:
-            s3.delete_object(Bucket=bucket_name, Key=material_attachment)
+            s3.delete_object(Bucket=bucket_name, Key=object_key)
 
         return response_200_msg("successfully deleted item")
-
 
     except Exception as e:
         # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")
