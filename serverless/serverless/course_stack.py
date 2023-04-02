@@ -5,9 +5,8 @@ from aws_cdk import aws_iam
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sns as sns
-from aws_cdk.core import Duration
+from aws_cdk import Duration
 from constructs import Construct
-
 
 class CourseStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -18,7 +17,6 @@ class CourseStack(Stack):
         #################
         ### CONSTANTS ###
         #################
-
         FUNCTIONS_FOLDER = "./lambda_functions/"
         COURSE_FUNCTIONS_FOLDER = "course"
         COURSE_STUDENT_FUNCTIONS_FOLDER = "course.student"

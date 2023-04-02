@@ -87,8 +87,7 @@ const UserClassMaterials = () => {
           <Typography variant='body1'>LESSON DATE</Typography>
           <Typography variant='body2'>{material.MaterialLessonDate}</Typography>
           <Card variant='outlined' sx={{ py: material.MaterialType == "Link" ? 2 : 1, px: 2, mt: 2, boxShadow: "none" }}>
-            <embed src=
-              "https://media.geeksforgeeks.org/wp-content/cdn-uploads/20210101201653/PDF.pdf"
+            <embed src={material.MaterialAttachment}
               width="100%"
               height="700"
               type="application/pdf"

@@ -75,8 +75,6 @@ function Chat({ userInfo }) {
   useEffect(() => {
     async function fetchContacts() {
       const [res1, res2] = await Promise.all([contactListAPI, openChatAPI]);
-      console.log(res1);
-      console.log(res2);
 
       let contactIds = [];
       const newChatData = res2.map((chat) => {
@@ -84,12 +82,21 @@ function Chat({ userInfo }) {
           return {
             chatId: chat.ChatId,
             name: chat.ChatName,
-            role: chat.ChatRole,
-          };
+            role: chat.ChatRole
+          }
         }
       });
 
-      const contactData = res1.map((contact) => {
+      const contactData = res1.filter((contact) => {
+        let contactKeys = Object.keys(contact);
+        let id = "";
+        for (let k of contactKeys) {
+          if (k.endsWith("Id")) {
+            id = contact[k];
+          }
+        }
+        return !contactIds.includes(id);
+      }).map((contact) => {
         let contactKeys = Object.keys(contact);
         let id = "";
         let name = "";
@@ -112,19 +119,46 @@ function Chat({ userInfo }) {
       });
 
       setContacts(contactData);
-      setChats(res2);
+      setChats(res2)
+
     }
-    console.log(userInfo);
+    console.log(userInfo)
     fetchContacts().then(() => {
       setOpenLoading(false);
     });
-  }, [userInfo]);
+  }, [userInfo, reload]);
+
+  const startChat = (contact) => {
+    setOpenContactList(false);
+    setOpenLoading(true);
+    const newChat = {
+      firstUserId: userInfo.id,
+      secondUserId: contact.id,
+    }
+
+    fetch(`${import.meta.env.VITE_API_URL}/user/chat?firstUserId=${userInfo.id}&secondUserId=${contact.id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+      body: JSON.stringify(newChat),
+    }).then((res) => {
+      res.json().then((data) => {
+        navigate(`/chat/${data.item.ChatId}`);
+        setReload(!reload);
+      })
+    }).catch((err) => {
+      console.log(err);
+      setOpenLoading(false)
+    })
+  }
 
   return (
     <Box sx={{ display: "flex" }}>
       <TransitionModal open={openContactList} style={modalStyle}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography variant="h6">Contact List</Typography>
+          <Typography variant="h6" sx={{ ml: 2 }}>New Chat</Typography>
           <IconButton onClick={() => setOpenContactList(false)}>
             <CloseIcon />
           </IconButton>
@@ -134,7 +168,7 @@ function Chat({ userInfo }) {
           {contacts.map((contact, key) => (
             <Box key={key}>
               <ListItem key={contact.id} disablePadding>
-                <ListItemButton>{<ListItemText primary={contact.name} />}</ListItemButton>
+                <ListItemButton onClick={() => startChat(contact)}>{<ListItemText primary={`[${contact.role}] ${contact.name} `} />}</ListItemButton>
               </ListItem>
               <Divider />
             </Box>
@@ -158,8 +192,8 @@ function Chat({ userInfo }) {
           <List sx={{ p: 0 }}>
             {chats.map((chat, key) => (
               <Box key={key}>
-                <ListItem onClick={() => navigate(`/chat/${chat.ChatId}`)} disablePadding>
-                  <ListItemButton selected={chatId == chat.ChatId}>{<ListItemText primary="Jeff" />}</ListItemButton>
+                <ListItem onClick={() => navigate(`/chat/${chat.id}`)} disablePadding>
+                  <ListItemButton selected={chatId == chat.id}>{<ListItemText primary={`[${chat.receiverRole}] ${chat.receiverName}`} />}</ListItemButton>
                 </ListItem>
                 <Divider />
               </Box>
@@ -182,26 +216,24 @@ function Chat({ userInfo }) {
         <Box sx={{ overflow: "auto" }}>
           <Toolbar />
           <Box sx={{ overflow: "auto" }}>
-            <Box sx={{ ml: 1 }}>
-              <CustomBreadcrumbs root={root} breadcrumbEnding={"Chat"} />
-            </Box>
-            <Divider sx={{ mt: 2 }} />
-            <Box sx={{ display: "flex", justifyContent: "center", my: 1 }} onClick={() => setOpenContactList(true)}>
-              <Button variant="contained" sx={{ width: "90%" }}>
-                New Chat
-              </Button>
-            </Box>
-            <List sx={{ p: 0 }}>
-              {chats.map((chat, key) => (
-                <Box key={key}>
-                  <ListItem onClick={() => navigate(`/chat/${chat.ChatId}`)} disablePadding>
-                    <ListItemButton selected={chatId == chat.ChatId}>{<ListItemText primary="Jeff" />}</ListItemButton>
-                  </ListItem>
-                  <Divider />
-                </Box>
-              ))}
-            </List>
+          <Box sx={{ ml: 1 }}>
+            <CustomBreadcrumbs root={root} breadcrumbEnding={"Chat"} />
           </Box>
+          <Divider sx={{ mt: 2 }} />
+          <Box sx={{ display: "flex", justifyContent: "center", my: 1 }} onClick={() => setOpenContactList(true)}>
+            <Button variant="contained" sx={{ width: "90%" }} >New Chat</Button>
+          </Box>
+          <List sx={{ p: 0 }}>
+            {chats.map((chat, key) => (
+              <Box key={key}>
+                <ListItem onClick={() => navigate(`/chat/${chat.ChatId}`)} disablePadding>
+                  <ListItemButton selected={chatId == chat.ChatId}>{<ListItemText primary="Jeff" />}</ListItemButton>
+                </ListItem>
+                <Divider />
+              </Box>
+            ))}
+          </List>
+        </Box>
         </Box>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, width: { sm: `calc(100% - ${drawerWidth}px)` }, pb: 10 }}>
@@ -230,7 +262,7 @@ function Chat({ userInfo }) {
           <Typography variant="h6" sx={{ textAlign: "center", display: { xs: "none", md: "block" } }}>
             {/* {selectedChat.name} */}
           </Typography>
-          <ChatUser chatId={1} userInfo={userInfo} />
+          <ChatUser chatId={1} userInfo={userInfo}/>
         </Box>
       </Box>
       <Loader open={openLoading} />
