@@ -25,7 +25,7 @@ async function lambda_handler(event, context) {
     const attemptsResponse = await dynamodb.get(getAttemptsParams).promise();
     const attempts = attemptsResponse.Item;
     if (!attempts || !attempts.QuizAttempt || !attempts.QuizMaxAttempts) {
-      throw new Error("Invalid response from DynamoDB");
+      throw new Error("Invalid response from DynamoDB" + attempts);
     }
 
     if (attempts.QuizAttempt >= attempts.QuizMaxAttempts) {
