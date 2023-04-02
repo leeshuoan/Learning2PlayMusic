@@ -82,14 +82,16 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
         }
         return usr;
       }, {});
-      user.Attributes = userAttributes;
-      if (user.Attributes.Role != "SuperAdmin" && user.Enabled) {
-        fetchedUserIds.push(user.Username);
-        user.UserStatus = user.UserStatus == "FORCE_CHANGE_PASSWORD" ? "Change Password" : "Confirmed";
-        let date = new Date(user.UserCreateDate);
-        let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-        user.UserCreateDate = formattedDate;
-        nonAdminUsersData.push(user);
+      if (userAttributes.Role == "User" || userAttributes.Role == "Teacher") {
+        user.Attributes = userAttributes;
+        if (user.Attributes.Role != "SuperAdmin" && user.Enabled) {
+          fetchedUserIds.push(user.Username);
+          user.UserStatus = user.UserStatus == "FORCE_CHANGE_PASSWORD" ? "Change Password" : "Confirmed";
+          let date = new Date(user.UserCreateDate);
+          let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+          user.UserCreateDate = formattedDate;
+          nonAdminUsersData.push(user);
+        }
       }
     });
     // settle courses user is enrolled in

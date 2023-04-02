@@ -87,6 +87,7 @@ const SuperAdminUserManagement = (userInfo) => {
         }
         return usr;
       }, {});
+      console.log(userAttributes.Role);
       user.Attributes = userAttributes;
       user.Enabled = user.Enabled ? "Enabled" : "Disabled";
       user.UserStatus = user.UserStatus == "FORCE_CHANGE_PASSWORD" ? "Change Password" : "Confirmed";
