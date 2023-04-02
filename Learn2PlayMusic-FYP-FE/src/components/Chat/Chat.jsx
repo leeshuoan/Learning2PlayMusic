@@ -1,39 +1,39 @@
-import HomeIcon from "@mui/icons-material/Home";
-import MenuIcon from "@mui/icons-material/Menu";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import ChatUser from "./ChatUser";
 import { Box, Breadcrumbs, Button, Card, Divider, Drawer, Grid, IconButton, InputBase, Link, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography } from "@mui/material";
-import { addDoc, collection, limit, orderBy, query } from "firebase/firestore";
-import { useEffect, useRef, useState } from "react";
-import { useCollectionData } from "react-firebase-hooks/firestore";
-import { useNavigate } from "react-router-dom";
 import useAppBarHeight from "../utils/AppBarHeight";
 import CustomBreadcrumbs from "../utils/CustomBreadcrumbs";
-import { db } from "../utils/firebase";
+import HomeIcon from "@mui/icons-material/Home";
+import MenuIcon from "@mui/icons-material/Menu";
 import Loader from "../utils/Loader";
-import ChatMessage from "./ChatMessage";
-const drawerWidth = 240;
+import TransitionModal from "../utils/TransitionModal";
+import CloseIcon from "@mui/icons-material/Close";
 
-function Chat(userInfo) {
-  const userId = userInfo.userInfo.id;
-  const contactListAPI = `${import.meta.env.VITE_API_URL}/user/chat/contactlist?userId=${userId}`;
-  const messagesEndRef = useRef(null);
+function Chat({ userInfo }) {
+  const { chatId } = useParams("chatId")
+  const drawerWidth = 240;
   const [contacts, setContacts] = useState([{ id: "", name: "" }]);
+  const [chats, setChats] = useState([]);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openLoading, setOpenLoading] = useState(true);
   const [selectedChat, setSelectedChat] = useState(contacts[0]);
-  const [newMsg, setNewMsg] = useState("");
-  const [root, setRoot] = useState(userInfo.userInfo.role == "Admin" ? "/admin" : userInfo.userInfo.role == "User" ? "/home" : "/teacher");
+  const [openContactList, setOpenContactList] = useState(false);
+  const [root, setRoot] = useState(userInfo.role == "Admin" ? "/admin" : userInfo.role == "User" ? "/home" : "/teacher");
   const navigate = useNavigate();
 
-  const messagesRef = collection(db, "Chat#1");
-  const chatQuery = query(messagesRef, orderBy("createdAt", "asc"), limit(25));
-
-  const [messages, loadingMsgs, error] = useCollectionData(chatQuery, {
-    idField: "id",
-  });
-
-  const scrollToBottom = () => {
-    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  const modalStyle = {
+    position: "relative",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "90%",
+    maxWidth: "500px",
+    bgcolor: "background.paper",
+    border: "1px solid #000",
+    borderRadius: 2,
+    p: 4,
   };
 
   const handleDrawerToggle = () => {
@@ -59,48 +59,48 @@ function Chat(userInfo) {
   //     return false; // message is valid
   //   }
   // }
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter" && newMsg !== "") {
-      sendMsg();
-    }
-  };
-  const sendMsg = async () => {
-    // if (invalidMessage(newMsg)) {
-    //   return; //show some message?
-    // }
-    var chatMsg = newMsg.replace(/[6|8|9]\d{7}|\+65[6|8|9]\d{7}|\+65\s[6|8|9]\d{7}/g, "*********").replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/, "*********");
-    console.log(chatMsg);
-    await addDoc(messagesRef, {
-      text: chatMsg,
-      createdAt: new Date(),
-      uid: userInfo.userInfo.id,
-    });
-    console.log("Message sent!");
-    setNewMsg("");
-  };
 
-  async function getAPI(endpoint) {
-    const response = await fetch(endpoint, {
+  async function request(endpoint) {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
       },
     });
     return response.json();
   }
 
+  const contactListAPI = request(`/user/chat/contactlist?userId=${userInfo.id}`)
+  const openChatAPI = request(`/user/chat?userId=${userInfo.id}`)
+
   useEffect(() => {
     async function fetchContacts() {
-      const [res] = await Promise.all([getAPI(contactListAPI)]);
-      console.log(res);
-      var fetchedData = res.map((contact) => {
-        console.log(contact);
+      const [res1, res2] = await Promise.all([contactListAPI, openChatAPI]);
+      console.log(res1);
+      console.log(res2);
+
+      let contactIds = [];
+      const newChatData = res2.map((chat) => {
+        if (!contactIds.includes(chat.ChatId)) {
+          return {
+            chatId: chat.ChatId,
+            name: chat.ChatName,
+            role: chat.ChatRole
+          }
+        }
+      })
+
+      const contactData = res1.map((contact) => {
         let contactKeys = Object.keys(contact);
         let id = "";
         let name = "";
+        let role = "";
         for (let k of contactKeys) {
           if (k.endsWith("Id")) {
             id = contact[k];
+            role = k.split("Id")[0];
+            role = role.charAt(0).toUpperCase() + role.slice(1);
           }
           if (k.endsWith("Name")) {
             name = contact[k];
@@ -109,19 +109,42 @@ function Chat(userInfo) {
         return {
           id: id,
           name: name,
+          role: role
         };
       });
-      setContacts(fetchedData);
-      console.log(fetchedData);
+
+      setContacts(contactData);
+      setChats(res2)
+
     }
+    console.log(userInfo)
     fetchContacts().then(() => {
       setOpenLoading(false);
-      scrollToBottom();
     });
-  }, [messages]);
+  }, [userInfo]);
 
   return (
     <Box sx={{ display: "flex" }}>
+      <TransitionModal open={openContactList} style={modalStyle}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Typography variant="h6">Contact List</Typography>
+          <IconButton onClick={() => setOpenContactList(false)}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Divider />
+        <List sx={{ p: 0 }}>
+          {contacts.map((contact, key) => (
+            <Box key={key}>
+              <ListItem key={contact.id} disablePadding>
+                <ListItemButton>{<ListItemText primary={contact.name} />}</ListItemButton>
+              </ListItem>
+              <Divider />
+            </Box>
+          ))}
+        </List>
+      </TransitionModal>
+
       {/* DEFAULT RENDER */}
       <Drawer variant="permanent" sx={{ display: { xs: "none", md: "block" }, width: drawerWidth, flexShrink: 1, [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" } }}>
         <Toolbar />
@@ -130,14 +153,17 @@ function Chat(userInfo) {
             <CustomBreadcrumbs root={root} breadcrumbEnding={"Chat"} />
           </Box>
           <Divider sx={{ mt: 2 }} />
+          <Box sx={{ display: "flex", justifyContent: "center", my: 1 }} onClick={() => setOpenContactList(true)}>
+            <Button variant="contained" sx={{ width: "90%" }} >New Chat</Button>
+          </Box>
           <List sx={{ p: 0 }}>
-            {contacts.map((contact) => (
-              <>
-                <ListItem key={contact.id} selected={selectedChat.id == contact.id} disablePadding>
-                  <ListItemButton>{<ListItemText primary={contact.name} />}</ListItemButton>
+            {chats.map((chat, key) => (
+              <Box key={key}>
+                <ListItem onClick={() => navigate(`/chat/${chat.ChatId}`)} disablePadding>
+                  <ListItemButton selected={chatId == chat.ChatId}>{<ListItemText primary="Jeff" />}</ListItemButton>
                 </ListItem>
                 <Divider />
-              </>
+              </Box>
             ))}
           </List>
         </Box>
@@ -151,37 +177,30 @@ function Chat(userInfo) {
           keepMounted: true, // Better open performance on mobile.
         }}
         sx={{
-          display: { xs: "block", sm: "none" },
+          display: { xs: "block", md: "none" },
           "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
         }}>
         <Box sx={{ overflow: "auto" }}>
           <Toolbar />
-          <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ ml: 1, mt: 2 }}>
-            <Link
-              underline="hover"
-              color="inherit"
-              sx={{ display: "flex", alignItems: "center" }}
-              onClick={() => {
-                userInfo.userInfo.role == "Teacher" ? navigate("/teacher") : navigate("/home");
-              }}>
-              <HomeIcon sx={{ mr: 0.5 }} />
-              Home
-            </Link>
-            <Typography>Chat</Typography>
-          </Breadcrumbs>
+          <Box sx={{ overflow: "auto" }}>
+          <Box sx={{ ml: 1 }}>
+            <CustomBreadcrumbs root={root} breadcrumbEnding={"Chat"} />
+          </Box>
           <Divider sx={{ mt: 2 }} />
-          {/* <List sx={{ p: 0 }}>
-            {contacts.map((contact) => (
-              <div>
-                <ListItem key={contact.id} disablePadding>
-                  <ListItemButton>
-                    <ListItemText primary={contact.name} />
-                  </ListItemButton>
+          <Box sx={{ display: "flex", justifyContent: "center", my: 1 }} onClick={() => setOpenContactList(true)}>
+            <Button variant="contained" sx={{ width: "90%" }} >New Chat</Button>
+          </Box>
+          <List sx={{ p: 0 }}>
+            {chats.map((chat, key) => (
+              <Box key={key}>
+                <ListItem onClick={() => navigate(`/chat/${chat.ChatId}`)} disablePadding>
+                  <ListItemButton selected={chatId == chat.ChatId}>{<ListItemText primary="Jeff" />}</ListItemButton>
                 </ListItem>
                 <Divider />
-              </div>
+              </Box>
             ))}
-          </List> */}
+          </List>
+        </Box>
         </Box>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, width: { sm: `calc(100% - ${drawerWidth}px)` }, pb: 10 }}>
@@ -210,22 +229,7 @@ function Chat(userInfo) {
           <Typography variant="h6" sx={{ textAlign: "center", display: { xs: "none", md: "block" } }}>
             {/* {selectedChat.name} */}
           </Typography>
-          {messages && messages.map((msg) => <ChatMessage key={msg.id} userInfo={userInfo} message={msg} />)}
-          <div ref={messagesEndRef} />
-          <Box sx={{ display: "flex", position: "fixed", bottom: 0, width: { xs: `calc(100% - ${40}px)`, md: `calc(100% - ${drawerWidth + 40}px)` }, p: 3, pl: 0 }}>
-            <Card variant="contained" sx={{ flexGrow: 1, display: "flex", alignItems: "center", p: 1, mr: 3, border: "black" }}>
-              <InputBase sx={{ width: "100%" }} className="inputBase" placeholder="Type your message" value={newMsg} onChange={(e) => setNewMsg(e.target.value)} onKeyDown={handleKeyPress} />
-            </Card>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => {
-                sendMsg();
-              }}
-              disabled={newMsg === ""}>
-              Send
-            </Button>
-          </Box>
+          <ChatUser chatId={1} userInfo={userInfo}/>
         </Box>
       </Box>
       <Loader open={openLoading} />
