@@ -88,7 +88,9 @@ async function lambda_handler(event, context) {
 
     await dynamodb.update(updateStudentQuizParams).promise();
 
-    return response_200(`Quiz ${quizId} successfully submitted`);
+    return response_200(`Quiz ${quizId} successfully submitted`, {
+      "score": quizScore
+    });
   } catch (e) {
     return response_400(e.message);
   }
