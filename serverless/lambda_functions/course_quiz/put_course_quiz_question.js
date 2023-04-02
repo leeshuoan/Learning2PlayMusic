@@ -1,5 +1,8 @@
 const DynamoDB = require("aws-sdk/clients/dynamodb");
 const AWS = require("aws-sdk");
+const request = require('request');
+const buffer = require('buffer');
+
 
 const { response_200, response_400, response_500 } = require("./responses");
 
@@ -29,17 +32,25 @@ async function lambda_handler(event, context) {
     let uploadedImage;
     let s3Params;
     if (requestBody && "questionImage" in requestBody && requestBody["questionImage"] != "") {
-      const base64data = requestBody.questionImage;
-      const fileExtension = base64data.split(";")[0].split("/")[1];
-      const base64Image = base64data.replace(/^data:image\/\w+;base64,/, "");
-      const imageBuffer = Buffer.from(base64Image, "base64");
-      s3Params = {
-        Bucket: bucketName,
-        Key: `Course${courseId}/Quiz${quizId}/Question${qnNumber}.${fileExtension}`,
-        Body: imageBuffer,
-        ContentType: "image/" + fileExtension,
-      };
-      uploadedImage = await s3.putObject(s3Params).promise();
+
+      request.get(url, async (error, response, body) => {
+        if (error) {
+          console.error(error);
+        } else {
+          const base64data = Buffer.from(body).toString('base64');
+          const fileExtension = base64data.split(";")[0].split("/")[1];
+          const base64Image = base64data.replace(/^data:image\/\w+;base64,/, "");
+          const imageBuffer = Buffer.from(base64Image, "base64");
+          s3Params = {
+            Bucket: bucketName,
+            Key: `Course${courseId}/Quiz${quizId}/Question${qnNumber}.${fileExtension}`,
+            Body: imageBuffer,
+            ContentType: "image/" + fileExtension,
+          };
+          uploadedImage = await s3.putObject(s3Params).promise();
+        }
+      });      
+
     }
 
     if (!options.includes(answer)) {

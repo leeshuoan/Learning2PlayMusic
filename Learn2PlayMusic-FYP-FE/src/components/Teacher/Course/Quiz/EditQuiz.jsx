@@ -172,7 +172,7 @@ const EditQuiz = ({ userInfo }) => {
         <Box>
           <Card sx={{ py: 3, px: 5, mt: 2 }}>
             <Typography variant="h5" sx={{ mb: 2 }}>
-              New Quiz
+              Edit Quiz
             </Typography>
             <form onSubmit={editQuiz}>
               <Box sx={{ mt: 1 }}>
