@@ -290,6 +290,9 @@ const AdminEnrolmentManagement = ({ userInfo }) => {
               </Box>
             )}></MaterialReactTable>
         </Box>
+        <Typography variant="body2" sx={{ m: 1, mt: 4 }}>
+          <b>Note:</b> Admin users cannot be enrolled in courses.
+        </Typography>
         <Loader open={open} />
       </Suspense>
     </Container>

@@ -27,27 +27,26 @@ def lambda_handler(event, context):
         enrolled = []
         does_not_exist = []
         userIds = request_body["userIds"]
-
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
-        with table.batch_write_items() as batch:
-            for userId in userIds:
-                user = get_user(userId)
-                if not user:
-                    does_not_exist.append(userId)
-                # check user type
-                if "studentId" in user:
-                    userType = "Student"
-                else:
-                    userType = "Teacher"
-                # check if <userId><courseId> combination exists in database
-                if combination_id_exists(userType, userId, "Course", courseId):
-                    already_enrolled.append(userId)
-                # does not exist, so enrol
-                else:
-                    enrolled.append(userId)
-                    item = {"PK": f"{userType}#{userId}", "SK": f"Course#{courseId}"}
-                    batch.put_item(Item=item)
+        dynamodb = boto3.client("dynamodb")
+        if len(userIds) <= 25:
+            dynamodb.batch_write_item(
+                RequestItems=build_request_items_body(
+                    userIds, courseId, already_enrolled, enrolled, does_not_exist
+                )
+            )
+        else:
+            # split userIds into chunks of 25
+            userId_chunks = [userIds[i : i + 25] for i in range(0, len(userIds), 25)]
+            for userId_chunk in userId_chunks:
+                dynamodb.batch_write_item(
+                    RequestItems=build_request_items_body(
+                        userId_chunk,
+                        courseId,
+                        already_enrolled,
+                        enrolled,
+                        does_not_exist,
+                    )
+                )
 
         return (
             response_200_items({"enrolled": enrolled})
@@ -72,3 +71,36 @@ def lambda_handler(event, context):
         print("❗Error: ", e)
 
         return response_500(e)
+
+
+def build_request_items_body(
+    userIds, courseId, already_enrolled, enrolled, does_not_exist
+):
+    request_items = []
+
+    for userId in userIds:
+        user = get_user(userId)
+        if not user:
+            does_not_exist.append(userId)
+        # check user type
+        if "studentId" in user:
+            userType = "Student"
+        else:
+            userType = "Teacher"
+        # check if <userId><courseId> combination exists in database
+        if combination_id_exists(userType, userId, "Course", courseId):
+            already_enrolled.append(userId)
+        # does not exist, so enrol
+        else:
+            enrolled.append(userId)
+            request_items.append(
+                {
+                    "PutRequest": {
+                        "Item": {
+                            "PK": {"S": f"{userType}#{userId}"},
+                            "SK": {"S": f"Course#{courseId}"},
+                        }
+                    }
+                }
+            )
+    return {"LMS": request_items}
