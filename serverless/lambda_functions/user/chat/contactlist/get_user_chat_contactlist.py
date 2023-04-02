@@ -1,10 +1,11 @@
-import sys
-import boto3
 import json
+import sys
 
-from global_functions.responses import *
-from global_functions.exists_in_db import *
+import boto3
 from global_functions.cognito import *
+from global_functions.exists_in_db import *
+from global_functions.responses import *
+
 
 def lambda_handler(event, context):
 
@@ -16,6 +17,7 @@ def lambda_handler(event, context):
 
         user = get_user(userId)
         admins = get_users('Admins')
+        super_admins = get_users('SuperAdmins')
         students = get_users('Users')
         teachers = get_users('Teachers')
         dynamodb = boto3.resource("dynamodb")
@@ -27,15 +29,20 @@ def lambda_handler(event, context):
             if has_student_teacher_pairing(user['studentId'], teacher['teacherId'], table) and teacher['teacherId']!=userId:
                 contactlist.append(teacher)
           [contactlist.append(admin) for admin in admins]
+          [contactlist.append(super_admin) for super_admin in super_admins]
+
 
         elif 'teacherId' in user:
           for student in students:
               if has_student_teacher_pairing(student['studentId'], user['teacherId'], table) and student['studentId']!=userId:
                   contactlist.append(student)
           [contactlist.append(admin) for admin in admins]
+          [contactlist.append(super_admin) for super_admin in super_admins]
+
 
         else: # is admin
           [contactlist.append(admin) for admin in admins if admin['adminId']!=userId]
+          [contactlist.append(super_admin) for super_admin in super_admins if super_admin['adminId']!=userId]
           [contactlist.append(teacher) for teacher in teachers if teacher['teacherId']!=userId]
           [contactlist.append(student) for student in students if student['studentId']!=userId]
 
