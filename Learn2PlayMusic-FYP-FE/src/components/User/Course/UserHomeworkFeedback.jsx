@@ -22,13 +22,24 @@ const UserHomeworkFeedback = (userInfo) => {
     return response.json();
   }
 
+  function returnScoreDescription(score) {
+    const scoreDescriptions = {
+      1: "1 - Bad",
+      2: "2 - Poor",
+      3: "3 - Good",
+      4: "4 - Very Good",
+      5: "5 - Excellent",
+    };
+
+    return scoreDescriptions[score] || "No Score";
+  }
+
   const getCourseAPI = request(`/course?courseId=${courseid}`)
   const getHomeworkFeedbackAPI = request(`/course/homework/feedback?courseId=${courseid}&studentId=${userInfo.userInfo.id}&homeworkId=${homeworkId}`)
 
   useEffect(() => {
     async function fetchData() {
       const [data1, data2] = await Promise.all([getCourseAPI, getHomeworkFeedbackAPI])
-      console.log(data2)
 
       let courseData = {
         id: data1[0].SK.split("#")[1],
@@ -100,7 +111,7 @@ const UserHomeworkFeedback = (userInfo) => {
           <Box sx={{ display: "flex" }}>
             <Box sx={{ mr: 3 }}>
               <Typography variant="subsubtitle" sx={{ mb: 2 }}>HOMEWORK SCORE</Typography>
-              <Typography variant="body1" sx={{ mb: 2 }}>{feedback.HomeworkScore * 100}%</Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>{returnScoreDescription(feedback.HomeworkScore)}</Typography>
             </Box>
             <Box>
               <Typography variant="subsubtitle" sx={{ mb: 2 }}>TEACHER'S COMMENTS</Typography>

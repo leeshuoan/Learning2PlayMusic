@@ -28,12 +28,8 @@ const TeacherHomeworkOverview = () => {
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
   const getCourseStudentsAPI = request(`/course/student?courseId=${courseid}`);
-  const getHomeworkAPI = request(
-    `/course/homework?courseId=${courseid}&homeworkId=${homeworkId}`
-  );
-  const getHomeworkFeedbackAPI = request(
-    `/course/homework/feedback?courseId=${courseid}&homeworkId=${homeworkId}`
-  );
+  const getHomeworkAPI = request( `/course/homework?courseId=${courseid}&homeworkId=${homeworkId}` );
+  const getHomeworkFeedbackAPI = request( `/course/homework/feedback?courseId=${courseid}&homeworkId=${homeworkId}` );
 
   https: useEffect(() => {
     async function fetchData() {
@@ -52,14 +48,8 @@ const TeacherHomeworkOverview = () => {
       };
       setCourse(courseData);
 
-      let formattedDueDate =
-        new Date(data2.HomeworkDueDate).toLocaleDateString() +
-        " " +
-        new Date(data2.HomeworkDueDate).toLocaleTimeString();
-      let formattedAssignedDate =
-        new Date(data2.HomeworkAssignedDate).toLocaleDateString() +
-        " " +
-        new Date(data2.HomeworkAssignedDate).toLocaleTimeString();
+      let formattedDueDate = new Date(data2.HomeworkDueDate).toLocaleDateString() + " " + new Date(data2.HomeworkDueDate).toLocaleTimeString();
+      let formattedAssignedDate = new Date(data2.HomeworkAssignedDate).toLocaleDateString() + " " + new Date(data2.HomeworkAssignedDate).toLocaleTimeString();
 
       let homeworkData = {
         id: data2.SK.split("#")[1],
@@ -74,14 +64,18 @@ const TeacherHomeworkOverview = () => {
       setHomework(homeworkData);
 
       const data = data3.map((homework) => {
+        const studentId = homework.SK.split("#")[1].split("Homework")[0]
         const studentName = homework.StudentName;
-        const homeworkScore =
-          homework.HomeworkScore == 0 ? "-" : homework.HomeworkScore; // assuming that no students will get 0 (otherwise will need change db :/)
+        const homeworkScore = homework.HomeworkScore == 0 ? "-" : homework.HomeworkScore; // assuming that no students will get 0 (otherwise will need change db :/)
         const lastSubmissionDate = new Date(homework.LastSubmissionDate);
         const formattedLastSubmissionDate = `${lastSubmissionDate.toLocaleDateString()} ${lastSubmissionDate.toLocaleTimeString()}`;
+        const reviewDate = new Date(homework.ReviewDate);
+        const formattedReviewDate = `${reviewDate.toLocaleDateString()} ${reviewDate.toLocaleTimeString()}`;
         return {
           ...homework,
           LastSubmissionDate: formattedLastSubmissionDate,
+          ReviewDate: formattedReviewDate,
+          StudentId: studentId,
           StudentName: studentName,
           HomeworkScore: homeworkScore,
         };
@@ -100,7 +94,9 @@ const TeacherHomeworkOverview = () => {
         accessorKey: "StudentName",
         id: "studentName",
         header: "Student Name",
-        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/homework/view/${row.original.id}`)}>{row.original.StudentName}</Link>,
+        Cell: ({ cell, row }) =>
+            <Link onClick={() => navigate(`/teacher/course/${courseid}/homework/${homeworkId}/grade/${row.original.StudentId}`,
+            {state: row.original})}>{row.original.StudentName}</Link>,
       },
       {
         accessorKey: "LastSubmissionDate",
@@ -189,7 +185,7 @@ const TeacherHomeworkOverview = () => {
             <MaterialReactTable
               columns={columns}
               data={data}
-              enableHiding={false}
+              enableHiding={true}
               enableFullScreenToggle={false}
               enableDensityToggle={false}
               initialState={{ density: "compact" }}
