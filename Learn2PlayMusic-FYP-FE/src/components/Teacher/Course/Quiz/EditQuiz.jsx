@@ -12,6 +12,7 @@ const EditQuiz = ({ userInfo }) => {
   const { courseid } = useParams();
   const { quizId } = useParams();
   const [course, setCourse] = useState({});
+  const [disableEditQuizButton, setDisableEditQuizButton] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [quizTitle, setQuizTitle] = useState("");
   const [quizDescription, setQuizDescription] = useState("");
@@ -135,6 +136,7 @@ const EditQuiz = ({ userInfo }) => {
 
   const addQuestion = () => {
     setOpenAddQuestion(true);
+    setDisableEditQuizButton(true);
     return;
   };
 
@@ -199,10 +201,10 @@ const EditQuiz = ({ userInfo }) => {
                 <TextField value={quizDescription} onChange={() => setQuizDescription(event.target.value)} fullWidth multiline rows={3} />
               </Box>
               {quizQuestions.map((question, key) => {
-                return <EditQuizQuestion key={key} question={question} userInfo={userInfo} handleRefreshData={handleRefreshData} />;
+                return <EditQuizQuestion key={key} question={question} userInfo={userInfo} handleRefreshData={handleRefreshData} handleDisableEditQuizButton={setDisableEditQuizButton} />;
               })}
               {openAddQuestion ? (
-                <EditQuizNewQuestion setOpenAddQuestion={setOpenAddQuestion} handleRefreshData={handleRefreshData} qnNumber={qnNumber} />
+                <EditQuizNewQuestion setOpenAddQuestion={setOpenAddQuestion} handleRefreshData={handleRefreshData} qnNumber={qnNumber} handleDisableEditQuizButton={setDisableEditQuizButton} />
               ) : (
                 <Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>
                   Add Question
@@ -217,7 +219,7 @@ const EditQuiz = ({ userInfo }) => {
                   }}>
                   Cancel
                 </Button>
-                <Button variant="contained" type="submit">
+                <Button variant="contained" type="submit" disabled={disableEditQuizButton}>
                   Edit Quiz
                 </Button>
               </Box>

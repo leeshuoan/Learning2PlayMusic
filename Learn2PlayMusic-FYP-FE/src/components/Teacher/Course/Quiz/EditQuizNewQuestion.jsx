@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber, handleRefreshData }) => {
+const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber, handleRefreshData, handleDisableEditQuizButton }) => {
   const { courseid } = useParams();
   const { quizId } = useParams();
   const [question, setQuestion] = useState("");
@@ -105,6 +105,7 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber, handleRefreshData }
       .then((res) => {
         if (res.ok) {
           setOpenAddQuestion(false);
+          handleDisableEditQuizButton(false);
           handleRefreshData();
           toast.success("Question added successfully!");
         }
@@ -200,7 +201,14 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, qnNumber, handleRefreshData }
           </RadioGroup>
         </Box>
         <Box sx={{ display: "flex", mt: 2 }}>
-          <Button variant="outlined" fullWidth sx={{ color: "primary.main" }} onClick={() => setOpenAddQuestion(false)}>
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{ color: "primary.main" }}
+            onClick={() => {
+              setOpenAddQuestion(false);
+              handleDisableEditQuizButton(false);
+            }}>
             Cancel
           </Button>
           <Button variant="contained" fullWidth sx={{ ml: 2 }} onClick={() => addQuestion()}>
