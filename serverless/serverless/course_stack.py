@@ -8,7 +8,6 @@ from aws_cdk import aws_sns as sns
 from aws_cdk import Duration
 from constructs import Construct
 
-
 class CourseStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -18,7 +17,6 @@ class CourseStack(Stack):
         #################
         ### CONSTANTS ###
         #################
-
         FUNCTIONS_FOLDER = "./lambda_functions/"
         COURSE_FUNCTIONS_FOLDER = "course"
         COURSE_STUDENT_FUNCTIONS_FOLDER = "course.student"
