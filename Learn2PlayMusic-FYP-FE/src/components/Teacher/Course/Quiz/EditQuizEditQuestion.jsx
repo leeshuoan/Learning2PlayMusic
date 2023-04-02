@@ -137,7 +137,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
             <InputLabel id="question-image-label">Image [Optional]</InputLabel>
             {console.log(file)}
             {console.log(image)}
-            {file == null && image == null ? (
+            {file == null && image == "" ? (
               <Button variant="contained" sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: "none", ":hover": { backgroundColor: "hovergrey" } }} component="label">
                 ADD A FILE
                 <input hidden accept="image/*" multiple type="file" onChange={fileUploaded} />
@@ -161,7 +161,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
                     <IconButton
                       sx={{ pl: 0 }}
                       onClick={() => {
-                        setImage(null);
+                        setImage("");
                       }}>
                       <ClearIcon />
                     </IconButton>
