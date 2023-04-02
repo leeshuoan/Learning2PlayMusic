@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuizButton }) => {
+const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuizButton, questionNumber }) => {
   const { courseid } = useParams();
   const { quizId } = useParams();
   const [question, setQuestion] = useState("");
@@ -78,7 +78,6 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
     }
 
     const newQnInfo = {
-      qnNumber: qnInfo.qnNumber,
       question: question,
       questionOptionType: questionType,
       options: options,
@@ -123,7 +122,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
     <>
       <Card variant="outlined" sx={{ boxShadow: "none", mt: 3, p: 2 }}>
         <Typography variant="h6" sx={{ mb: 1 }}>
-          Question {qnInfo.qnNumber}
+          Question {questionNumber}
         </Typography>
         <Grid container sx={{ mb: 2 }} spacing={2}>
           <Grid item xs={12} md={6}>

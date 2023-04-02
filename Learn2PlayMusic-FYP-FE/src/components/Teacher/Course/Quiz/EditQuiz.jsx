@@ -20,17 +20,19 @@ const EditQuiz = ({ userInfo }) => {
   const [visibility, setVisibility] = useState(true);
   const [quizQuestions, setQuizQuestions] = useState([
     {
-      qnNumber: 1,
+      questionId: "",
       question: "",
       questionOptionType: "MCQ",
       options: ["", "", "", ""],
       answer: "",
     },
   ]);
-  const [qnNumber, setQnNumber] = useState(0);
   const [openAddQuestion, setOpenAddQuestion] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
-
+  let questionNumber = 0;
+  const questionNumberDecrease = () => {
+    questionNumber--;
+  };
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
       method: "GET",
@@ -77,11 +79,9 @@ const EditQuiz = ({ userInfo }) => {
       setQuizMaxAttempts(data2.QuizMaxAttempts);
       setVisibility(data2.Visibility);
 
-      let i = 1;
       const quizQuestionData = data3.map((qn) => {
         return {
-          qnId: qn.SK.split("Question#")[1],
-          qnNumber: i++,
+          questionId: qn.SK.split("Question#")[1],
           question: qn.Question,
           questionOptionType: qn.QuestionOptionType,
           options: qn.Options,
@@ -89,7 +89,6 @@ const EditQuiz = ({ userInfo }) => {
           questionImage: qn.QuestionImage,
         };
       });
-      setQnNumber(i);
       setQuizQuestions(quizQuestionData);
     }
 
@@ -135,6 +134,7 @@ const EditQuiz = ({ userInfo }) => {
   }
 
   const addQuestion = () => {
+    questionNumber++;
     setOpenAddQuestion(true);
     setDisableEditQuizButton(true);
     return;
@@ -201,10 +201,11 @@ const EditQuiz = ({ userInfo }) => {
                 <TextField value={quizDescription} onChange={() => setQuizDescription(event.target.value)} fullWidth multiline rows={3} />
               </Box>
               {quizQuestions.map((question, key) => {
-                return <EditQuizQuestion key={key} question={question} userInfo={userInfo} handleRefreshData={handleRefreshData} handleDisableEditQuizButton={setDisableEditQuizButton} />;
+                questionNumber++;
+                return <EditQuizQuestion key={key} questionNumber={questionNumber} question={question} userInfo={userInfo} handleRefreshData={handleRefreshData} handleDisableEditQuizButton={setDisableEditQuizButton} />;
               })}
               {openAddQuestion ? (
-                <EditQuizNewQuestion setOpenAddQuestion={setOpenAddQuestion} handleRefreshData={handleRefreshData} qnNumber={qnNumber} handleDisableEditQuizButton={setDisableEditQuizButton} />
+                <EditQuizNewQuestion setOpenAddQuestion={setOpenAddQuestion} handleRefreshData={handleRefreshData} handleDisableEditQuizButton={setDisableEditQuizButton} />
               ) : (
                 <Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>
                   Add Question

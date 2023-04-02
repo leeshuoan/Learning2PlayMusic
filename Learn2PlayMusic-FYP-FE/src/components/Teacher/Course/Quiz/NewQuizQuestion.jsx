@@ -2,7 +2,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { Box, Button, Card, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
-const NewQuizQuestion = ({ qnInfo, handleQuestionChange }) => {
+const NewQuizQuestion = ({ qnInfo, handleQuestionChange, questionNumber }) => {
   const [question, setQuestion] = useState("");
   const [file, setFile] = useState(null);
   const [image, setImage] = useState("");
@@ -26,7 +26,7 @@ const NewQuizQuestion = ({ qnInfo, handleQuestionChange }) => {
 
   useEffect(() => {
     const newQnInfo = {
-      qnNumber: qnInfo.qnNumber,
+      questionId: qnInfo.questionId,
       question: question,
       questionOptionType: questionType,
       options: options,
@@ -70,7 +70,7 @@ const NewQuizQuestion = ({ qnInfo, handleQuestionChange }) => {
     <>
       <Card variant="outlined" sx={{ boxShadow: "none", mt: 3, p: 2 }}>
         <Typography variant="h6" sx={{ mb: 1 }}>
-          Question {qnInfo.qnNumber}
+          Question {questionNumber}
         </Typography>
         <Grid container sx={{ mb: 2 }} spacing={2}>
           <Grid item xs={12} md={6}>
