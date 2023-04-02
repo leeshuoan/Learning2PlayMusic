@@ -444,12 +444,20 @@ class CourseStack(Stack):
             runtime=_lambda.Runtime.NODEJS_16_X,
             handler=f"put_course_quiz_question.lambda_handler",
             code=_lambda.Code.from_asset(
-                f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"
+                f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}",
+                bundling=BundlingOptions(
+                                        nodejs={
+                                            "target": "index.js",
+                                            "externalModules": [
+                                                "request",
+                                                "buffer"
+                                            ]
+                                        })
             ),
             role=S3_DYNAMODB_ROLE,
             environment={
                 "QUESTION_IMAGE_BUCKET_NAME": L2PMA_question_image_bucket.bucket_name
-            }
+            },
         )
         # /course/report Functions
         get_course_report = _lambda.Function(
