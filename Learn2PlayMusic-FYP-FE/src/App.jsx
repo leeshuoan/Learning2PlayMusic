@@ -166,6 +166,7 @@ function App() {
           </Route>
 
           <Route path="chat" element={<Chat userInfo={userInfo} />} />
+          <Route path="chat/:chatId" element ={<Chat userInfo={userInfo} />}/>
           <Route path="profile" element={<Profile userInfo={userInfo} refreshUserInfo={handleRefreshUserInfo} />}></Route>
           <Route path="resetpassword" element={<ForgotPassword />}></Route>
           <Route path="changepassword" element={<ChangePassword />}></Route>

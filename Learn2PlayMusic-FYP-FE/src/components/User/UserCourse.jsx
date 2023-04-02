@@ -89,7 +89,6 @@ const UserCourse = ({ userInfo }) => {
               const id = homework.SK.split("Homework#")[1];
               const date = new Date(homework.HomeworkDueDate);
               const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-
               const homeworkFeedback = await fetchHomeworkFeedback(id);
 
               return {

@@ -3,10 +3,11 @@ import { Box, Button, Card, FormControlLabel, Grid, IconButton, InputLabel, Menu
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import Loader from "../../../utils/Loader";
 
-const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuizButton, questionNumber }) => {
-  const { courseid } = useParams();
-  const { quizId } = useParams();
+const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuizButton, questionNumber, handleRefreshData }) => {
+  const [loading, setLoading] = useState(false);
+  const { courseid, quizId } = useParams();
   const [question, setQuestion] = useState("");
   const [file, setFile] = useState(null);
   const [image, setImage] = useState("");
@@ -58,7 +59,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
     );
   };
 
-  const editQuestion = () => {
+  const editQuestion = async () => {
     if (question == "" || answer == "" || options.includes("")) {
       toast.error("Please fill in all the fields");
       return;
@@ -76,7 +77,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
         return;
       }
     }
-
+    setLoading(true);
     const newQnInfo = {
       question: question,
       questionOptionType: questionType,
@@ -87,8 +88,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
       quizId: quizId,
       questionId: qnInfo.questionId,
     };
-    console.log(newQnInfo);
-    fetch(`${import.meta.env.VITE_API_URL}/teacher/course/quiz/question`, {
+    fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -98,14 +98,17 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
     })
       .then((res) => {
         if (res.ok) {
+          handleRefreshData();
           setEdit(false);
           handleDisableEditQuizButton(false);
+          setLoading(false);
           toast.success("Question updated successfully!");
           return;
         }
       })
       .catch((err) => {
         console.log(err);
+        setLoading(false);
         toast.error("Failed to update question");
       });
   };
@@ -134,7 +137,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
             <InputLabel id="question-image-label">Image [Optional]</InputLabel>
             {console.log(file)}
             {console.log(image)}
-            {file == null && image == null ? (
+            {file == null && image == "" ? (
               <Button variant="contained" sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: "none", ":hover": { backgroundColor: "hovergrey" } }} component="label">
                 ADD A FILE
                 <input hidden accept="image/*" multiple type="file" onChange={fileUploaded} />
@@ -158,7 +161,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
                     <IconButton
                       sx={{ pl: 0 }}
                       onClick={() => {
-                        setImage(null);
+                        setImage("");
                       }}>
                       <ClearIcon />
                     </IconButton>
@@ -236,6 +239,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
           </Button>
         </Box>
       </Card>
+      <Loader open={loading} />
     </>
   );
 };
