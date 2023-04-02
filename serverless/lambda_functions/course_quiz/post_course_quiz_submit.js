@@ -46,8 +46,8 @@ async function lambda_handler(event, context) {
 
     for (const question of questions) {
       const SK = question.SK;
-      const qnNumber = SK.split("Question#")[1];
-      const submissionKey = "Question#" + qnNumber;
+      const questionId = SK.split("Question#")[1];
+      const submissionKey = "Question#" + questionId;
       let correct = 0;
       if (question.Answer == submissions[submissionKey]) {
         correct = 1;
@@ -57,7 +57,7 @@ async function lambda_handler(event, context) {
         TableName: "LMS",
         Key: {
           PK: `Course#${courseId}`,
-          SK: `Quiz#${quizId}Question#${qnNumber}`,
+          SK: `Quiz#${quizId}Question#${questionId}`,
         },
         UpdateExpression: `set Attempts = Attempts + :incr, Correct = Correct + :val, ${question.Answer} = ${question.Answer} + :incr`,
         ExpressionAttributeValues: {
