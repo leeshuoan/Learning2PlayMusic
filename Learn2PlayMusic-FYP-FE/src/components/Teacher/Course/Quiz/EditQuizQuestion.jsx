@@ -1,45 +1,33 @@
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { Box, Button, Card, Grid, Typography } from "@mui/material";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import TransitionModal from "../../../utils/TransitionModal";
+import ConfirmDeleteQuestion from "./ConfirmDeleteQuestion";
 import EditQuizEditQuestion from "./EditQuizEditQuestion";
-
 const EditQuizQuestion = ({ userInfo, question, questionNumber, handleRefreshData, handleDisableEditQuizButton }) => {
   const [edit, setEdit] = useState(false);
-  const { courseid, quizId } = useParams();
-
-  const deleteQuestion = () => {
-    console.log(question);
-    fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        questionId: question.questionId,
-        quizId: quizId,
-        courseId: courseid,
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          toast.error("An error occured while deleting the question");
-          return;
-        }
-        toast.success("Question deleted successfully");
-        handleRefreshData();
-      })
-      .catch((err) => {
-        console.log(err);
-        if (err.message == "Failed to fetch") {
-          toast.error("Question cannot be deleted as it is the only question in the quiz. Please delete the quiz instead.");
-        }
-      });
+  const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
+  const handleCloseModal = () => {
+    setConfirmDeleteModalOpen(false);
+    handleRefreshData();
+  };
+  const modalStyle = {
+    position: "relative",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: { xs: "60%", sm: "40%", md: "30%", lg: "25%", xl: "25%" },
+    bgcolor: "background.paper",
+    borderRadius: 2,
+    p: 4,
   };
 
   return (
     <>
+      <TransitionModal open={confirmDeleteModalOpen} handleClose={() => setConfirmDeleteModalOpen(false)} style={modalStyle}>
+        <ConfirmDeleteQuestion question={question} handleClose={() => handleCloseModal()} />
+      </TransitionModal>
+
       {!edit ? (
         <Card variant="outlined" sx={{ boxShadow: "none", mt: 3, p: 2 }}>
           <Typography variant="h6" sx={{ mb: 1 }}>
@@ -126,7 +114,7 @@ const EditQuizQuestion = ({ userInfo, question, questionNumber, handleRefreshDat
               }}>
               Edit Question
             </Button>
-            <Button variant="outlined" fullWidth color="error" sx={{ ml: 2, color: "error.main" }} onClick={() => deleteQuestion()}>
+            <Button variant="outlined" fullWidth color="error" sx={{ ml: 2, color: "error.main" }} onClick={() => setConfirmDeleteModalOpen(true)}>
               Delete Question
             </Button>
           </Box>
