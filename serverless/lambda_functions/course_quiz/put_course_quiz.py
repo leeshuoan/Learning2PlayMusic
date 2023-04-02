@@ -39,31 +39,31 @@ def lambda_handler(event, context):
             ExpressionAttributeValues=quiz_expression_attribute_values
         )
 
-        # students_response = table.query(
-        #     IndexName="SK-PK-index",
-        #     KeyConditionExpression="SK = :SK AND begins_with(PK, :PK)",
-        #     ExpressionAttributeValues={
-        #         ":SK": f"Course#{course_id}",
-        #         ":PK": "Student#"
-        #     })
+        students_response = table.query(
+            IndexName="SK-PK-index",
+            KeyConditionExpression="SK = :SK AND begins_with(PK, :PK)",
+            ExpressionAttributeValues={
+                ":SK": f"Course#{course_id}",
+                ":PK": "Student#"
+            })
 
-        # students = students_response["Items"]
-        # students_update_expression = 'SET QuizTitle = :quizTitle, QuizMaxAttempts = :quizMaxAttempts, Visibility= :visibility, QuizAttempt = :default, QuizScore= :default'
-        # students_expression_attribute_values = {
-        #     ':quizTitle': quiz_title,
-        #     ':quizMaxAttempts': quiz_max_attempts,
-        #     ':visibility': visibility,
-        #     ':default': 0
-        # }
-        # for student in students:
-        #     table.update_item(
-        #         Key={
-        #             'PK': f"Course#{course_id}",
-        #             'SK': f"{student['PK']}Quiz#{quiz_id}",
-        #         },
-        #         UpdateExpression=students_update_expression,
-        #         ExpressionAttributeValues=students_expression_attribute_values
-        #     )
+        students = students_response["Items"]
+        students_update_expression = 'SET QuizTitle = :quizTitle, QuizMaxAttempts = :quizMaxAttempts, Visibility= :visibility, QuizAttempt = :default, QuizScore= :default'
+        students_expression_attribute_values = {
+            ':quizTitle': quiz_title,
+            ':quizMaxAttempts': quiz_max_attempts,
+            ':visibility': visibility,
+            ':default': 0
+        }
+        for student in students:
+            table.update_item(
+                Key={
+                    'PK': f"Course#{course_id}",
+                    'SK': f"{student['PK']}Quiz#{quiz_id}",
+                },
+                UpdateExpression=students_update_expression,
+                ExpressionAttributeValues=students_expression_attribute_values
+            )
 
         return response_202_msg(f"Quiz with id {quiz_id} successfully updated ")
 
