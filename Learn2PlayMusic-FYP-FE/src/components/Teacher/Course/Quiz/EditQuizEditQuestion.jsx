@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
+const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuizButton }) => {
   const { courseid } = useParams();
   const { quizId } = useParams();
   const [question, setQuestion] = useState("");
@@ -99,6 +99,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
       .then((res) => {
         if (res.ok) {
           setEdit(false);
+          handleDisableEditQuizButton(false);
           toast.success("Question updated successfully!");
           return;
         }
@@ -220,7 +221,14 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
           </RadioGroup>
         </Box>
         <Box sx={{ display: "flex", mt: 2 }}>
-          <Button variant="outlined" fullWidth sx={{ color: "primary.main" }} onClick={() => setEdit(false)}>
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{ color: "primary.main" }}
+            onClick={() => {
+              setEdit(false);
+              handleDisableEditQuizButton(false);
+            }}>
             Cancel
           </Button>
           <Button variant="contained" fullWidth sx={{ ml: 2 }} onClick={() => editQuestion()}>
