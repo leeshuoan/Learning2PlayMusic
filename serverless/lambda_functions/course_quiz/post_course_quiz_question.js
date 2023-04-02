@@ -1,6 +1,5 @@
 const DynamoDB = require("aws-sdk/clients/dynamodb");
 const AWS = require("aws-sdk");
-const { v4: uuidv4 } = require("uuid");
 
 const { response_200, response_400, response_500 } = require("./responses");
 
