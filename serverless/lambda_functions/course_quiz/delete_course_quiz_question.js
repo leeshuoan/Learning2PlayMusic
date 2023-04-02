@@ -26,7 +26,7 @@ async function lambda_handler(event, context) {
     const requestBody = JSON.parse(event.body);
     const courseId = requestBody.courseId;
     const quizId = requestBody.quizId;
-    const qnNumber = requestBody.qnNumber;
+    const questionId = requestBody.questionId;
 
     checkNumQuestions(courseId, quizId);
 
@@ -34,19 +34,19 @@ async function lambda_handler(event, context) {
       TableName: "LMS",
       Key: {
         PK: `Course#${courseId}`,
-        SK: `Quiz#${quizId}Question#${qnNumber}`,
+        SK: `Quiz#${quizId}Question#${questionId}`,
       },
     };
 
     const result = await dynamodb.get(params).promise();
 
     if (!result.Item) {
-      return response_400(`Item with courseId:${courseId} quizId:${quizId} qnNumber:${qnNumber} not found`);
+      return response_400(`Item with courseId:${courseId} quizId:${quizId} questionId:${questionId} not found`);
     }
 
     await dynamodb.delete(params).promise();
 
-    return response_200(`Successfully deleted item with courseId:${courseId} quizId:${quizId} qnNumber:${qnNumber}!`);
+    return response_200(`Successfully deleted item with courseId:${courseId} quizId:${quizId} questionId:${questionId}!`);
 
   } catch (e) {
     return response_400(e);

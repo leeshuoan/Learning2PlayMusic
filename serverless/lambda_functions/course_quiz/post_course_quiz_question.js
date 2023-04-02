@@ -1,5 +1,6 @@
 const DynamoDB = require("aws-sdk/clients/dynamodb");
 const AWS = require("aws-sdk");
+const { v4: uuidv4 } = require("uuid");
 
 const { response_200, response_400, response_500 } = require("./responses");
 
@@ -12,6 +13,7 @@ async function lambda_handler(event, context) {
   try {
     let questionCount = 0;
     const requestBody = JSON.parse(event.body);
+    const randomUuid = uuidv4().slice(0, 8);    
 
     for (let question of requestBody) {
       questionCount++;
@@ -21,7 +23,7 @@ async function lambda_handler(event, context) {
       const questionText = question.question;
       const options = question.options;
       const answer = question.answer;
-      const qnNumber = question.qnNumber;
+      const questionId = randomUuid;
 
       const optionsStats = {};
       for (let option of options) {
@@ -37,7 +39,7 @@ async function lambda_handler(event, context) {
         const imageBuffer = Buffer.from(base64Image, "base64");
         s3Params = {
           Bucket: bucketName,
-          Key: `Course${courseId}/Quiz${quizId}/Question${qnNumber}.${fileExtension}`,
+          Key: `Course${courseId}/Quiz${quizId}/Question${questionId}.${fileExtension}`,
           Body: imageBuffer,
           ContentType: "image/" + fileExtension,
         };
@@ -53,7 +55,7 @@ async function lambda_handler(event, context) {
         TableName: "LMS",
         Item: {
           PK: `Course#${courseId}`,
-          SK: `Quiz#${quizId}Question#${qnNumber}`,
+          SK: `Quiz#${quizId}Question#${questionId}`,
           QuestionOptionType: questionOptionType,
           Question: questionText,
           Options: options,

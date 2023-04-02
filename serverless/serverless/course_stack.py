@@ -821,9 +821,9 @@ class CourseStack(Stack):
                 properties={
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "qnNumber": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "questionId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
-                required=["courseId", "quizId", "qnNumber"],
+                required=["courseId", "quizId", "questionId"],
             ),
         )
         put_course_quiz_question_model = main_api.add_model(
@@ -837,9 +837,9 @@ class CourseStack(Stack):
                 properties={
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "qnNumber": apigw.JsonSchema(type=apigw.JsonSchemaType.INTEGER),
+                    "questionId": apigw.JsonSchema(type=apigw.JsonSchemaType.INTEGER),
                 },
-                required=["courseId", "quizId", "qnNumber"],
+                required=["courseId", "quizId", "questionId"],
             ),
         )
 

@@ -27,14 +27,14 @@ def lambda_handler(event, context):
         courseId = queryStringParameters["courseId"]
         quizId = queryStringParameters["quizId"]
 
-        # if specific qnNumber is specified
+        # if specific questionId is specified
         # ADD IN FILTERS 
-        if "qnNumber" in queryStringParameters.keys():
-            qnNumber = queryStringParameters["qnNumber"]
+        if "questionId" in queryStringParameters.keys():
+            questionId = queryStringParameters["questionId"]
             response = table.get_item(
                 Key={
                     "PK": f"Course#{courseId}",
-                    "SK": f"Quiz#{quizId}Question#{qnNumber}"
+                    "SK": f"Quiz#{quizId}Question#{questionId}"
                 })
             items = response["Item"]
             get_presigned_url(items, "QuestionImage")
