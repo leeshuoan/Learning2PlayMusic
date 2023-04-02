@@ -36,8 +36,7 @@ jobs:
           cd serverless
           cd lambda_functions
           cd course_quiz
-          npm install
-          
+          npm install          
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
