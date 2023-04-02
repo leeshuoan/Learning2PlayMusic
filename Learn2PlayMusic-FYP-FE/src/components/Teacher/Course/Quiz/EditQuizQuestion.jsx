@@ -10,13 +10,14 @@ const EditQuizQuestion = ({ userInfo, question, questionNumber, handleRefreshDat
   const { courseid, quizId } = useParams();
 
   const deleteQuestion = () => {
+    console.log(question);
     fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        questionId: question.qnId,
+        questionId: question.questionId,
         quizId: quizId,
         courseId: courseid,
       }),
