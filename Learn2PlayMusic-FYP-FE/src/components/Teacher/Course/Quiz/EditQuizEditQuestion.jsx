@@ -1,6 +1,7 @@
 import ClearIcon from "@mui/icons-material/Clear";
 import { Box, Button, Card, FormControlLabel, Grid, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
   const [question, setQuestion] = useState("");
@@ -25,7 +26,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
   };
 
   useEffect(() => {
-    console.log(qnInfo)
+    console.log(qnInfo);
     setQuestion(qnInfo.question);
     setQuestionType(qnInfo.questionOptionType);
     setOptions(qnInfo.options);
@@ -55,6 +56,14 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
   };
 
   const editQuestion = () => {
+    if (question == "" || answer == "" || options.includes("")) {
+      toast.error("Please fill in all the fields");
+      return;
+    }
+    if (question == qnInfo.question && answer == qnInfo.answer && options == qnInfo.options && questionType == qnInfo.questionOptionType && image == qnInfo.questionImage) {
+      toast.error("Please make changes before updating!");
+      return;
+    }
     const newQnInfo = {
       qnNumber: qnInfo.qnNumber,
       question: question,
@@ -63,6 +72,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
       answer: answer,
       questionImage: image,
     };
+    console.log(newQnInfo);
     fetch(`${import.meta.env.VITE_API_URL}/teacher/course/quiz`, {
       method: "PUT",
       headers: {
@@ -70,15 +80,19 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
         Authorization: `Bearer ${userInfo.token}`,
       },
       body: JSON.stringify(newQnInfo),
-    }).then((res) => {
-      if (res.ok) {
-        setEdit(false);
-      }
-    }).catch((err) => {
-      console.log(err);
-    });
+    })
+      .then((res) => {
+        if (res.ok) {
+          setEdit(false);
+          toast.success("Question updated successfully!");
+          return;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Failed to update question");
+      });
   };
-
 
   const handleTrueFalseChange = (event) => {
     setOptions(["True", "False"]);
@@ -104,7 +118,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
             <InputLabel id="question-image-label">Image [Optional]</InputLabel>
             {console.log(file)}
             {console.log(image)}
-            {(file == null && image == null) ? (
+            {file == null && image == null ? (
               <Button variant="contained" sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: "none", ":hover": { backgroundColor: "hovergrey" } }} component="label">
                 ADD A FILE
                 <input hidden accept="image/*" multiple type="file" onChange={fileUploaded} />
@@ -191,8 +205,12 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit }) => {
           </RadioGroup>
         </Box>
         <Box sx={{ display: "flex", mt: 2 }}>
-          <Button variant="outlined" fullWidth sx={{ color: "primary.main" }} onClick={() => setEdit(false)}>Cancel</Button>
-          <Button variant="contained" fullWidth sx={{ ml: 2 }} onClick={() => editQuestion()}>Edit Question</Button>
+          <Button variant="outlined" fullWidth sx={{ color: "primary.main" }} onClick={() => setEdit(false)}>
+            Cancel
+          </Button>
+          <Button variant="contained" fullWidth sx={{ ml: 2 }} onClick={() => editQuestion()}>
+            Edit Question
+          </Button>
         </Box>
       </Card>
     </>
