@@ -837,7 +837,7 @@ class CourseStack(Stack):
                 properties={
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "quizId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                    "questionId": apigw.JsonSchema(type=apigw.JsonSchemaType.INTEGER),
+                    "questionId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
                 required=["courseId", "quizId", "questionId"],
             ),
