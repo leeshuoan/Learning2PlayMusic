@@ -17,14 +17,13 @@ const NewQuiz = () => {
   const [visibility, setVisibility] = useState(true);
   const [quizQuestions, setQuizQuestions] = useState([
     {
-      qnNumber: 1,
       question: "",
       questionOptionType: "multiple-choice",
       options: ["", "", "", ""],
       answer: "",
     },
   ]);
-  const [qnNumber, setQnNumber] = useState(2);
+  let questionNumber = 0;
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
@@ -151,20 +150,18 @@ const NewQuiz = () => {
     setQuizQuestions([
       ...quizQuestions,
       {
-        qnNumber: qnNumber,
         question: "",
         questionOptionType: "multiple-choice",
         options: [", '', '', '"],
         answer: "",
       },
     ]);
-    setQnNumber(qnNumber + 1);
   };
 
   const handleQuestionChange = (qnInfo) => {
     const newQuizQuestions = quizQuestions.map((qn) => {
       console.log(qnInfo);
-      if (qn.qnNumber === qnInfo.qnNumber) {
+      if (qn.questionId === qnInfo.questionId) {
         return qnInfo;
       }
       return qn;
@@ -233,7 +230,8 @@ const NewQuiz = () => {
                 <TextField value={quizDescription} onChange={() => setQuizDescription(event.target.value)} fullWidth multiline rows={3} />
               </Box>
               {quizQuestions.map((question, key) => {
-                return <NewQuizQuestion key={key} qnInfo={question} handleQuestionChange={handleQuestionChange} />;
+                questionNumber++;
+                return <NewQuizQuestion key={key} questionNumber={questionNumber} qnInfo={question} handleQuestionChange={handleQuestionChange} />;
               })}
               <Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>
                 Add Question

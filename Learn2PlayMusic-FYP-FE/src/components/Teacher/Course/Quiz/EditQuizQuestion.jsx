@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import EditQuizEditQuestion from "./EditQuizEditQuestion";
 
-const EditQuizQuestion = ({ userInfo, question, handleRefreshData, handleDisableEditQuizButton }) => {
+const EditQuizQuestion = ({ userInfo, question, questionNumber, handleRefreshData, handleDisableEditQuizButton }) => {
   const [edit, setEdit] = useState(false);
   const { courseid, quizId } = useParams();
 
@@ -16,7 +16,7 @@ const EditQuizQuestion = ({ userInfo, question, handleRefreshData, handleDisable
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        qnNumber: question.qnId,
+        questionId: question.qnId,
         quizId: quizId,
         courseId: courseid,
       }),
@@ -42,7 +42,7 @@ const EditQuizQuestion = ({ userInfo, question, handleRefreshData, handleDisable
       {!edit ? (
         <Card variant="outlined" sx={{ boxShadow: "none", mt: 3, p: 2 }}>
           <Typography variant="h6" sx={{ mb: 1 }}>
-            Question {question.qnNumber}
+            Question {questionNumber}
           </Typography>
           <Grid container spacing={0}>
             <Grid item xs={12} sm={9}>
