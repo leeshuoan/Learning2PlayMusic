@@ -56,11 +56,9 @@ def lambda_handler(event, context):
             "Options": options,
             "Answer": answer,
             "Attempts": 0,
-            "Correct": 0
+            "Correct": 0,
+            **options_stats
         }
-        for option in options:
-            item[option] = {str(0)}
-            
         if s3_params is not None:
             item["QuestionImage"] = "{0}/{1}".format(s3_params["Bucket"], s3_params["Key"])
 
