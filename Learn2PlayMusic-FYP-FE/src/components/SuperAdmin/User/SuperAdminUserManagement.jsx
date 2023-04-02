@@ -1,14 +1,15 @@
-import { Box, Button, Container, Switch, Tooltip, Typography } from "@mui/material";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { Box, Button, Container, IconButton, Switch, Tooltip, Typography } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import MaterialReactTable from "material-react-table";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import Loader from "../../utils/Loader";
 
 const TransitionModal = lazy(() => import("../../utils/TransitionModal"));
-const CreateStudentForm = lazy(() => import("./CreateStudentForm"));
+const CreateUserForm = lazy(() => import("./CreateUserForm"));
 const UserPrompt = lazy(() => import("./UserPrompt"));
 
-const AdminUserManagement = (userInfo) => {
+const SuperAdminUserManagement = (userInfo) => {
   // table data
   const [data, setData] = useState([]);
   const [reloadData, setReloadData] = useState(false);
@@ -16,12 +17,16 @@ const AdminUserManagement = (userInfo) => {
   const [open, setOpen] = useState(true);
   // create user
   const [openCreateUser, setOpenCreateUser] = useState(false);
+  const [roles, setRoles] = useState([]);
   // diable user
   const [openDisableUser, setOpenDisableUser] = useState(false);
   const [toDisableUser, setToDisableUser] = useState("");
   // enable user
   const [openEnableUser, setOpenEnableUser] = useState(false);
   const [toEnableUser, setToEnableUser] = useState("");
+  // delete user
+  const [openDeleteUser, setOpenDeleteUser] = useState(false);
+  const [toDeleteUser, setToDeleteUser] = useState("");
 
   function modalStyle(w) {
     return {
@@ -38,7 +43,27 @@ const AdminUserManagement = (userInfo) => {
   const largeModalWidth = { xs: "90%", sm: "60%", md: "40%", lg: "40%", xl: "40%" };
   const smallModalWidth = { xs: "60%", sm: "40%", md: "30%", lg: "25%", xl: "20%" };
 
+  // list groups ================================================================================================================================================================================================================================================================================
+  const listGroups = async () => {
+    let apiName = "AdminQueries";
+    let path = "/listGroups";
+    let myInit = {
+      queryStringParameters: {},
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`,
+      },
+    };
+    let groups = await API.get(apiName, path, myInit);
+    var rs = [];
+    for (let idx in groups.Groups) {
+      let groupName = groups.Groups[idx].GroupName;
+      rs.push(groupName.substr(0, groupName.length - 1));
+    }
+    setRoles(rs);
+  };
   // list users ================================================================================================================================================================================================================================================================================
+
   const listUsers = async () => {
     let apiName = "AdminQueries";
     let path = "/listUsers";
@@ -62,18 +87,16 @@ const AdminUserManagement = (userInfo) => {
         }
         return usr;
       }, {});
-      if (userAttributes.Role == "User") {
-        user.Attributes = userAttributes;
-        user.Enabled = user.Enabled ? "Enabled" : "Disabled";
-        user.UserStatus = user.UserStatus == "FORCE_CHANGE_PASSWORD" ? "Change Password" : "Confirmed";
+      user.Attributes = userAttributes;
+      user.Enabled = user.Enabled ? "Enabled" : "Disabled";
+      user.UserStatus = user.UserStatus == "FORCE_CHANGE_PASSWORD" ? "Change Password" : "Confirmed";
 
-        let date = new Date(user.UserCreateDate);
-        let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-        user.UserCreateDate = formattedDate;
-        parsedUserData.push(user);
-      }
+      let date = new Date(user.UserCreateDate);
+      let formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+      user.UserCreateDate = formattedDate;
+      parsedUserData.push(user);
     });
-
+    console.log(parsedUserData);
     setData(parsedUserData);
   };
 
@@ -95,6 +118,15 @@ const AdminUserManagement = (userInfo) => {
     setOpenEnableUser(false);
     setReloadData(!reloadData);
   };
+  // delete user ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
+  const openDeleteUserModal = async (user) => {
+    setOpenDeleteUser(true);
+    setToDeleteUser(user);
+  };
+  const deleteUserSuccessClose = () => {
+    setOpenDeleteUser(false);
+    setReloadData(!reloadData);
+  };
   // created user ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
   const createUserSuccessClose = () => {
     setOpenCreateUser(false);
@@ -103,7 +135,7 @@ const AdminUserManagement = (userInfo) => {
   // useEffect ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
   useEffect(() => {
     let start = new Date().getTime();
-    Promise.all([listUsers()]).then(() => {
+    Promise.all([listUsers(), listGroups()]).then(() => {
       setOpen(false);
       console.log("time taken to load users: " + (new Date().getTime() - start) / 1000 + "s");
     });
@@ -117,35 +149,61 @@ const AdminUserManagement = (userInfo) => {
       {
         accessorKey: "Attributes.Name",
         id: "name",
-        header: "Student Name",
+        header: "Name",
         minSize: 100,
       },
       {
         accessorKey: "Attributes.email",
         id: "email",
-        header: "Student Email",
+        header: "Email",
         minSize: 100,
       },
-
+      {
+        accessorKey: "Attributes.Role",
+        id: "role",
+        header: "Role",
+        size: 30,
+      },
       {
         accessorKey: "Enabled",
         id: "enabled",
         header: "Enabled",
         maxSize: 20,
-        Cell: ({ cell, row }) => (
-          <Tooltip title={row.original.Enabled == "Disabled" ? "Enable user" : "Disable user"} placement="bottom">
-            <Switch
-              color="success"
-              checked={row.original.Enabled == "Enabled"}
-              onChange={(event) => {
-                if (event.target.checked) {
-                  openEnableUserModal(row.original);
-                } else {
-                  openDisableUserModal(row.original);
-                }
-              }}></Switch>
-          </Tooltip>
-        ),
+        Cell: ({ cell, row }) =>
+          row.original.Attributes.Role != "SuperAdmin" ? (
+            <Tooltip title={row.original.Enabled == "Disabled" ? "Enable user" : "Disable user"} placement="bottom">
+              <Switch
+                color="success"
+                checked={row.original.Enabled == "Enabled"}
+                onChange={(event) => {
+                  if (event.target.checked) {
+                    openEnableUserModal(row.original);
+                  } else {
+                    openDisableUserModal(row.original);
+                  }
+                }}></Switch>
+            </Tooltip>
+          ) : null,
+      },
+      {
+        accessorKey: "",
+        id: "delete",
+        header: "Delete",
+        Cell: ({ cell, row }) =>
+          row.original.Attributes.Role != "SuperAdmin" ? (
+            <Tooltip title="Delete user forever" placement="bottom">
+              <IconButton
+                variant="contained"
+                color="error"
+                disabled={row.original.Enabled == "Enabled" ? true : false}
+                onClick={() => {
+                  openDeleteUserModal(row.original);
+                }}>
+                <DeleteForeverIcon />
+              </IconButton>
+            </Tooltip>
+          ) : null,
+        maxSize: 20,
       },
     ],
     []
@@ -157,9 +215,13 @@ const AdminUserManagement = (userInfo) => {
         <Box m={2}>
           {/* create user ========================================================================================== */}
           <TransitionModal open={openCreateUser} handleClose={() => setOpenCreateUser(false)} style={modalStyle(largeModalWidth)}>
-            <CreateStudentForm handleClose={() => createUserSuccessClose()} />
+            <CreateUserForm roles={roles} handleClose={() => createUserSuccessClose()} />
           </TransitionModal>
 
+          {/* delete user ========================================================================================== */}
+          <TransitionModal open={openDeleteUser} handleClose={() => setOpenDeleteUser(false)} style={modalStyle(smallModalWidth)}>
+            <UserPrompt type="Delete" selectedUser={toDeleteUser} handleClose={() => deleteUserSuccessClose()} />
+          </TransitionModal>
           {/* enable user ========================================================================================== */}
           <TransitionModal open={openEnableUser} handleClose={() => setOpenEnableUser(false)} style={modalStyle(smallModalWidth)}>
             <UserPrompt type="Enable" selectedUser={toEnableUser} handleClose={() => enableUserSuccessClose()} />
@@ -171,7 +233,7 @@ const AdminUserManagement = (userInfo) => {
 
           {/* main ========================================================================================== */}
           <Typography variant="h5" sx={{ m: 1, mt: 4 }}>
-            Student Management
+            User Management
           </Typography>
           <MaterialReactTable
             enableHiding={false}
@@ -200,11 +262,20 @@ const AdminUserManagement = (userInfo) => {
                     onClick={() => {
                       setOpenCreateUser(true);
                     }}>
-                    Add Student
+                    Add User
                   </Button>
                 </Box>
               );
             }}></MaterialReactTable>
+          {/* foot note ==========================================================================================*/}
+          <Typography variant="subtitle1" sx={{ mt: 3 }}>
+            <b>NOTE:</b>
+          </Typography>
+          <Typography variant="body2">
+            1. User must be disabled before they can be deleted forever.
+            <br />
+            2. You cannot enable/disable yourself.
+          </Typography>
         </Box>
         <Loader open={open} />
       </Suspense>
@@ -212,4 +283,4 @@ const AdminUserManagement = (userInfo) => {
   );
 };
 
-export default AdminUserManagement;
+export default SuperAdminUserManagement;

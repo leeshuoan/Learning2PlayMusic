@@ -5,11 +5,11 @@ import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import Loader from "../../utils/Loader";
 import TransitionModal from "../../utils/TransitionModal";
-import CreateCourseForm from "./CreateCourseForm";
-import DeleteCourseForm from "./DeleteCourseForm";
-import EditCourseForm from "./EditCourseForm";
+import CreateAnnouncementForm from "./CreateAnnouncementForm";
+import DeleteAnnouncementForm from "./DeleteAnnouncementForm";
+import EditAnnouncementForm from "./EditAnnouncementForm";
 
-const AdminCourseManagement = () => {
+const SuperAdminAnnouncementManagement = () => {
   const modalStyle = {
     position: "relative",
     top: "50%",
@@ -21,12 +21,10 @@ const AdminCourseManagement = () => {
     borderRadius: 2,
     p: 4,
   };
-  const [courses, setCourses] = useState([]);
-  const [courseName, setCourseName] = useState("");
-  const [courseId, setCourseId] = useState("");
-  const [teacherName, setTeacherName] = useState("");
-  const [teacherId, setTeacherId] = useState("");
-  const [timeSlot, setTimeslot] = useState("");
+  const [announcements, setAnnouncements] = useState([]);
+  const [announcementTitle, setAnnouncementTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [dateId, setDateId] = useState("");
   const [reloadData, setReloadData] = useState(false);
 
   const [open, setOpen] = useState(true);
@@ -45,12 +43,10 @@ const AdminCourseManagement = () => {
     setOpenEditModal(false);
     setReloadData(!reloadData);
   };
-  function handleOpenEditModal(timeSlot, teacherName, courseName, courseId, teacherId) {
-    setTimeslot(timeSlot);
-    setCourseName(courseName);
-    setCourseId(courseId);
-    setTeacherName(teacherName);
-    setTeacherId(teacherId);
+  function handleOpenEditModal(dateId, announcementTitle, content) {
+    setDateId(dateId);
+    setAnnouncementTitle(announcementTitle);
+    setContent(content);
     setOpenEditModal(true);
   }
 
@@ -61,40 +57,39 @@ const AdminCourseManagement = () => {
     setOpenDeleteModal(false);
     setReloadData(!reloadData);
   };
-  function handleOpenDeleteModal(timeSlot, teacherName, courseName, courseId) {
-    setTimeslot(timeSlot);
-    setCourseName(courseName);
-    setCourseId(courseId);
-    setTeacherName(teacherName);
+  function handleOpenDeleteModal(dateId, announcementTitle, content) {
+    setDateId(dateId);
+    setAnnouncementTitle(announcementTitle);
+    setContent(content);
     setOpenDeleteModal(true);
   }
 
   const columns = useMemo(
     () => [
       {
-        accessorKey: "courseName",
-        id: "courseName",
-        header: "Course Name",
+        accessorKey: "title",
+        id: "title",
+        header: "Title",
+        size: 30,
+        Cell: ({ cell, row }) => <Typography variant="body2">{row.original.title.length > 35 ? row.original.title.substring(0, 35) + "..." : row.original.title}</Typography>,
       },
       {
-        accessorKey: "timeSlot",
-        id: "timeSlot",
-        header: "Course Time Slot",
+        accessorKey: "date",
+        id: "date",
+        header: "Date",
+        size: 30,
       },
       {
-        accessorKey: "timeSlot",
-        id: "teacherName",
-        header: "Teacher Name",
-        Cell: ({ cell, row }) => (
-          <Typography variant="body2" id={row.original.teacherId}>
-            {row.original.teacherName}
-          </Typography>
-        ),
+        accessorKey: "content",
+        id: "content",
+        header: "Content",
+        Cell: ({ cell, row }) => <Typography variant="body2">{row.original.content.length > 145 ? row.original.content.substring(0, 145) + "..." : row.original.content}</Typography>,
       },
       {
         accessorKey: "",
         id: "actions",
         header: "Actions",
+        size: 30,
         Cell: ({ cell, row }) => (
           <Box
             sx={{
@@ -105,7 +100,7 @@ const AdminCourseManagement = () => {
             <Tooltip title="Edit" placement="bottom">
               <IconButton
                 onClick={() => {
-                  handleOpenEditModal(row.original.timeSlot, row.original.teacherName, row.original.courseName, row.original.id, row.original.teacherId);
+                  handleOpenEditModal(row.original.id, row.original.title, row.original.content);
                 }}>
                 <EditIcon></EditIcon>
               </IconButton>
@@ -114,7 +109,7 @@ const AdminCourseManagement = () => {
               <IconButton
                 color="error"
                 onClick={() => {
-                  handleOpenDeleteModal(row.original.timeSlot, row.original.teacherName, row.original.courseName, row.original.id);
+                  handleOpenDeleteModal(row.original.id, row.original.title, row.original.content);
                 }}>
                 <DeleteForeverIcon></DeleteForeverIcon>
               </IconButton>
@@ -136,38 +131,41 @@ const AdminCourseManagement = () => {
     return response.json();
   }
   useEffect(() => {
-    getAPI(`${import.meta.env.VITE_API_URL}/course`).then((res) => {
-      var fetchedData = res.map((course) => {
-        const id = course.SK.split("#")[1];
-        const courseName = course.CourseName;
-        const teacherName = course.TeacherName;
-        const teacherId = course.TeacherId;
-        const timeSlot = course.CourseSlot;
-        return { id, courseName, teacherName, teacherId, name, timeSlot };
+    setOpen(true);
+
+    //`${import.meta.env.VITE_API_URL}/user/chat/contactlist?userId=${userInfo.userInfo.id}
+    getAPI(`${import.meta.env.VITE_API_URL}/generalannouncement`).then((res) => {
+      var fetchedData = res.map((announcement) => {
+        const date = announcement.SK.split("#")[1].split("T")[0];
+        const id = announcement.SK.split("#")[1];
+        const content = announcement.Content;
+        const title = announcement.AnnouncementTitle;
+        return { id, date, content, title };
       });
-      setCourses(fetchedData);
+      setAnnouncements(fetchedData);
       console.log(fetchedData);
       setOpen(false);
     });
   }, [reloadData]);
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-      {/* new course form */}
+      {/* new announcement form */}
       <TransitionModal open={openModal} handleClose={handleCloseModal} style={modalStyle}>
-        <CreateCourseForm handleCloseModal={handleCloseModal} handleCloseModalSuccess={handleCloseModalSuccess}></CreateCourseForm>
+        <CreateAnnouncementForm handleCloseModal={handleCloseModal} handleCloseModalSuccess={handleCloseModalSuccess} />
       </TransitionModal>
-      {/* edit course form */}
+      {/* edit announcement form */}
       <TransitionModal open={openEditModal} handleClose={handleCloseEditModal} style={modalStyle}>
-        <EditCourseForm courseId={courseId} ogCourseName={courseName} ogTimeSlot={timeSlot} ogTeacherName={teacherName} ogTeacherId={teacherId} handleCloseEditModal={handleCloseEditModal} handleCloseEditModalSuccess={handleCloseEditModalSuccess} />
+        <EditAnnouncementForm dateId={dateId} existingAnnouncementTitle={announcementTitle} existingContent={content} handleCloseEditModal={handleCloseEditModal} handleCloseEditModalSuccess={handleCloseEditModalSuccess} />
       </TransitionModal>
+
       {/* delete confirmation */}
       <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal} style={modalStyle}>
-        <DeleteCourseForm courseId={courseId} courseName={courseName} timeSlot={timeSlot} teacherName={teacherName} handleCloseDeleteModal={handleCloseDeleteModal} handleCloseDeleteModalSuccess={handleCloseDeleteModalSuccess} />
+        <DeleteAnnouncementForm dateId={dateId} announcementTitle={announcementTitle} content={content} handleCloseDeleteModal={handleCloseDeleteModal} handleCloseDeleteModalSuccess={handleCloseDeleteModalSuccess} />
       </TransitionModal>
 
       {/* header */}
       <Typography variant="h5" sx={{ m: 1, mt: 4 }}>
-        Course Management
+        Announcement Management
       </Typography>
       {/* table */}
       <MaterialReactTable
@@ -175,8 +173,22 @@ const AdminCourseManagement = () => {
         enableFullScreenToggle={false}
         enableDensityToggle={false}
         columns={columns}
-        data={courses}
+        data={announcements}
+        enableExpanding={true}
         initialState={{ density: "compact" }}
+        renderDetailPanel={({ row }) => (
+          <Box
+            sx={{
+              display: "grid",
+
+              width: "100%",
+            }}>
+            <Typography variant="h6">Title</Typography>
+            <Typography variant="body2">{row.original.title}</Typography>
+            <Typography variant="h6">Content</Typography>
+            <Typography variant="body2">{row.original.content}</Typography>
+          </Box>
+        )}
         renderTopToolbarCustomActions={({ table }) => {
           return (
             <Box
@@ -191,14 +203,13 @@ const AdminCourseManagement = () => {
                 onClick={() => {
                   setOpenModal(true);
                 }}>
-                New Course
+                New Announcement
               </Button>
             </Box>
           );
         }}></MaterialReactTable>
-
-      <Loader open={open}></Loader>
+      <Loader open={open}/>
     </Container>
   );
 };
-export default AdminCourseManagement;
+export default SuperAdminAnnouncementManagement;

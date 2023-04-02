@@ -9,7 +9,7 @@ const TransitionModal = lazy(() => import("../../utils/TransitionModal"));
 const EnrolUserForm = lazy(() => import("./EnrolUserForm"));
 const UnenrolUserForm = lazy(() => import("./UnenrolUserForm"));
 
-const AdminEnrolmentManagement = ({ userInfo }) => {
+const SuperAdminEnrolmentManagement = ({ userInfo }) => {
   // table data
   const [data, setData] = useState([]);
   const [reloadData, setReloadData] = useState(false);
@@ -83,7 +83,7 @@ const AdminEnrolmentManagement = ({ userInfo }) => {
         return usr;
       }, {});
       user.Attributes = userAttributes;
-      if (user.Attributes.Role == "User" && user.Enabled) {
+      if (user.Attributes.Role != "SuperAdmin" && user.Enabled) {
         fetchedUserIds.push(user.Username);
         user.UserStatus = user.UserStatus == "FORCE_CHANGE_PASSWORD" ? "Change Password" : "Confirmed";
         let date = new Date(user.UserCreateDate);
@@ -164,22 +164,27 @@ const AdminEnrolmentManagement = ({ userInfo }) => {
       {
         accessorKey: "Attributes.Name",
         id: "name",
-        header: "Student Name",
+        header: "Name",
         minSize: 100,
       },
       {
         accessorKey: "Attributes.email",
         id: "email",
-        header: "Student Email",
+        header: "Email",
         minSize: 100,
       },
-
+      {
+        accessorKey: "Attributes.Role",
+        id: "role",
+        header: "Role",
+        size: 30,
+      },
       {
         accessorKey: "",
         id: "enrol",
         header: "Enrol",
         Cell: ({ cell, row }) =>
-          row.original.Attributes.Role != "Admin" ? (
+          row.original.Attributes.Role != "SuperAdmin" ? (
             <Tooltip title="Enrol user to course" placement="bottom">
               <IconButton
                 variant="contained"
@@ -224,7 +229,7 @@ const AdminEnrolmentManagement = ({ userInfo }) => {
             enableFullScreenToggle={false}
             enableMultiRowSelection={true}
             positionToolbarAlertBanner="bottom"
-            enableRowSelection={(row) => row.original.Attributes.Role != "Admin"}
+            enableRowSelection={(row) => row.original.Attributes.Role != "SuperAdmin"}
             onRowSelectionChange={setRowSelection}
             state={{ rowSelection }}
             enableDensityToggle={false}
@@ -246,7 +251,7 @@ const AdminEnrolmentManagement = ({ userInfo }) => {
                     gap: "1rem",
                   }}>
                   <Button variant="contained" onClick={enrolMultipleUsers} disabled={table.getSelectedRowModel().flatRows.length === 0}>
-                    Enrol Students
+                    Enrol Users
                   </Button>
                 </Box>
               );
@@ -264,7 +269,7 @@ const AdminEnrolmentManagement = ({ userInfo }) => {
                   <br />
                   <b>User Status:</b> {row.original.UserStatus}
                 </Typography>
-                {row.original.Attributes.Role == "Admin" ? null : (
+                {row.original.Attributes.Role == "SuperAdmin" ? null : (
                   <Typography variant="body2">
                     <b>Courses enrolled in:</b>
                     {userCoursesEnrolled[row.original.Username].length == 0
@@ -285,10 +290,13 @@ const AdminEnrolmentManagement = ({ userInfo }) => {
               </Box>
             )}></MaterialReactTable>
         </Box>
+        <Typography variant="body2" sx={{ m: 1, mt: 4 }}>
+          <b>Note:</b> Admin users cannot be enrolled in courses.
+        </Typography>
         <Loader open={open} />
       </Suspense>
     </Container>
   );
 };
 
-export default AdminEnrolmentManagement;
+export default SuperAdminEnrolmentManagement;

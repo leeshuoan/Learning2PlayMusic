@@ -29,9 +29,15 @@ import UserHome from "./components/User/UserHome";
 // admin
 import AdminHome from "./components/Admin/AdminHome";
 import AdminAnnouncementManagement from "./components/Admin/Announcement/AdminAnnouncementManagement";
-import AdminCourseManagement from "./components/Admin/Course/AdminCourseManagement";
 import AdminEnrolmentManagement from "./components/Admin/Enrolment/AdminEnrolmentManagement";
 import AdminUserManagement from "./components/Admin/User/AdminUserManagement";
+// super admin
+import SuperAdminAnnouncementManagement from "./components/SuperAdmin/Announcement/SuperAdminAnnouncementManagement";
+import SuperAdminCourseManagement from "./components/SuperAdmin/Course/SuperAdminCourseManagement";
+import SuperAdminEnrolmentManagement from "./components/SuperAdmin/Enrolment/SuperAdminEnrolmentManagement";
+import SuperAdminHome from "./components/SuperAdmin/SuperAdminHome";
+import SuperAdminUserManagement from "./components/SuperAdmin/User/SuperAdminUserManagement";
+
 // teacher
 import CourseAnnouncementForm from "./components/Teacher/Course/Announcement/CourseAnnouncementForm";
 import EditHomeworkForm from "./components/Teacher/Course/Homework/EditHomeworkForm";
@@ -80,12 +86,14 @@ function App() {
 
           let groups = session.getIdToken().payload["cognito:groups"];
           let userRole = null;
-          if (groups.includes("Admins")) {
-            userRole = "Admin";
+          if (groups.includes("SuperAdmins")) {
+            userRole = "SuperAdmin";
           } else if (groups.includes("Teachers")) {
             userRole = "Teacher";
           } else if (groups.includes("Users")) {
             userRole = "User";
+          } else if (groups.includes("Admins")) {
+            userRole = "Admin";
           }
 
           if (userRole != null) {
@@ -120,10 +128,17 @@ function App() {
 
           <Route path="admin" element={<PrivateRoutes userType="Admin"></PrivateRoutes>}>
             <Route index element={<AdminHome userInfo={userInfo} />} />
-            <Route path="users" element={<AdminUserManagement userInfo={userInfo} />} />
+            <Route path="students" element={<AdminUserManagement userInfo={userInfo} />} />
             <Route path="announcements" element={<AdminAnnouncementManagement userInfo={userInfo} />} />
-            <Route path="courses" element={<AdminCourseManagement userInfo={userInfo} />} />
             <Route path="enrolments" element={<AdminEnrolmentManagement userInfo={userInfo} />} />
+          </Route>
+
+          <Route path="superadmin" element={<PrivateRoutes userType="SuperAdmin"></PrivateRoutes>}>
+            <Route index element={<SuperAdminHome userInfo={userInfo} />} />
+            <Route path="users" element={<SuperAdminUserManagement userInfo={userInfo} />} />
+            <Route path="announcements" element={<SuperAdminAnnouncementManagement userInfo={userInfo} />} />
+            <Route path="courses" element={<SuperAdminCourseManagement userInfo={userInfo} />} />
+            <Route path="enrolments" element={<SuperAdminEnrolmentManagement userInfo={userInfo} />} />
           </Route>
 
           <Route path="teacher" element={<PrivateRoutes userType="Teacher"></PrivateRoutes>}>
@@ -166,7 +181,7 @@ function App() {
           </Route>
 
           <Route path="chat" element={<Chat userInfo={userInfo} />} />
-          <Route path="chat/:chatId" element ={<Chat userInfo={userInfo} />}/>
+          <Route path="chat/:chatId" element={<Chat userInfo={userInfo} />} />
           <Route path="profile" element={<Profile userInfo={userInfo} refreshUserInfo={handleRefreshUserInfo} />}></Route>
           <Route path="resetpassword" element={<ForgotPassword />}></Route>
           <Route path="changepassword" element={<ChangePassword />}></Route>

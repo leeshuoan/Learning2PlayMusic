@@ -10,8 +10,10 @@ const Unauthorized = ({ userRole }) => {
     redirectLink = "admin";
   } else if (userRole === "Teacher") {
     redirectLink = "teacher";
-  } else if (userRole === "Teacher") {
-    redirectLink = "teacher";
+  } else if (userRole === "SuperAdmin") {
+    redirectLink = "superadmin";
+  } else if (userRole === "User") {
+    redirectLink = "home";
   }
 
   return (

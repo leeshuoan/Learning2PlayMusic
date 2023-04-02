@@ -1,18 +1,16 @@
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import CloseIcon from "@mui/icons-material/Close";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Box, Button, Divider, Drawer, Grid, IconButton, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ChatUser from "./ChatUser";
-import { Box, Breadcrumbs, Button, Card, Divider, Drawer, Grid, IconButton, InputBase, Link, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography } from "@mui/material";
 import useAppBarHeight from "../utils/AppBarHeight";
 import CustomBreadcrumbs from "../utils/CustomBreadcrumbs";
-import HomeIcon from "@mui/icons-material/Home";
-import MenuIcon from "@mui/icons-material/Menu";
 import Loader from "../utils/Loader";
 import TransitionModal from "../utils/TransitionModal";
-import CloseIcon from "@mui/icons-material/Close";
+import ChatUser from "./ChatUser";
 
 function Chat({ userInfo }) {
-  const { chatId } = useParams("chatId")
+  const { chatId } = useParams("chatId");
   const drawerWidth = 240;
   const [contacts, setContacts] = useState([{ id: "", name: "" }]);
   const [chats, setChats] = useState([]);
@@ -20,7 +18,7 @@ function Chat({ userInfo }) {
   const [openLoading, setOpenLoading] = useState(true);
   const [selectedChat, setSelectedChat] = useState(contacts[0]);
   const [openContactList, setOpenContactList] = useState(false);
-  const [root, setRoot] = useState(userInfo.role == "Admin" ? "/admin" : userInfo.role == "User" ? "/home" : "/teacher");
+  const [root, setRoot] = useState(userInfo.role == "Admin" ? "/admin" : userInfo.role == "User" ? "/home" : userInfo.role == "SuperAdmin" ? "/superadmin" : "/teacher");
   const navigate = useNavigate();
 
   const modalStyle = {
@@ -71,8 +69,8 @@ function Chat({ userInfo }) {
     return response.json();
   }
 
-  const contactListAPI = request(`/user/chat/contactlist?userId=${userInfo.id}`)
-  const openChatAPI = request(`/user/chat?userId=${userInfo.id}`)
+  const contactListAPI = request(`/user/chat/contactlist?userId=${userInfo.id}`);
+  const openChatAPI = request(`/user/chat?userId=${userInfo.id}`);
 
   useEffect(() => {
     async function fetchContacts() {
@@ -86,10 +84,10 @@ function Chat({ userInfo }) {
           return {
             chatId: chat.ChatId,
             name: chat.ChatName,
-            role: chat.ChatRole
-          }
+            role: chat.ChatRole,
+          };
         }
-      })
+      });
 
       const contactData = res1.map((contact) => {
         let contactKeys = Object.keys(contact);
@@ -109,15 +107,14 @@ function Chat({ userInfo }) {
         return {
           id: id,
           name: name,
-          role: role
+          role: role,
         };
       });
 
       setContacts(contactData);
-      setChats(res2)
-
+      setChats(res2);
     }
-    console.log(userInfo)
+    console.log(userInfo);
     fetchContacts().then(() => {
       setOpenLoading(false);
     });
@@ -154,7 +151,9 @@ function Chat({ userInfo }) {
           </Box>
           <Divider sx={{ mt: 2 }} />
           <Box sx={{ display: "flex", justifyContent: "center", my: 1 }} onClick={() => setOpenContactList(true)}>
-            <Button variant="contained" sx={{ width: "90%" }} >New Chat</Button>
+            <Button variant="contained" sx={{ width: "90%" }}>
+              New Chat
+            </Button>
           </Box>
           <List sx={{ p: 0 }}>
             {chats.map((chat, key) => (
@@ -183,24 +182,26 @@ function Chat({ userInfo }) {
         <Box sx={{ overflow: "auto" }}>
           <Toolbar />
           <Box sx={{ overflow: "auto" }}>
-          <Box sx={{ ml: 1 }}>
-            <CustomBreadcrumbs root={root} breadcrumbEnding={"Chat"} />
+            <Box sx={{ ml: 1 }}>
+              <CustomBreadcrumbs root={root} breadcrumbEnding={"Chat"} />
+            </Box>
+            <Divider sx={{ mt: 2 }} />
+            <Box sx={{ display: "flex", justifyContent: "center", my: 1 }} onClick={() => setOpenContactList(true)}>
+              <Button variant="contained" sx={{ width: "90%" }}>
+                New Chat
+              </Button>
+            </Box>
+            <List sx={{ p: 0 }}>
+              {chats.map((chat, key) => (
+                <Box key={key}>
+                  <ListItem onClick={() => navigate(`/chat/${chat.ChatId}`)} disablePadding>
+                    <ListItemButton selected={chatId == chat.ChatId}>{<ListItemText primary="Jeff" />}</ListItemButton>
+                  </ListItem>
+                  <Divider />
+                </Box>
+              ))}
+            </List>
           </Box>
-          <Divider sx={{ mt: 2 }} />
-          <Box sx={{ display: "flex", justifyContent: "center", my: 1 }} onClick={() => setOpenContactList(true)}>
-            <Button variant="contained" sx={{ width: "90%" }} >New Chat</Button>
-          </Box>
-          <List sx={{ p: 0 }}>
-            {chats.map((chat, key) => (
-              <Box key={key}>
-                <ListItem onClick={() => navigate(`/chat/${chat.ChatId}`)} disablePadding>
-                  <ListItemButton selected={chatId == chat.ChatId}>{<ListItemText primary="Jeff" />}</ListItemButton>
-                </ListItem>
-                <Divider />
-              </Box>
-            ))}
-          </List>
-        </Box>
         </Box>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, width: { sm: `calc(100% - ${drawerWidth}px)` }, pb: 10 }}>
@@ -229,7 +230,7 @@ function Chat({ userInfo }) {
           <Typography variant="h6" sx={{ textAlign: "center", display: { xs: "none", md: "block" } }}>
             {/* {selectedChat.name} */}
           </Typography>
-          <ChatUser chatId={1} userInfo={userInfo}/>
+          <ChatUser chatId={1} userInfo={userInfo} />
         </Box>
       </Box>
       <Loader open={openLoading} />

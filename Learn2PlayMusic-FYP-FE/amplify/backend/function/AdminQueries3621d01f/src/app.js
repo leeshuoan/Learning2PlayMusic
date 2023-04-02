@@ -11,9 +11,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-const express = require('express');
-const bodyParser = require('body-parser');
-const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
+const express = require("express");
+const bodyParser = require("body-parser");
+const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
 
 const {
   addUserToGroup,
@@ -30,7 +30,7 @@ const {
   // custom
   createUser,
   deleteUser,
-} = require('./cognitoActions');
+} = require("./cognitoActions");
 
 const app = express();
 app.use(bodyParser.json());
@@ -40,10 +40,7 @@ app.use(awsServerlessExpressMiddleware.eventContext());
 // Enable CORS for all methods
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
@@ -55,26 +52,15 @@ const checkGroup = function (req, res, next) {
     return next();
   }
 
-  if (typeof allowedGroup === "undefined" || allowedGroup === "NONE") {
-    return next();
-  }
-
   // Fail if group enforcement is being used
   if (req.apiGateway.event.requestContext.authorizer.claims["cognito:groups"]) {
-    const groups =
-      req.apiGateway.event.requestContext.authorizer.claims[
-        "cognito:groups"
-      ].split(",");
-    if (!(allowedGroup && groups.indexOf(allowedGroup) > -1)) {
-      const err = new Error(
-        `User does not have permissions to perform administrative tasks`
-      );
+    const groups = req.apiGateway.event.requestContext.authorizer.claims["cognito:groups"].split(",");
+    if (!(groups.indexOf("SuperAdmins") > -1 || groups.indexOf("Admins") > -1)) {
+      const err = new Error(`User does not have permissions to perform administrative tasks`);
       next(err);
     }
   } else {
-    const err = new Error(
-      `User does not have permissions to perform administrative tasks`
-    );
+    const err = new Error(`User does not have permissions to perform administrative tasks`);
     err.statusCode = 403;
     next(err);
   }
@@ -91,10 +77,7 @@ app.post("/addUserToGroup", async (req, res, next) => {
   }
 
   try {
-    const response = await addUserToGroup(
-      req.body.username,
-      req.body.groupname
-    );
+    const response = await addUserToGroup(req.body.username, req.body.groupname);
     res.status(200).json(response);
   } catch (err) {
     next(err);
@@ -109,10 +92,7 @@ app.post("/removeUserFromGroup", async (req, res, next) => {
   }
 
   try {
-    const response = await removeUserFromGroup(
-      req.body.username,
-      req.body.groupname
-    );
+    const response = await removeUserFromGroup(req.body.username, req.body.groupname);
     res.status(200).json(response);
   } catch (err) {
     next(err);
@@ -221,16 +201,9 @@ app.get("/listGroupsForUser", async (req, res, next) => {
   try {
     let response;
     if (req.query.token) {
-      response = await listGroupsForUser(
-        req.query.username,
-        req.query.limit || 25,
-        req.query.token
-      );
+      response = await listGroupsForUser(req.query.username, req.query.limit || 25, req.query.token);
     } else if (req.query.limit) {
-      response = await listGroupsForUser(
-        req.query.username,
-        (Limit = req.query.limit)
-      );
+      response = await listGroupsForUser(req.query.username, (Limit = req.query.limit));
     } else {
       response = await listGroupsForUser(req.query.username);
     }
@@ -250,16 +223,9 @@ app.get("/listUsersInGroup", async (req, res, next) => {
   try {
     let response;
     if (req.query.token) {
-      response = await listUsersInGroup(
-        req.query.groupname,
-        req.query.limit || 25,
-        req.query.token
-      );
+      response = await listUsersInGroup(req.query.groupname, req.query.limit || 25, req.query.token);
     } else if (req.query.limit) {
-      response = await listUsersInGroup(
-        req.query.groupname,
-        (Limit = req.query.limit)
-      );
+      response = await listUsersInGroup(req.query.groupname, (Limit = req.query.limit));
     } else {
       response = await listUsersInGroup(req.query.groupname);
     }
@@ -276,12 +242,7 @@ app.post("/signUserOut", async (req, res, next) => {
    * Note that this only impacts actions the user can do in User Pools
    * such as updating an attribute, not services consuming the JWT
    */
-  if (
-    req.body.username !=
-      req.apiGateway.event.requestContext.authorizer.claims.username &&
-    req.body.username !=
-      /[^/]*$/.exec(req.apiGateway.event.requestContext.identity.userArn)[0]
-  ) {
+  if (req.body.username != req.apiGateway.event.requestContext.authorizer.claims.username && req.body.username != /[^/]*$/.exec(req.apiGateway.event.requestContext.identity.userArn)[0]) {
     const err = new Error("only the user can sign themselves out");
     err.statusCode = 400;
     return next(err);
@@ -314,13 +275,7 @@ app.post("/createUser", async (req, res, next) => {
   }
   try {
     //userPoolId, username, password, email, name, role
-    const response = await createUser(
-      req.body.username,
-      req.body.password,
-      req.body.email,
-      req.body.name,
-      req.body.role
-    );
+    const response = await createUser(req.body.username, req.body.password, req.body.email, req.body.name, req.body.role);
     res.status(200).json(response);
   } catch (err) {
     next(err);

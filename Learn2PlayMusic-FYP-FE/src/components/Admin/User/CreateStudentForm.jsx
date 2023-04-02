@@ -1,15 +1,14 @@
-import { Button, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Button, Grid, TextField, Typography } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import * as React from "react";
 import { toast } from "react-toastify";
 import uuid from "react-uuid";
 import Loader from "../../utils/Loader";
 
-
-export default function CreateUserForm({ roles, handleClose }) {
+export default function CreateStudentForm({ handleClose }) {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
-  const [role, setRole] = React.useState("");
+  const role = "User";
   const [open, setOpen] = React.useState(false);
 
   const handleNameChange = (event) => {
@@ -28,11 +27,12 @@ export default function CreateUserForm({ roles, handleClose }) {
     const data = new FormData(event.currentTarget);
     var email = data.get("email");
     var name = data.get("name");
-    var role = data.get("role");
 
     if (email === "" || name === "" || role === "") {
       console.log("Please fill in all fields");
       toast.error("Please fill in all fields");
+      setOpen(false);
+      handleClose();
       return;
     }
 
@@ -73,7 +73,7 @@ export default function CreateUserForm({ roles, handleClose }) {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Typography align="center" variant="h4">
-              Create new user
+              Create new student
             </Typography>
           </Grid>
           <Grid item xs={12} sm={12}>
@@ -82,22 +82,6 @@ export default function CreateUserForm({ roles, handleClose }) {
 
           <Grid item xs={12}>
             <TextField variant="outlined" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" value={email} onChange={handleEmailChange} />
-          </Grid>
-          <Grid item xs={12}>
-            <InputLabel id="roleLabel">Role</InputLabel>
-            <Select labelId="roleLabel" id="role" name="role" value={role} onChange={handleRoleChange} fullWidth>
-              {roles.map((r) =>
-                r === "Student" ? (
-                  <MenuItem key={"User"} value={"User"}>
-                    {"Student"}
-                  </MenuItem>
-                ) : (
-                  <MenuItem key={r} value={r}>
-                    {r}
-                  </MenuItem>
-                )
-              )}
-            </Select>
           </Grid>
           <Grid item xs={12}></Grid>
         </Grid>

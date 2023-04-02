@@ -1,12 +1,33 @@
 import { Box, Button, Grid, Typography, useTheme } from "@mui/material";
 import { API, Auth } from "aws-amplify";
-import { useState } from "react";
 import { toast } from "react-toastify";
+import { useState } from "react";
 import Loader from "../../utils/Loader";
 
 export default function UserPrompt({ selectedUser, handleClose, type }) {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+  // delete user
+  const confirmDeleteUser = async () => {
+    setOpen(true);
+    let apiName = "AdminQueries";
+    let path = "/deleteUser";
+    let myInit = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${(await Auth.currentSession()).getAccessToken().getJwtToken()}`,
+      },
+      body: {
+        username: selectedUser.Username,
+      },
+    };
+    let success = await API.post(apiName, path, myInit);
+    if (success.message) {
+      toast.success("User deleted successfully");
+      setOpen(false);
+      handleClose();
+    }
+  };
   // enable user
   const confirmEnableUser = async () => {
     setOpen(true);
@@ -58,6 +79,13 @@ export default function UserPrompt({ selectedUser, handleClose, type }) {
           <Typography align="center" variant="h5">
             {type} User?
           </Typography>
+          {type == "Delete" ? (
+            <Typography align="center" color="error" variant="subtitle1">
+              Warning: This action cannot be undone.
+            </Typography>
+          ) : (
+            ""
+          )}
         </Grid>
         <Grid item xs={12} sx={{ display: "flex", alignItems: "left", flexDirection: "column" }}>
           <Box>
@@ -76,7 +104,11 @@ export default function UserPrompt({ selectedUser, handleClose, type }) {
             }}>
             Cancel
           </Button>
-          {type == "Enable" ? (
+          {type == "Delete" ? (
+            <Button variant="contained" sx={{ mr: 1 }} color="error" onClick={() => confirmDeleteUser()}>
+              {type}
+            </Button>
+          ) : type == "Enable" ? (
             <Button variant="contained" sx={{ mr: 1, color: "black" }} color="success" onClick={() => confirmEnableUser()}>
               {type}
             </Button>

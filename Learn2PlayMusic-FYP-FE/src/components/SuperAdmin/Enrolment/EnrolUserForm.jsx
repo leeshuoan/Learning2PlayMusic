@@ -63,7 +63,7 @@ export default function EnrolUserForm({ toEnrolUser, handleClose, displayText, u
     try {
       response = await fetch(endpoint, myInit);
     } catch (error) {
-      toast.error("Something went wrong, try enrolling the students again!");
+      toast.error("Something went wrong, try enrolling the users again!");
       setOpen(false);
       handleClose();
       return;
@@ -72,21 +72,21 @@ export default function EnrolUserForm({ toEnrolUser, handleClose, displayText, u
     setOpen(false);
 
     if (response.status === 200 || (response.status === 202 && !data.alreadyEnrolled.length && !data.doesNotExist.length)) {
-      toast.success("Successfully enrolled all the selected students");
+      toast.success("Successfully enrolled all the selected users");
     } else if (response.status === 202) {
       const { alreadyEnrolled, doesNotExist, enrolled } = data;
 
       if (alreadyEnrolled.length) {
         const alreadyEnrolledIds = alreadyEnrolled.map((user) => userNameToIdMap[user]).join(", ");
-        toast.warning(`The following students are already enrolled in the course: ${alreadyEnrolledIds}`);
+        toast.warning(`The following users are already enrolled in the course: ${alreadyEnrolledIds}`);
       }
       if (doesNotExist.length) {
         const doesNotExistIds = doesNotExist.map((user) => userNameToIdMap[user]).join(", ");
-        toast.error(`The following students with the user IDs do not exist: ${doesNotExistIds}`);
+        toast.error(`The following users with the user IDs do not exist: ${doesNotExistIds}`);
       }
       if (enrolled.length) {
         const enrolledIds = enrolled.map((user) => userNameToIdMap[user]).join(", ");
-        toast.success(`Successfully enrolled all these students: ${enrolledIds}`);
+        toast.success(`Successfully enrolled all these users: ${enrolledIds}`);
       }
     } else {
       toast.error(data.message);
@@ -128,7 +128,7 @@ export default function EnrolUserForm({ toEnrolUser, handleClose, displayText, u
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Typography align="center" variant="h5">
-            {type == "single" ? "Enrol Student?" : "Enrol Multiple Students?"}
+            {type == "single" ? "Enrol User?" : "Enrol Multiple Users?"}
           </Typography>
         </Grid>
         {type == "single" ? (

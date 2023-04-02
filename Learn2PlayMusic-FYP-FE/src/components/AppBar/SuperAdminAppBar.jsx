@@ -1,14 +1,13 @@
 import ChatIcon from "@mui/icons-material/Chat";
 import Logout from "@mui/icons-material/Logout";
+import MenuIcon from "@mui/icons-material/Menu";
 import { AppBar, Avatar, Box, Container, IconButton, ListItemIcon, Menu, MenuItem, Toolbar, Tooltip, Typography, useTheme } from "@mui/material";
 import { Auth, Storage } from "aws-amplify";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import MenuIcon from "@mui/icons-material/Menu";
+import { useNavigate } from "react-router-dom";
 
-const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
-  const pages = ["Announcements", "Students", "Enrolments"];
-  const { category } = useParams();
+const SuperAdminAppBar = ({ userInfo, handleResetUserInfo }) => {
+  const pages = ["Announcements", "Courses", "Users", "Enrolments"];
   const theme = useTheme();
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -49,10 +48,10 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
-  
-    const handleCloseNavMenu = () => {
-      setAnchorElNav(null);
-    };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
 
   return (
     <>
@@ -62,36 +61,28 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
             <Toolbar disableGutters sx={{ display: "flex", justifyContent: "space-between" }}>
               {/* MOBILE NAV */}
               <Box sx={{ display: { xs: "flex", md: "none" } }}>
-                <IconButton
-                  size="large"
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleOpenNavMenu}
-                  color="inherit"
-                >
+                <IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleOpenNavMenu} color="inherit">
                   <MenuIcon />
                 </IconButton>
                 <Menu
                   id="menu-appbar"
                   anchorEl={anchorElNav}
                   anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
+                    vertical: "bottom",
+                    horizontal: "left",
                   }}
                   keepMounted
                   transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
+                    vertical: "top",
+                    horizontal: "left",
                   }}
                   open={Boolean(anchorElNav)}
                   onClose={handleCloseNavMenu}
                   sx={{
-                    display: { xs: 'block', md: 'none' },
-                  }}
-                >
+                    display: { xs: "block", md: "none" },
+                  }}>
                   {pages.map((page) => (
-                    <MenuItem key={page} onClick={() => navigate(`/admin/${page.toLowerCase()}`)}>
+                    <MenuItem key={page} onClick={() => navigate(`/superadmin/${page.toLowerCase()}`)}>
                       <Typography textAlign="center" variant="body2">
                         {page}
                       </Typography>
@@ -106,12 +97,12 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
                 <IconButton
                   disableRipple
                   onClick={() => {
-                    navigate("/admin");
+                    navigate("/superadmin");
                   }}>
                   <img src="/l2pm_logo.png" width="150px" />
                 </IconButton>
                 {pages.map((page) => (
-                  <MenuItem key={page} onClick={() => navigate(`/admin/${page.toLowerCase()}`)}>
+                  <MenuItem key={page} onClick={() => navigate(`/superadmin/${page.toLowerCase()}`)}>
                     <Typography textAlign="center" variant="body2">
                       {page}
                     </Typography>
@@ -123,7 +114,7 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
                 <IconButton
                   disableRipple
                   onClick={() => {
-                    navigate("/admin");
+                    navigate("/superadmin");
                   }}>
                   <img src="/l2pm_logo.png" width="150px" />
                 </IconButton>
@@ -211,4 +202,4 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
   );
 };
 
-export default AdminAppBar;
+export default SuperAdminAppBar;

@@ -10,7 +10,10 @@ const NotFound = ({userRole}) => {
     redirectLink = "teacher"
   } else if (userRole === "User") {
     redirectLink = "home"
+  }else if (userRole === "SuperAdmin") {
+    redirectLink = "superadmin"
   }
+  
 
     return (
       <div>

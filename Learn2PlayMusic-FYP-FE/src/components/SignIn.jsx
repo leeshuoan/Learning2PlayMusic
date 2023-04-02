@@ -13,6 +13,7 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
 
   const routes = {
     Admin: "/admin",
+    SuperAdmin: "/superadmin",
     Teacher: "/teacher",
     User: "/home",
   };
@@ -22,6 +23,8 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
   } else if (userInfo.role == "Teacher") {
     navigate(routes[userInfo.role]);
   } else if (userInfo.role == "User") {
+    navigate(routes[userInfo.role]);
+  } else if (userInfo.role == "SuperAdmin") {
     navigate(routes[userInfo.role]);
   }
 
@@ -48,7 +51,7 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
           if (err) {
             console.log(err);
           }
-
+          console.log(session.getIdToken().payload);
           let groups = session.getIdToken().payload["cognito:groups"];
           let userRole = null;
           if (groups.includes("Admins")) {
@@ -57,8 +60,9 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
             userRole = "Teacher";
           } else if (groups.includes("Users")) {
             userRole = "User";
+          } else if (groups.includes("SuperAdmins")) {
+            userRole = "SuperAdmin";
           }
-
           if (userRole != null) {
             let userInfo = {
               id: session.getIdToken().payload.sub,

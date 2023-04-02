@@ -33,7 +33,7 @@ export default function UnenrolUserForm({ toUnEnrolCourse, toUnEnrolUser, handle
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Typography align="center" variant="h5">
-            Un-enrol the following student from course?
+            Un-enrol the following user from course?
           </Typography>
           <Typography align="center" color="error" variant="subtitle1">
             Warning: This action cannot be undone and will remove all user data from the course forever.
