@@ -446,13 +446,12 @@ class CourseStack(Stack):
             code=_lambda.Code.from_asset(
                 f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}",
                 bundling=BundlingOptions(
-                                        nodejs={
-                                            "target": "index.js",
-                                            "externalModules": [
-                                                "request",
-                                                "buffer"
+                                            image=_lambda.Runtime.bundling_image,
+                                            command=[
+                                                "bash", "-c",
+                                                "npm install request buffer"
                                             ]
-                                        })
+                                        )
             ),
             role=S3_DYNAMODB_ROLE,
             environment={
