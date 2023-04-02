@@ -6,9 +6,12 @@ import urllib.request
 
 from global_functions.responses import *
 
-dynamodb = boto3.client("dynamodb")
+dynamodb = boto3.resource('dynamodb')
+
 s3 = boto3.client("s3")
 bucket_name = os.environ["QUESTION_IMAGE_BUCKET_NAME"]
+table = dynamodb.Table("LMS")
+
 
 def lambda_handler(event, context):
     try:
@@ -56,15 +59,13 @@ def lambda_handler(event, context):
             "Options": options,
             "Answer": answer,
             "Attempts": 0,
-            "Correct": 0
+            "Correct": 0,
+            **options_stats
         }
-        for option in options:
-            item[option] = {str(0)}
-            
         if s3_params is not None:
             item["QuestionImage"] = "{0}/{1}".format(s3_params["Bucket"], s3_params["Key"])
 
-        dynamodb.put_item(TableName="LMS", Item=item)
+        table.put_item(Item=item)
 
         return response_200_items("Successfully updated  Question {0}!".format(question_id))
 
