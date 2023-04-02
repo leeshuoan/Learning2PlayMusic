@@ -5,7 +5,7 @@ from aws_cdk import aws_iam
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sns as sns
-from aws_cdk.core import Duration
+from aws_cdk import Duration
 from constructs import Construct
 
 
