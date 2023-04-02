@@ -67,7 +67,7 @@ def lambda_handler(event, context):
 
         table.put_item(Item=item)
 
-        return response_200_items("Successfully updated  Question {0}!".format(question_id))
+        return response_200_items("Successfully updated  Question {0}!".format(question_text))
 
     except Exception as e:
         return response_400(str(e))
