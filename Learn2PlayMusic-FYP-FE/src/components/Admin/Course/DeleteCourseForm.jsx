@@ -38,7 +38,7 @@ export default function DeleteCourseForm({ courseId, courseName, timeSlot, teach
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={10}>
+        <Grid item xs={12}>
           <Typography variant="h4" sx={{ textAlign: "center" }}>
             Are you sure you want to delete this course permanently?
           </Typography>

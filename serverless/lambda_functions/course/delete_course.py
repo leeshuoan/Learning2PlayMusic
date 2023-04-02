@@ -1,7 +1,7 @@
 import sys
 
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Attr, Key
 from global_functions.exists_in_db import *
 from global_functions.responses import *
 
@@ -20,15 +20,16 @@ def lambda_handler(event, context):
         table = dynamodb.Table("LMS")
 
         # Query the database for all items related to the courseId
-        response = table.query(
-            KeyConditionExpression=Key("PK").contains(f"Course#{courseId}")
-            & Key("SK").contains(f"Course#{courseId}")
+        response = table.scan(
+            FilterExpression=(
+                Attr("PK").contains(f"Course#{courseId}")
+                | Attr("SK").contains(f"Course#{courseId}")
+            )
         )
-
         with table.batch_writer() as batch:
             # Delete all items related to the courseId in the database
             for item in response["Items"]:
-                batch.delete_item(Key=item)
+                batch.delete_item(Key={"PK": item["PK"], "SK": item["SK"]})
 
         return response_200_msg("successfully deleted item")
 

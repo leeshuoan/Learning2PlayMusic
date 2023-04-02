@@ -27,8 +27,7 @@ const UserClassMaterials = () => {
     },
   })
 
-  useEffect(() => {
-    Promise.all([getCourse, getMaterialAPI])
+  useEffect(() => {Promise.all([getCourse, getMaterialAPI])
       .then(async ([res1, res2]) => {
         const [data1, data2] = await Promise.all([res1.json(), res2.json()]);
         let courseData = {
@@ -40,12 +39,11 @@ const UserClassMaterials = () => {
         setCourse(courseData)
         setOpen(false)
 
-        let mat = data2[0]
+        let mat = data2
         mat.id = mat.SK.split("Material#")[1].substr(0, 1);
         let date_1 = new Date(mat['MaterialLessonDate']);
         let formattedDate_1 = `${date_1.toLocaleDateString()} ${date_1.toLocaleTimeString()}`;
         mat['MaterialLessonDate'] = formattedDate_1
-        console.log(mat)
         setMaterial(mat)
 
       }).catch((error) => {

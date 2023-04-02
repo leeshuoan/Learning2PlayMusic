@@ -273,6 +273,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_FUNCTIONS_FOLDER}.delete_course.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            timeout=840,
         )
 
         # /course/student
@@ -354,14 +355,17 @@ class CourseStack(Stack):
             "getCourseQuiz",
             runtime=_lambda.Runtime.PYTHON_3_9,
             handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.get_course_quiz_withJWT.lambda_handler",
-            code=_lambda.Code.from_asset(FUNCTIONS_FOLDER, 
-                                        bundling=BundlingOptions(
-                                            image=_lambda.Runtime.PYTHON_3_9.bundling_image,
-                                            command=[
-                                                "bash", "-c",
-                                                "pip install --no-cache pyjwt -t /asset-output && cp -au . /asset-output"
-                                            ]
-                                        )),
+            code=_lambda.Code.from_asset(
+                FUNCTIONS_FOLDER,
+                bundling=BundlingOptions(
+                    image=_lambda.Runtime.PYTHON_3_9.bundling_image,
+                    command=[
+                        "bash",
+                        "-c",
+                        "pip install --no-cache pyjwt -t /asset-output && cp -au . /asset-output",
+                    ],
+                ),
+            ),
             role=LAMBDA_ROLE,
         )
 
@@ -741,7 +745,14 @@ class CourseStack(Stack):
                     ),
                     "visibility": apigw.JsonSchema(type=apigw.JsonSchemaType.BOOLEAN),
                 },
-                required=["courseId", "quizId", "quizTitle", "quizMaxAttempts", "quizDescription", "visibility"],
+                required=[
+                    "courseId",
+                    "quizId",
+                    "quizTitle",
+                    "quizMaxAttempts",
+                    "quizDescription",
+                    "visibility",
+                ],
             ),
         )
 
@@ -829,7 +840,6 @@ class CourseStack(Stack):
                     "questionOptionType": apigw.JsonSchema(
                         type=apigw.JsonSchemaType.STRING
                     ),
-
                 },
                 required=["courseId", "quizId", "questionId"],
             ),
@@ -1010,7 +1020,9 @@ class CourseStack(Stack):
                     "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "homeworkId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "homeworkScore": apigw.JsonSchema(type=apigw.JsonSchemaType.NUMBER),
-                    "teacherComments": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "teacherComments": apigw.JsonSchema(
+                        type=apigw.JsonSchemaType.STRING
+                    ),
                 },
                 required=["courseId", "studentId", "homeworkId", "homeworkScore"],
             ),
