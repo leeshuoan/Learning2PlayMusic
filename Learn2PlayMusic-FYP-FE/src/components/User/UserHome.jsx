@@ -1,6 +1,7 @@
 import { Backdrop, Box, Button, Card, CircularProgress, Container, Grid, Link, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import RhythmMachine from "./RhythmMachine";
 
 const UserHome = ({ userInfo }) => {
   const [open, setOpen] = useState(true);
@@ -48,7 +49,12 @@ const UserHome = ({ userInfo }) => {
     }
     fetchData();
   }, []);
-  if (error) return <Typography variant="h4" align="center" sx={{mt:3}}>Something went wrong, contact admin immediately!</Typography>;
+  if (error)
+    return (
+      <Typography variant="h4" align="center" sx={{ mt: 3 }}>
+        Something went wrong, contact admin immediately!
+      </Typography>
+    );
   else
     return (
       <>
@@ -111,6 +117,7 @@ const UserHome = ({ userInfo }) => {
                   </Link>
                 </Box>
               </Card>
+              <RhythmMachine />
             </Grid>
           </Grid>
           <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>

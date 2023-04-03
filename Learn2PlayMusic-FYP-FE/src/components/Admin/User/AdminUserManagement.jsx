@@ -183,7 +183,6 @@ const AdminUserManagement = (userInfo) => {
             initialState={{
               density: "compact",
               sorting: [
-                { id: "role", desc: false },
                 { id: "name", desc: false },
               ],
             }}
