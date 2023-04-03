@@ -1,9 +1,8 @@
 import boto3
-from aws_cdk import Fn, Stack
+from aws_cdk import Duration, Fn, Stack
 from aws_cdk import aws_apigateway as apigw
 from aws_cdk import aws_iam
 from aws_cdk import aws_lambda as _lambda
-from aws_cdk import Duration
 from constructs import Construct
 
 
@@ -104,6 +103,7 @@ class UserStack(Stack):
             handler=f"{USER_COURSE_ENROLLED_FUNCTIONS_FOLDER}.post_user_course_enrolled.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            timeout=Duration.seconds(840),
         )
 
         # /user/course/enrol - batch enrol students to 1 course
