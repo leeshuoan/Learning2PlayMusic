@@ -3,7 +3,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Box, Button, Container, IconButton, Tooltip, Typography } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import MaterialReactTable from "material-react-table";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import Loader from "../../utils/Loader";
 const TransitionModal = lazy(() => import("../../utils/TransitionModal"));
 const EnrolUserForm = lazy(() => import("./EnrolUserForm"));
@@ -96,6 +96,7 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
     });
     // settle courses user is enrolled in
     let userCoursesDict = await postAPIWithBody(`${import.meta.env.VITE_API_URL}/user/course/enrolled`, { userIds: fetchedUserIds });
+    console.log(userCoursesDict);
     setUserCoursesEnrolled(userCoursesDict);
     setData(nonAdminUsersData);
   };
@@ -151,6 +152,7 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
   };
   // useEffect ==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
   useEffect(() => {
+    setOpen(true);
     let start = new Date().getTime();
     Promise.all([listNonAdminUsers()]).then(() => {
       setOpen(false);
