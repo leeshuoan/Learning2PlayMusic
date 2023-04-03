@@ -30,8 +30,7 @@ export default function ChangePassword() {
           toast.success("Password changed successfully");
           const role = user.challengeParam.userAttributes["custom:role"]
           console.log(role)
-          const route = role == "User" ? "/home" : role == "Teacher" ? "/teacher" : role == "Admin" ? "/admin" : "/"
-          navigate(route);
+          navigate("/");
         }).catch((err) => {
           toast.error(err.message);
           console.log(err)
