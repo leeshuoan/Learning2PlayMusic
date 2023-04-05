@@ -17,6 +17,7 @@ const NewQuiz = () => {
   const [visibility, setVisibility] = useState(true);
   const [quizQuestions, setQuizQuestions] = useState([
     {
+      questionNumber: 1,
       question: "",
       questionOptionType: "multiple-choice",
       options: ["", "", "", ""],
@@ -88,13 +89,11 @@ const NewQuiz = () => {
       console.log(quizQuestions);
       if (quizQuestions[i].question === "") {
         errorMsg = "Please enter a question title for Question " + (i + 1) + ".";
-        continue;
       }
       //checkk if quizQuestions[i].options has empty string
       for (let j = 0; j < quizQuestions[i].options.length; j++) {
         if (quizQuestions[i].options[j].trim() == "") {
           errorMsg = "Please enter all options for the question.";
-          continue;
         }
       }
       if (quizQuestions[i].questionOptionType === "multiple-choice") {
@@ -103,12 +102,10 @@ const NewQuiz = () => {
         });
         if (quizQuestions[i].options[0] === quizQuestions[i].options[1] || quizQuestions[i].options[0] === quizQuestions[i].options[2] || quizQuestions[i].options[0] === quizQuestions[i].options[3] || quizQuestions[i].options[1] === quizQuestions[i].options[2] || quizQuestions[i].options[1] === quizQuestions[i].options[3] || quizQuestions[i].options[2] === quizQuestions[i].options[3]) {
           errorMsg = "Please enter different options for the question.";
-          continue;
         }
       }
       if (quizQuestions[i].answer === "") {
         errorMsg = "Please select an answer for the question.";
-        continue;
       }
     }
 
@@ -118,61 +115,62 @@ const NewQuiz = () => {
       return;
     }
 
-      const newQuiz = {
-        quizTitle: quizTitle,
-        quizDescription: quizDescription,
-        quizMaxAttempts: quizMaxAttempts,
-        visibility: visibility,
-        courseId: courseid,
-      };
-      let newQuizId = null;
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
+    const newQuiz = {
+      quizTitle: quizTitle,
+      quizDescription: quizDescription,
+      quizMaxAttempts: quizMaxAttempts,
+      visibility: visibility,
+      courseId: courseid,
+    };
+    let newQuizId = null;
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newQuiz),
+    });
+    if (response.ok) {
+      const responseData = await response.json();
+      newQuizId = responseData.message.split("id").splice(1, 1).join().split(" ")[1];
+    } else {
+      console.error(`Error: ${response.status} - ${response.statusText}`);
+      return;
+    }
+
+    let newQuizQuestions = [];
+    for (let i = 0; i < quizQuestions.length; i++) {
+      const newQuizQuestion = { ...quizQuestions[i], courseId: courseid, quizId: newQuizId };
+      newQuizQuestions.push(newQuizQuestion);
+    }
+
+    try {
+      console.log(newQuizQuestions);
+      fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newQuiz),
+        body: JSON.stringify(newQuizQuestions),
       });
-      if (response.ok) {
-        const responseData = await response.json();
-        newQuizId = responseData.message.split("id").splice(1, 1).join().split(" ")[1];
-      } else {
-        console.error(`Error: ${response.status} - ${response.statusText}`);
-        return;
-      }
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+      toast.error("An unexpected error occurred during quiz creation");
+      return;
+    }
 
-      let newQuizQuestions = [];
-      for (let i = 0; i < quizQuestions.length; i++) {
-        const newQuizQuestion = { ...quizQuestions[i], courseId: courseid, quizId: newQuizId };
-        newQuizQuestions.push(newQuizQuestion);
-      }
-
-      try {
-        console.log(newQuizQuestions);
-        fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newQuizQuestions),
-        });
-      } catch (error) {
-        console.log(error);
-        setIsLoading(false);
-        toast.error("An unexpected error occurred during quiz creation");
-        return;
-      }
-
-      if (response) {
-        navigate(`/teacher/course/${courseid}/quiz`);
-        toast.success("Quiz created successfully");
-      }
+    if (response) {
+      navigate(`/teacher/course/${courseid}/quiz`);
+      toast.success("Quiz created successfully");
+    }
   }
 
   const addQuestion = () => {
     setQuizQuestions([
       ...quizQuestions,
       {
+        questionNumber: questionNumber + 1,
         question: "",
         questionOptionType: "multiple-choice",
         options: [", '', '', '"],
@@ -184,7 +182,7 @@ const NewQuiz = () => {
   const handleQuestionChange = (qnInfo) => {
     const newQuizQuestions = quizQuestions.map((qn) => {
       console.log(qnInfo);
-      if (qn.questionId === qnInfo.questionId) {
+      if (qn.questionNumber === qnInfo.questionNumber) {
         return qnInfo;
       }
       return qn;

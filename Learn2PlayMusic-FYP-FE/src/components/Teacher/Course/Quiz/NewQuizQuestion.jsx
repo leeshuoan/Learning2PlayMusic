@@ -26,7 +26,7 @@ const NewQuizQuestion = ({ qnInfo, handleQuestionChange, questionNumber }) => {
 
   useEffect(() => {
     const newQnInfo = {
-      questionId: qnInfo.questionId,
+      questionNumber: questionNumber,
       question: question,
       questionOptionType: questionType,
       options: options,
