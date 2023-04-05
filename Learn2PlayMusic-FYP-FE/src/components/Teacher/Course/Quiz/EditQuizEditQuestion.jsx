@@ -60,8 +60,18 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
   };
 
   const editQuestion = async () => {
-    if (question == "" || answer == "" || options.includes("")) {
-      toast.error("Please fill in all the fields");
+    if (question === "") {
+      toast.error("Please enter a question.");
+      return;
+    }
+    if (questionType === "multiple-choice") {
+      if (options[0].trim() === "" || options[1].trim() === "" || options[2].trim() === "" || options[3].trim() === "") {
+        toast.error("Please enter all options for the question.");
+        return;
+      }
+    }
+    if (answer === "") {
+      toast.error("Please select an answer for the question.");
       return;
     }
     if (question == qnInfo.question && answer == qnInfo.answer && options == qnInfo.options && questionType == qnInfo.questionOptionType && image == qnInfo.questionImage) {

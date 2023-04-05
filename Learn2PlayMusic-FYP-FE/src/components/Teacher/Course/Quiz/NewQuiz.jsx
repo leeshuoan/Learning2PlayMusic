@@ -78,72 +78,91 @@ const NewQuiz = () => {
     // check the other fields
     let errorMsg = "";
     if (quizTitle === "") {
-      errorMsg = "Missing quiz title";
+      errorMsg = "Please enter a quiz title.";
     }
     if (quizMaxAttempts === "") {
-      errorMsg = "Missing quiz max attempts";
+      errorMsg = "Please enter the max attempts for the quiz";
     }
     for (let i = 0; i < quizQuestions.length; i++) {
       console.log(quizQuestions[i].answer);
+      console.log(quizQuestions);
+      if (quizQuestions[i].question === "") {
+        errorMsg = "Please enter a question.";
+      }
+      //checkk if quizQuestions[i].options has empty string
+      for (let j = 0; j < quizQuestions[i].options.length; j++) {
+        if (quizQuestions[i].options[j].trim() == "") {
+          errorMsg = "Please enter all options for the question.";
+        }
+      }
+      if (quizQuestions[i].questionOptionType === "multiple-choice") {
+        quizQuestions[i].options.map((option) => {
+          return option.trim();
+        });
+        if (quizQuestions[i].options[0] === quizQuestions[i].options[1] || quizQuestions[i].options[0] === quizQuestions[i].options[2] || quizQuestions[i].options[0] === quizQuestions[i].options[3] || quizQuestions[i].options[1] === quizQuestions[i].options[2] || quizQuestions[i].options[1] === quizQuestions[i].options[3] || quizQuestions[i].options[2] === quizQuestions[i].options[3]) {
+          errorMsg = "Please enter different options for the question.";
+        }
+      }
       if (quizQuestions[i].answer === "") {
-        errorMsg = "Missing answer for question";
+        errorMsg = "Please select an answer for the question.";
       }
     }
+
     if (errorMsg !== "") {
       setIsLoading(false);
       toast.error(errorMsg);
       return;
     }
 
-    const newQuiz = {
-      quizTitle: quizTitle,
-      quizDescription: quizDescription,
-      quizMaxAttempts: quizMaxAttempts,
-      visibility: visibility,
-      courseId: courseid,
-    };
-    let newQuizId = null;
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newQuiz),
-    });
-    if (response.ok) {
-      const responseData = await response.json();
-      newQuizId = responseData.message.split("id").splice(1, 1).join().split(" ")[1];
-    } else {
-      console.error(`Error: ${response.status} - ${response.statusText}`);
-      return;
-    }
+    //   const newQuiz = {
+    //     quizTitle: quizTitle,
+    //     quizDescription: quizDescription,
+    //     quizMaxAttempts: quizMaxAttempts,
+    //     visibility: visibility,
+    //     courseId: courseid,
+    //   };
+    //   let newQuizId = null;
+    //   const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(newQuiz),
+    //   });
+    //   if (response.ok) {
+    //     const responseData = await response.json();
+    //     newQuizId = responseData.message.split("id").splice(1, 1).join().split(" ")[1];
+    //   } else {
+    //     console.error(`Error: ${response.status} - ${response.statusText}`);
+    //     return;
+    //   }
 
-    let newQuizQuestions = [];
-    for (let i = 0; i < quizQuestions.length; i++) {
-      const newQuizQuestion = { ...quizQuestions[i], courseId: courseid, quizId: newQuizId };
-      newQuizQuestions.push(newQuizQuestion);
-    }
+    //   let newQuizQuestions = [];
+    //   for (let i = 0; i < quizQuestions.length; i++) {
+    //     const newQuizQuestion = { ...quizQuestions[i], courseId: courseid, quizId: newQuizId };
+    //     newQuizQuestions.push(newQuizQuestion);
+    //   }
 
-    try {
-      console.log(newQuizQuestions);
-      fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newQuizQuestions),
-      });
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-      toast.error("An unexpected error occurred during quiz creation");
-      return;
-    }
+    //   try {
+    //     console.log(newQuizQuestions);
+    //     fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify(newQuizQuestions),
+    //     });
+    //   } catch (error) {
+    //     console.log(error);
+    //     setIsLoading(false);
+    //     toast.error("An unexpected error occurred during quiz creation");
+    //     return;
+    //   }
 
-    if (response) {
-      navigate(`/teacher/course/${courseid}/quiz`);
-      toast.success("Quiz created successfully");
-    }
+    //   if (response) {
+    //     navigate(`/teacher/course/${courseid}/quiz`);
+    //     toast.success("Quiz created successfully");
+    //   }
   }
 
   const addQuestion = () => {

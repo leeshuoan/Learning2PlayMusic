@@ -59,19 +59,19 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, handleRefreshData, handleDisa
   };
 
   const addQuestion = () => {
-    if (answer === "") {
-      toast.error("Please select an answer for the question.");
-      return;
-    }
     if (question === "") {
       toast.error("Please enter a question.");
       return;
     }
     if (questionType === "multiple-choice") {
-      if (options[0] === "" || options[1] === "" || options[2] === "" || options[3] === "") {
+      if (options[0].trim() === "" || options[1].trim() === "" || options[2].trim() === "" || options[3].trim() === "") {
         toast.error("Please enter all options for the question.");
         return;
       }
+    }
+    if (answer === "") {
+      toast.error("Please select an answer for the question.");
+      return;
     }
     if (questionType === "multiple-choice") {
       options.map((option) => {
