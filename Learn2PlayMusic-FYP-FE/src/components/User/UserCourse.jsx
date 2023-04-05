@@ -163,6 +163,7 @@ const UserCourse = ({ userInfo }) => {
     });
   }, []);
 
+
   const menuNavigate = (option) => {
     if (option == "Announcements") navigate(`/home/course/${course.id}/announcement`);
     if (option == "Class Materials") navigate(`/home/course/${course.id}/material`);
@@ -374,8 +375,9 @@ const UserCourse = ({ userInfo }) => {
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
+
                       <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? "grey" : "" }}>
-                        {homework.NumAttempts}
+                        {homework.NumAttempts ? homework.NumAttempts : "-"}
                       </Typography>
                       <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" }, color: homework.submission == 0 ? "grey" : "" }}>
                         Submissions: {homework.NumAttempts}
@@ -383,7 +385,7 @@ const UserCourse = ({ userInfo }) => {
                     </Grid>
                     <Grid item xs={12} sm={3}>
                       <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
-                        <Link onClick={() => navigate(homework.id + "/feedback")}>{homework.Marked ? "Marked" : ""}</Link>
+                        {homework.Marked ? <Link onClick={() => navigate(homework.id + "/feedback")}>Marked</Link> : "-"}
                       </Typography>
                       <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
                         Evaluation Status: <Link onClick={() => navigate(homework.id + "/feedback")}>{homework.Marked ? "Marked" : ""}</Link>

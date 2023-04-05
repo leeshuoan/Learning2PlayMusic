@@ -15,6 +15,7 @@ const TeacherHomeworkOverview = () => {
   const { homeworkId } = useParams();
   const [course, setCourse] = useState({});
   const [homework, setHomework] = useState({});
+  const [homeworkFeedback, setHomeworkFeedback] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [comments, setComments] = useState("");
   const [grade, setGrade] = useState("");
@@ -42,10 +43,11 @@ const TeacherHomeworkOverview = () => {
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
   const getHomeworkAPI = request( `/course/homework?courseId=${courseid}&homeworkId=${homeworkId}` );
+  const getHomeworkFeedbackAPI = request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${homeworkId}&studentId=${locate.state.StudentId}`);
 
   useEffect(() => {
     async function fetchData() {
-      const [data1, data2] = await Promise.all([getCourseAPI, getHomeworkAPI]);
+      const [data1, data2, data3] = await Promise.all([getCourseAPI, getHomeworkAPI, getHomeworkFeedbackAPI]);
 
       let courseData = {
         id: data1[0].SK.split("#")[1],
@@ -72,6 +74,12 @@ const TeacherHomeworkOverview = () => {
         assignedDate: formattedAssignedDate,
       };
       setHomework(homeworkData);
+
+      let homeworkFeedbackData = {
+        attachment: data3.HomeworkAttachment,
+        filename: data3.SubmissionFileName
+      };
+      setHomeworkFeedback(homeworkFeedbackData);
 
     }
 
@@ -194,8 +202,11 @@ const TeacherHomeworkOverview = () => {
             </Typography>
             <Typography variant="subsubtitle">FILE SUBMISSION</Typography>
             <Typography variant="subtitle2" sx={{ mb: 2 }}>
-              {" "}
-              <Link>{locate.state.SubmissionFileName}</Link>{" "}
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <a href={homeworkFeedback.attachment} target="_blank">
+                  {homeworkFeedback.filename}
+                </a>
+              </Typography>
             </Typography>
             <Typography variant="subsubtitle" sx={{ mt: 1 }}>
               {" "}
@@ -292,7 +303,9 @@ const TeacherHomeworkOverview = () => {
             <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
               <Button
                 variant="contained"
-                onClick={() => navigate(`/teacher/course/${courseid}/homework/${homeworkId}`)}
+                onClick={() =>
+                  navigate(`/teacher/course/${courseid}/homework/${homeworkId}`)
+                }
               >
                 Back to Homework
               </Button>
