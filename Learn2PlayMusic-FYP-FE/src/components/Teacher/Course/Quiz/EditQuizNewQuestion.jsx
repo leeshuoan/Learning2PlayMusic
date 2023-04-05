@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const EditQuizNewQuestion = ({ setOpenAddQuestion, handleRefreshData, handleDisableEditQuizButton }) => {
+const EditQuizNewQuestion = ({ setOpenAddQuestion, handleRefreshData, handleDisableEditQuizButton, userInfo }) => {
   const { courseid } = useParams();
   const { quizId } = useParams();
   const [question, setQuestion] = useState("");
@@ -98,6 +98,7 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, handleRefreshData, handleDisa
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
       },
       body: JSON.stringify(newQnInfo),
     })
@@ -119,7 +120,7 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, handleRefreshData, handleDisa
     <>
       <Card variant="outlined" sx={{ boxShadow: "none", mt: 3, p: 2 }}>
         <Typography variant="h6" sx={{ mb: 1 }}>
-          New Question 
+          New Question
         </Typography>
         <Grid container sx={{ mb: 2 }} spacing={2}>
           <Grid item xs={12} md={6}>
@@ -162,28 +163,28 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, handleRefreshData, handleDisa
             <Grid container columnSpacing={2} sx={{ mt: 1 }}>
               <Grid item xs={12} md={6}>
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <FormControlLabel sx={{ mr: 0 }} value={0} control={<Radio size="small" sx={{ ml: 1 }} disabled={ options[0]==""}/>} />
+                  <FormControlLabel sx={{ mr: 0 }} value={0} control={<Radio size="small" sx={{ ml: 1 }} disabled={options[0] == ""} />} />
                   <InputLabel id="question-label">Option 1 *</InputLabel>
                 </Box>
                 <TextField id="question" value={options[0]} fullWidth onChange={() => handleOptionChange(0, event)} variant="outlined" required />
               </Grid>
               <Grid item xs={12} md={6}>
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <FormControlLabel sx={{ mr: 0 }} value={1} control={<Radio size="small" sx={{ ml: 1 }} disabled={ options[1]==""}/>} />
+                  <FormControlLabel sx={{ mr: 0 }} value={1} control={<Radio size="small" sx={{ ml: 1 }} disabled={options[1] == ""} />} />
                   <InputLabel id="question-label">Option 2 *</InputLabel>
                 </Box>
                 <TextField id="question" value={options[1]} fullWidth onChange={() => handleOptionChange(1, event)} variant="outlined" required />
               </Grid>
               <Grid item xs={12} md={6}>
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <FormControlLabel sx={{ mr: 0 }} value={2} control={<Radio size="small" sx={{ ml: 1 }} disabled={ options[2]==""}/>} />
+                  <FormControlLabel sx={{ mr: 0 }} value={2} control={<Radio size="small" sx={{ ml: 1 }} disabled={options[2] == ""} />} />
                   <InputLabel id="question-label">Option 3 *</InputLabel>
                 </Box>
                 <TextField id="question" value={options[2]} fullWidth onChange={() => handleOptionChange(2, event)} variant="outlined" required />
               </Grid>
               <Grid item xs={12} md={6}>
                 <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                  <FormControlLabel sx={{ mr: 0 }} value={3} control={<Radio size="small" sx={{ ml: 1 }} disabled={ options[3]==""}/>} />
+                  <FormControlLabel sx={{ mr: 0 }} value={3} control={<Radio size="small" sx={{ ml: 1 }} disabled={options[3] == ""} />} />
                   <InputLabel id="question-label">Option 4 *</InputLabel>
                 </Box>
                 <TextField id="question" value={options[3]} fullWidth onChange={() => handleOptionChange(3, event)} variant="outlined" required />

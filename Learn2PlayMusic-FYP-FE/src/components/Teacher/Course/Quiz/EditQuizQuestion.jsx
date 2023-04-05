@@ -25,7 +25,7 @@ const EditQuizQuestion = ({ userInfo, question, questionNumber, handleRefreshDat
   return (
     <>
       <TransitionModal open={confirmDeleteModalOpen} handleClose={() => setConfirmDeleteModalOpen(false)} style={modalStyle}>
-        <ConfirmDeleteQuestion question={question} handleClose={() => handleCloseModal()} />
+        <ConfirmDeleteQuestion userInfo={userInfo} question={question} handleClose={() => handleCloseModal()} />
       </TransitionModal>
 
       {!edit ? (

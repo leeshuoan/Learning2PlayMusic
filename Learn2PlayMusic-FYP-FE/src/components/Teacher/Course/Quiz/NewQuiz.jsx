@@ -6,7 +6,7 @@ import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 import Loader from "../../../utils/Loader";
 import NewQuizQuestion from "./NewQuizQuestion";
 
-const NewQuiz = () => {
+const NewQuiz = ({ userInfo }) => {
   const navigate = useNavigate();
   const { courseid } = useParams();
   const [course, setCourse] = useState({});
@@ -31,6 +31,7 @@ const NewQuiz = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
       },
     });
 
@@ -127,42 +128,48 @@ const NewQuiz = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
       },
       body: JSON.stringify(newQuiz),
     });
     if (response.ok) {
+      console.log("newQuiz ok");
       const responseData = await response.json();
       newQuizId = responseData.message.split("id").splice(1, 1).join().split(" ")[1];
     } else {
-      console.error(`Error: ${response.status} - ${response.statusText}`);
+      toast.error(`Error: ${response.status} - ${response.statusText}, Please try again later.`);
       return;
     }
-
+    console.log(newQuizId);
     let newQuizQuestions = [];
     for (let i = 0; i < quizQuestions.length; i++) {
-      const newQuizQuestion = { ...quizQuestions[i], courseId: courseid, quizId: newQuizId };
+      const { questionNumber, ...rest } = quizQuestions[i];
+      const newQuizQuestion = { ...rest, courseId: courseid, quizId: newQuizId };
       newQuizQuestions.push(newQuizQuestion);
     }
-
+    console.log(newQuizQuestions);
     try {
       console.log(newQuizQuestions);
-      fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
+      console.log(JSON.stringify(newQuizQuestions));
+      await fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${userInfo.token}`,
         },
         body: JSON.stringify(newQuizQuestions),
+      }).then((res) => {
+        if (res.ok) {
+          setIsLoading(false);
+          toast.success("Quiz created successfully");
+          navigate(`/teacher/course/${courseid}/quiz`);
+        }
       });
     } catch (error) {
       console.log(error);
       setIsLoading(false);
       toast.error("An unexpected error occurred during quiz creation");
       return;
-    }
-
-    if (response) {
-      navigate(`/teacher/course/${courseid}/quiz`);
-      toast.success("Quiz created successfully");
     }
   }
 
@@ -181,7 +188,6 @@ const NewQuiz = () => {
 
   const handleQuestionChange = (qnInfo) => {
     const newQuizQuestions = quizQuestions.map((qn) => {
-      console.log(qnInfo);
       if (qn.questionNumber === qnInfo.questionNumber) {
         return qnInfo;
       }
