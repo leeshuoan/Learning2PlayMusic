@@ -87,12 +87,14 @@ const NewQuiz = () => {
       console.log(quizQuestions[i].answer);
       console.log(quizQuestions);
       if (quizQuestions[i].question === "") {
-        errorMsg = "Please enter a question.";
+        errorMsg = "Please enter a question title for Question " + (i + 1) + ".";
+        continue;
       }
       //checkk if quizQuestions[i].options has empty string
       for (let j = 0; j < quizQuestions[i].options.length; j++) {
         if (quizQuestions[i].options[j].trim() == "") {
           errorMsg = "Please enter all options for the question.";
+          continue;
         }
       }
       if (quizQuestions[i].questionOptionType === "multiple-choice") {
@@ -101,10 +103,12 @@ const NewQuiz = () => {
         });
         if (quizQuestions[i].options[0] === quizQuestions[i].options[1] || quizQuestions[i].options[0] === quizQuestions[i].options[2] || quizQuestions[i].options[0] === quizQuestions[i].options[3] || quizQuestions[i].options[1] === quizQuestions[i].options[2] || quizQuestions[i].options[1] === quizQuestions[i].options[3] || quizQuestions[i].options[2] === quizQuestions[i].options[3]) {
           errorMsg = "Please enter different options for the question.";
+          continue;
         }
       }
       if (quizQuestions[i].answer === "") {
         errorMsg = "Please select an answer for the question.";
+        continue;
       }
     }
 

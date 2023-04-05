@@ -61,7 +61,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
 
   const editQuestion = async () => {
     if (question === "") {
-      toast.error("Please enter a question.");
+      toast.error("Please enter a question title.");
       return;
     }
     if (questionType === "multiple-choice") {

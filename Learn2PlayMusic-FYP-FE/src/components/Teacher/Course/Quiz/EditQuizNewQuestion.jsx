@@ -60,7 +60,7 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, handleRefreshData, handleDisa
 
   const addQuestion = () => {
     if (question === "") {
-      toast.error("Please enter a question.");
+      toast.error("Please enter a question title.");
       return;
     }
     if (questionType === "multiple-choice") {
