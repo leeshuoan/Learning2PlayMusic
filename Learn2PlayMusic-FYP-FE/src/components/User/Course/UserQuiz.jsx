@@ -56,6 +56,7 @@ const UserQuiz = (userInfo) => {
 
     Promise.all([getCourse, getQuizAPI, getQuizQuestionAPI])
       .then(async ([courseInfoRes, quizInfoRes, quizQnRes]) => {
+        console.log(quizQnRes)
         if (quizInfoRes.status === 404 || quizQnRes.status === 404 || courseInfoRes.status === 404) {
           toast.error("Invalid ID");
           // navigate(`/home/course/${courseid}/quiz`);
@@ -122,7 +123,7 @@ const UserQuiz = (userInfo) => {
         // loop through the answer key dictionary
         const qId = key.split("Question#")[1];
         for (let question of questionsArray) {
-          if (key === question.id) {
+          if (key.split("Question#")[1] === question.id) {
             // Compare the user's response value to the "Answer" value in the answer key dictionary
             if (selectedOptions[key] === question.Answer) {
               correctAnswers++;
@@ -133,6 +134,7 @@ const UserQuiz = (userInfo) => {
       }
     }
     let quizScore = correctAnswers / totalQuestions;
+
     // prepare request body
     const requestBody = {
       courseId: course.id,
