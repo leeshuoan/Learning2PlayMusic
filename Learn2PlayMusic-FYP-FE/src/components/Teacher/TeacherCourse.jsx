@@ -169,58 +169,40 @@ const TeacherCourse = ({ userInfo }) => {
     });
   }
   async function deleteMaterial() {
+    setOpen(true);
     console.log(
       JSON.stringify({
         courseId: courseid,
         materialId: selectedMaterial,
       })
     );
-    let ok = false;
-    fetch(`${import.meta.env.VITE_API_URL}/course/material`, {
+    fetch(`${import.meta.env.VITE_API_URL}/course/material?courseId=${courseid}&materialId=${selectedMaterial}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userInfo.token}`,
       },
-      body: JSON.stringify({
-        courseId: courseid,
-        materialId: selectedMaterial,
-      }),
     }).then((response) => {
-      if (response.status === 200) {
-        ok = true;
+      console.log(response);
+      if (response.ok) {
+        setCourseMaterial(courseMaterial.filter((material) => material.id !== selectedMaterial));
+        toast.success("Material deleted successfully");
+        // reset
+        setOpen(false);
+        setSelectedMaterial(null);
+        setDeleteMaterialModal(false);
+        setRefreshUseEffect(!refreshUseEffect);
+        return;
       } else {
         toast.error("An unexpected error occured");
+        // reset
+        setOpen(false);
+        setSelectedMaterial(null);
+        setDeleteMaterialModal(false);
+        setRefreshUseEffect(!refreshUseEffect);
         return;
       }
     });
-    // reset
-    setOpen(true);
-    setSelectedMaterial(null);
-    setDeleteMaterialModal(false);
-    setTimeout(() => {
-      fetch(`${import.meta.env.VITE_API_URL}/course/material?courseId=${courseid}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((res) => {
-          const refreshMaterialData = res.map((material) => {
-            const id = material.SK.split("Material#")[1];
-            const date = new Date(material.MaterialLessonDate);
-            const formattedDate = `${date.toLocaleDateString()}`;
-            return { ...material, id, MaterialLessonDate: formattedDate };
-          });
-          console.log(refreshMaterialData);
-          setCourseMaterial(refreshMaterialData);
-          setOpen(false);
-          toast.success("Material deleted successfully");
-        });
-    }, 2000);
-    return;
   }
 
   async function deleteQuiz() {
