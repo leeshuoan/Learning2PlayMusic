@@ -1,5 +1,4 @@
-
-import { Box, Card, Container, Divider, Typography, useTheme, Link } from "@mui/material";
+import { Box, Card, Container, Divider, Link, Typography, useTheme } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -15,7 +14,6 @@ const TeacherHomeworkOverview = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
       method: "GET",
@@ -28,17 +26,12 @@ const TeacherHomeworkOverview = () => {
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
   const getCourseStudentsAPI = request(`/course/student?courseId=${courseid}`);
-  const getHomeworkAPI = request( `/course/homework?courseId=${courseid}&homeworkId=${homeworkId}` );
-  const getHomeworkFeedbackAPI = request( `/course/homework/feedback?courseId=${courseid}&homeworkId=${homeworkId}` );
+  const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&homeworkId=${homeworkId}`);
+  const getHomeworkFeedbackAPI = request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${homeworkId}`);
 
   https: useEffect(() => {
     async function fetchData() {
-      const [data1, data2, data3, data4] = await Promise.all([
-        getCourseAPI,
-        getHomeworkAPI,
-        getHomeworkFeedbackAPI,
-        getCourseStudentsAPI,
-      ]);
+      const [data1, data2, data3, data4] = await Promise.all([getCourseAPI, getHomeworkAPI, getHomeworkFeedbackAPI, getCourseStudentsAPI]);
 
       let courseData = {
         id: data1[0].SK.split("#")[1],
@@ -62,15 +55,16 @@ const TeacherHomeworkOverview = () => {
         percentageSubmission: +((data3.length / data4.length) * 100).toFixed(2),
       };
       setHomework(homeworkData);
+      console.log(data3);
 
       const data = data3.map((homework) => {
-        const studentId = homework.SK.split("#")[1].split("Homework")[0]
+        const studentId = homework.SK.split("#")[1].split("Homework")[0];
         const studentName = homework.StudentName;
         const homeworkScore = homework.HomeworkScore == 0 ? "-" : homework.HomeworkScore; // assuming that no students will get 0 (otherwise will need change db :/)
         const lastSubmissionDate = new Date(homework.LastSubmissionDate);
         const formattedLastSubmissionDate = `${lastSubmissionDate.toLocaleDateString()} ${lastSubmissionDate.toLocaleTimeString()}`;
-        const reviewDate = new Date(homework.ReviewDate);
-        const formattedReviewDate = `${reviewDate.toLocaleDateString()} ${reviewDate.toLocaleTimeString()}`;
+        const reviewDate = !homework.ReviewDate ? null : new Date(homework.ReviewDate);
+        const formattedReviewDate = reviewDate != null ? `${reviewDate.toLocaleDateString()} ${reviewDate.toLocaleTimeString()}` : "-";
         return {
           ...homework,
           LastSubmissionDate: formattedLastSubmissionDate,
@@ -81,6 +75,7 @@ const TeacherHomeworkOverview = () => {
         };
       });
       setData(data);
+      console.log(data);
     }
 
     fetchData().then(() => {
@@ -94,9 +89,7 @@ const TeacherHomeworkOverview = () => {
         accessorKey: "StudentName",
         id: "studentName",
         header: "Student Name",
-        Cell: ({ cell, row }) =>
-            <Link onClick={() => navigate(`/teacher/course/${courseid}/homework/${homeworkId}/grade/${row.original.StudentId}`,
-            {state: row.original})}>{row.original.StudentName}</Link>,
+        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/homework/${homeworkId}/grade/${row.original.StudentId}`, { state: row.original })}>{row.original.StudentName}</Link>,
       },
       {
         accessorKey: "LastSubmissionDate",
@@ -120,17 +113,9 @@ const TeacherHomeworkOverview = () => {
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <CustomBreadcrumbs
-          root="/teacher"
-          links={[
-            { name: course.name, path: `/teacher/course/${courseid}/homework` },
-          ]}
-          breadcrumbEnding={homework.title}
-        />
+        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}/homework` }]} breadcrumbEnding={homework.title} />
 
-        <Card
-          sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}
-        >
+        <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
               <Typography variant="h5" sx={{ color: "primary.main" }}>
@@ -177,8 +162,7 @@ const TeacherHomeworkOverview = () => {
               NUMBER OF SUBMISSIONS
             </Typography>
             <Typography variant="body2">
-              {homework.totalSubmissions}/{homework.totalExpectedSubmissions} (
-              {homework.percentageSubmission}%)
+              {homework.totalSubmissions}/{homework.totalExpectedSubmissions} ({homework.percentageSubmission}%)
             </Typography>
             <Divider sx={{ my: 3 }}></Divider>
 
