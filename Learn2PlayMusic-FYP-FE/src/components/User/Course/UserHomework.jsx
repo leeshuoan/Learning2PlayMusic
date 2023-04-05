@@ -13,10 +13,12 @@ const UserHomework = (userInfo) => {
   const { courseid } = useParams();
   const { homeworkId } = useParams();
   const [file, setFile] = useState(null);
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = useState(null);
   const [base64Attachment, setBase64Attachment] = useState("");
   const [course, setCourse] = useState({});
   const [homework, setHomework] = useState({});
+  const [studentHomeworkFeedback, setStudentHomeworkFeedback] = useState({});
+  const [hasPastSubmission, setHasPastSubmission] = useState(false)
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [submitted, setSubmitted] = useState(false);
@@ -71,10 +73,12 @@ const UserHomework = (userInfo) => {
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
   const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&homeworkId=${homeworkId}`);
+  const getHomeworkFeedbackAPI = request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${homeworkId}`); // reverse engineer, check if student is in the response, to determine if he/she has submitted hw before
+  const getStudentHomeworkFeedbackAPI = request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${homeworkId}&studentId=${userInfo.userInfo.id}`);
 
   useEffect(() => {
     async function fetchData() {
-      const [data1, data2] = await Promise.all([getCourseAPI, getHomeworkAPI]);
+      const [data1, data2, data3, data4] = await Promise.all([getCourseAPI, getHomeworkAPI, getHomeworkFeedbackAPI, getStudentHomeworkFeedbackAPI]);
 
       let courseData = {
         id: data1[0].SK.split("#")[1],
@@ -101,13 +105,26 @@ const UserHomework = (userInfo) => {
         assignedDate: formattedAssignedDate,
       };
       setHomework(homeworkData);
+
+      data3.forEach((hwFeedback) => {
+        var currentStudentId = hwFeedback.SK.split("Student#")[1].split("Homework#")[0]
+        if (currentStudentId == userInfo.userInfo.id) {
+          setHasPastSubmission(true);
+
+          let studentHomeworkFeedback = {
+            attachment: data4.HomeworkAttachment,
+            submissionFileName: data4.SubmissionFileName
+          };
+          setStudentHomeworkFeedback(studentHomeworkFeedback);
+        }
+      });
+
     }
 
     fetchData().then(() => {
       setIsLoading(false);
     });
   }, []);
-
   const handleTextFieldChange = (event) => {
     setTextFieldValue(event.target.value);
   };
@@ -115,21 +132,6 @@ const UserHomework = (userInfo) => {
   var isButtonDisabled = textFieldValue === "" && file === null;
 
   const submit = () => {
-    console.log(file);
-
-    // let homeworkAttachment = "";
-
-    // if (file) {
-    //   const reader = new FileReader();
-    //   reader.readAsBinaryString(file);
-
-    //   reader.onload = (event) => {
-    //     homeworkAttachment = `data:${file.type};base64,${btoa(
-    //       event.target.result
-    //     )}`;
-    //   };
-    //   console.log("homeworkAttachment here: ", homeworkAttachment);
-    // }
 
     fetch(`${import.meta.env.VITE_API_URL}/course/homework/submit`, {
       method: "POST",
@@ -235,6 +237,23 @@ const UserHomework = (userInfo) => {
                 <Typography variant="body2">{homework.dueDate}</Typography>
               </Box>
             </Box>
+            {hasPastSubmission ? (
+              <>
+                <Typography variant="subtitle2" sx={{ mt: 3, mb: 0.5 }}>FILE SUBMISSION</Typography>
+                <Typography variant="subtitle2" sx={{ mb: 2 }}>
+                  <Typography variant="body1" sx={{ mb: 1 }}>
+                    <a
+                      href={studentHomeworkFeedback.attachment}
+                      target="_blank"
+                    >
+                      {studentHomeworkFeedback.submissionFileName}
+                    </a>
+                  </Typography>
+                </Typography>
+              </>
+            ) : (
+              ""
+            )}
             <Typography variant="subtitle2" sx={{ mt: 3, mb: 0.5 }}>
               UPLOAD FILE
             </Typography>

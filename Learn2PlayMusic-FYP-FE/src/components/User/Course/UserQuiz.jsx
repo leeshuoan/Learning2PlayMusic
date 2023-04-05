@@ -22,6 +22,7 @@ const UserQuiz = (userInfo) => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [quizMaxAttempt, setQuizMaxAttempt] = useState(0);
   const [quizAttempt, setQuizAttempt] = useState(0);
+  const [score, setScore] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const headerConfig = {
     method: "GET",
@@ -56,6 +57,7 @@ const UserQuiz = (userInfo) => {
 
     Promise.all([getCourse, getQuizAPI, getQuizQuestionAPI])
       .then(async ([courseInfoRes, quizInfoRes, quizQnRes]) => {
+        console.log(quizQnRes)
         if (quizInfoRes.status === 404 || quizQnRes.status === 404 || courseInfoRes.status === 404) {
           toast.error("Invalid ID");
           // navigate(`/home/course/${courseid}/quiz`);
@@ -115,24 +117,7 @@ const UserQuiz = (userInfo) => {
   const confirmSubmit = async () => {
     // calc quiz score
     const totalQuestions = questionsArray.length;
-    let correctAnswers = 0;
-    // loop thru the user's answer
-    for (let key in selectedOptions) {
-      if (selectedOptions.hasOwnProperty(key)) {
-        // loop through the answer key dictionary
-        const qId = key.split("Question#")[1];
-        for (let question of questionsArray) {
-          if (key === question.id) {
-            // Compare the user's response value to the "Answer" value in the answer key dictionary
-            if (selectedOptions[key] === question.Answer) {
-              correctAnswers++;
-              break;
-            }
-          }
-        }
-      }
-    }
-    let quizScore = correctAnswers / totalQuestions;
+
     // prepare request body
     const requestBody = {
       courseId: course.id,
@@ -144,7 +129,7 @@ const UserQuiz = (userInfo) => {
     // submit
     try {
       const submitQuizData = await submitQuiz(requestBody);
-      console.log(submitQuizData);
+      setScore(submitQuizData.score)
       setSubmitted(true);
     } catch (error) {
       // todo: handle error?
@@ -205,15 +190,7 @@ const UserQuiz = (userInfo) => {
               justifyContent: "center",
               gap: "1rem",
             }}>
-            Score:{" "}
-            {questionsArray
-              .map((question) => {
-                if (question.Answer === selectedOptions[question.id]) {
-                  return 1;
-                }
-                return 0;
-              })
-              .reduce((a, b) => a + b, 0)}
+            Score: {score}
           </Box>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Button
