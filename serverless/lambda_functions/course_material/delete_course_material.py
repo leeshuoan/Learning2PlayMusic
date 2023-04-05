@@ -39,9 +39,9 @@ def lambda_handler(event, context):
 
         deleted_item = response.get('Attributes', {})
         material_attachment = deleted_item.get('MaterialAttachment', '')
-        bucket_name, object_key = material_attachment.split("/", 1)
 
         if material_attachment:
+            bucket_name, object_key = material_attachment.split("/", 1)
             s3.delete_object(Bucket=bucket_name, Key=object_key)
 
         return response_200_msg("successfully deleted item")
