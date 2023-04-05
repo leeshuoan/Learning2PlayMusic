@@ -118,55 +118,55 @@ const NewQuiz = () => {
       return;
     }
 
-    //   const newQuiz = {
-    //     quizTitle: quizTitle,
-    //     quizDescription: quizDescription,
-    //     quizMaxAttempts: quizMaxAttempts,
-    //     visibility: visibility,
-    //     courseId: courseid,
-    //   };
-    //   let newQuizId = null;
-    //   const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(newQuiz),
-    //   });
-    //   if (response.ok) {
-    //     const responseData = await response.json();
-    //     newQuizId = responseData.message.split("id").splice(1, 1).join().split(" ")[1];
-    //   } else {
-    //     console.error(`Error: ${response.status} - ${response.statusText}`);
-    //     return;
-    //   }
+      const newQuiz = {
+        quizTitle: quizTitle,
+        quizDescription: quizDescription,
+        quizMaxAttempts: quizMaxAttempts,
+        visibility: visibility,
+        courseId: courseid,
+      };
+      let newQuizId = null;
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newQuiz),
+      });
+      if (response.ok) {
+        const responseData = await response.json();
+        newQuizId = responseData.message.split("id").splice(1, 1).join().split(" ")[1];
+      } else {
+        console.error(`Error: ${response.status} - ${response.statusText}`);
+        return;
+      }
 
-    //   let newQuizQuestions = [];
-    //   for (let i = 0; i < quizQuestions.length; i++) {
-    //     const newQuizQuestion = { ...quizQuestions[i], courseId: courseid, quizId: newQuizId };
-    //     newQuizQuestions.push(newQuizQuestion);
-    //   }
+      let newQuizQuestions = [];
+      for (let i = 0; i < quizQuestions.length; i++) {
+        const newQuizQuestion = { ...quizQuestions[i], courseId: courseid, quizId: newQuizId };
+        newQuizQuestions.push(newQuizQuestion);
+      }
 
-    //   try {
-    //     console.log(newQuizQuestions);
-    //     fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body: JSON.stringify(newQuizQuestions),
-    //     });
-    //   } catch (error) {
-    //     console.log(error);
-    //     setIsLoading(false);
-    //     toast.error("An unexpected error occurred during quiz creation");
-    //     return;
-    //   }
+      try {
+        console.log(newQuizQuestions);
+        fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newQuizQuestions),
+        });
+      } catch (error) {
+        console.log(error);
+        setIsLoading(false);
+        toast.error("An unexpected error occurred during quiz creation");
+        return;
+      }
 
-    //   if (response) {
-    //     navigate(`/teacher/course/${courseid}/quiz`);
-    //     toast.success("Quiz created successfully");
-    //   }
+      if (response) {
+        navigate(`/teacher/course/${courseid}/quiz`);
+        toast.success("Quiz created successfully");
+      }
   }
 
   const addQuestion = () => {
