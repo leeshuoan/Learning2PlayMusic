@@ -1,10 +1,10 @@
-import sys
-import boto3
 import json
+import sys
 
-from global_functions.responses import *
-from global_functions.exists_in_db import *
+import boto3
 from global_functions.cognito import *
+from global_functions.exists_in_db import *
+from global_functions.responses import *
 
 
 def lambda_handler(event, context):
@@ -67,21 +67,21 @@ def lambda_handler(event, context):
                 })
 
             homework_items = homework_response['Items']
-
             total_homework_score = 0
             for homework in homework_items:
-                homework_score = float(homework['HomeworkScore'])
-                total_homework_score += homework_score
+                if "HomeworkScore" in homework:
+                    homework_score = float(homework['HomeworkScore'])
+                    total_homework_score += homework_score
 
-            student['TotalHomeworkScore'] = total_homework_score
-
+                student['TotalHomeworkScore'] = total_homework_score
+            print (total_homework_score)
             ######################################
             ### CALCULATE PARTICIPATION POINTS ###
             ######################################
 
             participation_points = total_quiz_score + total_homework_score
             student['ParticipationPoints'] = participation_points
-
+            print(student['ParticipationPoints'])
             ###########################
             ### GET PROGRESS REPORT ###
             ###########################

@@ -1,12 +1,12 @@
 import boto3
-from aws_cdk import BundlingOptions, CfnOutput, Stack
+from aws_cdk import BundlingOptions, CfnOutput, Duration, Stack
 from aws_cdk import aws_apigateway as apigw
 from aws_cdk import aws_iam
 from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sns as sns
-from aws_cdk import Duration
 from constructs import Construct
+
 
 class CourseStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -346,6 +346,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_CLASSLIST_FUNCTIONS_FOLDER}.get_course_classlist.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            timeout=Duration.seconds(840),
         )
 
         # /course/quiz/
