@@ -142,8 +142,7 @@ const TeacherCourse = ({ userInfo }) => {
 
   // announcement delete announcement
   async function deleteAnnouncement() {
-    console.log(selectedAnnouncement);
-    var ok = false;
+    setOpen(true);
     fetch(`${import.meta.env.VITE_API_URL}/course/announcement?courseId=${courseid}&announcementId=${selectedAnnouncement}`, {
       method: "DELETE",
       headers: {
@@ -152,34 +151,22 @@ const TeacherCourse = ({ userInfo }) => {
       },
     }).then((response) => {
       if (response.status === 200) {
-        ok = true;
+        setCourseAnnouncements(courseAnnouncements.filter((announcement) => announcement.id !== selectedAnnouncement));
+        // reset
+        setSelectedAnnouncement(null);
+        setDeleteAnnouncementModal(false);
+        setRefreshUseEffect(!refreshUseEffect);
+        setOpen(false);
+        return;
       } else {
         toast.error("An unexpected error occured");
+        setSelectedAnnouncement(null);
+        setDeleteAnnouncementModal(false);
+        setRefreshUseEffect(!refreshUseEffect);
+        setOpen(false);
         return;
       }
     });
-    // reset
-    setSelectedAnnouncement(null);
-    setDeleteAnnouncementModal(false);
-    fetch(`${import.meta.env.VITE_API_URL}/course/announcement?courseId=${courseid}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((res) => {
-        var refreshedAnnouncement = res.map((announcement) => {
-          const id = announcement.SK.split("Announcement#")[1];
-          const date = new Date(announcement.Date);
-          const formattedDate = date.toLocaleDateString();
-          return { ...announcement, id, Date: formattedDate };
-        });
-        setCourseAnnouncements(refreshedAnnouncement);
-        toast.success("Announcement deleted successfully");
-      });
-    return;
   }
   async function deleteMaterial() {
     console.log(
@@ -417,6 +404,7 @@ const TeacherCourse = ({ userInfo }) => {
             Delete
           </Button>
         </Box>
+        <Loader open={open} />
       </TransitionModal>
       {/* Delete material modal ========================================================================================================================*/}
       <TransitionModal

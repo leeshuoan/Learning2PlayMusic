@@ -82,7 +82,7 @@ const ViewCourseMaterialsForm = ({ userInfo }) => {
         <Box sx={{ display: "flex", width: "100%" }}>
           <Container maxWidth="xl">
             <Typography variant="h5" sx={{ color: "primary", mt: 3 }}>
-              New Class Material
+              View Class Material
             </Typography>
 
             {/* view */}
@@ -105,7 +105,7 @@ const ViewCourseMaterialsForm = ({ userInfo }) => {
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
                 {embeddedLink != "" ? (
-                  <a href={"//" + embeddedLink} target="_blank">
+                  <a href={embeddedLink} target="_blank">
                     {embeddedLink}
                   </a>
                 ) : (

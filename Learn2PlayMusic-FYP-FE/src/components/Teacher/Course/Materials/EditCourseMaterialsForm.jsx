@@ -63,11 +63,16 @@ const EditCourseMaterialsForm = ({ userInfo }) => {
   };
   // helper functions
   function buildRequestBody(materialTypeStr) {
+    let cleanedLink = embeddedLink;
+    if (!embeddedLink.startsWith("https://") || !embeddedLink.startsWith("http://")) {
+      cleanedLink = "https://" + embeddedLink;
+    }
+
     const requestBodyObject = {
       courseId: courseid,
       materialTitle: title,
       materialLessonDate: date.add(1, "day").toISOString(),
-      materialLink: embeddedLink,
+      materialLink: cleanedLink,
       materialType: materialTypeStr,
       materialAttachment: base64Attachment,
       materialAttachmentFileName: fileName,
@@ -98,7 +103,7 @@ const EditCourseMaterialsForm = ({ userInfo }) => {
       };
     }
     // make sure there are changes
-    if (title == material.MaterialTitle && date.add(1, "day").toISOString() == material.MaterialLessonDate && fileName == material.MaterialAttachmentFileName) {
+    if (title == material.MaterialTitle && date.add(1, "day").toISOString() == material.MaterialLessonDate && fileName == material.MaterialAttachmentFileName && embeddedLink == material.MaterialLink) {
       return {
         error: true,
         message: "Please make changes to the material!",
@@ -117,6 +122,7 @@ const EditCourseMaterialsForm = ({ userInfo }) => {
       setOpen(false);
       return;
     }
+
     var requestBody;
     if (file != "notChangingPDF") {
       const materialTypeStr = file ? file.type.split("/")[1].toUpperCase() : "Link";

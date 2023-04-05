@@ -6,13 +6,7 @@ function ViewCourseMaterialComponent({ material, course, title, date, link, file
   const { courseid } = useParams();
   const { materialid } = useParams();
   const navigate = useNavigate();
-  if (link != "") {
-    if (link.startsWith("http://")) {
-      link = link.substring(7);
-    } else if (link.startsWith("https://")) {
-      link = link.substring(8);
-    }
-  }
+
 
   if (material.MaterialAttachement != "") {
     // todo:show this when there is a
@@ -38,7 +32,7 @@ function ViewCourseMaterialComponent({ material, course, title, date, link, file
       </Typography>
       <Typography variant="body1" sx={{ mb: 1 }}>
         {file == null ? (
-          <a href={"//" + link} target="_blank">
+          <a href={link} target="_blank" >
             {link}
           </a>
         ) : (

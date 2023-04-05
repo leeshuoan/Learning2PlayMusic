@@ -7,9 +7,10 @@ import Loader from "../../../utils/Loader";
 
 export default function CourseAnnouncementForm({ userInfo }) {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [originalAnnouncement, setOriginalAnnouncement] = useState({ title: "", content: "" });
   const [course, setCourse] = useState({ id: "", name: "", timeslot: "", teacher: "" });
   const endpoint = `${import.meta.env.VITE_API_URL}/course/announcement`;
   const { courseid } = useParams();
@@ -68,6 +69,11 @@ export default function CourseAnnouncementForm({ userInfo }) {
           }
         });
     } else {
+      if (title == originalAnnouncement.title && content == originalAnnouncement.content) {
+        toast.error("Please make changes to at least one field!");
+        setOpen(false);
+        return;
+      }
       var response = handleEditAnnouncement(title, content)
         .then((response) => response.json())
         .then((res) => {
@@ -125,6 +131,7 @@ export default function CourseAnnouncementForm({ userInfo }) {
           })
           .then((res) => {
             console.log(res);
+            setOriginalAnnouncement({ title: res[0].Title, content: res[0].Content });
             setTitle(res[0].Title);
             setContent(res[0].Content);
           })
@@ -133,8 +140,9 @@ export default function CourseAnnouncementForm({ userInfo }) {
           });
       }
     }
-    setOpen(true);
-    fetchData().then(setOpen(false));
+    fetchData().then(() => {
+      setOpen(false);
+    });
   }, []);
 
   return (
