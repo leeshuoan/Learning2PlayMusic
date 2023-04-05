@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
+import Loader from "../../../utils/Loader";
 
 export default function CourseAnnouncementForm({ userInfo }) {
   const navigate = useNavigate();
-
+  const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [course, setCourse] = useState({ id: "", name: "", timeslot: "", teacher: "" });
@@ -48,12 +49,11 @@ export default function CourseAnnouncementForm({ userInfo }) {
 
   async function handleSubmit() {
     setOpen(true);
-    console.log(title);
     if (title == "" || content == "") {
       toast.error("Please fill in all the fields!");
       return;
     }
-    if (state.title == "") {
+    if (type == "new") {
       var response = handleAddAnnouncement(title, content)
         .then((response) => response.json())
         .then((res) => {
@@ -131,75 +131,79 @@ export default function CourseAnnouncementForm({ userInfo }) {
           });
       }
     }
-    fetchData();
+    setOpen(true);
+    fetchData().then(setOpen(false));
   }, []);
 
   return (
-    <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-      <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}` }]} breadcrumbEnding="Announcement" />
-      <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Box>
-            <Typography variant="h5" sx={{ color: "primary.main" }}>
-              {course.name}
-            </Typography>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Timeslot: {course.timeslot}
-            </Typography>
-          </Box>
-        </Box>
-      </Card>
-      <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
-        <Box sx={{ display: "flex", width: "100%" }}>
-          <Container maxWidth="xl">
-            <Typography variant="h5" sx={{ color: "primary", mt: 3 }}>
-              {type != "edit" ? "New" : "Edit"} Announcement
-            </Typography>
-
-            <TextField
-              required
-              fullWidth
-              id="title"
-              label="Title"
-              variant="outlined"
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value);
-              }}
-              sx={{ mt: 3 }}
-            />
-
-            <TextField
-              required
-              fullWidth
-              id="content"
-              label="Description"
-              variant="outlined"
-              value={content}
-              multiline
-              rows={10}
-              onChange={(event) => {
-                setContent(event.target.value);
-              }}
-              sx={{ mt: 3 }}
-            />
-
-            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3, mb: 1 }}>
-              <Button
-                variant="outlined"
-                sx={{ color: "primary.main" }}
-                onClick={() => {
-                  navigate(`/teacher/course/${courseid}`);
-                }}>
-                Cancel
-              </Button>
-              <Button variant="contained" onClick={handleSubmit}>
-                {type != "edit" ? "Post" : "Update"}
-              </Button>
+    <>
+      <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
+        <CustomBreadcrumbs root="/teacher" links={[{ name: course.name, path: `/teacher/course/${courseid}` }]} breadcrumbEnding="Announcement" />
+        <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Box>
+              <Typography variant="h5" sx={{ color: "primary.main" }}>
+                {course.name}
+              </Typography>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                Timeslot: {course.timeslot}
+              </Typography>
             </Box>
-          </Container>
-        </Box>
-      </Card>
-    </Container>
+          </Box>
+        </Card>
+        <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
+          <Box sx={{ display: "flex", width: "100%" }}>
+            <Container maxWidth="xl">
+              <Typography variant="h5" sx={{ color: "primary", mt: 3 }}>
+                {type != "edit" ? "New" : "Edit"} Announcement
+              </Typography>
+
+              <TextField
+                required
+                fullWidth
+                id="title"
+                label="Title"
+                variant="outlined"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                }}
+                sx={{ mt: 3 }}
+              />
+
+              <TextField
+                required
+                fullWidth
+                id="content"
+                label="Description"
+                variant="outlined"
+                value={content}
+                multiline
+                rows={10}
+                onChange={(event) => {
+                  setContent(event.target.value);
+                }}
+                sx={{ mt: 3 }}
+              />
+
+              <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3, mb: 1 }}>
+                <Button
+                  variant="outlined"
+                  sx={{ color: "primary.main" }}
+                  onClick={() => {
+                    navigate(`/teacher/course/${courseid}`);
+                  }}>
+                  Cancel
+                </Button>
+                <Button variant="contained" onClick={handleSubmit}>
+                  {type != "edit" ? "Post" : "Update"}
+                </Button>
+              </Box>
+            </Container>
+          </Box>
+        </Card>
+      </Container>
+      <Loader open={open} />
+    </>
   );
 }
