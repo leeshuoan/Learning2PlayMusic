@@ -2,7 +2,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Box, Button, Container, IconButton, Switch, Tooltip, Typography } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import MaterialReactTable from "material-react-table";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import Loader from "../../utils/Loader";
 
 const TransitionModal = lazy(() => import("../../utils/TransitionModal"));
@@ -193,15 +193,17 @@ const SuperAdminUserManagement = (userInfo) => {
         Cell: ({ cell, row }) =>
           row.original.Attributes.Role != "SuperAdmin" ? (
             <Tooltip title="Delete user forever" placement="bottom">
-              <IconButton
-                variant="contained"
-                color="error"
-                disabled={row.original.Enabled == "Enabled" ? true : false}
-                onClick={() => {
-                  openDeleteUserModal(row.original);
-                }}>
-                <DeleteForeverIcon />
-              </IconButton>
+              <span>
+                <IconButton
+                  variant="contained"
+                  color="error"
+                  disabled={row.original.Enabled == "Enabled" ? true : false}
+                  onClick={() => {
+                    openDeleteUserModal(row.original);
+                  }}>
+                  <DeleteForeverIcon />
+                </IconButton>
+              </span>
             </Tooltip>
           ) : null,
         maxSize: 20,
