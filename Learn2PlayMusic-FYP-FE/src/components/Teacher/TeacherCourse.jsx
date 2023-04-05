@@ -170,18 +170,16 @@ const TeacherCourse = ({ userInfo }) => {
   }
   async function deleteMaterial() {
     setOpen(true);
-    console.log(
-      JSON.stringify({
-        courseId: courseid,
-        materialId: selectedMaterial,
-      })
-    );
-    fetch(`${import.meta.env.VITE_API_URL}/course/material?courseId=${courseid}&materialId=${selectedMaterial}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/course/material`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userInfo.token}`,
       },
+      body: JSON.stringify({
+        courseId: courseid,
+        materialId: selectedMaterial,
+      }),
     }).then((response) => {
       console.log(response);
       if (response.ok) {
