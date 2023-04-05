@@ -51,6 +51,7 @@ export default function CourseAnnouncementForm({ userInfo }) {
     setOpen(true);
     if (title == "" || content == "") {
       toast.error("Please fill in all the fields!");
+      setOpen(false);
       return;
     }
     if (type == "new") {
@@ -63,6 +64,7 @@ export default function CourseAnnouncementForm({ userInfo }) {
             navigate(`/teacher/course/${courseid}/announcement`);
           } else {
             toast.error(res.message);
+            setOpen(false);
           }
         });
     } else {
@@ -75,10 +77,10 @@ export default function CourseAnnouncementForm({ userInfo }) {
             navigate(`/teacher/course/${courseid}/announcement`);
           } else {
             toast.error(res.message);
+            setOpen(false);
           }
         });
     }
-    setOpen(false);
     return;
   }
 
