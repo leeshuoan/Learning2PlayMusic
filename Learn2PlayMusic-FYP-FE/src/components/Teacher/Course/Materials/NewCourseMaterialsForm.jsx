@@ -60,11 +60,15 @@ const NewCourseMaterialsForm = ({ userInfo }) => {
   };
   // helper functions
   function buildRequestBody(materialTypeStr) {
+    let cleanedLink = embeddedLink;
+    if (!embeddedLink.startsWith("https://") || !embeddedLink.startsWith("http://")) {
+      cleanedLink = "https://" + embeddedLink;
+    }
     const requestBodyObject = {
       courseId: courseid,
       materialTitle: title,
       materialLessonDate: date.add(1, "day").toISOString(),
-      materialLink: embeddedLink,
+      materialLink: cleanedLink,
       materialType: materialTypeStr,
       materialAttachment: base64Attachment,
       materialAttachmentFileName: fileName,
