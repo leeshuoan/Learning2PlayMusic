@@ -288,9 +288,14 @@ const TeacherCourse = ({ userInfo }) => {
 
   useEffect(() => {
     async function fetchData() {
-      const [data1, data2, data3, data4, data5, data6] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI, getClassListAPI]);
+      const [data1, data2, data3, data4, data5] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI]);
+      // const [data1, data2, data3, data4, data5, data6] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI, getClassListAPI]);
+      if (category == "classlist") {
+        const data6 = await getClassListAPI;
+        console.log(data6);
+        setClassList(data6);
+      }
 
-      console.log(data6);
       const courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
@@ -337,8 +342,6 @@ const TeacherCourse = ({ userInfo }) => {
       //   const ParticipationPoints = " "
       //   return { ...student };
       // })
-      console.log(data6);
-      setClassList(data6);
     }
 
     fetchData().then(() => {
@@ -346,12 +349,19 @@ const TeacherCourse = ({ userInfo }) => {
     });
   }, [refreshUseEffect, userInfo]);
 
-  const menuNavigate = (option) => {
+  const menuNavigate = async (option) => {
     if (option == "Announcements") navigate(`/teacher/course/${course.id}/announcement`);
     if (option == "Class Materials") navigate(`/teacher/course/${course.id}/material`);
     if (option == "Quizzes") navigate(`/teacher/course/${course.id}/quiz`);
     if (option == "Homework") navigate(`/teacher/course/${course.id}/homework`);
-    if (option == "Class List") navigate(`/teacher/course/${course.id}/classlist`);
+    if (option == "Class List") {
+      setOpen(true);
+      const data6 = await getClassListAPI;
+      console.log(data6);
+      setClassList(data6);
+      setOpen(false);
+      navigate(`/teacher/course/${course.id}/classlist`);
+    }
   };
 
   return (
