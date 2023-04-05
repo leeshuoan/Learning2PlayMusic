@@ -35,6 +35,7 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
 
     if (data.get("email") == "" || data.get("password") == "") {
       toast.error("Please fill in all fields");
+      setOpen(false);
       return;
     }
 
