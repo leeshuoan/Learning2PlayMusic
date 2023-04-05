@@ -307,7 +307,7 @@ const UserCourse = ({ userInfo }) => {
                         Score
                       </Typography>
                       <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
-                        {quiz.QuizScore * 100}%
+                        {quiz.QuizScore == 0 ? "-" : quiz.QuizScore * 100 + "%"}
                       </Typography>
                       <Typography variant="body1" sx={{ display: { xs: "flex", sm: "none" } }}>
                         <span sx={{ color: "primary.main", mr: 0.5 }}>Score:</span>
