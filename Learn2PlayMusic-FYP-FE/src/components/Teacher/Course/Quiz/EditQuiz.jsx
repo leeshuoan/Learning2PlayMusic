@@ -203,7 +203,7 @@ const EditQuiz = ({ userInfo }) => {
                 return <EditQuizQuestion key={key} questionNumber={questionNumber} question={question} userInfo={userInfo} handleRefreshData={handleRefreshData} handleDisableEditQuizButton={setDisableEditQuizButton} />;
               })}
               {openAddQuestion ? (
-                <EditQuizNewQuestion setOpenAddQuestion={setOpenAddQuestion} handleRefreshData={handleRefreshData} handleDisableEditQuizButton={setDisableEditQuizButton} />
+                <EditQuizNewQuestion setOpenAddQuestion={setOpenAddQuestion} handleRefreshData={handleRefreshData} handleDisableEditQuizButton={setDisableEditQuizButton} userInfo={userInfo} />
               ) : (
                 <Button variant="outlined" color="success" fullWidth sx={{ color: "success.main", mt: 2 }} onClick={addQuestion}>
                   Add Question

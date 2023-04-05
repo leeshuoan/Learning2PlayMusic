@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Loader from "../../../utils/Loader";
 
-export default function ConfirmDeleteQuestion({ question, handleClose }) {
+export default function ConfirmDeleteQuestion({ question, handleClose, userInfo }) {
   const theme = useTheme();
   const { courseid, quizId } = useParams();
 
@@ -15,6 +15,7 @@ export default function ConfirmDeleteQuestion({ question, handleClose }) {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
       },
       body: JSON.stringify({
         questionId: question.questionId,
