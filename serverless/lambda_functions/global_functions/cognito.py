@@ -9,38 +9,37 @@ client = boto3.client("cognito-idp")
 
 
 def get_users(group):
-
-    if group == "Users":
-        userIdString = "studentId"
-        userNameString = "studentName"
-    elif group == "Teachers":
-        userIdString = "teacherId"
-        userNameString = "teacherName"
-    elif group == "Admins":
-        userIdString = "adminId"
-        userNameString = "adminName"
-        userType = "generalAdmin"
-    elif group == "SuperAdmins":
-        userIdString = "adminId"
-        userNameString = "adminName"
-        userType = "superAdmin"
+    user_group_map = {
+        "Users": {"id": "studentId", "name": "studentName"},
+        "Teachers": {"id": "teacherId", "name": "teacherName"},
+        "Admins": {"id": "adminId", "name": "adminName"},
+        "SuperAdmins": {"id": "adminId", "name": "adminName"}
+    }
+    
+    group_info = user_group_map[group]
+    userIdString = group_info["id"]
+    userNameString = group_info["name"]
 
     all_users_info = []
-    users_response = client.list_users_in_group(UserPoolId=USERPOOLID, GroupName=group)[
-        "Users"
-    ]
+    response_iterator = client.get_paginator("list_users_in_group").paginate(
+        UserPoolId=USERPOOLID, GroupName=group
+    )
 
-    for user in users_response:
-
-        for attribute in user["Attributes"]:
-            if attribute["Name"] == "custom:name":
-                userName = attribute["Value"]
-
-                all_users_info.append(
-                    {f"{userIdString}": user["Username"], f"{userNameString}": userName}
+    for page in response_iterator:
+        users_response = page["Users"]
+        all_users_info.extend(
+            {
+                f"{userIdString}": user["Username"],
+                f"{userNameString}": next(
+                    (attr["Value"] for attr in user["Attributes"] if attr["Name"] == "custom:name"),
+                    None
                 )
+            }
+            for user in users_response
+        )
 
     return all_users_info
+
 
 
 #################################
