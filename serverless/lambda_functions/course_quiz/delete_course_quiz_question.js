@@ -18,7 +18,7 @@ const checkNumQuestions = async (courseId, quizId) => {
 
   if (quizResponse.Count == 1) {
     throw new Error("Cannot delete question because there is only 1 question in the quiz")
-  } 
+  }
 }
 
 async function lambda_handler(event, context) {
