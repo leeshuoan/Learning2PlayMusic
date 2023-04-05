@@ -1,28 +1,36 @@
-import { Typography, Link } from "@mui/material";
+import { Link, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-const NotFound = ({userRole}) => {
-  let redirectLink = ""
+const NotFound = ({ userRole }) => {
+  let redirectLink = "";
+  const navigate = useNavigate();
 
-  console.log(userRole)
+  console.log(userRole);
   if (userRole === "Admin") {
-    redirectLink = "admin"
+    redirectLink = "admin";
   } else if (userRole === "Teacher") {
-    redirectLink = "teacher"
+    redirectLink = "teacher";
   } else if (userRole === "User") {
-    redirectLink = "home"
-  }else if (userRole === "SuperAdmin") {
-    redirectLink = "superadmin"
+    redirectLink = "home";
+  } else if (userRole === "SuperAdmin") {
+    redirectLink = "superadmin";
   }
-  
 
-    return (
-      <div>
-        <Typography variant="h4" sx={{ pt:3, textAlign:"center" }}>404: Page not Found</Typography>
-        <Typography sx={{ pt:1, textAlign:"center" }}>
-        <Link onClick={() => { window.location.href =  "/" + redirectLink}}>Go to the home page</Link>
-        </Typography>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <Typography variant="h4" sx={{ pt: 3, textAlign: "center" }}>
+        404: Page not Found
+      </Typography>
+      <Typography sx={{ pt: 1, textAlign: "center" }}>
+        <Link
+          onClick={() => {
+            navigate("/" + redirectLink);
+          }}>
+          Go to the home page
+        </Link>
+      </Typography>
+    </div>
+  );
+};
 
 export default NotFound;

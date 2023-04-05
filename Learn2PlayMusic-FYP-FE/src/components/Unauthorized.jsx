@@ -24,7 +24,7 @@ const Unauthorized = ({ userRole }) => {
       <Typography sx={{ pt: 1, textAlign: "center" }}>
         <Link
           onClick={() => {
-            navigate("/");
+            navigate("/" + redirectLink);
           }}>
           Go to the home page
         </Link>
