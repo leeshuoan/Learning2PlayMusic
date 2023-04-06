@@ -15,33 +15,33 @@ def lambda_handler(event, context):
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
 
-        sgTimezone = dateutil.tz.gettz('Asia/Singapore')
-        year = datetime.now(tz=sgTimezone).strftime("%Y")
+        sg_timezone = dateutil.tz.gettz('Asia/Singapore')
+        year = datetime.now(tz=sg_timezone).strftime("%Y")
+        request_body = json.loads(event['body'])
+        course_id = request_body['courseId'] if 'courseId' in request_body else None
+        student_id = request_body['studentId'] if 'studentId' in request_body else None
+        available_date = request_body['availableDate'] if 'availableDate' in request_body else None
 
+        if available_date is None or course_id is None or student_id is None:
+            return response_400("courseId, studentId or availableDate is missing")
         # get count of reports for this student
         response = table.query(
             KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
             ExpressionAttributeValues={
-                ":PK": f"Course#{json.loads(event['body'])['courseId']}",
-                ":SK": f"Student#{json.loads(event['body'])['studentId']}Report#"
+                ":PK": f"Course#{course_id}",
+                ":SK": f"Student#{request_body['studentId']}Report#"
             })
         
         reportNum = str(response['Count']+1)
-        reportId = reportNum + "-" + year
+        report_id = reportNum + "-" + year
 
         # VALIDATION
         # checks that courseId passed in is not an empty string
-        if json.loads(event['body'])['courseId']=="":
-            return response_400("courseId is missing")
-
-        # check if <courseId> exists in database
-        courseId = json.loads(event['body'])['courseId']
-        if not id_exists("Course", "Course", courseId):
+        if not id_exists("Course", "Course", course_id):
             return response_404("courseId does not exist in database")
 
-        # check if <studentId> has been registered with <courseId>
-        studentId = json.loads(event['body'])['studentId']
-        if not combination_id_exists("Course", courseId, "Student", studentId):
+        # check if <studentId> has been registered with <courseId>]
+        if not combination_id_exists("Course", course_id, "Student", student_id):
             return response_404("studentId is not registered with the course. To do so, please use /user/course to register")
 
         evaluation_list = {
@@ -63,11 +63,11 @@ def lambda_handler(event, context):
         }
 
         item = {
-                "PK": f"Course#{courseId}",
-                "SK": f"Student#{studentId}Report#{reportId}",
+                "PK": f"Course#{course_id}",
+                "SK": f"Student#{student_id}Report#{report_id}",
                 "EvaluationList": evaluation_list,
                 "Title": '',
-                'AvailableDate': event['queryStringParameters']['availableDate'],
+                'AvailableDate': available_date,
                 'UpdatedDate': '',
                 "GoalsForNewTerm": '',
                 "AdditionalComments": '',
