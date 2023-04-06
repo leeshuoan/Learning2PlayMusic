@@ -11,7 +11,7 @@ export default function ChangePassword() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    
+
     if (data.get("email") == "" || data.get("current-password") == "" || data.get("new-password") == "" || data.get("confirm-password") == "") {
       toast.error("Please fill in all fields");
       return;
@@ -26,15 +26,15 @@ export default function ChangePassword() {
       .then((user) => {
         console.log(user)
         Auth.completeNewPassword(user, data.get("new-password"))
-        .then((user) => {
-          toast.success("Password changed successfully");
-          const role = user.challengeParam.userAttributes["custom:role"]
-          console.log(role)
-          navigate("/");
-        }).catch((err) => {
-          toast.error(err.message);
-          console.log(err)
-        })
+          .then((user) => {
+            toast.success("Password changed successfully");
+            const role = user.challengeParam.userAttributes["custom:role"]
+            console.log(role)
+            navigate("/");
+          }).catch((err) => {
+            toast.error(err.message);
+            console.log(err)
+          })
       }).catch((err) => {
         toast.error(err.message);
         console.log(err)
@@ -85,7 +85,7 @@ export default function ChangePassword() {
                 id="current-password"
                 name="current-password"
                 label="Current Password"
-                autoFocus
+                type="password"
               />
               <TextField
                 margin="normal"

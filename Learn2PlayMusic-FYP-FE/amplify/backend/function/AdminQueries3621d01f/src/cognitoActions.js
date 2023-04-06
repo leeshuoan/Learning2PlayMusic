@@ -299,6 +299,10 @@ async function createUser(username, password, email, name, role) {
       {
         Name: "custom:profileImage",
         Value: " "
+      },
+      {
+        Name: "email_verified",
+        Value: "true"
       }
     ],
   };
