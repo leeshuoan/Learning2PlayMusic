@@ -26,7 +26,7 @@ def lambda_handler(event, context):
         month = datetime.fromisoformat(available_date.replace("Z",'+00:00')).strftime("%B")
         year  = datetime.fromisoformat(available_date.replace("Z",'+00:00')).strftime("%Y")
         # single student
-        if student_id != None or student_id != "":
+        if student_id != None:
             # check if <studentId> has been registered with <courseId>]
             if not combination_id_exists("Course", course_id, "Student", student_id):
                 return response_404("studentId is not registered with the course. To do so, please use /user/course to register")
