@@ -50,6 +50,14 @@ const NewHomeworkForm = () => {
 
   const createHomework = (e) => {
     e.preventDefault();
+    if (homeworkTitle === "") {
+      toast.error("Please fill in the title!");
+      return;
+    }
+    if (homeworkDescription === "") {
+      toast.error("Please fill in the description!");
+      return;
+    }
     if (value == null) {
       toast.error("Please select a due date!");
       return;
@@ -112,8 +120,8 @@ const NewHomeworkForm = () => {
             New Homework
           </Typography>
           <form onSubmit={createHomework}>
-            <TextField id="title" label="Title" variant="outlined" value={homeworkTitle} onChange={() => setHomeworkTitle(event.target.value)} sx={{ mt: 2 }} required />
-            <TextField id="description" label="Description" variant="outlined" rows={7} value={homeworkDescription} onChange={() => setHomeworkDescription(event.target.value)} multiline fullWidth sx={{ mt: 2, mb: 2 }} required />
+            <TextField id="title" label="Title *" variant="outlined" value={homeworkTitle} onChange={() => setHomeworkTitle(event.target.value)} sx={{ mt: 2 }} />
+            <TextField id="description" label="Description *" variant="outlined" rows={7} value={homeworkDescription} onChange={() => setHomeworkDescription(event.target.value)} multiline fullWidth sx={{ mt: 2, mb: 2 }} />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Due Date *"

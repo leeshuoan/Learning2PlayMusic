@@ -57,6 +57,14 @@ const EditHomeworkForm = () => {
 
   const updateHomework = async (e) => {
     e.preventDefault();
+    if (homeworkTitle === "") {
+      toast.error("Please fill in the title!");
+      return;
+    }
+    if (homeworkDescription === "") {
+      toast.error("Please fill in the description!");
+      return;
+    }
     if (value == null) {
       toast.error("Please select a due date!");
       return;
@@ -121,8 +129,8 @@ const EditHomeworkForm = () => {
             Edit Homework
           </Typography>
           <form onSubmit={updateHomework}>
-            <TextField required fullWidth id="title" label="Title" variant="outlined" value={homeworkTitle} onChange={(e) => setHomeworkTitle(e.target.value)} sx={{ mt: 2 }} />
-            <TextField label="Add Text" variant="outlined" rows={7} value={homeworkDescription} onChange={(e) => setHomeworkDescription(e.target.value)} multiline fullWidth sx={{ mt: 2, mb: 2 }} />
+            <TextField fullWidth id="title" label="Title*" variant="outlined" value={homeworkTitle} onChange={(e) => setHomeworkTitle(e.target.value)} sx={{ mt: 2 }} />
+            <TextField id="description" label="Description*" variant="outlined" rows={7} value={homeworkDescription} onChange={(e) => setHomeworkDescription(e.target.value)} multiline fullWidth sx={{ mt: 2, mb: 2 }} />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Due Date *"
