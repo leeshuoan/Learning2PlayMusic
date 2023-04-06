@@ -25,6 +25,7 @@ const Unauthorized = ({ userRole }) => {
         <Link
           onClick={() => {
             navigate("/" + redirectLink);
+            window.location.reload();
           }}>
           Go to the home page
         </Link>
