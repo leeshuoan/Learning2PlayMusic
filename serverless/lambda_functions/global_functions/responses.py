@@ -58,6 +58,21 @@ def response_200_msg_items(action, item):
                     "item": item
                     })
     }
+def response_200_msg_double_items(action, item, action1, item1):
+    return {
+        "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST,GET,DELETE,PUT"
+        },
+        "body": json.dumps({
+                    "message": f"[SUCCESS] successfully {action} item",
+                    "item": item,
+                    "message": f"[SUCCESS] successfully {action1} item",
+                    "item": item1,
+                    })
+    }
 def response_202_msg_custom_items( customItem):
     return {
         "statusCode": 202,
