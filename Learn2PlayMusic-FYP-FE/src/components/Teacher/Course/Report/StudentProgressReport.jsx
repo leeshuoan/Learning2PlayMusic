@@ -1,9 +1,11 @@
-import { useState } from 'react'
-import { Box, Button, Divider, Typography, FormControl, FormControlLabel, FormLabel, InputLabel, Radio, RadioGroup, TextField } from '@mui/material'
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { Box, Button, Divider, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, Typography } from "@mui/material";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import Loader from "../../../utils/Loader";
 
 const StudentProgressReport = (report) => {
+  const [loading, setLoading] = useState(false);
   const metrics = {
     posture: "Posture",
     rhythm: "Rhythm",
@@ -22,7 +24,7 @@ const StudentProgressReport = (report) => {
     attendance: "Attendance",
   };
   const performance = ["Poor", "Weak", "Satisfactory", "Good", "Excellent", "N.A."];
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [goals, setGoals] = useState(report.report.GoalsForNewTerm);
   const [comments, setComments] = useState(report.report.AdditionalComments);
   const [evaluation, setEvaluation] = useState(report.report.EvaluationList);
@@ -33,7 +35,7 @@ const StudentProgressReport = (report) => {
       headers: {
         "Content-Type": "application/json",
       },
-    })
+    });
   }
 
   const handleGoalsChange = (event) => {
@@ -45,11 +47,25 @@ const StudentProgressReport = (report) => {
   };
 
   const handleEvaluationChange = (event) => {
-    setEvaluation({...evaluation, [event.target.name]: event.target.value});
+    setEvaluation({ ...evaluation, [event.target.name]: event.target.value });
   };
 
   async function submitReport(e) {
+    setLoading(true);
     e.preventDefault();
+    for (let key in evaluation) {
+      console.log(evaluation[key])
+      if (evaluation[key] === "") {
+        toast.error("Please check all the checkboxes");
+        setLoading(false);
+        return;
+      }
+    }
+    if (goals === "") {
+      toast.error("Please fill in the goals for the new term");
+      setLoading(false);
+      return;
+    }
     const bodyParams = JSON.stringify({
       studentId: report.userId,
       evaluationList: evaluation,
@@ -59,38 +75,37 @@ const StudentProgressReport = (report) => {
       title: report.report.Title,
       availableDate: report.report.AvailableDate,
       updatedDate: report.report.UpdatedDate,
-      courseId: report.courseId
-    })
+      courseId: report.courseId,
+    });
 
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/report`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: bodyParams
-    })
+      body: bodyParams,
+    });
 
     if (response) {
-      navigate(`/teacher/course/${report.courseId}/classlist`)
+      setLoading(false);
+      navigate(`/teacher/course/${report.courseId}/classlist`);
       toast.success("Report updated successfully");
     }
-  };
+  }
 
   return (
     <>
       {console.log(report)}
       <Box sx={{ display: report.report.Available ? "block" : "none" }}>
         <Divider sx={{ my: 2 }} />
-        <Typography variant="subtitle1" >
-          Available on: {new Date(report.report.AvailableDate).toLocaleDateString()} {new Date(report.report.AvailableDate).toLocaleTimeString()}
-        </Typography>
+        <Typography variant="subtitle1">Available on: {report.report.AvailableDate == "" ? "-" : new Date(report.report.AvailableDate).toLocaleDateString() + " " + new Date(report.report.AvailableDate).toLocaleTimeString()}</Typography>
         <Typography variant="subtitle1" sx={{ mt: 1, mb: 2 }}>
-          Last updated: {new Date(report.report.UpdatedDate).toLocaleDateString()} {new Date(report.report.UpdatedDate).toLocaleTimeString()}
+          Last updated: {report.report.UpdatedDate == "" ? "-" : new Date(report.report.UpdatedDate).toLocaleDateString() + " " + new Date(report.report.UpdatedDate).toLocaleTimeString()}
         </Typography>
         <form onSubmit={submitReport}>
           {Object.keys(metrics).map((metric, key) => (
             <Box key={key}>
-              <FormLabel>{metrics[metric]}</FormLabel>
+              <FormLabel>{metrics[metric] + "*"}</FormLabel>
               <RadioGroup name={metric} defaultValue={report.report.EvaluationList[metric]} onChange={handleEvaluationChange} sx={{ mb: 1 }} row>
                 {performance.map((performance, key) => (
                   <FormControlLabel value={performance} key={key} control={<Radio size="small" />} label={performance} />
@@ -99,7 +114,7 @@ const StudentProgressReport = (report) => {
             </Box>
           ))}
           <FormLabel id="goals-for-the-new-term" sx={{ mt: 2 }}>
-            Goals for the New Term
+            Goals for the New Term*
           </FormLabel>
           <TextField variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1, mb: 2 }} value={goals} onChange={handleGoalsChange} />
           <FormLabel id="additional-comments">Additional Comments</FormLabel>
@@ -117,13 +132,11 @@ const StudentProgressReport = (report) => {
         <Typography variant="h6" sx={{ mb: 1, color: "grey" }}>
           Not Available Yet
         </Typography>
-        <Typography variant="subtitle1" >
-          Available on: {report.report.AvailableDate}
-        </Typography>
+        <Typography variant="subtitle1">Available on: {report.report.AvailableDate}</Typography>
       </Box>
+      <Loader open={loading}></Loader>
     </>
+  );
+};
 
-  )
-}
-
-export default StudentProgressReport
+export default StudentProgressReport;

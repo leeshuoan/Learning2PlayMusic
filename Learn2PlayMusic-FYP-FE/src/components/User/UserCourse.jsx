@@ -155,6 +155,7 @@ const UserCourse = ({ userInfo }) => {
         const formattedDate = date.toLocaleDateString();
         return { ...report, id, availableDate: formattedDate };
       });
+      console.log(progressReportData);
       setCourseProgressReport(progressReportData);
     }
 

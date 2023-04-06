@@ -1,3 +1,4 @@
+import AssessmentIcon from "@mui/icons-material/Assessment";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
 import { Box, Button, Container, IconButton, Tooltip, Typography } from "@mui/material";
@@ -8,6 +9,7 @@ import TransitionModal from "../../utils/TransitionModal";
 import CreateCourseForm from "./CreateCourseForm";
 import DeleteCourseForm from "./DeleteCourseForm";
 import EditCourseForm from "./EditCourseForm";
+import ReportGenerationForm from "./ReportGenerationForm";
 
 const SuperAdminCourseManagement = () => {
   const modalStyle = {
@@ -39,7 +41,6 @@ const SuperAdminCourseManagement = () => {
   };
   // // Edit
   const [openEditModal, setOpenEditModal] = useState(false);
-
   const handleCloseEditModal = () => setOpenEditModal(false);
   const handleCloseEditModalSuccess = () => {
     setOpenEditModal(false);
@@ -53,6 +54,18 @@ const SuperAdminCourseManagement = () => {
     setTeacherId(teacherId);
     setOpenEditModal(true);
   }
+  // report
+  const [openReportModal, setOpenReportModal] = useState(false);
+  function handleOpenReportModal(courseId, courseName) {
+    setCourseName(courseName);
+    setCourseId(courseId);
+    setOpenReportModal(true);
+  }
+  const handleCloseReportModal = () => setOpenReportModal(false);
+  const handleCloseReportModalSuccess = () => {
+    setOpenReportModal(false);
+    setReloadData(!reloadData);
+  };
 
   // delete
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -122,6 +135,28 @@ const SuperAdminCourseManagement = () => {
           </Box>
         ),
       },
+      {
+        accessorKey: "",
+        id: "report",
+        header: "Progress Report",
+        Cell: ({ cell, row }) => (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "2px",
+            }}>
+            <Tooltip title="Generate Progress Report" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  handleOpenReportModal(row.original.id, row.original.courseName);
+                }}>
+                <AssessmentIcon color="info"></AssessmentIcon>
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
     ],
     []
   );
@@ -163,6 +198,10 @@ const SuperAdminCourseManagement = () => {
       {/* delete confirmation */}
       <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal} style={modalStyle}>
         <DeleteCourseForm courseId={courseId} courseName={courseName} timeSlot={timeSlot} teacherName={teacherName} handleCloseDeleteModal={handleCloseDeleteModal} handleCloseDeleteModalSuccess={handleCloseDeleteModalSuccess} />
+      </TransitionModal>
+      {/* generate report */}
+      <TransitionModal open={openReportModal} handleClose={handleCloseReportModal} style={modalStyle}>
+        <ReportGenerationForm courseId={courseId} courseName={courseName} handleClose={handleCloseReportModal} handleCloseSuccess={handleCloseReportModalSuccess} />
       </TransitionModal>
 
       {/* header */}

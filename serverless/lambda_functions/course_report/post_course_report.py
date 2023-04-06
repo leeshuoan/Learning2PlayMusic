@@ -36,14 +36,15 @@ def lambda_handler(event, context):
         else:
             output = []
             response = table.query(
-                KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
+                IndexName="SK-PK-index",
+                KeyConditionExpression="SK = :SK AND begins_with(PK, :PK)",
                 ExpressionAttributeValues={
-                    ":PK": f"Course#{course_id}",
-                    ":SK": f"Student#"
-                })
+                    ":SK": f"Course#{course_id}",
+                    ":PK": "Student#"
+            })
             students = response['Items']
             for student in students:
-                stu_id = student['SK'].split('#')[1]
+                stu_id = student['PK'].split('#')[1]
                 report_response = generate_report(course_id, stu_id, month, year, available_date)
                 output.append(report_response)
                 # get count of reports for this student
