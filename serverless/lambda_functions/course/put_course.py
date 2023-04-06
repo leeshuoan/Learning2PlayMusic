@@ -34,6 +34,9 @@ def lambda_handler(event, context):
                 return response_404("teacherId does not exist in Cognito")
             update_expression += "TeacherId = :teacherId, "
             expression_attribute_values[":teacherId"] = teacherId
+        # teacherID must be passed with original to update teacher, remove and delete respectively
+        if ("teacherId" in requestBody and "originalTeacherId" not in requestBody) or ("teacherId" not in requestBody and "originalTeacherId" in requestBody):
+                    return response_500("teacherId and originalTeacherId must be passed in together")
 
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table("LMS")
@@ -48,6 +51,17 @@ def lambda_handler(event, context):
             UpdateExpression=update_expression[:-2],
             ExpressionAttributeValues=expression_attribute_values,
         )
+        if "teacherId" in requestBody and "originalTeacherId" in requestBody:
+            # directly enrol selected teacher into the course
+            enrol_item = {
+                "PK": f"Teacher#{requestBody['teacherId']}",
+                "SK": f"Course#{requestBody['courseId']}"
+            }
+            table.put_item(Item=enrol_item)
+            # unenrol existing teacher
+            table.delete_item(
+                Key={"PK": f"Teacher#{requestBody['originalTeacherId']}", "SK": f"Course#{requestBody['courseId']}"}
+            )
 
         return response_200_msg_items("updated", response)
 

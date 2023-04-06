@@ -561,6 +561,7 @@ class CourseStack(Stack):
                     "courseSlot": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "teacherId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "originalTeacherId":apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                 },
                 required=["courseId"],
             ),

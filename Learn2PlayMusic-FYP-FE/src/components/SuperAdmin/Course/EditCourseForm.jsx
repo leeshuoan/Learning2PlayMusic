@@ -50,6 +50,7 @@ export default function EditCourseForm({ courseId, ogCourseName, ogTimeSlot, ogT
     }
     if (selectedTeacher.teacherId != ogTeacherId) {
       requestBody.teacherId = selectedTeacher.teacherId;
+      requestBody.originalTeacherId = ogTeacherId;
     }
     console.log(requestBody);
     let response;
@@ -163,7 +164,7 @@ export default function EditCourseForm({ courseId, ogCourseName, ogTimeSlot, ogT
           Cancel
         </Button>
         <Button variant="contained" color="primary" type="submit">
-          Create
+          Edit
         </Button>
       </Box>
       <Loader open={open} />
