@@ -1,4 +1,4 @@
-import { Backdrop, Box, Card, CircularProgress, Container, Grid, Typography, useTheme } from "@mui/material";
+import { Backdrop, Box, Card, CircularProgress, Container, Grid, Typography, useTheme, Link } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
@@ -95,7 +95,11 @@ const UserReport = (userInfo) => {
           </Box>
         </Card>
         {report.GoalsForNewTerm == "" ? (
-          "Teacher has not provided feedback for you yet, you can message your teacher to ask for feedback through the chat function at the top right corner!"
+          <Box sx={{ display: submitted ? "none" : "block" }}>
+            <Card sx={{ py: 3, px: 5, mt: 2 }}>
+              Teacher has not provided feedback for you yet, you can message your teacher to ask for feedback through the <Link onClick={() => navigate("/chat")}>chat</Link> 
+            </Card>
+          </Box>
         ) : (
           <Box sx={{ display: submitted ? "none" : "block" }}>
             <Card sx={{ py: 3, px: 5, mt: 2 }}>
