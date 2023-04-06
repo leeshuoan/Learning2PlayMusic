@@ -469,6 +469,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.post_course_report.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=S3_DYNAMODB_ROLE,
+            timeout=Duration.seconds(840),
         )
         put_course_report = _lambda.Function(
             self,
@@ -1225,6 +1226,22 @@ class CourseStack(Stack):
                 required=["courseId", "studentId", "reportId", "evaluationList"],
             ),
         )
+        post_course_report_model = main_api.add_model(
+            "PostCourseReportModel",
+            content_type="application/json",
+            model_name="PostCourseReportModel",
+            schema=apigw.JsonSchema(
+                title="PostCourseReportModel",
+                schema=apigw.JsonSchemaVersion.DRAFT4,
+                type=apigw.JsonSchemaType.OBJECT,
+                properties={
+                    "courseId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "studentId": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                    "availableDate": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
+                },
+                required=["courseId", "availableDate"],
+            ),
+        )
 
         course_report_resource.add_method(
             "GET",
@@ -1238,11 +1255,7 @@ class CourseStack(Stack):
         course_report_resource.add_method(
             "POST",
             apigw.LambdaIntegration(post_course_report),
-            request_parameters={
-                "method.request.querystring.courseId": True,
-                "method.request.querystring.studentId": True,
-                "method.request.querystring.availableDate": True,
-            },
+            request_models={"application/json": post_course_report_model},
         )
         course_report_resource.add_method(
             "PUT",
