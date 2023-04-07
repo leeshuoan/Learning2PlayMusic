@@ -11,12 +11,12 @@ import ChatUser from "./ChatUser";
 
 function Chat({ userInfo }) {
   const { chatId } = useParams("chatId");
+  console.log(chatId)
   const drawerWidth = 240;
   const [contacts, setContacts] = useState([{ id: "", name: "" }]);
   const [chats, setChats] = useState([]);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openLoading, setOpenLoading] = useState(true);
-  const [selectedChat, setSelectedChat] = useState(contacts[0]);
   const [reload, setReload] = useState(false);
   const [openContactList, setOpenContactList] = useState(false);
   const [root, setRoot] = useState(userInfo.role == "Admin" ? "/admin" : userInfo.role == "User" ? "/home" : userInfo.role == "SuperAdmin" ? "/superadmin" : "/teacher");
@@ -275,7 +275,11 @@ function Chat({ userInfo }) {
           <Typography variant="h6" sx={{ textAlign: "center", display: { xs: "none", md: "block" } }}>
             {/* {selectedChat.name} */}
           </Typography>
-          <ChatUser chatId={chatId} userInfo={userInfo} />
+          {chatId ? (
+            <ChatUser chatId={chatId} userInfo={userInfo} />
+          ) : (
+            <Typography variant="h6" sx={{ textAlign: "center", mt: 3 }}>No chat selected</Typography>
+          )}
         </Box>
       </Box>
       <Loader open={openLoading} />
