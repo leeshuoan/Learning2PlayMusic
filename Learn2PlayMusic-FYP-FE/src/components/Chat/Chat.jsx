@@ -268,17 +268,25 @@ function Chat({ userInfo }) {
             </Grid>
             <Grid item xs={11}>
               <Typography variant="h6" sx={{ textAlign: "center" }}>
-                {/* {selectedChat.name} */}
+                {chats.map((chat) => {
+                  if (chat.id == chatId) {
+                    return `[${chat.receiverRole}] ${chat.receiverName}`;
+                  }
+                })}
               </Typography>
             </Grid>
           </Grid>
           <Typography variant="h6" sx={{ textAlign: "center", display: { xs: "none", md: "block" } }}>
-            {/* {selectedChat.name} */}
+            {chats.map((chat) => {
+              if (chat.id == chatId) {
+                return `[${chat.receiverRole}] ${chat.receiverName}`;
+              }
+            })}
           </Typography>
           {chatId ? (
             <ChatUser chatId={chatId} userInfo={userInfo} />
           ) : (
-            <Typography variant="h6" sx={{ textAlign: "center", mt: 3 }}>No chat selected</Typography>
+            <Typography variant="h6" sx={{ textAlign: "center" }}>No chat selected</Typography>
           )}
         </Box>
       </Box>
