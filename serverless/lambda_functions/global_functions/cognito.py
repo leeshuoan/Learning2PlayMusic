@@ -10,15 +10,16 @@ client = boto3.client("cognito-idp")
 
 def get_users(group):
     user_group_map = {
-        "Users": {"id": "studentId", "name": "studentName"},
-        "Teachers": {"id": "teacherId", "name": "teacherName"},
-        "Admins": {"id": "adminId", "name": "adminName"},
-        "SuperAdmins": {"id": "adminId", "name": "adminName"}
+        "Users": {"id": "studentId", "name": "studentName", "group": "studentGroup"},
+        "Teachers": {"id": "teacherId", "name": "teacherName", "group": "teacherGroup"},
+        "Admins": {"id": "adminId", "name": "adminName", "group": "adminGroup"},
+        "SuperAdmins": {"id": "adminId", "name": "adminName", "group": "adminGroup"}
     }
     
     group_info = user_group_map[group]
     userIdString = group_info["id"]
     userNameString = group_info["name"]
+    userGroupString = group_info["group"]
 
     all_users_info = []
     response_iterator = client.get_paginator("list_users_in_group").paginate(
@@ -32,6 +33,10 @@ def get_users(group):
                 f"{userIdString}": user["Username"],
                 f"{userNameString}": next(
                     (attr["Value"] for attr in user["Attributes"] if attr["Name"] == "custom:name"),
+                    None
+                ),
+                f"{userGroupString}": next(
+                    (attr["Value"] for attr in user["Attributes"] if attr["Name"] == "custom:role"),
                     None
                 )
             }
@@ -71,7 +76,6 @@ def get_all_users():
 def get_user(userId):
 
     all_users = get_all_users()
-
     for user in all_users:
         if userId in user.values():
             return user

@@ -41,10 +41,15 @@ def lambda_handler(event, context):
 
 
         else: # is admin
-          [contactlist.append(admin) for admin in admins if admin['adminId']!=userId]
-          [contactlist.append(super_admin) for super_admin in super_admins if super_admin['adminId']!=userId]
-          [contactlist.append(teacher) for teacher in teachers if teacher['teacherId']!=userId]
-          [contactlist.append(student) for student in students if student['studentId']!=userId]
+
+          if user['adminGroup']=='Admin': # if user is BASIC admin
+            [contactlist.append(super_admin) for super_admin in super_admins]
+            [contactlist.append(teacher) for teacher in teachers]
+            [contactlist.append(student) for student in students]
+          elif user['adminGroup']=='SuperAdmin': # if user is SUPER admin
+            [contactlist.append(admin) for admin in admins]
+            [contactlist.append(teacher) for teacher in teachers]
+            [contactlist.append(student) for student in students]
 
         return response_200_items(contactlist)
 
