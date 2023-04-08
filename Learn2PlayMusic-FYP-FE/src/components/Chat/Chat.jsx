@@ -91,13 +91,17 @@ function Chat({ userInfo }) {
           let name = "";
           let role = "";
           for (let k of contactKeys) {
+            console.log("k: ",k);
             if (k.endsWith("Id")) {
               id = contact[k];
-              role = k.split("Id")[0];
-              role = role.charAt(0).toUpperCase() + role.slice(1);
+              // role = k.split("Id")[0];
+              // role = role.charAt(0).toUpperCase() + role.slice(1);
             }
             if (k.endsWith("Name")) {
               name = contact[k];
+            }
+            if (k.endsWith("Group")) {
+              role = contact[k];
             }
           }
           return {
