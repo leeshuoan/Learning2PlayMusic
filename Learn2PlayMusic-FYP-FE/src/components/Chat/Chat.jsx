@@ -8,10 +8,10 @@ import CustomBreadcrumbs from "../utils/CustomBreadcrumbs";
 import Loader from "../utils/Loader";
 import TransitionModal from "../utils/TransitionModal";
 import ChatUser from "./ChatUser";
+import PaginatedContactList from "./PaginatedContactList";
 
 function Chat({ userInfo }) {
   const { chatId } = useParams("chatId");
-  console.log(chatId)
   const drawerWidth = 240;
   const [contacts, setContacts] = useState([{ id: "", name: "" }]);
   const [chats, setChats] = useState([]);
@@ -32,32 +32,12 @@ function Chat({ userInfo }) {
     bgcolor: "background.paper",
     border: "1px solid #000",
     borderRadius: 2,
-    p: 4,
+    p: 3,
   };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
-  //// check for SG phone number or email
-  // function invalidMessage(message) {
-  //   // Regular expression patterns
-  //   const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-  //   const phoneRegex = /[6|8|9]\d{7}|\+65[6|8|9]\d{7}|\+65\s[6|8|9]\d{7}/g;
-
-  //   // Check if message contains email
-  //   if (emailRegex.test(message)) {
-  //     return true; // message is invalid
-  //   } else {
-  //     // remove all non digits in the message
-  //     phoneNumCheck = message.replace(/\D/g, "");
-  //     // Check if message contains phone number
-  //     if (phoneRegex.test(phoneNumCheck)) {
-  //       return true; // message is invalid
-  //     }
-  //     return false; // message is valid
-  //   }
-  // }
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
@@ -130,6 +110,7 @@ function Chat({ userInfo }) {
       setContacts(contactData);
       setChats(chatData);
     }
+
     fetchContacts().then(() => {
       setOpenLoading(false);
     });
@@ -167,7 +148,7 @@ function Chat({ userInfo }) {
     <Box sx={{ display: "flex" }}>
       <TransitionModal open={openContactList} style={modalStyle}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography variant="h6" sx={{ ml: 2 }}>
+          <Typography variant="h6" sx={{ ml: 2 }} >
             New Chat
           </Typography>
           <IconButton onClick={() => setOpenContactList(false)}>
@@ -175,16 +156,9 @@ function Chat({ userInfo }) {
           </IconButton>
         </Box>
         <Divider />
-        <List sx={{ p: 0 }}>
-          {contacts.map((contact, key) => (
-            <Box key={key}>
-              <ListItem key={contact.id} disablePadding>
-                <ListItemButton onClick={() => startChat(contact)}>{<ListItemText primary={`[${contact.role}] ${contact.name} `} />}</ListItemButton>
-              </ListItem>
-              <Divider />
-            </Box>
-          ))}
-        </List>
+        <Box>
+          <PaginatedContactList contacts={contacts} startChat={startChat} />
+        </Box>
       </TransitionModal>
 
       {/* DEFAULT RENDER */}
@@ -268,26 +242,36 @@ function Chat({ userInfo }) {
             </Grid>
             <Grid item xs={11}>
               <Typography variant="h6" sx={{ textAlign: "center" }}>
-                {chats.map((chat) => {
-                  if (chat.id == chatId) {
-                    return `[${chat.receiverRole}] ${chat.receiverName}`;
-                  }
-                })}
+                {chatId ? (
+                  <>
+                    {chats.map((chat) => {
+                      if (chat.id == chatId) {
+                        return `[${chat.receiverRole}] ${chat.receiverName}`;
+                      }
+                    })
+                    }
+                  </>
+                ) : (
+                  <Typography variant="h6" sx={{ textAlign: "center" }}>No chat selected</Typography>
+                )}
               </Typography>
             </Grid>
           </Grid>
           <Typography variant="h6" sx={{ textAlign: "center", display: { xs: "none", md: "block" } }}>
-            {chats.map((chat) => {
-              if (chat.id == chatId) {
-                return `[${chat.receiverRole}] ${chat.receiverName}`;
-              }
-            })}
+            {chatId ? (
+              <>
+                {chats.map((chat) => {
+                  if (chat.id == chatId) {
+                    return `[${chat.receiverRole}] ${chat.receiverName}`;
+                  }
+                })
+                }
+              </>
+            ) : (
+              <Typography variant="h6" sx={{ textAlign: "center" }}>No chat selected</Typography>
+            )}
           </Typography>
-          {chatId ? (
-            <ChatUser chatId={chatId} userInfo={userInfo} />
-          ) : (
-            <Typography variant="h6" sx={{ textAlign: "center" }}>No chat selected</Typography>
-          )}
+          <ChatUser chatId={chatId} userInfo={userInfo} />
         </Box>
       </Box>
       <Loader open={openLoading} />
