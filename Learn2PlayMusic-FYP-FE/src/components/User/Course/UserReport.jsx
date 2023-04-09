@@ -1,4 +1,4 @@
-import { Backdrop, Box, Card, CircularProgress, Container, Grid, Typography, useTheme, Link } from "@mui/material";
+import { Backdrop, Box, Card, CircularProgress, Container, Grid, Link, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomBreadcrumbs from "../../utils/CustomBreadcrumbs";
@@ -70,7 +70,7 @@ const UserReport = (userInfo) => {
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <CustomBreadcrumbs root="/home" links={[{ name: course.name, path: `/home/course/${courseid}/report` }]} breadcrumbEnding={course.name} />
+        <CustomBreadcrumbs root="/home" links={[{ name: course.name, path: `/home/course/${courseid}/report` }]} breadcrumbEnding={report.Title} />
 
         <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -97,7 +97,7 @@ const UserReport = (userInfo) => {
         {report.GoalsForNewTerm == "" ? (
           <Box sx={{ display: submitted ? "none" : "block" }}>
             <Card sx={{ py: 3, px: 5, mt: 2 }}>
-              Teacher has not provided feedback for you yet, you can message your teacher to ask for feedback through the <Link onClick={() => navigate("/chat")}>chat</Link> 
+              Teacher has not provided feedback for you yet, you can message your teacher to ask for feedback through the <Link onClick={() => navigate("/chat")}>chat</Link>
             </Card>
           </Box>
         ) : (
