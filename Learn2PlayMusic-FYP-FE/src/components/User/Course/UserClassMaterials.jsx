@@ -19,7 +19,7 @@ const UserClassMaterials = () => {
       'Content-Type': 'application/json',
     },
   })
-
+  //
   const getMaterialAPI = fetch(`${import.meta.env.VITE_API_URL}/course/material?courseId=${courseid}&materialId=${materialId}`, {
     method: 'GET',
     headers: {
