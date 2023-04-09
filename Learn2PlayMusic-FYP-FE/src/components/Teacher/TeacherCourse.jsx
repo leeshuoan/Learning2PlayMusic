@@ -149,14 +149,14 @@ const TeacherCourse = ({ userInfo }) => {
             <Typography
               variant="button"
               onClick={() => {
-                navigate(`/teacher/course/${courseid}/announcement/edit/${row.original.SK}`);
+                navigate(`/teacher/course/${courseid}/announcement/edit/${row.original.id}`);
               }}>
               <Link underline="hover">Edit</Link>
             </Typography>
             <Typography
               variant="button"
               onClick={() => {
-                setSelectedAnnouncement(row.original.SK);
+                setSelectedAnnouncement(row.original.id);
                 setDeleteAnnouncementModal(true);
               }}>
               <Link underline="hover">Delete</Link>
@@ -735,7 +735,7 @@ const TeacherCourse = ({ userInfo }) => {
                           <Link
                             underline="hover"
                             onClick={() => {
-                              navigate(`edit/${quiz.id}`);
+                              navigate(`/teacher/course/${courseid}/quiz/edit/${quiz.id}`);
                             }}>
                             Edit
                           </Link>
@@ -763,7 +763,7 @@ const TeacherCourse = ({ userInfo }) => {
                         variant="outlined"
                         sx={{ color: "primary.main" }}
                         onClick={() => {
-                          navigate(`summary/${quiz.id}`);
+                          navigate(`/teacher/course/${courseid}/quiz/summary/${quiz.id}`);
                         }}>
                         View Quiz Summary
                       </Button>
@@ -807,7 +807,7 @@ const TeacherCourse = ({ userInfo }) => {
                     <Grid container>
                       <Grid item xs={12} sm={4}>
                         <Typography variant="body1" sx={{ color: "primary.main" }}>
-                          <Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkTitle}</Link>
+                          <Link onClick={() => navigate(`/teacher/course/${courseid}/homework/${homework.id}`)}>{homework.HomeworkTitle}</Link>
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={4}>
@@ -825,14 +825,11 @@ const TeacherCourse = ({ userInfo }) => {
                           <Typography
                             variant="button"
                             onClick={() => {
-                              navigate(`${homework.id}/edit`);
+                              navigate(`/teacher/course/${courseid}/homework/edit/${homework.id}`);
                             }}>
                             <Link underline="hover">Edit</Link>
                           </Typography>
-                          <Typography
-                            variant="button"
-                            // onclick={() => {
-                          >
+                          <Typography variant="button">
                             <Link
                               underline="hover"
                               onClick={() => {
