@@ -213,6 +213,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.get_course_announcement.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
         post_course_announcement = _lambda.Function(
             self,
