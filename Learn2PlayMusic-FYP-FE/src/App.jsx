@@ -57,7 +57,7 @@ import TeacherHome from "./components/Teacher/TeacherHome";
 
 Amplify.configure(aws_exports);
 
-function App() {
+const App = () => {
   const [userInfo, setUserInfo] = useState({});
   const [fetchUserInfo, setFetchUserInfo] = useState(false);
 
@@ -180,11 +180,14 @@ function App() {
             </Route>
           </Route>
 
-          <Route path="chat" element={<Chat userInfo={userInfo} />} />
-          <Route path="chat/:chatId" element={<Chat userInfo={userInfo} />} />
-          <Route path="profile" element={<Profile userInfo={userInfo} refreshUserInfo={handleRefreshUserInfo} />}></Route>
+          <Route element={<PrivateRoutes userType="Home"></PrivateRoutes>}>
+            <Route path="chat" element={<Chat userInfo={userInfo} />} />
+            <Route path="chat/:chatId" element={<Chat userInfo={userInfo} />} />
+            <Route path="profile" element={<Profile userInfo={userInfo} refreshUserInfo={handleRefreshUserInfo} />}></Route>
+            <Route path="changepassword" element={<ChangePassword />}></Route>
+          </Route>
+
           <Route path="resetpassword" element={<ForgotPassword />}></Route>
-          <Route path="changepassword" element={<ChangePassword />}></Route>
           <Route path="*" element={<NotFound userRole={userInfo.role} />} />
         </Routes>
       </ThemeProvider>
