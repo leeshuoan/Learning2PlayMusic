@@ -61,9 +61,12 @@ const NewCourseMaterialsForm = ({ userInfo }) => {
   // helper functions
   function buildRequestBody(materialTypeStr) {
     let cleanedLink = embeddedLink;
-    if (!embeddedLink.startsWith("https://") || !embeddedLink.startsWith("http://")) {
+    if (!embeddedLink.startsWith("https://") && !embeddedLink.startsWith("http://")) {
       cleanedLink = "https://" + embeddedLink;
+    } else {
+      cleanedLink = embeddedLink;
     }
+
     const requestBodyObject = {
       courseId: courseid,
       materialTitle: title,
