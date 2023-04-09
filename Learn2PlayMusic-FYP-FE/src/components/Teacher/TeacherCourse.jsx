@@ -1,3 +1,4 @@
+import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -10,6 +11,7 @@ import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../utils/CustomBreadcrumbs";
 import Loader from "../utils/Loader";
 import TransitionModal from "../utils/TransitionModal";
+import { handleCourseAnnouncements, handleCourseClassList, handleCourseHomework, handleCourseInfo, handleCourseMaterial, handleCourseQuiz } from "./DataLoadingFunctions";
 
 const TeacherCourse = ({ userInfo }) => {
   const [open, setOpen] = useState(true);
@@ -289,84 +291,71 @@ const TeacherCourse = ({ userInfo }) => {
 
   useEffect(() => {
     async function fetchData() {
-      const [data1, data2, data3, data4, data5] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI]);
-      // const [data1, data2, data3, data4, data5, data6] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI, getClassListAPI]);
-      if (category == "classlist") {
-        console.time("calling classlist")
-        const data6 = await getClassListAPI;
-        console.log(data6);
-        console.time("called classlist")
-
-        setClassList(data6);
+      try {
+        handleCourseInfo(getCourseAPI, setCourse);
+        switch (category) {
+          case "classlist":
+            console.log("classlist");
+            await handleCourseClassList(getClassListAPI, setClassList);
+            break;
+          case "announcement":
+            console.log("announcement");
+            await handleCourseAnnouncements(getCourseAnnouncementsAPI, setCourseAnnouncements);
+            break;
+          case "material":
+            console.log("material");
+            await handleCourseMaterial(getMaterialAPI, setCourseMaterial);
+            break;
+          case "quiz":
+            console.log("quiz");
+            await handleCourseQuiz(getQuizAPI, setCourseQuiz);
+            break;
+          case "homework":
+            console.log("homework");
+            await handleCourseHomework(getHomeworkAPI, setCourseHomework);
+            break;
+          default:
+            await handleCourseAnnouncements(getCourseAnnouncementsAPI, setCourseAnnouncements);
+            break;
+        }
+        setOpen(false);
+      } catch (error) {
+        setOpen(false);
+        toast.error("An unexpected error occured");
       }
-
-      const courseData = {
-        id: data1[0].SK.split("#")[1],
-        name: data1[0].CourseName,
-        timeslot: data1[0].CourseSlot,
-        teacher: data1[0].TeacherName,
-      };
-      setCourse(courseData);
-
-      console.log(data2);
-      const homeworkData = data2.map((homework) => {
-        const id = homework.SK.split("Homework#")[1];
-        const dueDate = new Date(homework.HomeworkDueDate);
-        const formattedDueDate = `${dueDate.toLocaleDateString()} `;
-        return { ...homework, id, HomeworkDueDate: formattedDueDate };
-      });
-      setCourseHomework(homeworkData);
-
-      const materialData = data3.map((material) => {
-        const id = material.SK.split("Material#")[1];
-        const date = new Date(material.MaterialLessonDate);
-        const formattedDate = `${date.toLocaleDateString()}`;
-        return { ...material, id, MaterialLessonDate: formattedDate };
-      });
-      setCourseMaterial(materialData);
-
-      console.log(data4);
-      const quizData = data4.map((quiz) => {
-        const id = quiz.SK.split("Quiz#")[1];
-        const date = new Date(quiz.QuizDueDate);
-        const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-        return { ...quiz, id };
-      });
-      setCourseQuiz(quizData);
-
-      const announcementsData = data5.map((announcement) => {
-        const id = announcement.SK.split("Announcement#")[1];
-        const date = new Date(announcement.Date);
-        const formattedDate = date.toLocaleDateString();
-        return { ...announcement, id, Date: formattedDate };
-      });
-      setCourseAnnouncements(announcementsData);
-
-      // const classListData = data6.map((student) => {
-      //   const ParticipationPoints = " "
-      //   return { ...student };
-      // })
     }
 
-    fetchData().then(() => {
-      setOpen(false);
-    });
+    fetchData();
   }, [refreshUseEffect, userInfo]);
 
-  const menuNavigate = async (option) => {
-    if (option == "Announcements") navigate(`/teacher/course/${course.id}/announcement`);
-    if (option == "Class Materials") navigate(`/teacher/course/${course.id}/material`);
-    if (option == "Quizzes") navigate(`/teacher/course/${course.id}/quiz`);
-    if (option == "Homework") navigate(`/teacher/course/${course.id}/homework`);
-    if (option == "Class List") {
-      setOpen(true);
-      const data6 = await getClassListAPI;
-      console.log(data6);
-      setClassList(data6);
-      setOpen(false);
-      navigate(`/teacher/course/${course.id}/classlist`);
+  async function menuNavigate(option) {
+    setOpen(true);
+    switch (option) {
+      case "Announcements":
+        navigate(`/teacher/course/${course.id}/announcement`);
+        await handleCourseAnnouncements(getCourseAnnouncementsAPI, setCourseAnnouncements);
+        break;
+      case "Class Materials":
+        navigate(`/teacher/course/${course.id}/material`);
+        await handleCourseMaterial(getMaterialAPI, setCourseMaterial);
+        break;
+      case "Quizzes":
+        navigate(`/teacher/course/${course.id}/quiz`);
+        await handleCourseQuiz(getQuizAPI, setCourseQuiz);
+        break;
+      case "Homework":
+        navigate(`/teacher/course/${course.id}/homework`);
+        await handleCourseHomework(getHomeworkAPI, setCourseHomework);
+        break;
+      case "Class List":
+        navigate(`/teacher/course/${course.id}/classlist`);
+        await handleCourseClassList(getClassListAPI, setClassList);
+        break;
+      default:
+        break;
     }
-  };
+    setOpen(false);
+  }
 
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
@@ -606,12 +595,13 @@ const TeacherCourse = ({ userInfo }) => {
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <Typography variant="h5">Class Announcements</Typography>
                 <Button
+                  startIcon={<AddIcon />}
                   variant="contained"
                   onClick={() => {
                     var endpt = category == "announcement" ? "new" : "announcement/new";
                     navigate(endpt);
                   }}>
-                  +&nbsp;New
+                  New
                 </Button>
               </Box>
               {/* end header */}
@@ -654,11 +644,12 @@ const TeacherCourse = ({ userInfo }) => {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                   <Typography variant="h5">Class Materials</Typography>
                   <Button
+                    startIcon={<AddIcon />}
                     variant="contained"
                     onClick={() => {
                       navigate("new");
                     }}>
-                    +&nbsp;New
+                    New
                   </Button>
                 </Box>
                 {/* end header */}
@@ -673,11 +664,12 @@ const TeacherCourse = ({ userInfo }) => {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                   <Typography variant="h5">Quizzes</Typography>
                   <Button
+                    startIcon={<AddIcon />}
                     variant="contained"
                     onClick={() => {
                       navigate("new");
                     }}>
-                    +&nbsp;New
+                    New
                   </Button>
                 </Box>
                 {/* end header */}
@@ -754,11 +746,12 @@ const TeacherCourse = ({ userInfo }) => {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                   <Typography variant="h5">Homework</Typography>
                   <Button
+                    startIcon={<AddIcon />}
                     variant="contained"
                     onClick={() => {
                       navigate(`new`);
                     }}>
-                    +&nbsp;New
+                    New
                   </Button>
                 </Box>
                 {/* end header */}
