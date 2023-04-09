@@ -30,7 +30,9 @@ def lambda_handler(event, context):
             "QuizDescription": quiz_description,
             "NumberOfStudentsAttempted": 0,
             "AverageScore": 0,
-            "Visibility": visibility
+            "Visibility": visibility,
+            "QuestionCount": 0
+
         }
 
         table.put_item(Item=item)
@@ -54,7 +56,6 @@ def lambda_handler(event, context):
                     "Visibility": visibility,
                     "QuizAttempt": 0,
                     "QuizScore": 0,
-                    "QuestionCount": 0
                 }
             )
 
