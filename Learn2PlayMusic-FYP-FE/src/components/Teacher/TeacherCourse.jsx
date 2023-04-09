@@ -292,8 +292,11 @@ const TeacherCourse = ({ userInfo }) => {
       const [data1, data2, data3, data4, data5] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI]);
       // const [data1, data2, data3, data4, data5, data6] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI, getClassListAPI]);
       if (category == "classlist") {
+        console.time("calling classlist")
         const data6 = await getClassListAPI;
         console.log(data6);
+        console.time("called classlist")
+
         setClassList(data6);
       }
 

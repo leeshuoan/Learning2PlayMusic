@@ -347,7 +347,7 @@ class CourseStack(Stack):
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
             timeout=Duration.seconds(840),
-            memory_size=384,
+            memory_size=512,
         )
 
         # /course/quiz/
