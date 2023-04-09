@@ -43,7 +43,7 @@ def lambda_handler(event, context):
                 KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
                 ExpressionAttributeValues={
                     ":PK": f"Course#{courseId}",
-                    ":SK": f"Student#{student}Quiz"
+                    ":SK": f"Student#{student}Quiz",
                 })
 
             quiz_items = quiz_response['Items']
