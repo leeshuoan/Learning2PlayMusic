@@ -15,6 +15,9 @@ const UserCourse = ({ userInfo }) => {
   const [courseHomework, setCourseHomework] = useState([]);
   const [courseMaterial, setCourseMaterial] = useState([]);
   const [courseQuiz, setCourseQuiz] = useState([]);
+  const [homeworkPoints, setHomeworkPoints] = useState(0);
+  const [quizPoints, setQuizPoints] = useState(0);
+  const [totalQuizPoints, setTotalQuizPoints] = useState(0);
   const [courseAnnouncement, setCourseAnnouncement] = useState([]);
   const [courseProgressReport, setCourseProgressReport] = useState([]);
 
@@ -73,7 +76,6 @@ const UserCourse = ({ userInfo }) => {
   useEffect(() => {
     async function fetchData() {
       const [data1, data2, data3, data4, data5, data6] = await Promise.all([getCourseAPI, getHomeworkAPI, getMaterialAPI, getQuizAPI, getCourseAnnouncementsAPI, getProgressReportAPI]);
-
       const courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
@@ -90,6 +92,7 @@ const UserCourse = ({ userInfo }) => {
               const date = new Date(homework.HomeworkDueDate);
               const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
               const homeworkFeedback = await fetchHomeworkFeedback(id);
+              setHomeworkPoints((prevPoints) => prevPoints + 1);
 
               return {
                 ...homework,
@@ -109,6 +112,7 @@ const UserCourse = ({ userInfo }) => {
       async function fetchHomeworkFeedback(id) {
         const data = await request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${id}&studentId=${userInfo.id}`);
         const homeworkFeedback = {
+          HomeworkScore: data.HomeworkScore == null ? 0 : data.HomeworkScore,
           Marked: data.Marked,
           NumAttempts: data.NumAttempts != 0 ? data.NumAttempts : "",
         };
@@ -131,6 +135,8 @@ const UserCourse = ({ userInfo }) => {
         const id = quiz.SK.split("Quiz#")[1];
         const date = new Date(quiz.QuizDueDate);
         const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        setQuizPoints((prevPoints) => prevPoints + quiz.QuizScore);
+        // setTotalQuizPoints(quiz.QuestionCount);
         return { ...quiz, id, QuizDueDate: formattedDate };
       });
       setCourseQuiz(quizData);
@@ -409,7 +415,7 @@ const UserCourse = ({ userInfo }) => {
                 </Typography>
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <EmojiEventsIcon fontSize="large" sx={{ color: "#FFB118" }} />
-                  <Typography variant="h4">203</Typography>
+                  <Typography variant="h4">{Math.round(homeworkPoints*10+quizPoints*100)}</Typography>
                 </Box>
               </Card>
               <Card sx={{ py: 3, px: 5, mt: 2 }}>
