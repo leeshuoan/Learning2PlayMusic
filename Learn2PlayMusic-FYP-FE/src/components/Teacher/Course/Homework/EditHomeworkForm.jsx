@@ -50,9 +50,9 @@ const EditHomeworkForm = () => {
       setHomeworkAssignedDate(data2.HomeworkAssignedDate);
       dayjs.extend(customParseFormat);
       setValue(dayjs(data2.HomeworkDueDate));
+      setOpen(false);
     }
     fetchData();
-    setOpen(false);
   }, []);
 
   const updateHomework = async (e) => {
@@ -148,8 +148,8 @@ const EditHomeworkForm = () => {
             </Box>
           </form>
         </Card>
-      </Container>
       <Loader open={open} />
+      </Container>
     </>
   );
 };
