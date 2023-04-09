@@ -59,8 +59,6 @@ async function lambda_handler(event, context) {
     }
     await dynamodb.update(quizParams).promise();
 
-    return response_200(`Successfully inserted ${questionCount} Question(s)!`);
-
     return response_200(`Successfully deleted item with courseId:${courseId} quizId:${quizId} questionId:${questionId}!`);
 
   } catch (e) {
