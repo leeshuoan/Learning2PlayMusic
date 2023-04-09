@@ -213,6 +213,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.get_course_announcement.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
         post_course_announcement = _lambda.Function(
             self,
@@ -347,7 +348,7 @@ class CourseStack(Stack):
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
             timeout=Duration.seconds(840),
-            memory_size=384,
+            memory_size=512,
         )
 
         # /course/quiz/
@@ -422,11 +423,9 @@ class CourseStack(Stack):
         post_course_quiz_question = _lambda.Function(
             self,
             "postCourseQuizQuestion",
-            runtime=_lambda.Runtime.NODEJS_16_X,
-            handler=f"post_course_quiz_question.lambda_handler",
-            code=_lambda.Code.from_asset(
-                f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"
-            ),
+            runtime=_lambda.Runtime.PYTHON_3_9,
+            handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.post_course_quiz_question.lambda_handler",
+            code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=S3_DYNAMODB_ROLE,
             environment={
                 "QUESTION_IMAGE_BUCKET_NAME": L2PMA_question_image_bucket.bucket_name

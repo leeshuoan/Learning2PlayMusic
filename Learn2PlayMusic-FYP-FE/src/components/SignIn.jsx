@@ -97,7 +97,9 @@ export default function SignIn({ userInfo, handleSetUserInfo }) {
               Learn2Play Beyond Classroom
             </Typography>
             <Typography variant="body1" color="white" sx={{ textAlign: { xs: "center", sm: "left" } }}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut distinctio fuga officia incidunt doloribus sed asperiores vitae dignissimos perspiciatis animi eaque, necessitatibus placeat laboriosam harum minima voluptate enim rem saepe.
+              Welcome to Learn2Play's Learning Management System!<br /><br />
+              Our user-friendly and engaging LMS is designed to help you make the most of your musical journey. Easily access all of your course materials, submit homework, track your progress, and enjoy fun and interactive features like quizzes.
+              Sign in to experience it now!
             </Typography>
             <img src={homebg} alt="" />
           </Grid>

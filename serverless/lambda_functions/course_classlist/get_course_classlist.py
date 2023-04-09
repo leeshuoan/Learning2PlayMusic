@@ -43,14 +43,14 @@ def lambda_handler(event, context):
                 KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
                 ExpressionAttributeValues={
                     ":PK": f"Course#{courseId}",
-                    ":SK": f"Student#{student}Quiz"
+                    ":SK": f"Student#{student}Quiz",
                 })
 
             quiz_items = quiz_response['Items']
-
+            print("quiz items: ", quiz_items)
             total_quiz_score = 0
             for quiz in quiz_items:
-                quiz_score = float(quiz['QuizScore'])
+                quiz_score = float(quiz['QuizScore'])*100
                 total_quiz_score += quiz_score
 
             student['TotalQuizScore'] = total_quiz_score
@@ -67,10 +67,11 @@ def lambda_handler(event, context):
                 })
 
             homework_items = homework_response['Items']
+            print("homework items: ", homework_items)
             total_homework_score = 0
             for homework in homework_items:
                 if "HomeworkScore" in homework:
-                    homework_score = float(homework['HomeworkScore'])
+                    homework_score = float(homework['HomeworkScore'])*10
                     total_homework_score += homework_score
 
                 student['TotalHomeworkScore'] = total_homework_score

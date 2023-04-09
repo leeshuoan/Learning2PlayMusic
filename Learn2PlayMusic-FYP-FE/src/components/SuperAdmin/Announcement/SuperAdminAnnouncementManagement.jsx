@@ -83,7 +83,7 @@ const SuperAdminAnnouncementManagement = () => {
         accessorKey: "content",
         id: "content",
         header: "Content",
-        Cell: ({ cell, row }) => <Typography variant="body2">{row.original.content.length > 145 ? row.original.content.substring(0, 145) + "..." : row.original.content}</Typography>,
+        Cell: ({ cell, row }) => <Typography variant="body2">{row.original.content.length > 90 ? row.original.content.substring(0, 90) + "..." : row.original.content}</Typography>,
       },
       {
         accessorKey: "",
