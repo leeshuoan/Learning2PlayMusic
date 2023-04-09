@@ -4,6 +4,8 @@ import boto3
 from uuid import uuid4
 from base64 import b64decode
 
+from global_functions.responses import *
+
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table("LMS")
 s3 = boto3.client('s3')
@@ -14,17 +16,13 @@ bucket_name = os.environ['QUESTION_IMAGE_BUCKET_NAME']
 def lambda_handler(event, context):
     try:
         question_count = 0
-        request_body = event['body']
-        
+        request_body = json.loads(event['body'])     
         course_id = ""
         quiz_id = ""
-        if not isinstance(request_body, list):
-            raise TypeError("Request body must be an array of questions")
 
         for question in request_body:
             random_uuid = str(uuid4())[:8]
-            question = json.loads(question)
-
+            
             question_count += 1
             course_id = question['courseId']
             quiz_id = question['quizId']
@@ -87,12 +85,7 @@ def lambda_handler(event, context):
             }
         )
 
-        return {
-            'statusCode': 200,
-            'body': f'Successfully inserted {question_count} Question(s)!'
-        }
+        return response_202_msg(f'Successfully inserted {question_count} Question(s)!')
+
     except Exception as e:
-        return {
-            'statusCode': 400,
-            'body': str(e)
-        }
+        return response_400(str(e))
