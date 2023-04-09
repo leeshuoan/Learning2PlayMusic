@@ -10,7 +10,7 @@ const checkNumQuestions = async (courseId, quizId) => {
     KeyConditionExpression: "PK = :PK and begins_with(SK, :SK)",
     ExpressionAttributeValues: {
       ":PK": `Course#${courseId}`,
-      ":SK": `Quiz#${quizId}Question#`
+      ":SK": `Quiz#${quizId}Question#`,
     }
   };
 
