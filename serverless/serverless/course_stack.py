@@ -818,8 +818,7 @@ class CourseStack(Stack):
                     "options": apigw.JsonSchema(type=apigw.JsonSchemaType.ARRAY),
                     "answer": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
                     "questionImage": apigw.JsonSchema(type=apigw.JsonSchemaType.STRING),
-                },
-                required=["courseId", "quizId", "question", "options", "answer"],
+                }
             ),
         )
 
