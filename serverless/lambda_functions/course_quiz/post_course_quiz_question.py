@@ -15,7 +15,7 @@ def lambda_handler(event, context):
     try:
         question_count = 0
         request_body = event['body']
-        return request_body
+        
         course_id = ""
         quiz_id = ""
         if not isinstance(request_body, list):
