@@ -43,27 +43,34 @@ const NewHomeworkForm = () => {
         teacher: data1[0].TeacherName,
       };
       setCourse(courseData);
+      setOpen(false);
     }
     fetchData();
-    setOpen(false);
   }, []);
 
   const createHomework = (e) => {
     e.preventDefault();
-    if (homeworkTitle === "") {
+    setOpen(true);
+    if (homeworkTitle == "") {
       toast.error("Please fill in the title!");
+      setOpen(false);
       return;
     }
-    if (homeworkDescription === "") {
+    if (homeworkDescription == "") {
       toast.error("Please fill in the description!");
+      setOpen(false);
       return;
     }
+
     if (value == null) {
       toast.error("Please select a due date!");
+      setOpen(false);
       return;
     }
+
     if (new Date(value.toISOString()) < new Date()) {
       toast.error("Due date cannot be in the past!");
+      setOpen(false);
       return;
     }
     const newHomework = {
@@ -83,8 +90,10 @@ const NewHomeworkForm = () => {
     });
     if (res) {
       toast.success("Homework created successfully!");
+      setOpen(false);
       navigate(`/teacher/course/${courseid}/homework`);
     } else {
+      setOpen(false);
       toast.error("An unexpected error occured during homework creation");
     }
   };
@@ -120,8 +129,8 @@ const NewHomeworkForm = () => {
             New Homework
           </Typography>
           <form onSubmit={createHomework}>
-            <TextField id="title" label="Title *" variant="outlined" value={homeworkTitle} onChange={() => setHomeworkTitle(event.target.value)} sx={{ mt: 2 }} />
-            <TextField id="description" label="Description *" variant="outlined" rows={7} value={homeworkDescription} onChange={() => setHomeworkDescription(event.target.value)} multiline fullWidth sx={{ mt: 2, mb: 2 }} />
+            <TextField id="title" label="Title*" variant="outlined" value={homeworkTitle} onChange={() => setHomeworkTitle(event.target.value)} sx={{ mt: 2 }} />
+            <TextField id="description" label="Description*" variant="outlined" rows={7} value={homeworkDescription} onChange={() => setHomeworkDescription(event.target.value)} multiline fullWidth sx={{ mt: 2, mb: 2 }} />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Due Date *"
@@ -148,9 +157,8 @@ const NewHomeworkForm = () => {
             </Box>
           </form>
         </Card>
+        <Loader open={open} />
       </Container>
-
-      <Loader open={open} />
     </>
   );
 };
