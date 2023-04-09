@@ -22,6 +22,7 @@ def lambda_handler(event, context):
 
         for question in request_body:
             random_uuid = str(uuid4())[:8]
+            question = json.loads(question)
 
             question_count += 1
             course_id = question['courseId']
