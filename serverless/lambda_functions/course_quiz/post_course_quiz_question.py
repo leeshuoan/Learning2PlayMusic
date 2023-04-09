@@ -14,11 +14,11 @@ bucket_name = os.environ['QUESTION_IMAGE_BUCKET_NAME']
 def lambda_handler(event, context):
     try:
         question_count = 0
-        request_body = json.loads(event['body'])
+        request_body = event['body']
         course_id = ""
         quiz_id = ""
         if not isinstance(request_body, list):
-            raise TypeError("Request body must be a an array of questions")
+            raise TypeError("Request body must be an array of questions")
         
         for question in request_body:
             random_uuid = str(uuid4())[:8]
@@ -67,8 +67,7 @@ def lambda_handler(event, context):
                 }
 
                 uploaded_image = s3.put_object(**s3_params)
-                question_item['QuestionImage'] = s3_params['Bucket'] + \
-                    "/" + s3_params['Key']
+                question_item['QuestionImage'] = s3_params['Bucket'] + "/" + s3_params['Key']
 
             table.put_item(
                 Item=question_item
