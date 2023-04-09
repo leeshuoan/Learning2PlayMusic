@@ -92,7 +92,7 @@ const UserClassMaterials = () => {
               height="700"
               type="application/pdf"
               style={{ display: material.MaterialType == "PDF" ? "block" : "none" }} />
-            <Link style={{ display: material.MaterialType == "Link" ? "flex" : "none" }} href="https://www.youtube.com/watch?v=UETPELwIjho" target="_blank"><InsertLinkIcon sx={{ mr: 0.5 }} />{material.MaterialTitle}</Link>
+            <Link style={{ display: material.MaterialType == "Link" ? "flex" : "none" }} href={material.MaterialLink} target="_blank"><InsertLinkIcon sx={{ mr: 0.5 }} />{material.MaterialTitle}</Link>
           </Card>
         </Card>
       </Box>
