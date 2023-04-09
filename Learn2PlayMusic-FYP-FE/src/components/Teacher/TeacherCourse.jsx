@@ -659,7 +659,40 @@ const TeacherCourse = ({ userInfo }) => {
                 </Button>
               </Box>
               {/* end header */}
-              <MaterialReactTable
+              {courseAnnouncements
+                .sort((a, b) => b.Date - a.Date)
+                .map((announcement, key) => (
+                  <Card key={key} variant="outlined" sx={{ boxShadow: "none", mt: 2, p: 2 }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" } }}>
+                      <Typography variant="subtitle1" sx={{}}>
+                        {announcement.Title}
+                      </Typography>
+                      <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
+                        <Typography
+                          variant="button"
+                          onClick={() => {
+                            var endpt = category == "announcement" ? `edit/${announcement.id}` : `announcement/edit/${announcement.id}`;
+                            navigate(endpt);
+                          }}>
+                          <Link underline="hover">Edit</Link>
+                        </Typography>
+                        <Typography
+                          variant="button"
+                          onClick={() => {
+                            setDeleteAnnouncementModal(true);
+                            setSelectedAnnouncement(announcement.id);
+                          }}>
+                          <Link underline="hover">Delete</Link>
+                        </Typography>
+                      </Stack>
+                    </Box>
+                    <Typography variant="subsubtitle" sx={{ mb: 1 }}>
+                      Posted {announcement.formattedDate}
+                    </Typography>
+                    <Typography variant="body2">{announcement.Content}</Typography>
+                  </Card>
+                ))}
+              {/* <MaterialReactTable
                 columns={courseAnnouncementColumns}
                 data={courseAnnouncements}
                 enableHiding={false}
@@ -670,7 +703,7 @@ const TeacherCourse = ({ userInfo }) => {
                   density: "compact",
                   sorting: [{ id: "date", desc: true }],
                 }}
-                renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
+                renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable> */}
             </Card>
             {/* course materials ========================================================================================================================*/}
             <Box>
