@@ -76,7 +76,7 @@ const NewHomeworkForm = () => {
     const newHomework = {
       homeworkTitle: homeworkTitle,
       homeworkDescription: homeworkDescription,
-      homeworkDueDate: value.toISOString(),
+      homeworkDueDate: value.add(1, "day").toISOString(),
       homeworkAssignedDate: new Date().toISOString(),
       courseId: courseid,
     };

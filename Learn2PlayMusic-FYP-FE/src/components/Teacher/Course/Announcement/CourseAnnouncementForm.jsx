@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 import Loader from "../../../utils/Loader";
+import ViewCourseAnnouncementForm from "./ViewCourseAnnouncement";
 
 export default function CourseAnnouncementForm({ userInfo }) {
   const navigate = useNavigate();
@@ -125,7 +126,7 @@ export default function CourseAnnouncementForm({ userInfo }) {
               return;
             } else if (!response.ok) {
               toast.error("Something went wrong!");
-              navigate("/teacher/course/${courseid}/announcement");
+              navigate(`/teacher/course/${courseid}/announcement`);
               return;
             }
             return response.json();
@@ -145,7 +146,9 @@ export default function CourseAnnouncementForm({ userInfo }) {
     }
     fetchData().then(() => {});
   }, []);
-
+  if (type == "view") {
+    return <ViewCourseAnnouncementForm userInfo={userInfo}></ViewCourseAnnouncementForm>;
+  }
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
