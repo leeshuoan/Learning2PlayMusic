@@ -152,12 +152,12 @@ const App = () => {
               <Route path="material/view/:materialid?" element={<ViewCourseMaterialsForm userInfo={userInfo} />} />
               <Route path="material/new" element={<NewCourseMaterialsForm userInfo={userInfo} />} />
               <Route path="material/edit/:materialid?" element={<EditCourseMaterialsForm userInfo={userInfo} />} />
+
               <Route path="homework/new" element={<NewHomeworkForm userInfo={userInfo} />} />
-              <Route path="homework/:homeworkId">
-                <Route index element={<TeacherHomeworkOverview userInfo={userInfo} />} />
-                <Route path="edit" element={<EditHomeworkForm userInfo={userInfo} />} />
-                <Route path="grade/:userId" element={<TeacherGradeHomework userInfo={userInfo} />} />
-              </Route>
+              <Route path="homework/view/:homeworkId" element={<TeacherHomeworkOverview userInfo={userInfo} />} />
+              <Route path="homework/edit/:homeworkId" element={<EditHomeworkForm userInfo={userInfo} />} />
+              <Route path="homework/grade/:homeworkId/:userId" element={<TeacherGradeHomework userInfo={userInfo} />} />
+
               <Route path="report/:userId" element={<BaseProgressReport userInfo={userInfo} />} />
               <Route path="report/:userId/:reportId" element={<BaseProgressReport />} />
               <Route path="quiz/new" element={<NewQuiz userInfo={userInfo} />} />
@@ -193,6 +193,6 @@ const App = () => {
       </ThemeProvider>
     </div>
   );
-}
+};
 
 export default App;

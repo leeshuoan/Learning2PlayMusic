@@ -28,8 +28,8 @@ export const handleCourseHomework = async (getHomeworkAPI, setCourseHomework) =>
   const homeworkData = data.map((homework) => {
     const id = homework.SK.split("Homework#")[1];
     const dueDate = new Date(homework.HomeworkDueDate);
-    const formattedDueDate = `${dueDate.toLocaleDateString()} `;
-    return { ...homework, id, HomeworkDueDate: formattedDueDate };
+    // const formattedDueDate = `${dueDate.toLocaleDateString()} `;// change to pass date obj so that react table wil sort!
+    return { ...homework, id, HomeworkDueDate: dueDate };
   });
   setCourseHomework(homeworkData);
 };

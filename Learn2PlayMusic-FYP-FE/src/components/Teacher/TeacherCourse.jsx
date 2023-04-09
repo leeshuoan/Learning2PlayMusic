@@ -1,8 +1,10 @@
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import EditIcon from "@mui/icons-material/Edit";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, Container, Divider, Grid, Link, MenuItem, Stack, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, Container, Grid, IconButton, Link, MenuItem, Stack, Tooltip, Typography } from "@mui/material";
 import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -63,62 +65,16 @@ const TeacherCourse = ({ userInfo }) => {
   const getHomeworkAPI = request(`/course/homework?courseId=${courseid}`);
   const getQuizAPI = request(`/course/quiz?courseId=${courseid}`);
   const getClassListAPI = request(`/course/classlist?courseId=${courseid}`);
-  // material table configs
-  const courseMaterialsColumns = useMemo(
-    () => [
-      {
-        accessorKey: "MaterialTitle",
-        id: "title",
-        header: "Title",
-        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/material/view/${row.original.id}`)}>{row.original.MaterialTitle}</Link>,
-      },
-      {
-        accessorKey: "MaterialType",
-        id: "type",
-        header: "Type",
-        size: 50, //SMALL
-      },
-      {
-        accessorKey: "MaterialLessonDate",
-        id: "lessonDate",
-        header: "Lesson Date",
-        size: 100, //medium
-      },
-      {
-        accessorKey: "Actions",
-        id: "actions",
-        header: "Actions",
-        Cell: ({ cell, row }) => (
-          <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
-            <Typography
-              variant="button"
-              onClick={() => {
-                navigate(`/teacher/course/${courseid}/material/edit/${row.original.id}`);
-              }}>
-              <Link underline="hover">Edit</Link>
-            </Typography>
-            <Typography
-              variant="button"
-              onClick={() => {
-                setSelectedMaterial(row.original.id);
-                setDeleteMaterialModal(true);
-              }}>
-              <Link underline="hover">Delete</Link>
-            </Typography>
-          </Stack>
-        ),
-      },
-    ],
-    [course]
-  );
-
+  // announcement table configs
   const courseAnnouncementColumns = useMemo(
     () => [
       {
         accessorKey: "Title",
         id: "title",
+        size: 50, //SMALL
+
         header: "Title",
-        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/announcement/view/${row.original.SK}`)}>{row.original.Title}</Link>,
+        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/announcement/view/${row.original.id}`)}>{row.original.Title}</Link>,
       },
       {
         accessorKey: "Date",
@@ -145,29 +101,231 @@ const TeacherCourse = ({ userInfo }) => {
         id: "actions",
         header: "Actions",
         Cell: ({ cell, row }) => (
-          <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
-            <Typography
-              variant="button"
-              onClick={() => {
-                navigate(`/teacher/course/${courseid}/announcement/edit/${row.original.SK}`);
-              }}>
-              <Link underline="hover">Edit</Link>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "2px",
+            }}>
+            <Tooltip title="Edit" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  navigate(`/teacher/course/${courseid}/announcement/edit/${row.original.id}`);
+                }}>
+                <EditIcon></EditIcon>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete" placement="bottom">
+              <IconButton
+                color="error"
+                onClick={() => {
+                  setSelectedAnnouncement(row.original.id);
+                  setDeleteAnnouncementModal(true);
+                }}>
+                <DeleteForeverIcon></DeleteForeverIcon>
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
+    ],
+    []
+  );
+  // material table configs
+  const courseMaterialsColumns = useMemo(
+    () => [
+      {
+        accessorKey: "MaterialTitle",
+        id: "title",
+        size: 50, //SMALL
+        header: "Title",
+        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/material/view/${row.original.id}`)}>{row.original.MaterialTitle}</Link>,
+      },
+      {
+        accessorKey: "MaterialType",
+        id: "type",
+        header: "Type",
+        size: 50, //SMALL
+      },
+      {
+        accessorKey: "MaterialLessonDate",
+        id: "lessonDate",
+        header: "Lesson Date",
+        size: 50, //SMALL
+      },
+      {
+        accessorKey: "Actions",
+        id: "actions",
+        header: "Actions",
+        Cell: ({ cell, row }) => (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "2px",
+            }}>
+            <Tooltip title="Edit" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  navigate(`/teacher/course/${courseid}/material/edit/${row.original.id}`);
+                }}>
+                <EditIcon></EditIcon>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete" placement="bottom">
+              <IconButton
+                color="error"
+                onClick={() => {
+                  setSelectedMaterial(row.original.id);
+                  setDeleteMaterialModal(true);
+                }}>
+                <DeleteForeverIcon></DeleteForeverIcon>
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
+    ],
+    []
+  );
+  // quiz table configs
+  const courseQuizColumns = useMemo(
+    () => [
+      {
+        accessorKey: "QuizTitle",
+        id: "quizTitle",
+        header: "Title",
+        size: 50, //SMALL
+
+        Cell: ({ cell, row }) => (
+          <Tooltip title="View Quiz Summary" placement="bottom">
+            <Link onClick={() => navigate(`/teacher/course/${courseid}/quiz/summary/${row.original.id}`)}>{row.original.QuizTitle}</Link>
+          </Tooltip>
+        ),
+      },
+      {
+        accessorKey: "QuizDescription",
+        id: "quizDescription",
+        header: "Description",
+        size: 100,
+      },
+      {
+        accessorKey: "QuizMaxAttempts",
+        id: "quizMaxAttempts",
+        header: "Maximum Attempts",
+        width: 20,
+      },
+      {
+        accessorKey: "",
+        id: "actions",
+        header: "Actions",
+        Cell: ({ cell, row }) => (
+          <Stack direction="row" spacing={{ xs: 1, sm: 2 }}>
+            <Typography variant="button">
+              <Link
+                onClick={() => {
+                  setSelectedQuiz(quiz);
+                  setVisibilityQuizModal(true);
+                }}>
+                <Box sx={{ display: row.original.Visibility ? "flex" : "none", alignItems: "center" }}>
+                  <IconButton color="success">
+                    <Tooltip title="Hide?" placement="bottom">
+                      <VisibilityIcon />
+                    </Tooltip>
+                  </IconButton>
+                </Box>
+                <Box sx={{ display: row.original.Visibility ? "none" : "flex", alignItems: "center" }}>
+                  <IconButton color="error">
+                    <Tooltip title="Show?" placement="bottom">
+                      <VisibilityOffIcon />
+                    </Tooltip>
+                  </IconButton>
+                </Box>
+              </Link>
             </Typography>
-            <Typography
-              variant="button"
-              onClick={() => {
-                setSelectedAnnouncement(row.original.SK);
-                setDeleteAnnouncementModal(true);
-              }}>
-              <Link underline="hover">Delete</Link>
-            </Typography>
+            <Tooltip title="Edit" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  navigate(`/teacher/course/${courseid}/quiz/edit/${row.original.id}`);
+                }}>
+                <EditIcon></EditIcon>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete" placement="bottom">
+              <IconButton
+                color="error"
+                onClick={() => {
+                  setSelectedQuiz(row.original);
+                  setDeleteQuizModal(true);
+                }}>
+                <DeleteForeverIcon></DeleteForeverIcon>
+              </IconButton>
+            </Tooltip>
           </Stack>
         ),
       },
     ],
     []
   );
-
+  // homework table configs
+  const courseHomeworkColumns = useMemo(
+    () => [
+      {
+        accessorKey: "HomeworkTitle",
+        id: "title",
+        header: "Title",
+        size: 50, //SMALL
+        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/homework/view/${row.original.id}`)}>{row.original.HomeworkTitle}</Link>,
+      },
+      {
+        accessorKey: "HomeworkDueDate",
+        id: "date",
+        header: "Due Date",
+        size: 50, //medium
+        sortingFn: "datetime",
+        Cell: ({ cell, row }) => <Typography variant="body2">{new Date(row.original.HomeworkDueDate).toLocaleDateString()}</Typography>,
+      },
+      {
+        accessorKey: "HomeworkDescription",
+        id: "description",
+        header: "Description",
+      },
+      {
+        accessorKey: "",
+        id: "actions",
+        header: "Actions",
+        Cell: ({ cell, row }) => (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "right",
+              gap: "2px",
+            }}>
+            <Tooltip title="Edit" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  navigate(`/teacher/course/${courseid}/homework/edit/${row.original.id}`);
+                }}>
+                <EditIcon></EditIcon>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete" placement="bottom">
+              <IconButton
+                color="error"
+                onClick={() => {
+                  setSelectedHomework(row.original);
+                  setDeleteHomeworkModal(true);
+                }}>
+                <DeleteForeverIcon></DeleteForeverIcon>
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+      },
+    ],
+    []
+  );
+  // class list table configs
   const classListColumns = useMemo(
     () => [
       {
@@ -347,7 +505,7 @@ const TeacherCourse = ({ userInfo }) => {
   useEffect(() => {
     async function fetchData() {
       try {
-        handleCourseInfo(getCourseAPI, setCourse);
+        await handleCourseInfo(getCourseAPI, setCourse);
         switch (category) {
           case "classlist":
             console.log("classlist");
@@ -356,6 +514,7 @@ const TeacherCourse = ({ userInfo }) => {
           case "announcement":
             console.log("announcement");
             await handleCourseAnnouncements(getCourseAnnouncementsAPI, setCourseAnnouncements);
+            console.log(courseAnnouncements);
             break;
           case "material":
             console.log("material");
@@ -368,6 +527,7 @@ const TeacherCourse = ({ userInfo }) => {
           case "homework":
             console.log("homework");
             await handleCourseHomework(getHomeworkAPI, setCourseHomework);
+            console.log(courseHomework);
             break;
           default:
             await handleCourseAnnouncements(getCourseAnnouncementsAPI, setCourseAnnouncements);
@@ -681,7 +841,7 @@ const TeacherCourse = ({ userInfo }) => {
                   <Button
                     variant="contained"
                     onClick={() => {
-                      navigate("new");
+                      navigate(`/teacher/course/${courseid}/material/new`);
                     }}>
                     New Course Material
                   </Button>
@@ -700,76 +860,13 @@ const TeacherCourse = ({ userInfo }) => {
                   <Button
                     variant="contained"
                     onClick={() => {
-                      navigate("new");
+                      navigate(`/teacher/course/${courseid}/quiz/new`);
                     }}>
                     New Quiz
                   </Button>
                 </Box>
                 {/* end header */}
-                {courseQuiz.map((quiz, key) => (
-                  <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" } }}>
-                      <Typography variant="h6" sx={{ mb: 1 }}>
-                        {quiz.QuizTitle}
-                      </Typography>
-                      <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={{ xs: 1, sm: 2 }}>
-                        <Typography variant="button">
-                          <Link
-                            underline="hover"
-                            sx={{ color: quiz.Visibility ? "success.dark" : "error.dark", "&:hover": { underline: quiz.Visibility ? "success.dark" : "error.dark" } }}
-                            onClick={() => {
-                              setSelectedQuiz(quiz);
-                              setVisibilityQuizModal(true);
-                            }}>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <Box sx={{ display: quiz.Visibility ? "flex" : "none", alignItems: "center" }}>
-                                <VisibilityIcon fontSize="inherit" /> &nbsp; Shown
-                              </Box>
-                              <Box sx={{ display: quiz.Visibility ? "none" : "flex", alignItems: "center" }}>
-                                <VisibilityOffIcon fontSize="inherit" /> &nbsp; Hidden
-                              </Box>
-                            </Box>
-                          </Link>
-                        </Typography>
-                        <Typography variant="button">
-                          <Link
-                            underline="hover"
-                            onClick={() => {
-                              navigate(`edit/${quiz.id}`);
-                            }}>
-                            Edit
-                          </Link>
-                        </Typography>
-                        <Typography variant="button">
-                          <Link
-                            underline="hover"
-                            onClick={() => {
-                              setSelectedQuiz(quiz);
-                              setDeleteQuizModal(true);
-                            }}>
-                            Delete
-                          </Link>
-                        </Typography>
-                      </Stack>
-                    </Box>
-                    <Typography variant="body1" sx={{ mt: 1, mb: 2 }}>
-                      {quiz.QuizDescription}
-                    </Typography>
-                    <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
-                      <Typography variant="body2" sx={{ mt: 1 }}>
-                        Max attempts allowed: {quiz.QuizMaxAttempts}
-                      </Typography>
-                      <Button
-                        variant="outlined"
-                        sx={{ color: "primary.main" }}
-                        onClick={() => {
-                          navigate(`summary/${quiz.id}`);
-                        }}>
-                        View Quiz Summary
-                      </Button>
-                    </Box>
-                  </Card>
-                ))}
+                <MaterialReactTable columns={courseQuizColumns} data={courseQuiz} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
               </Card>
             </Box>
             {/* homework ==================================================================================================== */}
@@ -787,66 +884,7 @@ const TeacherCourse = ({ userInfo }) => {
                   </Button>
                 </Box>
                 {/* end header */}
-                <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
-                  <Grid item xs={4}>
-                    <Typography variant="subtitle2">HOMEWORK TITLE</Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
-                      DUE DATE
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
-                      ACTIONS
-                    </Typography>
-                  </Grid>
-                </Grid>
-                {courseHomework.map((homework, key) => (
-                  <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
-                    <Grid container>
-                      <Grid item xs={12} sm={4}>
-                        <Typography variant="body1" sx={{ color: "primary.main" }}>
-                          <Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkTitle}</Link>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
-                          {homework.HomeworkDueDate}
-                        </Typography>
-
-                        <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
-                          Due Date: {homework.HomeworkDueDate}
-                        </Typography>
-                      </Grid>
-
-                      <Grid item xs={12} sm={4}>
-                        <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2} sx={{ justifyContent: "center", alignItems: "center" }}>
-                          <Typography
-                            variant="button"
-                            onClick={() => {
-                              navigate(`${homework.id}/edit`);
-                            }}>
-                            <Link underline="hover">Edit</Link>
-                          </Typography>
-                          <Typography
-                            variant="button"
-                            // onclick={() => {
-                          >
-                            <Link
-                              underline="hover"
-                              onClick={() => {
-                                setSelectedHomework(homework);
-                                setDeleteHomeworkModal(true);
-                              }}>
-                              Delete
-                            </Link>
-                          </Typography>
-                        </Stack>
-                      </Grid>
-                    </Grid>
-                  </Card>
-                ))}
+                <MaterialReactTable columns={courseHomeworkColumns} data={courseHomework} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
               </Card>
             </Box>
             {/* class list ==================================================================================================== */}
