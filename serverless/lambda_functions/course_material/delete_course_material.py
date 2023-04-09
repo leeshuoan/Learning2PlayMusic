@@ -9,13 +9,14 @@ from global_functions.exists_in_db import *
 
 s3 = boto3.client('s3')
 bucket_name = os.environ['MATERIAL_ATTACHMENT_BUCKET_NAME']
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
 
 
 def lambda_handler(event, context):
 
     try:
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
+
         request_body: dict = json.loads(event['body'])
 
         # VALIDATION

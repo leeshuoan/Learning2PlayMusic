@@ -1,4 +1,3 @@
-import json
 import sys
 
 import boto3
@@ -6,6 +5,8 @@ from global_functions.cognito import *
 from global_functions.exists_in_db import *
 from global_functions.responses import *
 
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
 
 def lambda_handler(event, context):
 
@@ -13,8 +14,7 @@ def lambda_handler(event, context):
 
         courseId = event['queryStringParameters']['courseId']
 
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
+
 
         # VALIDATION
         # check if <courseId> exists in database

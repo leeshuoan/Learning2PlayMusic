@@ -4,12 +4,13 @@ from global_functions.responses import *
 from datetime import datetime
 import dateutil.tz
 
+dynamodb = boto3.resource('dynamodb')
+table_name = "LMS"
+table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
 
-    dynamodb = boto3.resource('dynamodb')
-    table_name = "LMS"
-    table = dynamodb.Table(table_name)
+
     sg_timezone = dateutil.tz.gettz('Asia/Singapore')
     date = datetime.now(tz=sg_timezone).strftime("%Y-%m-%dT%H:%M:%S")
 

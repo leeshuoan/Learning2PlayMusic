@@ -6,14 +6,12 @@ import jwt
 
 from global_functions.responses import *
 
-
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
 class Encoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, decimal.Decimal):
             return float(obj)
-
-# Get all quizzes by courseid
-
 
 def lambda_handler(event, context):
 
@@ -25,8 +23,7 @@ def lambda_handler(event, context):
 
     res = {}
     try:
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
+
 
         courseId = queryStringParameters["courseId"]
 
@@ -50,7 +47,6 @@ def lambda_handler(event, context):
         return res
 
     except Exception as e:
-        # print(f".......... 🚫 UNSUCCESSFUL: Failed request for Course ID: {courseId} 🚫 ..........")
         exception_type, exception_object, exception_traceback = sys.exc_info()
 
         line_number = exception_traceback.tb_lineno

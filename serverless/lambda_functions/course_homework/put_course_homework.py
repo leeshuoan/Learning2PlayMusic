@@ -5,11 +5,11 @@ import uuid
 from global_functions.responses import *
 
 
-def lambda_handler(event, context):
+dynamodb = boto3.resource('dynamodb')
+table_name = "LMS"
+table = dynamodb.Table(table_name)
 
-    dynamodb = boto3.resource('dynamodb')
-    table_name = "LMS"
-    table = dynamodb.Table(table_name)
+def lambda_handler(event, context):
 
     try:
         request_body = json.loads(event['body'])

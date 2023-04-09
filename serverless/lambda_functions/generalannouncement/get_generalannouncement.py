@@ -4,6 +4,8 @@ import boto3
 from global_functions.responses import *
 from global_functions.exists_in_db import *
 
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
 # Get all general announcement
 def lambda_handler(event, context):
   
@@ -21,9 +23,6 @@ def lambda_handler(event, context):
             # check if <dateId> exists in database
             if not id_exists("GeneralAnnouncements", "Date", dateId):
                 return response_404("dateId does not exist in database")
-
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
 
         response = table.query(
             KeyConditionExpression="PK= :PK AND begins_with(SK, :SK)",

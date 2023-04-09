@@ -8,13 +8,13 @@ from global_functions.exists_in_db import *
 
 
 s3 = boto3.client('s3')
-
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
 
 def lambda_handler(event, context):
 
     try:
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
+
         request_body: dict = json.loads(event['body'])
 
         course_id = request_body['courseId']

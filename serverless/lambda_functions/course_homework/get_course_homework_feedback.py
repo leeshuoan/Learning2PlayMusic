@@ -7,6 +7,9 @@ from global_functions.responses import *
 from global_functions.get_presigned_url import get_presigned_url
 from global_functions.cognito import *
 
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
+
 
 class Encoder(json.JSONEncoder):
     def default(self, obj):
@@ -19,8 +22,7 @@ def lambda_handler(event, context):
     queryStringParameters: dict = event["queryStringParameters"]
     res = {}
     try:
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
+
         course_id = queryStringParameters["courseId"]
 
         if "studentId" in queryStringParameters:
@@ -105,7 +107,8 @@ def get_all_student_homework(course_id, queryStringParameters, table):
                 })
             if "Item" not in response:
                 continue
-            response['Item']['StudentName'] = get_student_name(student_id) # add student's name to the item
+            response['Item']['StudentName'] = get_student_name(
+                student_id)  # add student's name to the item
             items.append(response["Item"])
         for item in items:
             if item['HomeworkAttachment'] != "":
@@ -137,6 +140,7 @@ def get_all_student_homework(course_id, queryStringParameters, table):
     res["body"] = json.dumps(items, cls=Encoder)
 
     return res
+
 
 def get_student_name(student_id):
     # get all students from Cognito

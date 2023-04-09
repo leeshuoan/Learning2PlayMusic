@@ -6,11 +6,12 @@ from datetime import datetime, timezone
 from global_functions.responses import *
 
 
+dynamodb = boto3.resource('dynamodb')
+table_name = "LMS"
+table = dynamodb.Table(table_name)
+
 def lambda_handler(event, context):
 
-    dynamodb = boto3.resource('dynamodb')
-    table_name = "LMS"
-    table = dynamodb.Table(table_name)
     random_uuid = str(uuid.uuid4())[:8]
 
     try:

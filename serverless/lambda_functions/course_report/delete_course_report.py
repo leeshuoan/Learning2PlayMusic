@@ -1,16 +1,17 @@
 import sys
 import boto3
-import json
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
 
 
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
+
 def lambda_handler(event, context):
 
     try:
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
+
 
         courseId = event['queryStringParameters']['courseId']
         studentId = event['queryStringParameters']['studentId']

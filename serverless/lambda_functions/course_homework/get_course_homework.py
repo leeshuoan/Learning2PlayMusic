@@ -7,6 +7,9 @@ import decimal
 
 from global_functions.responses import *
 
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
+
 
 class Encoder(json.JSONEncoder):
     def default(self, obj):
@@ -19,8 +22,6 @@ def lambda_handler(event, context):
     queryStringParameters: dict = event["queryStringParameters"]
     res = {}
     try:
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
 
         courseId = queryStringParameters["courseId"]
 

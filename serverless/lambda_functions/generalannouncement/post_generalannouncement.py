@@ -9,6 +9,8 @@ from global_functions.exists_in_db import *
 from global_functions.responses import *
 from global_functions.sns import *
 
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
 
 def lambda_handler(event, context):
 
@@ -16,8 +18,6 @@ def lambda_handler(event, context):
         sgTimezone = dateutil.tz.gettz("Asia/Singapore")
         dateId = datetime.now(tz=sgTimezone).strftime("%Y-%m-%dT%H:%M:%S")
 
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
         request_body = json.loads(event["body"])
 
         if "content" not in request_body:

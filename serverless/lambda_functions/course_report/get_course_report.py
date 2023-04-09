@@ -5,12 +5,13 @@ import json
 from global_functions.responses import *
 from global_functions.exists_in_db import *
 
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
+
 
 def lambda_handler(event, context):
 
     try:
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
 
         courseId = event['queryStringParameters']['courseId']
         studentId = event['queryStringParameters']['studentId']
@@ -23,10 +24,9 @@ def lambda_handler(event, context):
             sk_name = "Student#" + studentId + "Report"
             if not combination_id_exists("Course", courseId, sk_name, reportId):
                 return response_404("reportId is not registered with the course.")
-            
+
             sortKey = "Student#" + studentId + "Report#" + reportId
 
-        
         # VALIDATION
         # check if <courseId> exists in database
         if not id_exists("Course", "Course", courseId):
@@ -36,15 +36,14 @@ def lambda_handler(event, context):
         if not combination_id_exists("Student", studentId, "Course", courseId):
             return response_404("studentId is not registered with the course. To do so, please use /user/course to register")
 
-
-        # get report(s) with evaluations for student 
+        # get report(s) with evaluations for student
         response = table.query(
             KeyConditionExpression="PK = :PK AND begins_with(SK, :SK)",
             ExpressionAttributeValues={
                 ":PK": f"Course#{courseId}",
                 ":SK": f"{sortKey}"
             })
-        
+
         print("response")
         print(response)
 
@@ -65,4 +64,3 @@ def lambda_handler(event, context):
         print("❗Error: ", e)
 
         return response_500(e)
-

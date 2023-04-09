@@ -10,7 +10,6 @@ table_name = "LMS"
 table = dynamodb.Table(table_name)
 sg_timezone = dateutil.tz.gettz('Asia/Singapore')
 date = datetime.now(tz=sg_timezone).strftime("%Y-%m-%dT%H:%M:%SZ")
-print("date generated: ", date)
 
 def lambda_handler(event, context) :
     try:

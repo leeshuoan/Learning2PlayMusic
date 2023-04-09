@@ -5,14 +5,14 @@ from global_functions.responses import *
 from global_functions.exists_in_db import *
 
 
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
+
+
 def lambda_handler(event, context):
     res = {}
     try:
         request_body = json.loads(event['body'])
-
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
-
         course_id = request_body['courseId']
         quiz_id = request_body['quizId']
 

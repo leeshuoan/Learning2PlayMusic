@@ -7,6 +7,8 @@ from global_functions.exists_in_db import *
 from global_functions.responses import *
 from global_functions.sns import *
 
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
 
 def lambda_handler(event, context):
 
@@ -15,8 +17,7 @@ def lambda_handler(event, context):
         if not id_exists("GeneralAnnouncements", "Date", dateId):
             return response_404("dateId does not exist in database")
 
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
+
 
         request_body = json.loads(event["body"])
         if "content" not in request_body:

@@ -9,10 +9,13 @@ from global_functions.responses import *
 from global_functions.exists_in_db import *
 
 
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("LMS")
 class Encoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, decimal.Decimal):
             return float(obj)
+
 
 
 def lambda_handler(event, context):
@@ -21,14 +24,12 @@ def lambda_handler(event, context):
     queryStringParameters: dict = event["queryStringParameters"]
 
     try:
-        dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table("LMS")
+
 
         courseId = queryStringParameters["courseId"]
         quizId = queryStringParameters["quizId"]
 
         # if specific questionId is specified
-        # ADD IN FILTERS 
         if "questionId" in queryStringParameters.keys():
             questionId = queryStringParameters["questionId"]
             response = table.get_item(
