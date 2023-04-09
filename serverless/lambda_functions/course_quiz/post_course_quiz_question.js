@@ -13,13 +13,15 @@ async function lambda_handler(event, context) {
   try {
     let questionCount = 0;
     const requestBody = JSON.parse(event.body);
+    let courseId;
+    let quizId;
 
     for (let question of requestBody) {
       const randomUuid = uuidv4().slice(0, 8);
 
       questionCount++;
-      const courseId = question.courseId;
-      const quizId = question.quizId;
+      courseId = question.courseId;
+      quizId = question.quizId;
       const questionOptionType = question.questionOptionType;
       const questionText = question.question;
       const options = question.options;
@@ -52,7 +54,7 @@ async function lambda_handler(event, context) {
         throw new Error("answer must be one of the options");
       }
 
-      const params = {
+      const questionParams = {
         TableName: "LMS",
         Item: {
           PK: `Course#${courseId}`,
@@ -68,10 +70,23 @@ async function lambda_handler(event, context) {
       };
 
       if ("questionImage" in question && question["questionImage"] != "") {
-        params.Item.QuestionImage = s3Params.Bucket + "/" + s3Params.Key;
+        questionParams.Item.QuestionImage = s3Params.Bucket + "/" + s3Params.Key;
       }
-      await dynamodb.put(params).promise();
+      await dynamodb.put(questionParams).promise();
     }
+
+    const quizParams = {
+      TableName: "LMS",
+      Key: {
+        PK: `Course#${courseId}`,
+        SK: `Quiz#${quizId}`
+      },
+      UpdateExpression: 'SET QuestionCount = QuestionCount + :val',
+      ExpressionAttributeValues: {
+        ':val': questionCount
+      }
+    }
+    await dynamodb.update(quizParams).promise();
 
     return response_200(`Successfully inserted ${questionCount} Question(s)!`);
   } catch (e) {

@@ -30,7 +30,7 @@ async function lambda_handler(event, context) {
 
     checkNumQuestions(courseId, quizId);
 
-    const params = {
+    const questionParams = {
       TableName: "LMS",
       Key: {
         PK: `Course#${courseId}`,
@@ -44,7 +44,22 @@ async function lambda_handler(event, context) {
       return response_400(`Item with courseId:${courseId} quizId:${quizId} questionId:${questionId} not found`);
     }
 
-    await dynamodb.delete(params).promise();
+    await dynamodb.delete(questionParams).promise();
+
+    const quizParams = {
+      TableName: "LMS",
+      Key: {
+        PK: `Course#${courseId}`,
+        SK: `Quiz#${quizId}`
+      },
+      UpdateExpression: 'SET QuestionCount = QuestionCount - :val',
+      ExpressionAttributeValues: {
+        ':val': 1
+      }
+    }
+    await dynamodb.update(quizParams).promise();
+
+    return response_200(`Successfully inserted ${questionCount} Question(s)!`);
 
     return response_200(`Successfully deleted item with courseId:${courseId} quizId:${quizId} questionId:${questionId}!`);
 

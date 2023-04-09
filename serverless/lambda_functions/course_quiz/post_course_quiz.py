@@ -53,7 +53,8 @@ def lambda_handler(event, context):
                     "QuizMaxAttempts": quiz_max_attempts,
                     "Visibility": visibility,
                     "QuizAttempt": 0,
-                    "QuizScore": 0
+                    "QuizScore": 0,
+                    "QuestionCount": 0
                 }
             )
 
