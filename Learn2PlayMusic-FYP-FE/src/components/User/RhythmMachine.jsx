@@ -6,7 +6,8 @@ const RhythmMachine = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useState(120);
   const [sequence, setSequence] = useState([false, false, false, false]);
-  const colors = ["#576CBC", "#19376D", "0B2447", "#262A56"];
+  const purple = "#576CBC";
+  const grey = "#E5E5E5";
   const synth = new Tone.Synth().toDestination();
 
   const handleToggleNote = (index) => {
@@ -27,7 +28,7 @@ const RhythmMachine = () => {
   const steps = new Tone.Sequence(
     (time, index) => {
       if (sequence[index]) {
-        synth.triggerAttackRelease(["C4", "D#4", "F#4"][index], "16n", time);
+        synth.triggerAttackRelease(["C4", "D#4", "F#4"][index], "60n", time);
       }
     },
     [0, 1, 2, 3],
@@ -60,8 +61,8 @@ const RhythmMachine = () => {
         </Grid>
         {sequence.map((step, index) => (
           <Grid item xs={12} sm={12} md={5} lg={3} xl={3}>
-            <Button key={index} variant="contained" onClick={() => handleToggleNote(index)} sx={{ width: "50%", height: "100px", m: 3, backgroundColor: colors[index] }}>
-              {step ? "X" : "O"}
+            <Button key={index} variant="contained" onClick={() => handleToggleNote(index)} sx={{ width: "50%", height: "100px", m: 3, backgroundColor: step ? purple : grey }}>
+
             </Button>
           </Grid>
         ))}

@@ -8,6 +8,7 @@ import MaterialReactTable from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../utils/Loader";
+import RhythmMachine from "./RhythmMachine";
 
 const UserCourse = ({ userInfo }) => {
   const [open, setOpen] = useState(true);
@@ -442,7 +443,9 @@ const UserCourse = ({ userInfo }) => {
             </Box>
           </Box>
         </Grid>
+
       </Grid>
+      <RhythmMachine></RhythmMachine>
       <Loader open={open} />
     </Container>
   );
