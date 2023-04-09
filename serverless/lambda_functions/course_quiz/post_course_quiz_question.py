@@ -19,7 +19,7 @@ def lambda_handler(event, context):
         quiz_id = ""
         if not isinstance(request_body, list):
             raise TypeError("Request body must be an array of questions")
-        
+
         for question in request_body:
             random_uuid = str(uuid4())[:8]
 
@@ -67,7 +67,8 @@ def lambda_handler(event, context):
                 }
 
                 uploaded_image = s3.put_object(**s3_params)
-                question_item['QuestionImage'] = s3_params['Bucket'] + "/" + s3_params['Key']
+                question_item['QuestionImage'] = s3_params['Bucket'] + \
+                    "/" + s3_params['Key']
 
             table.put_item(
                 Item=question_item
@@ -78,8 +79,8 @@ def lambda_handler(event, context):
                 'PK': f'Course#{course_id}',
                 'SK': f'Quiz#{quiz_id}'
             },
-            UpdateExpression = "SET QuestionCount = QuestionCount + :val",
-            ExpressionAttributeValues = {
+            UpdateExpression="SET QuestionCount = QuestionCount + :val",
+            ExpressionAttributeValues={
                 ':val': question_count
             }
         )
