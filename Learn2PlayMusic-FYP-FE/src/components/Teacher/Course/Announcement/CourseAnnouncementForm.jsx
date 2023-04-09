@@ -114,6 +114,7 @@ export default function CourseAnnouncementForm({ userInfo }) {
             teacher: res[0].TeacherName,
           };
           setCourse(courseData);
+          setOpen(false);
         });
       if (type == "edit") {
         fetch(`${endpoint}?courseId=${courseid}&announcementId=${announcementId}`, { method: "GET", headers: headers })
@@ -134,15 +135,15 @@ export default function CourseAnnouncementForm({ userInfo }) {
             setOriginalAnnouncement({ title: res[0].Title, content: res[0].Content });
             setTitle(res[0].Title);
             setContent(res[0].Content);
+            setOpen(false);
           })
           .catch((error) => {
             console.log(error);
+            setOpen(false);
           });
       }
     }
-    fetchData().then(() => {
-      setOpen(false);
-    });
+    fetchData().then(() => {});
   }, []);
 
   return (
@@ -212,8 +213,8 @@ export default function CourseAnnouncementForm({ userInfo }) {
             </Container>
           </Box>
         </Card>
+        <Loader open={open} />
       </Container>
-      <Loader open={open} />
     </>
   );
 }

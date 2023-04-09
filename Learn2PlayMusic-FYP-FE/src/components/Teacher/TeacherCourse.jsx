@@ -153,6 +153,7 @@ const TeacherCourse = ({ userInfo }) => {
       if (response.status === 200) {
         setCourseAnnouncements(courseAnnouncements.filter((announcement) => announcement.id !== selectedAnnouncement));
         // reset
+        toast.success("Announcement deleted successfully");
         setSelectedAnnouncement(null);
         setDeleteAnnouncementModal(false);
         setRefreshUseEffect(!refreshUseEffect);
