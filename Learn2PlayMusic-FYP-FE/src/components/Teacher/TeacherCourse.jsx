@@ -1,4 +1,3 @@
-import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -595,13 +594,12 @@ const TeacherCourse = ({ userInfo }) => {
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <Typography variant="h5">Class Announcements</Typography>
                 <Button
-                  startIcon={<AddIcon />}
                   variant="contained"
                   onClick={() => {
                     var endpt = category == "announcement" ? "new" : "announcement/new";
                     navigate(endpt);
                   }}>
-                  New
+                  New Announcement
                 </Button>
               </Box>
               {/* end header */}
@@ -644,12 +642,11 @@ const TeacherCourse = ({ userInfo }) => {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                   <Typography variant="h5">Class Materials</Typography>
                   <Button
-                    startIcon={<AddIcon />}
                     variant="contained"
                     onClick={() => {
                       navigate("new");
                     }}>
-                    New
+                    New Course Material
                   </Button>
                 </Box>
                 {/* end header */}
@@ -664,12 +661,11 @@ const TeacherCourse = ({ userInfo }) => {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                   <Typography variant="h5">Quizzes</Typography>
                   <Button
-                    startIcon={<AddIcon />}
                     variant="contained"
                     onClick={() => {
                       navigate("new");
                     }}>
-                    New
+                    New Quiz
                   </Button>
                 </Box>
                 {/* end header */}
@@ -728,7 +724,8 @@ const TeacherCourse = ({ userInfo }) => {
                         Max attempts allowed: {quiz.QuizMaxAttempts}
                       </Typography>
                       <Button
-                        variant="contained"
+                        variant="outlined"
+                        sx={{color:"primary.main"}}
                         onClick={() => {
                           navigate(`summary/${quiz.id}`);
                         }}>
@@ -746,12 +743,11 @@ const TeacherCourse = ({ userInfo }) => {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                   <Typography variant="h5">Homework</Typography>
                   <Button
-                    startIcon={<AddIcon />}
                     variant="contained"
                     onClick={() => {
                       navigate(`new`);
                     }}>
-                    New
+                    New Homework
                   </Button>
                 </Box>
                 {/* end header */}
