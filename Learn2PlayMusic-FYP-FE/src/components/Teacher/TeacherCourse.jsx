@@ -112,6 +112,62 @@ const TeacherCourse = ({ userInfo }) => {
     [course]
   );
 
+  const courseAnnouncementColumns = useMemo(
+    () => [
+      {
+        accessorKey: "Title",
+        id: "title",
+        header: "Title",
+        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/announcement/view/${row.original.SK}`)}>{row.original.Title}</Link>,
+      },
+      {
+        accessorKey: "Date",
+        id: "date",
+        header: "Post Date",
+        size: 50, //medium
+        sortingFn: "datetime",
+        Cell: ({ cell, row }) => <Typography variant="body2">{new Date(row.original.Date).toLocaleDateString()}</Typography>,
+      },
+      {
+        accessorKey: "Content",
+        id: "content",
+        header: "Content",
+        size: 100, //medium
+        maxWidth: 100,
+        Cell: ({ cell, row }) => (
+          <Typography sx={{ maxWidth: 350 }} variant="body2">
+            {row.original.Content.length > 50 ? row.original.Content.substring(0, 50) + "..." : row.original.Content}
+          </Typography>
+        ),
+      },
+      {
+        accessorKey: "",
+        id: "actions",
+        header: "Actions",
+        Cell: ({ cell, row }) => (
+          <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
+            <Typography
+              variant="button"
+              onClick={() => {
+                navigate(`/teacher/course/${courseid}/announcement/edit/${row.original.SK}`);
+              }}>
+              <Link underline="hover">Edit</Link>
+            </Typography>
+            <Typography
+              variant="button"
+              onClick={() => {
+                setSelectedAnnouncement(row.original.SK);
+                setDeleteAnnouncementModal(true);
+              }}>
+              <Link underline="hover">Delete</Link>
+            </Typography>
+          </Stack>
+        ),
+      },
+    ],
+    []
+  );
+
   const classListColumns = useMemo(
     () => [
       {
@@ -591,7 +647,7 @@ const TeacherCourse = ({ userInfo }) => {
           <Box>
             <Card sx={{ py: 3, px: 5, mt: 2, display: category == "announcement" ? "block" : category === undefined ? "block" : "none" }}>
               {/* header */}
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                 <Typography variant="h5">Class Announcements</Typography>
                 <Button
                   variant="contained"
@@ -603,37 +659,18 @@ const TeacherCourse = ({ userInfo }) => {
                 </Button>
               </Box>
               {/* end header */}
-              {courseAnnouncements.map((announcement, key) => (
-                <Card key={key} variant="outlined" sx={{ boxShadow: "none", mt: 2, p: 2 }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" } }}>
-                    <Typography variant="subtitle1" sx={{}}>
-                      {announcement.Title}
-                    </Typography>
-                    <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
-                      <Typography
-                        variant="button"
-                        onClick={() => {
-                          var endpt = category == "announcement" ? `edit/${announcement.id}` : `announcement/edit/${announcement.id}`;
-                          navigate(endpt);
-                        }}>
-                        <Link underline="hover">Edit</Link>
-                      </Typography>
-                      <Typography
-                        variant="button"
-                        onClick={() => {
-                          setDeleteAnnouncementModal(true);
-                          setSelectedAnnouncement(announcement.id);
-                        }}>
-                        <Link underline="hover">Delete</Link>
-                      </Typography>
-                    </Stack>
-                  </Box>
-                  <Typography variant="subsubtitle" sx={{ mb: 1 }}>
-                    Posted {announcement.Date}
-                  </Typography>
-                  <Typography variant="body2">{announcement.Content}</Typography>
-                </Card>
-              ))}
+              <MaterialReactTable
+                columns={courseAnnouncementColumns}
+                data={courseAnnouncements}
+                enableHiding={false}
+                sortDescFirst={true}
+                enableFullScreenToggle={false}
+                enableDensityToggle={false}
+                initialState={{
+                  density: "compact",
+                  sorting: [{ id: "date", desc: true }],
+                }}
+                renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
             </Card>
             {/* course materials ========================================================================================================================*/}
             <Box>
@@ -718,14 +755,13 @@ const TeacherCourse = ({ userInfo }) => {
                     <Typography variant="body1" sx={{ mt: 1, mb: 2 }}>
                       {quiz.QuizDescription}
                     </Typography>
-                    {/* todo :view quiz summary */}
                     <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
                       <Typography variant="body2" sx={{ mt: 1 }}>
                         Max attempts allowed: {quiz.QuizMaxAttempts}
                       </Typography>
                       <Button
                         variant="outlined"
-                        sx={{color:"primary.main"}}
+                        sx={{ color: "primary.main" }}
                         onClick={() => {
                           navigate(`summary/${quiz.id}`);
                         }}>

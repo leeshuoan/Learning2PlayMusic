@@ -18,8 +18,8 @@ export const handleCourseAnnouncements = async (getCourseAnnouncementsAPI, setCo
   const announcementsData = data.map((announcement) => {
     const id = announcement.SK.split("Announcement#")[1];
     const date = new Date(announcement.Date);
-    const formattedDate = date.toLocaleDateString();
-    return { ...announcement, id, Date: formattedDate };
+    // const formattedDate = date.toLocaleDateString(); // change to pass date obj so that react table wil sort!
+    return { ...announcement, id, Date: date };
   });
   setCourseAnnouncements(announcementsData);
 };
