@@ -70,7 +70,7 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
         return;
       }
     }
-    if (answer === "") {
+    if (!options.includes(answer)) {
       toast.error("Please select an answer for the question.");
       return;
     }
