@@ -70,7 +70,7 @@ const AdminAnnouncementManagement = () => {
         accessorKey: "title",
         id: "title",
         header: "Title",
-        size: 30,
+        size: 20,
         Cell: ({ cell, row }) => <Typography variant="body2">{row.original.title.length > 35 ? row.original.title.substring(0, 35) + "..." : row.original.title}</Typography>,
       },
       {
@@ -83,7 +83,7 @@ const AdminAnnouncementManagement = () => {
         accessorKey: "content",
         id: "content",
         header: "Content",
-        Cell: ({ cell, row }) => <Typography variant="body2">{row.original.content.length > 145 ? row.original.content.substring(0, 145) + "..." : row.original.content}</Typography>,
+        Cell: ({ cell, row }) => <Typography sx={{maxWidth: 250}} variant="body2">{row.original.content.length > 50 ? row.original.content.substring(0, 50) + "..." : row.original.content}</Typography>,
       },
       {
         accessorKey: "",
@@ -208,7 +208,7 @@ const AdminAnnouncementManagement = () => {
             </Box>
           );
         }}></MaterialReactTable>
-      <Loader open={open}/>
+      <Loader open={open} />
     </Container>
   );
 };
