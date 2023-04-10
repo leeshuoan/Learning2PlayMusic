@@ -165,7 +165,7 @@ function Chat({ userInfo }) {
       </TransitionModal>
 
       {/* DEFAULT RENDER */}
-      <Drawer variant="permanent" sx={{ display: { xs: "none", md: "block", zIndex:1 }, width: drawerWidth, flexShrink: 1, [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" } }}>
+      <Drawer variant="permanent" sx={{ display: { xs: "none", md: "block", zIndex: 1 }, width: drawerWidth, flexShrink: 1, [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" } }}>
         <Toolbar sx={{ backgroundColor: "transparent", boxShadow: "none" }} />
         <Box sx={{ overflow: "auto" }}>
           <Box sx={{ ml: 1 }}>
@@ -215,7 +215,12 @@ function Chat({ userInfo }) {
             <List sx={{ p: 0 }}>
               {chats.map((chat, key) => (
                 <Box key={key}>
-                  <ListItem onClick={() => navigate(`/chat/${chat.id}`)} disablePadding>
+                  <ListItem
+                    onClick={() => {
+                      navigate(`/chat/${chat.id}`);
+                      setMobileOpen(false);
+                    }}
+                    disablePadding>
                     <ListItemButton selected={chatId == chat.id}>{<ListItemText primary={`[${chat.receiverRole}] ${chat.receiverName}`} />}</ListItemButton>
                   </ListItem>
                   <Divider />
