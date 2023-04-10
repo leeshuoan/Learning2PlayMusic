@@ -44,7 +44,9 @@ const PrivateRoutes = ({ userType }) => {
             setLoading(false);
           }
 
-          if (userRole == userType) {
+          if (Array.isArray(userType) && userType.includes(userRole)) {
+            setIsAuth(true);
+          } else if (userRole == userType) {
             setIsAuth(true);
           } else {
             setIsAuth(false);

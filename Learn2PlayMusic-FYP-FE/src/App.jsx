@@ -178,7 +178,7 @@ const App = () => {
             </Route>
           </Route>
 
-          <Route element={<PrivateRoutes userType="Home"></PrivateRoutes>}>
+          <Route element={<PrivateRoutes userType={["User", "Teacher", "Admin", "SuperAdmin"]}></PrivateRoutes>}>
             <Route path="chat" element={<Chat userInfo={userInfo} />} />
             <Route path="chat/:chatId" element={<Chat userInfo={userInfo} />} />
             <Route path="profile" element={<Profile userInfo={userInfo} refreshUserInfo={handleRefreshUserInfo} />}></Route>
