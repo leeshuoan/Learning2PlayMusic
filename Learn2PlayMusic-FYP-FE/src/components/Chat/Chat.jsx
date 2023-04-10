@@ -177,16 +177,24 @@ function Chat({ userInfo }) {
               New Chat
             </Button>
           </Box>
-          <List sx={{ p: 0 }}>
-            {chats.map((chat, key) => (
-              <Box key={key}>
-                <ListItem onClick={() => navigate(`/chat/${chat.id}`)} disablePadding>
-                  <ListItemButton selected={chatId == chat.id}>{<ListItemText primary={`[${chat.receiverRole}] ${chat.receiverName}`} />}</ListItemButton>
-                </ListItem>
-                <Divider />
-              </Box>
-            ))}
-          </List>
+          {chats.length > 0 ? (
+            <List sx={{ p: 0 }}>
+              {chats.map((chat, key) => (
+                <Box key={key}>
+                  <ListItem onClick={() => navigate(`/chat/${chat.id}`)} disablePadding>
+                    <ListItemButton selected={chatId == chat.id}>{<ListItemText primary={`[${chat.receiverRole}] ${chat.receiverName}`} />}</ListItemButton>
+                  </ListItem>
+                  <Divider />
+                </Box>
+              ))}
+            </List>
+          ) : (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 4 }}>
+              <Typography variant="body`" sx={{ p: 2 }}>
+                {openLoading ? "Loading..." : "No chats yet"}
+              </Typography>
+            </Box>
+          )}
         </Box>
       </Drawer>
       {/* MOBILE RENDER */}
@@ -212,21 +220,24 @@ function Chat({ userInfo }) {
                 New Chat
               </Button>
             </Box>
-            <List sx={{ p: 0 }}>
-              {chats.map((chat, key) => (
-                <Box key={key}>
-                  <ListItem
-                    onClick={() => {
-                      navigate(`/chat/${chat.id}`);
-                      setMobileOpen(false);
-                    }}
-                    disablePadding>
-                    <ListItemButton selected={chatId == chat.id}>{<ListItemText primary={`[${chat.receiverRole}] ${chat.receiverName}`} />}</ListItemButton>
-                  </ListItem>
-                  <Divider />
-                </Box>
-              ))}
-            </List>
+            {chats.length > 0 ? (
+              <List sx={{ p: 0 }}>
+                {chats.map((chat, key) => (
+                  <Box key={key}>
+                    <ListItem onClick={() => navigate(`/chat/${chat.id}`)} disablePadding>
+                      <ListItemButton selected={chatId == chat.id}>{<ListItemText primary={`[${chat.receiverRole}] ${chat.receiverName}`} />}</ListItemButton>
+                    </ListItem>
+                    <Divider />
+                  </Box>
+                ))}
+              </List>
+            ) : (
+              <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 4 }}>
+                <Typography variant="body`" sx={{ p: 2 }}>
+                  {openLoading ? "Loading..." : "No chats yet"}
+                </Typography>
+              </Box>
+            )}
           </Box>
         </Box>
       </Drawer>
@@ -257,11 +268,7 @@ function Chat({ userInfo }) {
                       }
                     })}
                   </>
-                ) : (
-                  <Typography variant="h6" sx={{ textAlign: "center" }}>
-                    No chat selected
-                  </Typography>
-                )}
+                ) : null}
               </Typography>
             </Grid>
           </Grid>
@@ -274,11 +281,7 @@ function Chat({ userInfo }) {
                   }
                 })}
               </>
-            ) : (
-              <Typography variant="h6" sx={{ textAlign: "center" }}>
-                No chat selected
-              </Typography>
-            )}
+            ) : null}
           </Typography>
           <ChatUser chatId={chatId} userInfo={userInfo} />
         </Box>
