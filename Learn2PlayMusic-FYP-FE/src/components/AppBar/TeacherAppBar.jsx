@@ -43,7 +43,7 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
       {
         <AppBar
           position="sticky"
-          sx={{ bgcolor: theme.palette.background.paper, zIndex: 9999 }}>
+          sx={{ bgcolor: theme.palette.background.paper }}>
           <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
             <Toolbar
               disableGutters
