@@ -166,7 +166,7 @@ function Chat({ userInfo }) {
       </TransitionModal>
 
       {/* DEFAULT RENDER */}
-      <Drawer variant="permanent" sx={{ display: { xs: "none", md: "block" }, width: drawerWidth, flexShrink: 1, [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" } }}>
+      <Drawer variant="permanent" sx={{ display: { xs: "none", md: "block", zIndex: -1 }, width: drawerWidth, flexShrink: 1, [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" } }}>
         <Toolbar />
         <Box sx={{ overflow: "auto" }}>
           <Box sx={{ ml: 1 }}>
@@ -199,7 +199,7 @@ function Chat({ userInfo }) {
           keepMounted: true, // Better open performance on mobile.
         }}
         sx={{
-          display: { xs: "block", md: "none" },
+          display: { xs: "block", md: "none", zIndex: -1 },
           "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
         }}>
         <Box sx={{ overflow: "auto" }}>

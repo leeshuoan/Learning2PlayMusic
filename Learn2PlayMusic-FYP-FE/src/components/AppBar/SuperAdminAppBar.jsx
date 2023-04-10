@@ -56,7 +56,7 @@ const SuperAdminAppBar = ({ userInfo, handleResetUserInfo }) => {
   return (
     <>
       {
-        <AppBar position="sticky" sx={{ bgcolor: theme.palette.background.paper, zIndex: 9999 }}>
+        <AppBar position="sticky" sx={{ bgcolor: theme.palette.background.paper }}>
           <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
             <Toolbar disableGutters sx={{ display: "flex", justifyContent: "space-between" }}>
               {/* MOBILE NAV */}
