@@ -15,9 +15,8 @@ const SuperAdminAnnouncementManagement = () => {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "50%",
+    width: { xs: "80%", sm: "80%", md: "50%", lg: "30%", xl: "30%" },
     bgcolor: "background.paper",
-    border: "1px solid #000",
     borderRadius: 2,
     p: 4,
   };
@@ -175,7 +174,7 @@ const SuperAdminAnnouncementManagement = () => {
         columns={columns}
         data={announcements}
         enableExpanding={true}
-        initialState={{ density: "compact" }}
+        initialState={{ density: "compact", sorting: [{ id: "date", desc: true }] }}
         renderDetailPanel={({ row }) => (
           <Box
             sx={{

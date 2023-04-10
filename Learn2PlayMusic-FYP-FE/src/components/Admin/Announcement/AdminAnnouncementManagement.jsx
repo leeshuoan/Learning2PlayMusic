@@ -15,9 +15,8 @@ const AdminAnnouncementManagement = () => {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "50%",
+    width: { xs: "80%", sm: "80%", md: "50%", lg: "30%", xl: "30%" },
     bgcolor: "background.paper",
-    border: "1px solid #000",
     borderRadius: 2,
     p: 4,
   };
@@ -83,7 +82,11 @@ const AdminAnnouncementManagement = () => {
         accessorKey: "content",
         id: "content",
         header: "Content",
-        Cell: ({ cell, row }) => <Typography sx={{maxWidth: 250}} variant="body2">{row.original.content.length > 50 ? row.original.content.substring(0, 50) + "..." : row.original.content}</Typography>,
+        Cell: ({ cell, row }) => (
+          <Typography sx={{ maxWidth: 250 }} variant="body2">
+            {row.original.content.length > 50 ? row.original.content.substring(0, 50) + "..." : row.original.content}
+          </Typography>
+        ),
       },
       {
         accessorKey: "",
@@ -175,7 +178,7 @@ const AdminAnnouncementManagement = () => {
         columns={columns}
         data={announcements}
         enableExpanding={true}
-        initialState={{ density: "compact" }}
+        initialState={{ density: "compact", sorting: [{ id: "date", desc: true }] }}
         renderDetailPanel={({ row }) => (
           <Box
             sx={{
