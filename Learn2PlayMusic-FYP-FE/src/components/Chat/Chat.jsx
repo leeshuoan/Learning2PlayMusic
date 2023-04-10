@@ -148,7 +148,7 @@ function Chat({ userInfo }) {
   };
 
   return (
-    <Box sx={{ display: "flex", zIndex: -2 }}>
+    <Box sx={{ display: "flex" }}>
       <TransitionModal open={openContactList} style={modalStyle}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Typography variant="h6" sx={{ ml: 2 }}>
@@ -165,8 +165,8 @@ function Chat({ userInfo }) {
       </TransitionModal>
 
       {/* DEFAULT RENDER */}
-      <Drawer variant="permanent" sx={{ display: { xs: "none", md: "block", zIndex: -1 }, width: drawerWidth, flexShrink: 1, [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" } }}>
-        <Toolbar />
+      <Drawer variant="permanent" sx={{ display: { xs: "none", md: "block", zIndex:1 }, width: drawerWidth, flexShrink: 1, [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" } }}>
+        <Toolbar sx={{ backgroundColor: "transparent", boxShadow: "none" }} />
         <Box sx={{ overflow: "auto" }}>
           <Box sx={{ ml: 1 }}>
             <CustomBreadcrumbs root={root} breadcrumbEnding={"Chat"} />
