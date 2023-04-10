@@ -29,10 +29,8 @@ export default function CreateStudentForm({ handleClose }) {
     var name = data.get("name");
 
     if (email === "" || name === "" || role === "") {
-      console.log("Please fill in all fields");
       toast.error("Please fill in all fields");
       setOpen(false);
-      handleClose();
       return;
     }
 

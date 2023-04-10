@@ -30,10 +30,8 @@ export default function CreateUserForm({ roles, handleClose }) {
     var role = data.get("role");
 
     if (email === "" || name === "" || role === "") {
-      console.log("Please fill in all fields");
       toast.error("Please fill in all fields");
       setOpen(false);
-      handleClose();
       return;
     }
 
