@@ -1,4 +1,4 @@
-import { Box, Button, Card, InputBase } from "@mui/material";
+import { Box, Button, Card, InputBase, Typography } from "@mui/material";
 import { addDoc, collection, limit, orderBy, query } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
@@ -43,6 +43,14 @@ const ChatUser = ({ chatId, userInfo }) => {
     }
   }, [messages]);
 
+  if (!chatId) {
+    return (
+      <Typography variant="h6" sx={{
+        textAlign: "center", mt:6}}>
+        Please select a chat or click on new chat to start messaging!
+      </Typography>
+    );
+  }
   return (
     <>
       {messages && messages.map((msg, key) => <ChatMessage key={key} userInfo={userInfo} message={msg} />)}
