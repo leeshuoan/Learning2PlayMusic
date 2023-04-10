@@ -10,6 +10,7 @@ const ChatUser = ({ chatId, userInfo }) => {
   const messagesRef = collection(db, `Chat#${chatId}`);
   const messagesEndRef = useRef(null);
   const chatQuery = query(messagesRef, orderBy("createdAt", "asc"), limit(25));
+  console.log(chatId)
 
   const [newMsg, setNewMsg] = useState("");
   const [messages, loadingMsgs, error] = useCollectionData(chatQuery, { idField: "id" });
@@ -46,29 +47,47 @@ const ChatUser = ({ chatId, userInfo }) => {
   if (!chatId) {
     return (
       <Typography variant="h6" sx={{
-        textAlign: "center", mt:6}}>
+        textAlign: "center", mt: 6
+      }}>
         Please select a chat or click on new chat to start messaging!
       </Typography>
     );
   }
   return (
     <>
-      {messages && messages.map((msg, key) => <ChatMessage key={key} userInfo={userInfo} message={msg} />)}
-      <div ref={messagesEndRef} />
-      <Box sx={{ display: "flex", position: "fixed", bottom: 0, width: { xs: `calc(100% - ${40}px)`, md: `calc(100% - ${drawerWidth + 40}px)` }, p: 3, pl: 0 }}>
-        <Card variant="contained" sx={{ flexGrow: 1, display: "flex", alignItems: "center", p: 1, mr: 3, border: "black" }}>
-          <InputBase sx={{ width: "100%" }} className="inputBase" placeholder="Type your message" value={newMsg} onChange={(e) => setNewMsg(e.target.value)} onKeyDown={handleKeyPress} disabled={!chatId} />
-        </Card>
-        <Button
-          variant="contained"
-          size="large"
-          onClick={() => {
-            sendMsg();
-          }}
-          disabled={newMsg === "" || !chatId}>
-          Send
-        </Button>
-      </Box>
+      {chatId != "undefined" ? (
+        <>
+          {messages && messages.map((msg, key) => <ChatMessage key={key} userInfo={userInfo} message={msg} />)}
+          <div ref={messagesEndRef} />
+          <Box sx={{ display: "flex", position: "fixed", bottom: 0, width: { xs: `calc(100% - ${40}px)`, md: `calc(100% - ${drawerWidth + 40}px)` }, p: 3, pl: 0 }}>
+            <Card variant="contained" sx={{ flexGrow: 1, display: "flex", alignItems: "center", p: 1, mr: 3, border: "black" }}>
+              <InputBase sx={{ width: "100%" }} className="inputBase" placeholder="Type your message" value={newMsg} onChange={(e) => setNewMsg(e.target.value)} onKeyDown={handleKeyPress} disabled={!chatId} />
+            </Card>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => {
+                sendMsg();
+              }}
+              disabled={newMsg === "" || !chatId}>
+              Send
+            </Button>
+          </Box>
+        </>
+      ) : (
+        <>
+          <Typography variant="h6" sx={{
+            textAlign: "center", mt: 6
+          }}>
+            This chat is not valid!
+          </Typography>
+          <Typography variant="h6" sx={{
+            textAlign: "center"
+          }}>
+            Please select a chat or click on new chat to start messaging!
+          </Typography>
+        </>
+      )}
     </>
   );
 };
