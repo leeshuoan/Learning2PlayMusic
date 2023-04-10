@@ -30,7 +30,6 @@ function Chat({ userInfo }) {
     width: "90%",
     maxWidth: "500px",
     bgcolor: "background.paper",
-    border: "1px solid #000",
     borderRadius: 2,
     p: 3,
   };
@@ -91,7 +90,7 @@ function Chat({ userInfo }) {
           let name = "";
           let role = "";
           for (let k of contactKeys) {
-            console.log("k: ",k);
+            console.log("k: ", k);
             if (k.endsWith("Id")) {
               id = contact[k];
               // role = k.split("Id")[0];
@@ -149,10 +148,10 @@ function Chat({ userInfo }) {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", zIndex: -2 }}>
       <TransitionModal open={openContactList} style={modalStyle}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography variant="h6" sx={{ ml: 2 }} >
+          <Typography variant="h6" sx={{ ml: 2 }}>
             New Chat
           </Typography>
           <IconButton onClick={() => setOpenContactList(false)}>
@@ -199,11 +198,10 @@ function Chat({ userInfo }) {
           keepMounted: true, // Better open performance on mobile.
         }}
         sx={{
-          display: { xs: "block", md: "none", zIndex: -1 },
+          display: { xs: "block", md: "none" },
           "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
         }}>
         <Box sx={{ overflow: "auto" }}>
-          <Toolbar />
           <Box sx={{ overflow: "auto" }}>
             <Box sx={{ ml: 1 }}>
               <CustomBreadcrumbs root={root} breadcrumbEnding={"Chat"} />
@@ -218,7 +216,7 @@ function Chat({ userInfo }) {
               {chats.map((chat, key) => (
                 <Box key={key}>
                   <ListItem onClick={() => navigate(`/chat/${chat.id}`)} disablePadding>
-                    <ListItemButton selected={chatId == chat.id}>{<ListItemText primary="Jeff" />}</ListItemButton>
+                    <ListItemButton selected={chatId == chat.id}>{<ListItemText primary={`[${chat.receiverRole}] ${chat.receiverName}`} />}</ListItemButton>
                   </ListItem>
                   <Divider />
                 </Box>
@@ -252,11 +250,12 @@ function Chat({ userInfo }) {
                       if (chat.id == chatId) {
                         return `[${chat.receiverRole}] ${chat.receiverName}`;
                       }
-                    })
-                    }
+                    })}
                   </>
                 ) : (
-                  <Typography variant="h6" sx={{ textAlign: "center" }}>No chat selected</Typography>
+                  <Typography variant="h6" sx={{ textAlign: "center" }}>
+                    No chat selected
+                  </Typography>
                 )}
               </Typography>
             </Grid>
@@ -268,11 +267,12 @@ function Chat({ userInfo }) {
                   if (chat.id == chatId) {
                     return `[${chat.receiverRole}] ${chat.receiverName}`;
                   }
-                })
-                }
+                })}
               </>
             ) : (
-              <Typography variant="h6" sx={{ textAlign: "center" }}>No chat selected</Typography>
+              <Typography variant="h6" sx={{ textAlign: "center" }}>
+                No chat selected
+              </Typography>
             )}
           </Typography>
           <ChatUser chatId={chatId} userInfo={userInfo} />

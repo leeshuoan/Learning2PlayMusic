@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react'
+import { Box, Button, Card, InputBase } from "@mui/material";
 import { addDoc, collection, limit, orderBy, query } from "firebase/firestore";
+import { useEffect, useRef, useState } from "react";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { db } from "../utils/firebase";
-import { Box, Button, Card, Grid, IconButton, InputBase, Typography } from "@mui/material";
 import ChatMessage from "./ChatMessage";
 
 const ChatUser = ({ chatId, userInfo }) => {
@@ -12,7 +12,7 @@ const ChatUser = ({ chatId, userInfo }) => {
   const chatQuery = query(messagesRef, orderBy("createdAt", "asc"), limit(25));
 
   const [newMsg, setNewMsg] = useState("");
-  const [messages, loadingMsgs, error] = useCollectionData(chatQuery, { idField: "id", });
+  const [messages, loadingMsgs, error] = useCollectionData(chatQuery, { idField: "id" });
 
   const scrollToBottom = () => {
     messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -27,6 +27,7 @@ const ChatUser = ({ chatId, userInfo }) => {
   const sendMsg = async () => {
     var chatMsg = newMsg.replace(/[6|8|9]\d{7}|\+65[6|8|9]\d{7}|\+65\s[6|8|9]\d{7}/g, "*********").replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/, "*********");
     console.log(chatMsg);
+    console.log(chatId);
     await addDoc(messagesRef, {
       text: chatMsg,
       createdAt: new Date(),
@@ -48,7 +49,7 @@ const ChatUser = ({ chatId, userInfo }) => {
       <div ref={messagesEndRef} />
       <Box sx={{ display: "flex", position: "fixed", bottom: 0, width: { xs: `calc(100% - ${40}px)`, md: `calc(100% - ${drawerWidth + 40}px)` }, p: 3, pl: 0 }}>
         <Card variant="contained" sx={{ flexGrow: 1, display: "flex", alignItems: "center", p: 1, mr: 3, border: "black" }}>
-          <InputBase sx={{ width: "100%" }} className="inputBase" placeholder="Type your message" value={newMsg} onChange={(e) => setNewMsg(e.target.value)} onKeyDown={handleKeyPress} />
+          <InputBase sx={{ width: "100%" }} className="inputBase" placeholder="Type your message" value={newMsg} onChange={(e) => setNewMsg(e.target.value)} onKeyDown={handleKeyPress} disabled={!chatId} />
         </Card>
         <Button
           variant="contained"
@@ -56,12 +57,12 @@ const ChatUser = ({ chatId, userInfo }) => {
           onClick={() => {
             sendMsg();
           }}
-          disabled={newMsg === ""}>
+          disabled={newMsg === "" || !chatId}>
           Send
         </Button>
       </Box>
     </>
-  )
-}
+  );
+};
 
-export default ChatUser
+export default ChatUser;
