@@ -10,16 +10,19 @@ import DeleteAnnouncementForm from "./DeleteAnnouncementForm";
 import EditAnnouncementForm from "./EditAnnouncementForm";
 
 const SuperAdminAnnouncementManagement = () => {
-  const modalStyle = {
-    position: "relative",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: { xs: "80%", sm: "80%", md: "50%", lg: "30%", xl: "30%" },
-    bgcolor: "background.paper",
-    borderRadius: 2,
-    p: 4,
-  };
+  const largeModalWidth = { xs: "90%", sm: "60%", md: "40%", lg: "40%", xl: "40%" };
+  function modalStyle(w) {
+    return {
+      position: "relative",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: w,
+      bgcolor: "background.paper",
+      borderRadius: 2,
+      p: 4,
+    };
+  }
   const [announcements, setAnnouncements] = useState([]);
   const [announcementTitle, setAnnouncementTitle] = useState("");
   const [content, setContent] = useState("");
@@ -149,16 +152,16 @@ const SuperAdminAnnouncementManagement = () => {
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       {/* new announcement form */}
-      <TransitionModal open={openModal} handleClose={handleCloseModal} style={modalStyle}>
+      <TransitionModal open={openModal} handleClose={handleCloseModal} style={modalStyle(largeModalWidth)}>
         <CreateAnnouncementForm handleCloseModal={handleCloseModal} handleCloseModalSuccess={handleCloseModalSuccess} />
       </TransitionModal>
       {/* edit announcement form */}
-      <TransitionModal open={openEditModal} handleClose={handleCloseEditModal} style={modalStyle}>
+      <TransitionModal open={openEditModal} handleClose={handleCloseEditModal} style={modalStyle(largeModalWidth)}>
         <EditAnnouncementForm dateId={dateId} existingAnnouncementTitle={announcementTitle} existingContent={content} handleCloseEditModal={handleCloseEditModal} handleCloseEditModalSuccess={handleCloseEditModalSuccess} />
       </TransitionModal>
 
       {/* delete confirmation */}
-      <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal} style={modalStyle}>
+      <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal} style={modalStyle(largeModalWidth)}>
         <DeleteAnnouncementForm dateId={dateId} announcementTitle={announcementTitle} content={content} handleCloseDeleteModal={handleCloseDeleteModal} handleCloseDeleteModalSuccess={handleCloseDeleteModalSuccess} />
       </TransitionModal>
 
@@ -207,7 +210,7 @@ const SuperAdminAnnouncementManagement = () => {
             </Box>
           );
         }}></MaterialReactTable>
-      <Loader open={open}/>
+      <Loader open={open} />
     </Container>
   );
 };

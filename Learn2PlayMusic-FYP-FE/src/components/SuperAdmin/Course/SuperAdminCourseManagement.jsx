@@ -12,17 +12,22 @@ import EditCourseForm from "./EditCourseForm";
 import ReportGenerationForm from "./ReportGenerationForm";
 
 const SuperAdminCourseManagement = () => {
-  const modalStyle = {
-    position: "relative",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "30%",
-    bgcolor: "background.paper",
-    border: "1px solid #000",
-    borderRadius: 2,
-    p: 4,
-  };
+  const largeModalWidth = { xs: "90%", sm: "60%", md: "40%", lg: "40%", xl: "40%" };
+  const smallModalWidth = { xs: "60%", sm: "40%", md: "30%", lg: "30%", xl: "30%" };
+  function modalStyle(w) {
+    return {
+      position: "relative",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: w,
+      bgcolor: "background.paper",
+      border: "1px solid #000",
+      borderRadius: 2,
+      p: 4,
+    };
+  }
+
   const [courses, setCourses] = useState([]);
   const [courseName, setCourseName] = useState("");
   const [courseId, setCourseId] = useState("");
@@ -188,19 +193,19 @@ const SuperAdminCourseManagement = () => {
   return (
     <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
       {/* new course form */}
-      <TransitionModal open={openModal} handleClose={handleCloseModal} style={modalStyle}>
+      <TransitionModal open={openModal} handleClose={handleCloseModal} style={modalStyle(largeModalWidth)}>
         <CreateCourseForm handleCloseModal={handleCloseModal} handleCloseModalSuccess={handleCloseModalSuccess}></CreateCourseForm>
       </TransitionModal>
       {/* edit course form */}
-      <TransitionModal open={openEditModal} handleClose={handleCloseEditModal} style={modalStyle}>
+      <TransitionModal open={openEditModal} handleClose={handleCloseEditModal} style={modalStyle(largeModalWidth)}>
         <EditCourseForm courseId={courseId} ogCourseName={courseName} ogTimeSlot={timeSlot} ogTeacherName={teacherName} ogTeacherId={teacherId} handleCloseEditModal={handleCloseEditModal} handleCloseEditModalSuccess={handleCloseEditModalSuccess} />
       </TransitionModal>
       {/* delete confirmation */}
-      <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal} style={modalStyle}>
+      <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal} style={modalStyle(smallModalWidth)}>
         <DeleteCourseForm courseId={courseId} courseName={courseName} timeSlot={timeSlot} teacherName={teacherName} handleCloseDeleteModal={handleCloseDeleteModal} handleCloseDeleteModalSuccess={handleCloseDeleteModalSuccess} />
       </TransitionModal>
       {/* generate report */}
-      <TransitionModal open={openReportModal} handleClose={handleCloseReportModal} style={modalStyle}>
+      <TransitionModal open={openReportModal} handleClose={handleCloseReportModal} style={modalStyle(largeModalWidth)}>
         <ReportGenerationForm courseId={courseId} courseName={courseName} handleClose={handleCloseReportModal} handleCloseSuccess={handleCloseReportModalSuccess} />
       </TransitionModal>
 
