@@ -26,14 +26,14 @@ def lambda_handler(event, context):
         ##################################
 
         students = get_users('Users')
-        # students_to_remove = []
+        students_to_remove = []
 
         for student in students:
 
             studentId = student['studentId']
 
-            # if not combination_id_exists("Course", courseId, "Student", studentId):
-            #     students_to_remove.append(student)
+            if not combination_id_exists("Student", studentId, "Course", courseId):
+                students_to_remove.append(student)
 
             #######################
             ### GET QUIZ SCORES ###
@@ -84,8 +84,8 @@ def lambda_handler(event, context):
             ### GET PROGRESS REPORT ###
             ###########################
 
-        # for i in students_to_remove:
-        #     students.remove(i)
+        for i in students_to_remove:
+            students.remove(i)
 
         return response_200_items(students)
 
