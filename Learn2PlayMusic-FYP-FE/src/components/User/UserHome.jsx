@@ -30,6 +30,8 @@ const UserHome = ({ userInfo }) => {
         if ("message" in courses) {
           setError(true);
         }
+        // sort annoucnement first
+        announcements.sort((a, b) => new Date(b.SK.split("Date#")[1]) - new Date(a.SK.split("Date#")[1]));
         const announcementsData = announcements.slice(0, 3).map((a) => ({
           ...a,
           date: new Date(a.SK.split("Date#")[1]).toLocaleDateString(),
@@ -48,7 +50,12 @@ const UserHome = ({ userInfo }) => {
     }
     fetchData();
   }, []);
-  if (error) return <Typography variant="h4" align="center" sx={{mt:3}}>Something went wrong, contact admin immediately!</Typography>;
+  if (error)
+    return (
+      <Typography variant="h4" align="center" sx={{ mt: 3 }}>
+        Something went wrong, contact admin immediately!
+      </Typography>
+    );
   else
     return (
       <>

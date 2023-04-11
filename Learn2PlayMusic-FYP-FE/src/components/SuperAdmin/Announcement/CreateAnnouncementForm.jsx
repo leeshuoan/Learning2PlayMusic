@@ -34,7 +34,7 @@ export default function CreateAnnouncementForm({ handleCloseModal, handleCloseMo
         },
         body: JSON.stringify({
           announcementTitle: announcementTitle,
-          content: content,
+          content: content.replace(/(\r\n|\r|\n)/g, "<br/>"),
         }),
       });
     } catch (error) {
