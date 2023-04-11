@@ -13,7 +13,7 @@ import ReportGenerationForm from "./ReportGenerationForm";
 
 const SuperAdminCourseManagement = () => {
   const largeModalWidth = { xs: "90%", sm: "60%", md: "40%", lg: "40%", xl: "40%" };
-  const smallModalWidth = { xs: "60%", sm: "40%", md: "30%", lg: "30%", xl: "30%" };
+  const mediumModalWidth = { xs: "80%", sm: "55%", md: "45%", lg: "40%", xl: "30%" };
   function modalStyle(w) {
     return {
       position: "relative",
@@ -201,7 +201,7 @@ const SuperAdminCourseManagement = () => {
         <EditCourseForm courseId={courseId} ogCourseName={courseName} ogTimeSlot={timeSlot} ogTeacherName={teacherName} ogTeacherId={teacherId} handleCloseEditModal={handleCloseEditModal} handleCloseEditModalSuccess={handleCloseEditModalSuccess} />
       </TransitionModal>
       {/* delete confirmation */}
-      <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal} style={modalStyle(smallModalWidth)}>
+      <TransitionModal open={openDeleteModal} handleClose={handleCloseDeleteModal} style={modalStyle(mediumModalWidth)}>
         <DeleteCourseForm courseId={courseId} courseName={courseName} timeSlot={timeSlot} teacherName={teacherName} handleCloseDeleteModal={handleCloseDeleteModal} handleCloseDeleteModalSuccess={handleCloseDeleteModalSuccess} />
       </TransitionModal>
       {/* generate report */}

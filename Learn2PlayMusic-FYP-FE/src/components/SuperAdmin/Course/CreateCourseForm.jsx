@@ -24,12 +24,8 @@ export default function CreateCourseForm({ handleCloseModal, handleCloseModalSuc
   const submitForm = async (event) => {
     setOpen(true);
     event.preventDefault();
-    console.log(courseName);
-    console.log(day);
-    console.log(hour);
-    console.log(selectedTeacher);
 
-    if (courseName === "" || day === "" || hour === "" || selectedTeacher === "") {
+    if (courseName === "" || day === "" || hour === "" || JSON.stringify(selectedTeacher) === "{}" || selectedTeacher == null) {
       toast.error("Please fill in all fields!");
       setOpen(false);
       return;
