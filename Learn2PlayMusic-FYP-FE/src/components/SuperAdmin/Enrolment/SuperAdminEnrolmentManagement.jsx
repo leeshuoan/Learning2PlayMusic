@@ -45,7 +45,6 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
   }
   const largeModalWidth = { xs: "90%", sm: "60%", md: "40%", lg: "40%", xl: "40%" };
 
-
   // list users ================================================================================================================================================================================================================================================================================
   async function postAPIWithBody(endpoint, body) {
     const response = await fetch(endpoint, {
@@ -188,7 +187,7 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
         id: "enrol",
         header: "Enrol",
         Cell: ({ cell, row }) =>
-          row.original.Attributes.Role != "SuperAdmin" ? (
+          row.original.Attributes.Role == "User" ? (
             <Tooltip title="Enrol user to course" placement="bottom">
               <IconButton
                 variant="contained"
@@ -233,7 +232,7 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
             enableFullScreenToggle={false}
             enableMultiRowSelection={true}
             positionToolbarAlertBanner="bottom"
-            enableRowSelection={(row) => row.original.Attributes.Role != "SuperAdmin"}
+            enableRowSelection={(row) => row.original.Attributes.Role == "User"}
             onRowSelectionChange={setRowSelection}
             state={{ rowSelection }}
             enableDensityToggle={false}
@@ -242,7 +241,7 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
             initialState={{
               density: "compact",
               sorting: [
-                { id: "role", desc: false },
+                { id: "role", desc: true },
                 { id: "name", desc: false },
               ],
             }}
@@ -282,9 +281,11 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
                           return (
                             <span key={course.SK + course.PK}>
                               <br />
-                              <IconButton onClick={() => unEnrolUser(course, row.original)}>
-                                <CloseIcon fontSize="inherit" color="error"></CloseIcon>
-                              </IconButton>
+                              {row.original.role == "User" ? (
+                                <IconButton onClick={() => unEnrolUser(course, row.original)}>
+                                  <CloseIcon fontSize="inherit" color="error"></CloseIcon>
+                                </IconButton>
+                              ) : null}
                               {course.CourseName} on {course.CourseSlot}
                             </span>
                           );
@@ -294,9 +295,12 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
               </Box>
             )}></MaterialReactTable>
         </Box>
-        <Typography variant="body2" sx={{ m: 1, mt: 4 }}>
-          <b>Note:</b> Admin users cannot be enrolled in courses.
+        <Typography variant="body2" sx={{ m: 1, my: 4 }}>
+          <b>Note:</b> Enrollment of teachers should be done on the course page, with one teacher assigned per course. Please note that teacher enrollments will have view-only access.
         </Typography>
+        <div>
+          <br></br>
+        </div>
         <Loader open={open} />
       </Suspense>
     </Container>
