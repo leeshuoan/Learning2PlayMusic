@@ -160,10 +160,9 @@ const UserCourse = ({ userInfo }) => {
       console.log(progressReportData);
       setCourseProgressReport(progressReportData);
 
-      data7.every(student => {
-        if(student.studentId == userInfo.id){
+      data7.forEach(student => {
+        if (student.studentId == userInfo.id) {
           setParticipationPoints(student.ParticipationPoints);
-          return false; // equivalent to a 'break'
         }
       });
 
