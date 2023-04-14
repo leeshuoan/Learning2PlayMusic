@@ -1,9 +1,8 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import CloseIcon from "@mui/icons-material/Close";
 import { Box, Button, Container, IconButton, Tooltip, Typography } from "@mui/material";
 import { API, Auth } from "aws-amplify";
 import MaterialReactTable from "material-react-table";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import Loader from "../../utils/Loader";
 const TransitionModal = lazy(() => import("../../utils/TransitionModal"));
 const EnrolUserForm = lazy(() => import("./EnrolUserForm"));
@@ -267,19 +266,14 @@ const AdminEnrolmentManagement = ({ userInfo }) => {
                 {row.original.Attributes.Role == "Admin" ? null : (
                   <Typography variant="body2">
                     <b>Courses enrolled in:</b>
-                    {userCoursesEnrolled[row.original.Username].length == 0
-                      ? " None"
-                      : userCoursesEnrolled[row.original.Username].map((course) => {
-                          return (
-                            <span key={course.SK + course.PK}>
-                              <br />
-                              <IconButton onClick={() => unEnrolUser(course, row.original)}>
-                                <CloseIcon fontSize="inherit" color="error"></CloseIcon>
-                              </IconButton>
-                              {course.CourseName} on {course.CourseSlot}
-                            </span>
-                          );
-                        })}
+                    {userCoursesEnrolled[row.original.Username].map((course) => {
+                      return (
+                        <span key={course.SK + course.PK}>
+                          <br />
+                          {course.CourseName} on {course.CourseSlot}
+                        </span>
+                      );
+                    })}
                   </Typography>
                 )}
               </Box>
