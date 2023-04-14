@@ -648,37 +648,43 @@ const TeacherCourse = ({ userInfo }) => {
                 </Button>
               </Box>
               {/* end header */}
-              {courseAnnouncements.map((announcement, key) => (
-                <Card key={key} variant="outlined" sx={{ boxShadow: "none", mt: 2, p: 2 }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" } }}>
-                    <Typography variant="subtitle1" sx={{}}>
-                      {announcement.Title}
+              {courseAnnouncements.length == 0 ? (
+                <Typography variant="body1" align="center">
+                  No announcements yet! Create one now?
+                </Typography>
+              ) : (
+                courseAnnouncements.map((announcement, key) => (
+                  <Card key={key} variant="outlined" sx={{ boxShadow: "none", mt: 2, p: 2 }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" } }}>
+                      <Typography variant="subtitle1" sx={{}}>
+                        {announcement.Title}
+                      </Typography>
+                      <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
+                        <Typography
+                          variant="button"
+                          onClick={() => {
+                            var endpt = category == "announcement" ? `edit/${announcement.id}` : `announcement/edit/${announcement.id}`;
+                            navigate(endpt);
+                          }}>
+                          <Link underline="hover">Edit</Link>
+                        </Typography>
+                        <Typography
+                          variant="button"
+                          onClick={() => {
+                            setDeleteAnnouncementModal(true);
+                            setSelectedAnnouncement(announcement.id);
+                          }}>
+                          <Link underline="hover">Delete</Link>
+                        </Typography>
+                      </Stack>
+                    </Box>
+                    <Typography variant="subsubtitle" sx={{ mb: 1 }}>
+                      Posted {announcement.formattedDate}
                     </Typography>
-                    <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
-                      <Typography
-                        variant="button"
-                        onClick={() => {
-                          var endpt = category == "announcement" ? `edit/${announcement.id}` : `announcement/edit/${announcement.id}`;
-                          navigate(endpt);
-                        }}>
-                        <Link underline="hover">Edit</Link>
-                      </Typography>
-                      <Typography
-                        variant="button"
-                        onClick={() => {
-                          setDeleteAnnouncementModal(true);
-                          setSelectedAnnouncement(announcement.id);
-                        }}>
-                        <Link underline="hover">Delete</Link>
-                      </Typography>
-                    </Stack>
-                  </Box>
-                  <Typography variant="subsubtitle" sx={{ mb: 1 }}>
-                    Posted {announcement.formattedDate}
-                  </Typography>
-                  <Typography variant="body2">{announcement.Content}</Typography>
-                </Card>
-              ))}
+                    <Typography variant="body2">{announcement.Content}</Typography>
+                  </Card>
+                ))
+              )}
               {/* <MaterialReactTable
                 columns={courseAnnouncementColumns}
                 data={courseAnnouncements}
@@ -726,70 +732,76 @@ const TeacherCourse = ({ userInfo }) => {
                   </Button>
                 </Box>
                 {/* end header */}
-                {courseQuiz.map((quiz, key) => (
-                  <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" } }}>
-                      <Typography variant="h6" sx={{ mb: 1 }}>
-                        {quiz.QuizTitle}
-                      </Typography>
-                      <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={{ xs: 1, sm: 2 }}>
-                        <Typography variant="button">
-                          <Link
-                            underline="hover"
-                            sx={{ color: quiz.Visibility ? "success.dark" : "error.dark", "&:hover": { underline: quiz.Visibility ? "success.dark" : "error.dark" } }}
-                            onClick={() => {
-                              setSelectedQuiz(quiz);
-                              setVisibilityQuizModal(true);
-                            }}>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <Box sx={{ display: quiz.Visibility ? "flex" : "none", alignItems: "center" }}>
-                                <VisibilityIcon fontSize="inherit" /> &nbsp; Shown
+                {courseQuiz.length == 0 ? (
+                  <Typography variant="body1" align="center">
+                    No quizzes yet! Create one now?{" "}
+                  </Typography>
+                ) : (
+                  courseQuiz.map((quiz, key) => (
+                    <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
+                      <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" } }}>
+                        <Typography variant="h6" sx={{ mb: 1 }}>
+                          {quiz.QuizTitle}
+                        </Typography>
+                        <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={{ xs: 1, sm: 2 }}>
+                          <Typography variant="button">
+                            <Link
+                              underline="hover"
+                              sx={{ color: quiz.Visibility ? "success.dark" : "error.dark", "&:hover": { underline: quiz.Visibility ? "success.dark" : "error.dark" } }}
+                              onClick={() => {
+                                setSelectedQuiz(quiz);
+                                setVisibilityQuizModal(true);
+                              }}>
+                              <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <Box sx={{ display: quiz.Visibility ? "flex" : "none", alignItems: "center" }}>
+                                  <VisibilityIcon fontSize="inherit" /> &nbsp; Shown
+                                </Box>
+                                <Box sx={{ display: quiz.Visibility ? "none" : "flex", alignItems: "center" }}>
+                                  <VisibilityOffIcon fontSize="inherit" /> &nbsp; Hidden
+                                </Box>
                               </Box>
-                              <Box sx={{ display: quiz.Visibility ? "none" : "flex", alignItems: "center" }}>
-                                <VisibilityOffIcon fontSize="inherit" /> &nbsp; Hidden
-                              </Box>
-                            </Box>
-                          </Link>
-                        </Typography>
-                        <Typography variant="button">
-                          <Link
-                            underline="hover"
-                            onClick={() => {
-                              navigate(`/teacher/course/${courseid}/quiz/edit/${quiz.id}`);
-                            }}>
-                            Edit
-                          </Link>
-                        </Typography>
-                        <Typography variant="button">
-                          <Link
-                            underline="hover"
-                            onClick={() => {
-                              setSelectedQuiz(quiz);
-                              setDeleteQuizModal(true);
-                            }}>
-                            Delete
-                          </Link>
-                        </Typography>
-                      </Stack>
-                    </Box>
-                    <Typography variant="body1" sx={{ mt: 1, mb: 2 }}>
-                      {quiz.QuizDescription}
-                    </Typography>
-                    <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
-                      <Typography variant="body2" sx={{ mt: 1 }}>
-                        Max attempts allowed: {quiz.QuizMaxAttempts}
+                            </Link>
+                          </Typography>
+                          <Typography variant="button">
+                            <Link
+                              underline="hover"
+                              onClick={() => {
+                                navigate(`/teacher/course/${courseid}/quiz/edit/${quiz.id}`);
+                              }}>
+                              Edit
+                            </Link>
+                          </Typography>
+                          <Typography variant="button">
+                            <Link
+                              underline="hover"
+                              onClick={() => {
+                                setSelectedQuiz(quiz);
+                                setDeleteQuizModal(true);
+                              }}>
+                              Delete
+                            </Link>
+                          </Typography>
+                        </Stack>
+                      </Box>
+                      <Typography variant="body1" sx={{ mt: 1, mb: 2 }}>
+                        {quiz.QuizDescription}
                       </Typography>
-                      <Button
-                        variant="outlined"
-                        sx={{ color: "primary.main" }}
-                        onClick={() => {
-                          navigate(`/teacher/course/${courseid}/quiz/summary/${quiz.id}`);
-                        }}>
-                        View Quiz Summary
-                      </Button>
-                    </Box>
-                  </Card>
-                ))}
+                      <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
+                        <Typography variant="body2" sx={{ mt: 1 }}>
+                          Max attempts allowed: {quiz.QuizMaxAttempts}
+                        </Typography>
+                        <Button
+                          variant="outlined"
+                          sx={{ color: "primary.main" }}
+                          onClick={() => {
+                            navigate(`/teacher/course/${courseid}/quiz/summary/${quiz.id}`);
+                          }}>
+                          View Quiz Summary
+                        </Button>
+                      </Box>
+                    </Card>
+                  ))
+                )}
               </Card>
             </Box>
             {/* homework ==================================================================================================== */}
@@ -807,63 +819,73 @@ const TeacherCourse = ({ userInfo }) => {
                   </Button>
                 </Box>
                 {/* end header */}
-                <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
-                  <Grid item xs={4}>
-                    <Typography variant="subtitle2">HOMEWORK TITLE</Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
-                      DUE DATE
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
-                      ACTIONS
-                    </Typography>
-                  </Grid>
-                </Grid>
-                {courseHomework.map((homework, key) => (
-                  <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
-                    <Grid container>
-                      <Grid item xs={12} sm={4}>
-                        <Typography variant="body1" sx={{ color: "primary.main" }}>
-                          <Link onClick={() => navigate(`/teacher/course/${courseid}/homework/${homework.id}`)}>{homework.HomeworkTitle}</Link>
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
-                          {homework.HomeworkDueDate}
-                        </Typography>
-
-                        <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
-                          Due Date: {homework.HomeworkDueDate}
-                        </Typography>
-                      </Grid>
-
-                      <Grid item xs={12} sm={4}>
-                        <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2} sx={{ justifyContent: "center", alignItems: "center" }}>
-                          <Typography
-                            variant="button"
-                            onClick={() => {
-                              navigate(`/teacher/course/${courseid}/homework/edit/${homework.id}`);
-                            }}>
-                            <Link underline="hover">Edit</Link>
-                          </Typography>
-                          <Typography variant="button">
-                            <Link
-                              underline="hover"
-                              onClick={() => {
-                                setSelectedHomework(homework);
-                                setDeleteHomeworkModal(true);
-                              }}>
-                              Delete
-                            </Link>
-                          </Typography>
-                        </Stack>
-                      </Grid>
+                {courseHomework.length == 0 ? (
+                  ""
+                ) : (
+                  <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
+                    <Grid item xs={4}>
+                      <Typography variant="subtitle2">HOMEWORK TITLE</Typography>
                     </Grid>
-                  </Card>
-                ))}
+                    <Grid item xs={4}>
+                      <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
+                        DUE DATE
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
+                        ACTIONS
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                )}
+                {courseHomework.length == 0 ? (
+                  <Typography variant="body1" align="center">
+                    No homework yet! Create one now?
+                  </Typography>
+                ) : (
+                  courseHomework.map((homework, key) => (
+                    <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
+                      <Grid container>
+                        <Grid item xs={12} sm={4}>
+                          <Typography variant="body1" sx={{ color: "primary.main" }}>
+                            <Link onClick={() => navigate(`/teacher/course/${courseid}/homework/${homework.id}`)}>{homework.HomeworkTitle}</Link>
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                          <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
+                            {homework.HomeworkDueDate}
+                          </Typography>
+
+                          <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
+                            Due Date: {homework.HomeworkDueDate}
+                          </Typography>
+                        </Grid>
+
+                        <Grid item xs={12} sm={4}>
+                          <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2} sx={{ justifyContent: "center", alignItems: "center" }}>
+                            <Typography
+                              variant="button"
+                              onClick={() => {
+                                navigate(`/teacher/course/${courseid}/homework/edit/${homework.id}`);
+                              }}>
+                              <Link underline="hover">Edit</Link>
+                            </Typography>
+                            <Typography variant="button">
+                              <Link
+                                underline="hover"
+                                onClick={() => {
+                                  setSelectedHomework(homework);
+                                  setDeleteHomeworkModal(true);
+                                }}>
+                                Delete
+                              </Link>
+                            </Typography>
+                          </Stack>
+                        </Grid>
+                      </Grid>
+                    </Card>
+                  ))
+                )}
               </Card>
             </Box>
             {/* class list ==================================================================================================== */}
