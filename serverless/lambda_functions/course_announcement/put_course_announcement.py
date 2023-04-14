@@ -8,6 +8,7 @@ import dateutil.tz
 
 from global_functions.responses import *
 from global_functions.exists_in_db import *
+from global_functions.sns import *
 
 def lambda_handler(event, context):
 
@@ -37,15 +38,18 @@ def lambda_handler(event, context):
         if not combination_id_exists("Course", courseId, "Announcement", announcementId):
             return response_404("announcementId does not exist in database")
 
+        announcementTitle = json.loads(event['body'])['title']
+        content = json.loads(event['body'])['content']
 
         item = {
                 "PK": f"Course#{courseId}",
                 "SK": f"Announcement#{announcementId}",
-                "Title": json.loads(event['body'])['title'],
-                "Content": json.loads(event['body'])['content'],
+                "Title": announcementTitle,
+                "Content": content,
                 "Date": str(date)
             }
-        response = table.put_item(Item=item)
+        table.put_item(Item=item)
+        publish_course_announcement(announcementTitle, content)
 
         # response = table.update_item(
         #     Key={"PK": f"Course#{json.loads(event['body'])['courseId']}",
