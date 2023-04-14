@@ -18,7 +18,7 @@ const UserHomework = (userInfo) => {
   const [course, setCourse] = useState({});
   const [homework, setHomework] = useState({});
   const [studentHomeworkFeedback, setStudentHomeworkFeedback] = useState({});
-  const [hasPastSubmission, setHasPastSubmission] = useState(false)
+  const [hasPastSubmission, setHasPastSubmission] = useState(false);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [submitted, setSubmitted] = useState(false);
@@ -88,14 +88,8 @@ const UserHomework = (userInfo) => {
       };
       setCourse(courseData);
 
-      let formattedDueDate =
-        new Date(data2.HomeworkDueDate).toLocaleDateString() +
-        " " +
-        new Date(data2.HomeworkDueDate).toLocaleTimeString();
-      let formattedAssignedDate =
-        new Date(data2.HomeworkAssignedDate).toLocaleDateString() +
-        " " +
-        new Date(data2.HomeworkAssignedDate).toLocaleTimeString();
+      let formattedDueDate = new Date(data2.HomeworkDueDate).toLocaleDateString() + " " + new Date(data2.HomeworkDueDate).toLocaleTimeString();
+      let formattedAssignedDate = new Date(data2.HomeworkAssignedDate).toLocaleDateString() + " " + new Date(data2.HomeworkAssignedDate).toLocaleTimeString();
 
       let homeworkData = {
         id: data2.SK.split("#")[1],
@@ -107,18 +101,17 @@ const UserHomework = (userInfo) => {
       setHomework(homeworkData);
 
       data3.forEach((hwFeedback) => {
-        var currentStudentId = hwFeedback.SK.split("Student#")[1].split("Homework#")[0]
+        var currentStudentId = hwFeedback.SK.split("Student#")[1].split("Homework#")[0];
         if (currentStudentId == userInfo.userInfo.id) {
           setHasPastSubmission(true);
 
           let studentHomeworkFeedback = {
             attachment: data4.HomeworkAttachment,
-            submissionFileName: data4.SubmissionFileName
+            submissionFileName: data4.SubmissionFileName,
           };
           setStudentHomeworkFeedback(studentHomeworkFeedback);
         }
       });
-
     }
 
     fetchData().then(() => {
@@ -132,7 +125,6 @@ const UserHomework = (userInfo) => {
   var isButtonDisabled = textFieldValue === "" && file === null;
 
   const submit = () => {
-
     fetch(`${import.meta.env.VITE_API_URL}/course/homework/submit`, {
       method: "POST",
       headers: {
@@ -163,8 +155,7 @@ const UserHomework = (userInfo) => {
             justifyContent: "center",
             gap: "1rem",
             marginTop: "1rem",
-          }}
-        >
+          }}>
           <Button
             variant="contained"
             sx={{
@@ -173,8 +164,7 @@ const UserHomework = (userInfo) => {
               boxShadow: theme.shadows[10],
               ":hover": { backgroundColor: "hovergrey" },
             }}
-            onClick={handleClose}
-          >
+            onClick={handleClose}>
             Cancel
           </Button>
           <Button variant="contained" color="primary" onClick={submit}>
@@ -184,17 +174,9 @@ const UserHomework = (userInfo) => {
       </TransitionModal>
 
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
-        <CustomBreadcrumbs
-          root="/home"
-          links={[
-            { name: course.name, path: `/home/course/${courseid}/homework` },
-          ]}
-          breadcrumbEnding={homework.title}
-        />
+        <CustomBreadcrumbs root="/home" links={[{ name: course.name, path: `/home/course/${courseid}/homework` }]} breadcrumbEnding={homework.title} />
 
-        <Card
-          sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}
-        >
+        <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
               <Typography variant="h5" sx={{ color: "primary.main" }}>
@@ -239,13 +221,12 @@ const UserHomework = (userInfo) => {
             </Box>
             {hasPastSubmission ? (
               <>
-                <Typography variant="subtitle2" sx={{ mt: 3, mb: 0.5 }}>FILE SUBMISSION</Typography>
+                <Typography variant="subtitle2" sx={{ mt: 3, mb: 0.5 }}>
+                  FILE SUBMISSION
+                </Typography>
                 <Typography variant="subtitle2" sx={{ mb: 2 }}>
                   <Typography variant="body1" sx={{ mb: 1 }}>
-                    <a
-                      href={studentHomeworkFeedback.attachment}
-                      target="_blank"
-                    >
+                    <a href={studentHomeworkFeedback.attachment} target="_blank">
                       {studentHomeworkFeedback.submissionFileName}
                     </a>
                   </Typography>
@@ -267,16 +248,9 @@ const UserHomework = (userInfo) => {
                   boxShadow: "none",
                   ":hover": { backgroundColor: "hovergrey" },
                 }}
-                component="label"
-              >
+                component="label">
                 ADD A FILE
-                <input
-                  hidden
-                  accept="application/pdf, image/*"
-                  multiple
-                  type="file"
-                  onChange={fileUploaded}
-                />
+                <input hidden accept="application/pdf, image/*" multiple type="file" onChange={fileUploaded} />
               </Button>
             ) : (
               // remove button to upload after uploading one file
@@ -285,10 +259,7 @@ const UserHomework = (userInfo) => {
 
             {file ? (
               <div>
-                <Typography
-                  variant="body2"
-                  style={{ textDecoration: "underline" }}
-                >
+                <Typography variant="body2" style={{ textDecoration: "underline" }}>
                   <IconButton onClick={handleRemoveFile}>
                     <ClearIcon />
                   </IconButton>
@@ -301,22 +272,8 @@ const UserHomework = (userInfo) => {
             )}
 
             <br />
-            <TextField
-              label="Add Text"
-              variant="outlined"
-              rows={7}
-              multiline
-              fullWidth
-              sx={{ mt: 1 }}
-              value={textFieldValue}
-              onChange={handleTextFieldChange}
-            />
-            <Button
-              variant="contained"
-              sx={{ mt: 2 }}
-              onClick={() => setOpen(true)}
-              disabled={isButtonDisabled}
-            >
+            <TextField label="Add Text" variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1 }} value={textFieldValue} onChange={handleTextFieldChange} />
+            <Button variant="contained" sx={{ mt: 2 }} onClick={() => setOpen(true)} disabled={isButtonDisabled}>
               <UploadIcon />
               SUBMIT
             </Button>
@@ -335,10 +292,7 @@ const UserHomework = (userInfo) => {
               Submission Successful!
             </Typography>
             <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
-              <Button
-                variant="contained"
-                onClick={() => navigate(`/home/course/${course.id}/homework`)}
-              >
+              <Button variant="contained" onClick={() => navigate(`/home/course/${course.id}/homework`)}>
                 Back to Homework
               </Button>
             </Box>
@@ -350,8 +304,7 @@ const UserHomework = (userInfo) => {
           open={isLoading}
           onClick={() => {
             setOpen(false);
-          }}
-        >
+          }}>
           <CircularProgress color="inherit" />
         </Backdrop>
       </Container>

@@ -57,7 +57,7 @@ const UserQuiz = (userInfo) => {
 
     Promise.all([getCourse, getQuizAPI, getQuizQuestionAPI])
       .then(async ([courseInfoRes, quizInfoRes, quizQnRes]) => {
-        console.log(quizQnRes)
+        console.log(quizQnRes);
         if (quizInfoRes.status === 404 || quizQnRes.status === 404 || courseInfoRes.status === 404) {
           toast.error("Invalid ID");
           // navigate(`/home/course/${courseid}/quiz`);
@@ -129,7 +129,7 @@ const UserQuiz = (userInfo) => {
     // submit
     try {
       const submitQuizData = await submitQuiz(requestBody);
-      setScore(submitQuizData.score)
+      setScore(submitQuizData.score);
       setSubmitted(true);
     } catch (error) {
       // todo: handle error?

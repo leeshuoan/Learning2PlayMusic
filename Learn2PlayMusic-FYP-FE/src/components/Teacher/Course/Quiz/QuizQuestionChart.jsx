@@ -27,7 +27,7 @@ const QuizQuestionChart = ({ questionImage, data }) => {
   console.log(data);
   return (
     <div>
-      {questionImage && <img src={questionImage} width="400" alt="question" />}
+      {questionImage && <img src={questionImage} height="200" width="200" alt="question" />}
       {data.map((option) => {
         let fontColor = option.correct ? green : optionGrey;
         let fontWeight = option.correct ? "h6" : "body1";
