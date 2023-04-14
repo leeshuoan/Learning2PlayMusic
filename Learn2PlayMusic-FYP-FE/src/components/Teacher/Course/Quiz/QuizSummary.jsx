@@ -51,15 +51,22 @@ const QuizSummary = (userInfo) => {
         timeslot: fetchedCourseData[0].CourseSlot,
         teacher: fetchedCourseData[0].TeacherName,
       };
-      console.log(courseData);
       setCourse(courseData);
 
-      let quizData = fetchedQuizData;
-      let quizPerformance = quizData.AverageScore == 0 ? "" : quizData.AverageScore >= fetchedQuizQuestionData.length / 2 ? green : red;
-      quizData = { ...quizData, quizPerformance };
-      console.log(quizData);
-      setQuiz(quizData);
+      let quizPerformance;
+      let AverageScorePercent = fetchedQuizData.TotalScore == 0 || fetchedQuizData.NumberOfAttempts == 0 ? 0 : parseFloat(((fetchedQuizData.TotalScore / fetchedQuizData.NumberOfAttempts / fetchedQuizQuestionData.length) * 100).toFixed(2));
+      console.log(AverageScorePercent);
+      if (AverageScorePercent == 0) {
+        // edge case of everyone get 0
+        quizPerformance = fetchedQuizData.NumberOfAttempts > 0 ? red : "";
+      } else {
+        // pass or fail color
+        quizPerformance = AverageScorePercent >= fetchedQuizQuestionData.length / 2 ? green : red;
+      }
+      fetchedQuizData = { ...fetchedQuizData, quizPerformance, AverageScorePercent };
+      setQuiz(fetchedQuizData);
 
+      console.log(fetchedQuizQuestionData);
       let questionsData = fetchedQuizQuestionData.map((q) => {
         let questionId = q.SK.split("Question#")[1];
         let percentCorrect = q.Correct == 0 || q.Attempts == 0 ? 0 : Math.round((q.Correct / q.Attempts) * 10000) / 100;
@@ -125,12 +132,12 @@ const QuizSummary = (userInfo) => {
           </Grid>
           <Grid item xs={12} sm={12} md={5} lg={5}>
             <Typography variant="body1">
-              <b>Number of students attempted:</b> {quiz.NumberOfStudentsAttempted == 0 ? 0 : quiz.NumberOfStudentsAttempted}
+              <b>Number of attempts:</b> {quiz.NumberOfAttempts == 0 ? "-" : quiz.NumberOfAttempts}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={12} md={3} lg={3}>
             <Typography variant="body1">
-              <b>Average Score:</b> {quiz.AverageScore == 0 ? 0 : <span style={{ color: quiz.quizPerformance }}>{quiz.AverageScore}</span>}
+              <b>Average Score:</b> {quiz.quizPerformance == "" && quiz.AverageScorePercent == 0 ? "-" : <span style={{ color: quiz.quizPerformance }}>{quiz.AverageScorePercent}%</span>}
             </Typography>
           </Grid>
         </Grid>
@@ -182,10 +189,6 @@ const QuizSummary = (userInfo) => {
           }}>
           Back
         </Button>
-        {/* TODO: change visibility here (if we wan add here else just remove)*/}
-        {/* <Button variant="contained" >
-          {quiz.Visibility ? "Hide Quiz" : "Show Quiz"}
-        </Button> */}
       </Box>
 
       {/* Backdrop for loading */}

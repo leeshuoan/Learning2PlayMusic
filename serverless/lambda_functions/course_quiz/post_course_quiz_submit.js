@@ -59,9 +59,9 @@ async function lambda_handler(event, context) {
           PK: `Course#${courseId}`,
           SK: `Quiz#${quizId}Question#${questionId}`,
         },
-        UpdateExpression: `set Attempts = Attempts + :incr, Correct = Correct + :val, #answer = #answer + :incr`,
+        UpdateExpression: `set Attempts = Attempts + :incr, Correct = Correct + :val, #selection = #selection + :incr`,
         ExpressionAttributeNames: {
-          "#answer": question.Answer,
+          "#selection": submissions[submissionKey],
         },
         ExpressionAttributeValues: {
           ":val": correct,
@@ -89,7 +89,7 @@ async function lambda_handler(event, context) {
     await dynamodb.update(updateStudentQuizParams).promise();
 
     return response_200(`Quiz ${quizId} successfully submitted`, {
-      "score": quizScore
+      score: quizScore,
     });
   } catch (e) {
     return response_400(e.message);
