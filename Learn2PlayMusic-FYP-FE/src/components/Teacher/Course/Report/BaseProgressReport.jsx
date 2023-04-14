@@ -93,16 +93,7 @@ const BaseProgressReport = () => {
               </Typography>
             </Box>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
-            <Box>
-              <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
-                {course.teacher}
-              </Typography>
-              <Typography variant="body2" sx={{ textAlign: "right" }}>
-                Teacher
-              </Typography>
-            </Box>
-          </Box>
+
         </Card>
 
         <Box>
