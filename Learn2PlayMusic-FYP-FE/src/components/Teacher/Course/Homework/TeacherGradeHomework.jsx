@@ -1,11 +1,10 @@
-import { Box, Button, Card, Container, Divider, FormControlLabel, FormLabel, InputLabel, Link, Radio, RadioGroup, TextField, Typography, useTheme, Backdrop, CircularProgress} from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { Backdrop, Box, Button, Card, CircularProgress, Container, Divider, FormControlLabel, FormLabel, InputLabel, Radio, RadioGroup, TextField, Typography, useTheme } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import celebration from "../../../../assets/celebration.png";
 import CustomBreadcrumbs from "../../../utils/CustomBreadcrumbs";
 import Loader from "../../../utils/Loader";
 import TransitionModal from "../../../utils/TransitionModal";
-import celebration from "../../../../assets/celebration.png";
-
 
 const TeacherHomeworkOverview = () => {
   const theme = useTheme();
@@ -42,7 +41,7 @@ const TeacherHomeworkOverview = () => {
   }
 
   const getCourseAPI = request(`/course?courseId=${courseid}`);
-  const getHomeworkAPI = request( `/course/homework?courseId=${courseid}&homeworkId=${homeworkId}` );
+  const getHomeworkAPI = request(`/course/homework?courseId=${courseid}&homeworkId=${homeworkId}`);
   const getHomeworkFeedbackAPI = request(`/course/homework/feedback?courseId=${courseid}&homeworkId=${homeworkId}&studentId=${locate.state.StudentId}`);
 
   useEffect(() => {
@@ -57,14 +56,8 @@ const TeacherHomeworkOverview = () => {
       };
       setCourse(courseData);
 
-      let formattedDueDate =
-        new Date(data2.HomeworkDueDate).toLocaleDateString() +
-        " " +
-        new Date(data2.HomeworkDueDate).toLocaleTimeString();
-      let formattedAssignedDate =
-        new Date(data2.HomeworkAssignedDate).toLocaleDateString() +
-        " " +
-        new Date(data2.HomeworkAssignedDate).toLocaleTimeString();
+      let formattedDueDate = new Date(data2.HomeworkDueDate).toLocaleDateString() + " " + new Date(data2.HomeworkDueDate).toLocaleTimeString();
+      let formattedAssignedDate = new Date(data2.HomeworkAssignedDate).toLocaleDateString() + " " + new Date(data2.HomeworkAssignedDate).toLocaleTimeString();
 
       let homeworkData = {
         id: data2.SK.split("#")[1],
@@ -77,10 +70,9 @@ const TeacherHomeworkOverview = () => {
 
       let homeworkFeedbackData = {
         attachment: data3.HomeworkAttachment,
-        filename: data3.SubmissionFileName
+        filename: data3.SubmissionFileName,
       };
       setHomeworkFeedback(homeworkFeedbackData);
-
     }
 
     fetchData().then(() => {
@@ -132,8 +124,7 @@ const TeacherHomeworkOverview = () => {
             justifyContent: "center",
             gap: "1rem",
             marginTop: "1rem",
-          }}
-        >
+          }}>
           <Button
             variant="contained"
             sx={{
@@ -142,8 +133,7 @@ const TeacherHomeworkOverview = () => {
               boxShadow: theme.shadows[10],
               ":hover": { backgroundColor: "hovergrey" },
             }}
-            onClick={handleClose}
-          >
+            onClick={handleClose}>
             Cancel
           </Button>
           <Button variant="contained" color="primary" onClick={submit}>
@@ -165,9 +155,7 @@ const TeacherHomeworkOverview = () => {
           breadcrumbEnding="Grade"
         />
 
-        <Card
-          sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}
-        >
+        <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
               <Typography variant="h5" sx={{ color: "primary.main" }}>
@@ -218,71 +206,28 @@ const TeacherHomeworkOverview = () => {
             </Typography>
             <Divider sx={{ my: 3 }} />
             <FormLabel>HOMEWORK SCORE</FormLabel>
-            <RadioGroup
-              name="score"
-              row
-              value={grade}
-              onChange={handleGradeChange}
-            >
-              <FormControlLabel
-                value="1"
-                control={<Radio size="small" />}
-                label="1 - Bad"
-              />
-              <FormControlLabel
-                value="2"
-                control={<Radio size="small" />}
-                label="2 - Poor"
-              />
-              <FormControlLabel
-                value="3"
-                control={<Radio size="small" />}
-                label="3 - Good"
-              />
-              <FormControlLabel
-                value="4"
-                control={<Radio size="small" />}
-                label="4 - Very Good"
-              />
-              <FormControlLabel
-                value="5"
-                control={<Radio size="small" />}
-                label="5 - Excellent"
-              />
+            <RadioGroup name="score" row value={grade} onChange={handleGradeChange}>
+              <FormControlLabel value="1" control={<Radio size="small" />} label="1 - Bad" />
+              <FormControlLabel value="2" control={<Radio size="small" />} label="2 - Poor" />
+              <FormControlLabel value="3" control={<Radio size="small" />} label="3 - Good" />
+              <FormControlLabel value="4" control={<Radio size="small" />} label="4 - Very Good" />
+              <FormControlLabel value="5" control={<Radio size="small" />} label="5 - Excellent" />
             </RadioGroup>
             <InputLabel id="additional-comments" sx={{ mt: 1 }}>
               {" "}
               ADDITIONAL COMMENTS{" "}
             </InputLabel>
-            <TextField
-              variant="outlined"
-              rows={7}
-              multiline
-              fullWidth
-              sx={{ mt: 1 }}
-              value={comments}
-              onChange={handleCommentsChange}
-            />
-            <Box
-              sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}
-            >
+            <TextField variant="outlined" rows={7} multiline fullWidth sx={{ mt: 1 }} value={comments} onChange={handleCommentsChange} />
+            <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
               <Button
                 variant="outlined"
                 sx={{ color: "primary.main" }}
                 onClick={() => {
-                  navigate(
-                    `/teacher/course/${courseid}/homework/${homeworkId}`
-                  );
-                }}
-              >
+                  navigate(`/teacher/course/${courseid}/homework/${homeworkId}`);
+                }}>
                 Cancel
               </Button>
-              <Button
-                variant="contained"
-                sx={{ mt: 2 }}
-                onClick={() => setOpen(true)}
-                disabled={isButtonDisabled}
-              >
+              <Button variant="contained" sx={{ mt: 2 }} onClick={() => setOpen(true)} disabled={isButtonDisabled}>
                 Submit Grade
               </Button>
             </Box>
@@ -301,12 +246,7 @@ const TeacherHomeworkOverview = () => {
               Grade Submission Successful!
             </Typography>
             <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
-              <Button
-                variant="contained"
-                onClick={() =>
-                  navigate(`/teacher/course/${courseid}/homework/${homeworkId}`)
-                }
-              >
+              <Button variant="contained" onClick={() => navigate(`/teacher/course/${courseid}/homework/${homeworkId}`)}>
                 Back to Homework
               </Button>
             </Box>
@@ -318,8 +258,7 @@ const TeacherHomeworkOverview = () => {
           open={isLoading}
           onClick={() => {
             setOpen(false);
-          }}
-        >
+          }}>
           <CircularProgress color="inherit" />
         </Backdrop>
 

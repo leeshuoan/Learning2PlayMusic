@@ -89,7 +89,7 @@ const TeacherHomeworkOverview = () => {
         accessorKey: "StudentName",
         id: "studentName",
         header: "Student Name",
-        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/homework/${homeworkId}/grade/${row.original.StudentId}`, { state: row.original })}>{row.original.StudentName}</Link>,
+        Cell: ({ cell, row }) => <Link onClick={() => navigate(`/teacher/course/${courseid}/homework/grade/${homeworkId}/${row.original.StudentId}`, { state: row.original })}>{row.original.StudentName}</Link>,
       },
       {
         accessorKey: "LastSubmissionDate",
