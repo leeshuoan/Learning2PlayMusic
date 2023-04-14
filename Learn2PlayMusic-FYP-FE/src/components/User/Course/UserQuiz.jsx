@@ -57,7 +57,7 @@ const UserQuiz = (userInfo) => {
 
     Promise.all([getCourse, getQuizAPI, getQuizQuestionAPI])
       .then(async ([courseInfoRes, quizInfoRes, quizQnRes]) => {
-        console.log(quizQnRes)
+        console.log(quizQnRes);
         if (quizInfoRes.status === 404 || quizQnRes.status === 404 || courseInfoRes.status === 404) {
           toast.error("Invalid ID");
           // navigate(`/home/course/${courseid}/quiz`);
@@ -129,7 +129,7 @@ const UserQuiz = (userInfo) => {
     // submit
     try {
       const submitQuizData = await submitQuiz(requestBody);
-      setScore(submitQuizData.score)
+      setScore(submitQuizData.score);
       setSubmitted(true);
     } catch (error) {
       // todo: handle error?
@@ -236,6 +236,16 @@ const UserQuiz = (userInfo) => {
               </Typography>
               <Typography variant="subtitle2" sx={{ mb: 1 }}>
                 Date: {course.timeslot}
+              </Typography>
+            </Box>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+            <Box>
+              <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
+                {course.teacher}
+              </Typography>
+              <Typography variant="body2" sx={{ textAlign: "right" }}>
+                Teacher
               </Typography>
             </Box>
           </Box>

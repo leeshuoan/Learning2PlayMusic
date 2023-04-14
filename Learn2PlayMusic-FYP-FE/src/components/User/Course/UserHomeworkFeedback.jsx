@@ -61,7 +61,13 @@ const UserHomeworkFeedback = (userInfo) => {
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>
         <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ mt: 3 }}>
-          <Link underline="hover" color="inherit" sx={{ display: "flex", alignItems: "center" }} onClick={() => { navigate('/home') }}>
+          <Link
+            underline="hover"
+            color="inherit"
+            sx={{ display: "flex", alignItems: "center" }}
+            onClick={() => {
+              navigate("/home");
+            }}>
             <HomeIcon sx={{ mr: 0.5 }} />
             Home
           </Link>
@@ -74,11 +80,9 @@ const UserHomeworkFeedback = (userInfo) => {
             {course.name}
           </Link>
           <Typography color="text.primary">Homework</Typography>
-
         </Breadcrumbs>
 
-        <Card
-          sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
+        <Card sx={{ py: 1.5, px: 3, mt: 2, display: { xs: "flex", sm: "flex" } }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
               <Typography variant="h5" sx={{ color: "primary.main" }}>
@@ -89,35 +93,65 @@ const UserHomeworkFeedback = (userInfo) => {
               </Typography>
             </Box>
           </Box>
+          <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+            <Box>
+              <Typography variant="subtitle1" sx={{ mb: 0.5 }}>
+                {course.teacher}
+              </Typography>
+              <Typography variant="body2" sx={{ textAlign: "right" }}>
+                Teacher
+              </Typography>
+            </Box>
+          </Box>
         </Card>
 
         <Card sx={{ py: 3, px: 5, mt: 2 }}>
-          <Typography variant="subsubtitle" sx={{ mb: 2 }}>STUDENT NAME</Typography>
-          <Typography variant="subtitle1" sx={{ mb: 2 }}>{userInfo.userInfo.name}</Typography>
-          <Typography variant="subsubtitle" sx={{ mb: 2 }}>FILE SUBMISSION</Typography>
-          <Typography variant="body1" sx={{ mb: 2 }}><Link onClick={() => {window.open(feedback.HomeworkAttachment, '_blank')}}>{feedback.SubmissionFileName}</Link></Typography>
-          <Typography variant="body1" sx={{ mb: 2 }}>{feedback.SubmissionContent}</Typography>
+          <Typography variant="subsubtitle" sx={{ mb: 2 }}>
+            STUDENT NAME
+          </Typography>
+          <Typography variant="subtitle1" sx={{ mb: 2 }}>
+            {userInfo.userInfo.name}
+          </Typography>
+          <Typography variant="subsubtitle" sx={{ mb: 2 }}>
+            FILE SUBMISSION
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            <Link
+              onClick={() => {
+                window.open(feedback.HomeworkAttachment, "_blank");
+              }}>
+              {feedback.SubmissionFileName}
+            </Link>
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            {feedback.SubmissionContent}
+          </Typography>
           <Divider sx={{ my: 3 }} />
           <Box sx={{ display: "flex" }}>
             <Box sx={{ mr: 3 }}>
-              <Typography variant="subsubtitle" sx={{ mb: 2 }}>HOMEWORK SCORE</Typography>
-              <Typography variant="body1" sx={{ mb: 2 }}>{returnScoreDescription(feedback.HomeworkScore)}</Typography>
+              <Typography variant="subsubtitle" sx={{ mb: 2 }}>
+                HOMEWORK SCORE
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                {returnScoreDescription(feedback.HomeworkScore)}
+              </Typography>
             </Box>
             <Box>
-              <Typography variant="subsubtitle" sx={{ mb: 2 }}>TEACHER'S COMMENTS</Typography>
-              <Typography variant="body1" sx={{ mb: 2 }}>{feedback.TeacherComments}</Typography>
+              <Typography variant="subsubtitle" sx={{ mb: 2 }}>
+                TEACHER'S COMMENTS
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                {feedback.TeacherComments}
+              </Typography>
             </Box>
           </Box>
         </Card>
       </Container>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-      >
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </>
-  )
+  );
 }
 
 export default UserHomeworkFeedback
