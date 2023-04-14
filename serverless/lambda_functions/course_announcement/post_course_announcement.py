@@ -36,14 +36,18 @@ def lambda_handler(event, context):
         if not id_exists("Course", "Course", courseId):
             return response_404("courseId does not exist in database")
 
+        announcementTitle = json.loads(event['body'])['title']
+        content = json.loads(event['body'])['content']
+
         item = {
                 "PK": f"Course#{json.loads(event['body'])['courseId']}",
                 "SK": f"Announcement#{announcementId}",
-                "Title": json.loads(event['body'])['title'],
-                "Content": json.loads(event['body'])['content'],
+                "Title": announcementTitle,
+                "Content": content,
                 "Date": str(date)
             }
-        response = table.put_item(Item=item)
+        table.put_item(Item=item)
+        publish_course_announcement(announcementTitle, content)
 
         return response_200_msg_items("inserted", item)
 

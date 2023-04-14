@@ -128,7 +128,7 @@ const QuizSummary = (userInfo) => {
           </Grid>
           <Grid item xs={12} sm={12} md={3} lg={3}>
             <Typography variant="body1">
-              <b>Average Score:</b> {quiz.quizPerformance == "" && quiz.AverageScorePercent == 0 ? "-" : <span style={{ color: quiz.quizPerformance }}>{quiz.AverageScorePercent}%</span>}
+              <b>Quiz Average Score:</b> {quiz.quizPerformance == "" && quiz.AverageScorePercent == 0 ? "-" : <span style={{ color: quiz.quizPerformance }}>{quiz.AverageScorePercent}%</span>}
             </Typography>
           </Grid>
         </Grid>
@@ -151,7 +151,7 @@ const QuizSummary = (userInfo) => {
                     <Typography variant="body1">
                       <b>Question {questionCounter}:</b>&nbsp;{question.Question}
                       <br />
-                      <b>Percent correct:</b>&nbsp;
+                      <b>Question's Average Score:</b>&nbsp;
                       <span style={{ color: question.performance }}>
                         {question.Correct}/{question.Attempts}&nbsp;({question.percentCorrect}%)
                       </span>

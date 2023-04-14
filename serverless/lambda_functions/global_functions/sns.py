@@ -61,7 +61,7 @@ def publish_general_announcement(subject, content):
             print("Email not sent. Error message:"),
             print(e.response['Error']['Message'])
 
-def publish_course_announcement(subject, content, sender): #sender should be a teacher's email
+def publish_course_announcement(subject, content): #sender should be a teacher's email
 
     topicArn = os.environ['SNS_TOPIC_ARN']
     subscribers = list_subscribers(topicArn)
@@ -69,7 +69,7 @@ def publish_course_announcement(subject, content, sender): #sender should be a t
     subject = subject
     body_text = content
     # body_html = '<p>Hello from <b>Amazon SES!</b></p>'
-    email_sender = 'l2pma.addmin@gmail.com' # will never change, similar to admin@gmail.com
+    email_sender = 'teacher@gmail.com' # will never change, similar to admin@gmail.com
 
     for subscriber in subscribers:
         try:
