@@ -149,14 +149,17 @@ function Chat({ userInfo }) {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <TransitionModal open={openContactList} style={modalStyle}>
+      <TransitionModal
+        open={openContactList}
+        handleClose={() => {
+          setOpenContactList(false);
+        }}
+        style={modalStyle}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography variant="h6" sx={{ ml: 2 }}>
+          <Typography variant="h6" sx={{ ml: 2, mb:1 }}>
             New Chat
           </Typography>
-          <IconButton onClick={() => setOpenContactList(false)}>
-            <CloseIcon />
-          </IconButton>
+
         </Box>
         <Divider />
         <Box>
