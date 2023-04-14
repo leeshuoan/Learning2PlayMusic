@@ -26,7 +26,6 @@ const NewCourseMaterialsForm = ({ userInfo }) => {
   const [fileName, setFileName] = useState("");
   const [title, setTitle] = useState("");
   const [base64Attachment, setBase64Attachment] = useState(""); // base 64 file
-  // todo : handle when there is already an s3 link for the material
 
   // file handling
   const fileToBase64 = (file, callback) => {
@@ -58,14 +57,18 @@ const NewCourseMaterialsForm = ({ userInfo }) => {
     linkToDownloadUploadedFile.click();
     document.body.removeChild(linkToDownloadUploadedFile);
   };
-  // helper functions
-  function buildRequestBody(materialTypeStr) {
+  const cleanMaterialLink = () => {
     let cleanedLink = embeddedLink;
     if (!embeddedLink.startsWith("https://") && !embeddedLink.startsWith("http://")) {
       cleanedLink = "https://" + embeddedLink;
     } else {
       cleanedLink = embeddedLink;
     }
+    return cleanedLink;
+  };
+  // helper functions
+  function buildRequestBody(materialTypeStr) {
+    var cleanedLink = materialTypeStr == "Link" ? cleanMaterialLink() : "";
 
     const requestBodyObject = {
       courseId: courseid,

@@ -14,11 +14,14 @@ const ViewCourseMaterialsForm = ({ userInfo }) => {
 
   const [open, setOpen] = useState(true);
   const [course, setCourse] = useState({});
-  const [date, setDate] = useState(null);
-  const [embeddedLink, setEmbeddedLink] = useState("");
-  const [title, setTitle] = useState("");
-  const [fileName, setFileName] = useState("");
-  const [s3Url, setS3Url] = useState(""); // s3 link
+  const [courseMaterial, setCourseMaterial] = useState({
+    MaterialLink: "",
+    MaterialLessonDate: "",
+    MaterialType: "",
+    MaterialAttachment: "",
+    MaterialTitle: "",
+    MaterialAttachmentFileName: "",
+  });
 
   async function request(endpoint) {
     const response = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
@@ -34,10 +37,7 @@ const ViewCourseMaterialsForm = ({ userInfo }) => {
 
   useEffect(() => {
     async function fetchData() {
-      const [data1, data2] = await Promise.all([getCourseAPI, getMaterialAPI]);
-
-      console.log(data1[0]);
-      console.log(data2);
+      const [data1, data] = await Promise.all([getCourseAPI, getMaterialAPI]);
       let courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
@@ -46,18 +46,20 @@ const ViewCourseMaterialsForm = ({ userInfo }) => {
       };
       setCourse(courseData);
 
-      let fetchedDate = data2.MaterialLessonDate.split("T")[0];
-      setTitle(data2.MaterialTitle);
-      setEmbeddedLink(data2.MaterialLink);
-      console.log(data2.MaterialLink);
-      setS3Url(data2.MaterialAttachment);
-      setFileName(data2.MaterialAttachmentFileName);
-      setDate(fetchedDate);
-      console.log(fetchedDate);
+      var dateObj = new Date(data.MaterialLessonDate);
+      const materialData = {
+        MaterialLessonDate: `${dateObj.toLocaleDateString()}`,
+        MaterialLink: data.MaterialLink,
+        MaterialType: data.MaterialType,
+        MaterialAttachment: data.MaterialAttachment,
+        MaterialTitle: data.MaterialTitle,
+        MaterialAttachmentFileName: data.MaterialAttachmentFileName,
+      };
+      setCourseMaterial(materialData);
+      console.log(courseData);
+      console.log(materialData);
     }
-    fetchData().then(() => {
-      setOpen(false);
-    });
+    fetchData().then(() => setOpen(false));
   }, []);
 
   // ========================================================================================================================
@@ -86,31 +88,30 @@ const ViewCourseMaterialsForm = ({ userInfo }) => {
             </Typography>
 
             {/* view */}
-
             <Box sx={{ mt: 5 }}>
               <Typography variant="h6" sx={{ mt: 2 }}>
                 Title
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                {title}
+                {courseMaterial.MaterialTitle}
               </Typography>
               <Typography variant="h6" sx={{ mt: 2 }}>
                 Date
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                {date}
+                {courseMaterial.MaterialLessonDate}
               </Typography>
               <Typography variant="h6" sx={{ mt: 2 }}>
                 Attachment
               </Typography>
               <Typography variant="body1" sx={{ mb: 1 }}>
-                {embeddedLink != "" ? (
-                  <a href={embeddedLink} target="_blank">
-                    {embeddedLink}
+                {courseMaterial.MaterialType != "PDF" ? (
+                  <a href={courseMaterial.MaterialLink} target="_blank">
+                    {courseMaterial.MaterialLink}
                   </a>
                 ) : (
-                  <a href={s3Url} target="_blank">
-                    {fileName}
+                  <a href={courseMaterial.MaterialAttachment} target="_blank">
+                    {courseMaterial.MaterialAttachmentFileName}
                   </a>
                 )}
               </Typography>
