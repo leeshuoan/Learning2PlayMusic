@@ -155,8 +155,9 @@ const UserCourse = ({ userInfo }) => {
           report["Available"] = false;
         }
         const formattedDate = date.toLocaleDateString();
-        return { ...report, id, availableDate: formattedDate };
+        return { ...report, id, availableDate: formattedDate, sortDate: date };
       });
+      progressReportData.sort((a, b) => b.sortDate - a.sortDate);
       setCourseProgressReport(progressReportData);
 
       data7.forEach((student) => {
