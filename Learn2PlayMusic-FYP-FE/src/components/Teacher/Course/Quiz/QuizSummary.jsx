@@ -51,6 +51,7 @@ const QuizSummary = (userInfo) => {
         timeslot: fetchedCourseData[0].CourseSlot,
         teacher: fetchedCourseData[0].TeacherName,
       };
+      console.log(courseData);
       setCourse(courseData);
 
       let quizPerformance;
@@ -66,7 +67,7 @@ const QuizSummary = (userInfo) => {
       fetchedQuizData = { ...fetchedQuizData, quizPerformance, AverageScorePercent };
       setQuiz(fetchedQuizData);
 
-      console.log(fetchedQuizQuestionData);
+
       let questionsData = fetchedQuizQuestionData.map((q) => {
         let questionId = q.SK.split("Question#")[1];
         let percentCorrect = q.Correct == 0 || q.Attempts == 0 ? 0 : Math.round((q.Correct / q.Attempts) * 10000) / 100;
@@ -142,7 +143,6 @@ const QuizSummary = (userInfo) => {
           {quizQuestions.map((question) => {
             questionCounter++;
             let questionImage = question.QuestionImage ? question.QuestionImage : null;
-            console.log(questionImage);
             return (
               <Grid item xs={12} sm={12} md={12}>
                 <Accordion id={question.SK} key={question.SK} aria-controls={question.SK} sx={{ border: "1px solid rgba(0,0,0,0.05)", borderRadius: 4 }}>

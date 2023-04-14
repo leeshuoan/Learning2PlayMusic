@@ -54,7 +54,6 @@ const StudentProgressReport = (report) => {
     setLoading(true);
     e.preventDefault();
     for (let key in evaluation) {
-      console.log(evaluation[key])
       if (evaluation[key] === "") {
         toast.error("Please check all the checkboxes");
         setLoading(false);
@@ -95,7 +94,6 @@ const StudentProgressReport = (report) => {
 
   return (
     <>
-      {console.log(report)}
       <Box sx={{ display: report.report.Available ? "block" : "none" }}>
         <Divider sx={{ my: 2 }} />
         <Typography variant="subtitle1">Available on: {report.report.AvailableDate == "" ? "-" : new Date(report.report.AvailableDate).toLocaleDateString() + " " + new Date(report.report.AvailableDate).toLocaleTimeString()}</Typography>
