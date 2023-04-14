@@ -823,15 +823,20 @@ const TeacherCourse = ({ userInfo }) => {
                   ""
                 ) : (
                   <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={3} md={6}>
                       <Typography variant="subtitle2">HOMEWORK TITLE</Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={3} md={2}>
+                      <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
+                        ASSIGNED DATE
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={3} md={2}>
                       <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
                         DUE DATE
                       </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={3} md={2}>
                       <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
                         ACTIONS
                       </Typography>
@@ -846,12 +851,21 @@ const TeacherCourse = ({ userInfo }) => {
                   courseHomework.map((homework, key) => (
                     <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
                       <Grid container>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={3} md={6}>
                           <Typography variant="body1" sx={{ color: "primary.main" }}>
                             <Link onClick={() => navigate(`/teacher/course/${courseid}/homework/${homework.id}`)}>{homework.HomeworkTitle}</Link>
                           </Typography>
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={3} md={2}>
+                          <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
+                            {homework.HomeworkAssignedDate}
+                          </Typography>
+
+                          <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
+                            Assigned Date: {homework.HomeworkAssignedDate}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={3} md={2}>
                           <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
                             {homework.HomeworkDueDate}
                           </Typography>
@@ -861,7 +875,10 @@ const TeacherCourse = ({ userInfo }) => {
                           </Typography>
                         </Grid>
 
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={3} md={2}>
+                          <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
+                            Actions:
+                          </Typography>
                           <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2} sx={{ justifyContent: "center", alignItems: "center" }}>
                             <Typography
                               variant="button"

@@ -26,12 +26,16 @@ export const handleCourseAnnouncements = async (getCourseAnnouncementsAPI, setCo
 };
 export const handleCourseHomework = async (getHomeworkAPI, setCourseHomework) => {
   const data = await getHomeworkAPI;
+
   const homeworkData = data.map((homework) => {
     const id = homework.SK.split("Homework#")[1];
+    const assignedDate = new Date(homework.HomeworkAssignedDate);
+    const formattedAssignedDate = `${assignedDate.toLocaleDateString()}`;
     const dueDate = new Date(homework.HomeworkDueDate);
     const formattedDueDate = `${dueDate.toLocaleDateString()} `;
-    return { ...homework, id, HomeworkDueDate: formattedDueDate };
+    return { ...homework, id, HomeworkDueDate: formattedDueDate, HomeworkAssignedDate: formattedAssignedDate, assignedDate: assignedDate };
   });
+  homeworkData.sort((a, b) => a.assignedDate - b.assignedDate);
   setCourseHomework(homeworkData);
 };
 export const handleCourseMaterial = async (getMaterialAPI, setCourseMaterial) => {

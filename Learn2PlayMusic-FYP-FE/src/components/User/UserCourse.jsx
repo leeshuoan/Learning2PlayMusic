@@ -90,18 +90,23 @@ const UserCourse = ({ userInfo }) => {
             data2.map(async (homework) => {
               const id = homework.SK.split("Homework#")[1];
               const date = new Date(homework.HomeworkDueDate);
-              const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+              const formattedDate = `${date.toLocaleDateString()} `;
+              // const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
               const homeworkFeedback = await fetchHomeworkFeedback(id);
-
+              const assignedDate = new Date(homework.HomeworkAssignedDate);
+              const formattedAssignedDate = `${assignedDate.toLocaleDateString()} `;
               return {
                 ...homework,
                 id,
                 HomeworkDueDate: formattedDate,
+                HomeworkAssignedDate: formattedAssignedDate,
                 Marked: homeworkFeedback.Marked,
                 NumAttempts: homeworkFeedback.NumAttempts,
+                assignedDate: assignedDate,
               };
             })
           );
+          homeworkData.sort((a, b) => a.assignedDate - b.assignedDate);
           return homeworkData;
         } catch (error) {
           console.log(error);
@@ -347,21 +352,26 @@ const UserCourse = ({ userInfo }) => {
 
             <Box sx={{ display: category == "homework" ? "block" : "none" }}>
               <Grid container spacing={2} sx={{ px: 4, mt: 2, display: { xs: "none", sm: "flex" } }}>
-                <Grid item xs={3}>
+                <Grid item xs={4}>
                   <Typography variant="subtitle2">HOMEWORK TITLE</Typography>
                 </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
+                <Grid item xs={2}>
+                  <Typography variant="subtitle2" align="center">
+                    ASSIGNED DATE
+                  </Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <Typography variant="subtitle2" align="center">
                     DUE DATE
                   </Typography>
                 </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
+                <Grid item xs={2}>
+                  <Typography variant="subtitle2" align="center">
                     SUBMISSIONS
                   </Typography>
                 </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="subtitle2" sx={{ textAlign: "center" }}>
+                <Grid item xs={2}>
+                  <Typography variant="subtitle2" align="center">
                     EVALUATION STATUS
                   </Typography>
                 </Grid>
@@ -369,12 +379,20 @@ const UserCourse = ({ userInfo }) => {
               {courseHomework.map((homework, key) => (
                 <Card key={key} sx={{ py: 3, px: 4, mt: 2 }}>
                   <Grid container spacing={2}>
-                    <Grid item xs={12} sm={3}>
+                    <Grid item xs={12} sm={4}>
                       <Typography variant="body1" sx={{ color: "primary.main" }}>
                         <Link onClick={() => navigate("" + homework.id)}>{homework.HomeworkTitle}</Link>
                       </Typography>
                     </Grid>
-                    <Grid item xs={12} sm={3}>
+                    <Grid item xs={12} sm={2}>
+                      <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
+                        {homework.HomeworkAssignedDate}
+                      </Typography>
+                      <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
+                        Assigned Date: {homework.HomeworkAssignedDate}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
                       <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
                         {homework.HomeworkDueDate}
                       </Typography>
@@ -382,7 +400,7 @@ const UserCourse = ({ userInfo }) => {
                         Due Date: {homework.HomeworkDueDate}
                       </Typography>
                     </Grid>
-                    <Grid item xs={12} sm={3}>
+                    <Grid item xs={12} sm={2}>
                       <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? "grey" : "" }}>
                         {homework.NumAttempts ? homework.NumAttempts : "-"}
                       </Typography>
@@ -390,12 +408,12 @@ const UserCourse = ({ userInfo }) => {
                         Submissions: {homework.NumAttempts}
                       </Typography>
                     </Grid>
-                    <Grid item xs={12} sm={3}>
+                    <Grid item xs={12} sm={2}>
                       <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" } }}>
                         {homework.Marked ? <Link onClick={() => navigate(homework.id + "/feedback")}>Marked</Link> : "-"}
                       </Typography>
                       <Typography variant="body1" sx={{ display: { xs: "block", sm: "none" } }}>
-                        Evaluation Status: <Link onClick={() => navigate(homework.id + "/feedback")}>{homework.Marked ? "Marked" : ""}</Link>
+                        Evaluation Status: {homework.Marked ? <Link onClick={() => navigate(homework.id + "/feedback")}> Marked</Link> : "-"}
                       </Typography>
                     </Grid>
                   </Grid>
