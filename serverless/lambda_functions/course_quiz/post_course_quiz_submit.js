@@ -93,7 +93,7 @@ async function lambda_handler(event, context) {
         PK: `Course#${courseId}`,
         SK: `Quiz#${quizId}`,
       },
-      UpdateExpression: "set NumberOfAttempts = NumberOfStudentsAttempted + :val, TotalScore = TotalScore + :quizscore",
+      UpdateExpression: "set NumberOfAttempts = NumberOfAttempts + :val, TotalScore = TotalScore + :quizscore",
       ExpressionAttributeValues: {
         ":quizscore": quizScore,
         ":val": 1,
