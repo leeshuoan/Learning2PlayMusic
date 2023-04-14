@@ -55,18 +55,17 @@ const QuizSummary = (userInfo) => {
       setCourse(courseData);
 
       let quizPerformance;
-      let AverageScorePercent = fetchedQuizData.TotalScore == 0 || fetchedQuizData.NumberOfAttempts == 0 ? 0 : parseFloat(((fetchedQuizData.TotalScore / fetchedQuizData.NumberOfAttempts / fetchedQuizQuestionData.length) * 100).toFixed(2));
+      let AverageScorePercent = fetchedQuizData.TotalScore == 0 || fetchedQuizData.NumberOfAttempts == 0 ? 0 : parseFloat(((fetchedQuizData.TotalScore / fetchedQuizData.NumberOfAttempts / fetchedQuizData.QuestionCount) * 100).toFixed(2));
       console.log(AverageScorePercent);
       if (AverageScorePercent == 0) {
         // edge case of everyone get 0
         quizPerformance = fetchedQuizData.NumberOfAttempts > 0 ? red : "";
       } else {
-        // pass or fail color
-        quizPerformance = AverageScorePercent >= fetchedQuizQuestionData.length / 2 ? green : red;
+        // pass or fail color 
+        quizPerformance = AverageScorePercent >= 50 ? green : red;
       }
       fetchedQuizData = { ...fetchedQuizData, quizPerformance, AverageScorePercent };
       setQuiz(fetchedQuizData);
-
 
       let questionsData = fetchedQuizQuestionData.map((q) => {
         let questionId = q.SK.split("Question#")[1];
