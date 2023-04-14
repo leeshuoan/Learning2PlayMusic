@@ -281,6 +281,8 @@ const UserCourse = ({ userInfo }) => {
                 <Box m={2}>
                   <MaterialReactTable
                     columns={columns}
+                    enableFullScreenToggle={false}
+                    enableDensityToggle={false}
                     data={courseMaterial}
                     initialState={{ density: "compact" }}
                     renderTopToolbarCustomActions={({ table }) => {

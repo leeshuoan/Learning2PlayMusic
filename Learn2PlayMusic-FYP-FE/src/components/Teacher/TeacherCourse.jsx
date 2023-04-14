@@ -714,7 +714,7 @@ const TeacherCourse = ({ userInfo }) => {
                 </Box>
                 {/* end header */}
 
-                <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableHiding={false} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
+                <MaterialReactTable columns={courseMaterialsColumns} data={courseMaterial} enableFullScreenToggle={false} enableDensityToggle={false} initialState={{ density: "compact" }} renderTopToolbarCustomActions={({ table }) => {}}></MaterialReactTable>
               </Card>
             </Box>
             {/* quiz ==================================================================================================== */}

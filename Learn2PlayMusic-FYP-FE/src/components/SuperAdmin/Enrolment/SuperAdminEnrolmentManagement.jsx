@@ -81,7 +81,7 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
         }
         return usr;
       }, {});
-      if (userAttributes.Role == "User" || userAttributes.Role == "Teacher") {
+      if (userAttributes.Role == "User" ) {
         user.Attributes = userAttributes;
         if (user.Attributes.Role != "SuperAdmin" && user.Enabled) {
           fetchedUserIds.push(user.Username);
@@ -281,11 +281,9 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
                           return (
                             <span key={course.SK + course.PK}>
                               <br />
-                              {row.original.role == "User" ? (
-                                <IconButton onClick={() => unEnrolUser(course, row.original)}>
-                                  <CloseIcon fontSize="inherit" color="error"></CloseIcon>
-                                </IconButton>
-                              ) : null}
+                              <IconButton onClick={() => unEnrolUser(course, row.original)}>
+                                <CloseIcon fontSize="inherit" color="error"></CloseIcon>
+                              </IconButton>
                               {course.CourseName} on {course.CourseSlot}
                             </span>
                           );
@@ -295,9 +293,9 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
               </Box>
             )}></MaterialReactTable>
         </Box>
-        <Typography variant="body2" sx={{ m: 1, my: 4 }}>
-          <b>Note:</b> Enrollment of teachers should be done on the course page, with one teacher assigned per course. Please note that teacher enrollments will have view-only access.
-        </Typography>
+        {/* <Typography variant="body2" sx={{ m: 1, my: 4 }}>
+          <b>Note:</b> Enrollment of teachers should be done on the course page, with one teacher assigned per course.
+        </Typography> */}
         <div>
           <br></br>
         </div>
