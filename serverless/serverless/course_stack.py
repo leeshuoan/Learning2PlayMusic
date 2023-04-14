@@ -146,6 +146,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.get_course_homework.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=1024,
         )
         post_course_homework = _lambda.Function(
             self,
@@ -154,6 +155,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.post_course_homework.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
         delete_course_homework = _lambda.Function(
             self,
@@ -162,6 +164,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.delete_course_homework.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
         put_course_homework = _lambda.Function(
             self,
@@ -170,6 +173,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.put_course_homework.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
         # Create /course/homework/feedback AWS Lambda function
         get_course_homework_feedback = _lambda.Function(
@@ -182,6 +186,7 @@ class CourseStack(Stack):
             environment={
                 "HOMEWORK_SUBMISSION_BUCKET_NAME": L2PMA_homework_submission_bucket.bucket_name
             },
+            memory_size=512,
         )
         post_course_homework_feedback = _lambda.Function(
             self,
@@ -190,6 +195,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_HOMEWORK_FUNCTIONS_FOLDER}.post_course_homework_feedback.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=S3_DYNAMODB_ROLE,
+            memory_size=512,
         )
 
         # /course/homework/submit function
@@ -203,6 +209,7 @@ class CourseStack(Stack):
             environment={
                 "HOMEWORK_SUBMISSION_BUCKET_NAME": L2PMA_homework_submission_bucket.bucket_name
             },
+            memory_size=512,
         )
 
         # /course/announcement Functions
@@ -223,6 +230,7 @@ class CourseStack(Stack):
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
             environment={"SNS_TOPIC_ARN": topic.topic_arn},
+            memory_size=512,
         )
         delete_course_announcement = _lambda.Function(
             self,
@@ -231,6 +239,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.delete_course_announcement.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
         put_course_announcement = _lambda.Function(
             self,
@@ -239,6 +248,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_ANNOUNCEMENT_FUNCTIONS_FOLDER}.put_course_announcement.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
 
         # /course Functions
@@ -249,6 +259,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_FUNCTIONS_FOLDER}.get_course.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
         post_course = _lambda.Function(
             self,
@@ -257,6 +268,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_FUNCTIONS_FOLDER}.post_course.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
         put_course = _lambda.Function(
             self,
@@ -265,6 +277,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_FUNCTIONS_FOLDER}.put_course.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
         delete_course = _lambda.Function(
             self,
@@ -274,6 +287,7 @@ class CourseStack(Stack):
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
             timeout=Duration.seconds(840),
+            memory_size=512,
         )
 
         # /course/student
@@ -284,6 +298,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_STUDENT_FUNCTIONS_FOLDER}.get_course_student.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
 
         # /course/teacher
@@ -294,6 +309,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_TEACHER_FUNCTIONS_FOLDER}.get_course_teacher.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
 
         # /course/material
@@ -315,6 +331,7 @@ class CourseStack(Stack):
             environment={
                 "MATERIAL_ATTACHMENT_BUCKET_NAME": L2PMA_material_attachment_bucket.bucket_name
             },
+            memory_size=512,
         )
         delete_course_material = _lambda.Function(
             self,
@@ -326,6 +343,7 @@ class CourseStack(Stack):
             environment={
                 "MATERIAL_ATTACHMENT_BUCKET_NAME": L2PMA_material_attachment_bucket.bucket_name
             },
+            memory_size=512,
         )
         put_course_material = _lambda.Function(
             self,
@@ -337,6 +355,7 @@ class CourseStack(Stack):
             environment={
                 "MATERIAL_ATTACHMENT_BUCKET_NAME": L2PMA_material_attachment_bucket.bucket_name
             },
+            memory_size=512,
         )
 
         # /course/classlist
@@ -348,7 +367,7 @@ class CourseStack(Stack):
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
             timeout=Duration.seconds(840),
-            memory_size=512,
+            memory_size=1024,
         )
 
         # /course/quiz/
@@ -369,6 +388,7 @@ class CourseStack(Stack):
                 ),
             ),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
 
         post_course_quiz = _lambda.Function(
@@ -378,6 +398,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.post_course_quiz.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
 
         put_course_quiz = _lambda.Function(
@@ -387,6 +408,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.put_course_quiz.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
 
         delete_course_quiz = _lambda.Function(
@@ -396,6 +418,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_QUIZ_FUNCTIONS_FOLDER}.delete_course_quiz.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=LAMBDA_ROLE,
+            memory_size=512,
         )
         # /course/quiz/submit
         post_course_quiz_submit = _lambda.Function(
@@ -407,6 +430,7 @@ class CourseStack(Stack):
                 f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"
             ),
             role=S3_DYNAMODB_ROLE,
+            memory_size=512,
         )
         # /course/quiz/question Functions
         get_course_quiz_question = _lambda.Function(
@@ -419,6 +443,7 @@ class CourseStack(Stack):
             environment={
                 "QUESTION_IMAGE_BUCKET_NAME": L2PMA_question_image_bucket.bucket_name
             },
+            memory_size=512,
         )
         post_course_quiz_question = _lambda.Function(
             self,
@@ -430,6 +455,7 @@ class CourseStack(Stack):
             environment={
                 "QUESTION_IMAGE_BUCKET_NAME": L2PMA_question_image_bucket.bucket_name
             },
+            memory_size=512,
         )
         delete_course_quiz_question = _lambda.Function(
             self,
@@ -440,6 +466,7 @@ class CourseStack(Stack):
                 f"{FUNCTIONS_FOLDER}/{COURSE_QUIZ_FUNCTIONS_FOLDER}"
             ),
             role=S3_DYNAMODB_ROLE,
+            memory_size=512,
         )
         put_course_quiz_question = _lambda.Function(
             self,
@@ -451,6 +478,7 @@ class CourseStack(Stack):
             environment={
                 "QUESTION_IMAGE_BUCKET_NAME": L2PMA_question_image_bucket.bucket_name
             },
+            memory_size=512,
         )
 
         # /course/report Functions
@@ -461,6 +489,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.get_course_report.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=S3_DYNAMODB_ROLE,
+            memory_size=512,
         )
         post_course_report = _lambda.Function(
             self,
@@ -470,6 +499,7 @@ class CourseStack(Stack):
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=S3_DYNAMODB_ROLE,
             timeout=Duration.seconds(840),
+            memory_size=512,
         )
         put_course_report = _lambda.Function(
             self,
@@ -478,6 +508,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.put_course_report.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=S3_DYNAMODB_ROLE,
+            memory_size=512,
         )
         delete_course_report = _lambda.Function(
             self,
@@ -486,6 +517,7 @@ class CourseStack(Stack):
             handler=f"{COURSE_REPORT_FUNCTIONS_FOLDERS}.delete_course_report.lambda_handler",
             code=_lambda.Code.from_asset(FUNCTIONS_FOLDER),
             role=S3_DYNAMODB_ROLE,
+            memory_size=512,
         )
 
         ##############
