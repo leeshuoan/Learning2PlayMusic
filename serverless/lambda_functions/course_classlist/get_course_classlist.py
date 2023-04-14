@@ -79,7 +79,7 @@ def lambda_handler(event, context):
             ######################################
 
             participation_points = total_quiz_score + total_homework_score
-            student['ParticipationPoints'] = participation_points
+            student['ParticipationPoints'] = int(participation_points)
             ###########################
             ### GET PROGRESS REPORT ###
             ###########################

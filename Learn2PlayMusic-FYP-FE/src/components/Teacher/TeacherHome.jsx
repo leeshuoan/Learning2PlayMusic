@@ -93,7 +93,7 @@ const TeacherHome = ({ userInfo }) => {
         <Grid container spacing={2} sx={{ pt: 2 }}>
           <Grid item xs={12} md={12}>
             <Card sx={{ py: 3, px: 4 }}>
-              <Typography variant="h6">Annoucements</Typography>
+              <Typography variant="h6">Announcements</Typography>
               {announcements.map((announcement, index) => (
                 <Card variant="outlined" sx={{ boxShadow: "none", my: 1, p: 2 }} key={index}>
                   <Typography variant="subtitle2">{announcement.Title}</Typography>
