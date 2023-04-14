@@ -239,7 +239,6 @@ const TeacherCourse = ({ userInfo }) => {
         materialId: selectedMaterial,
       }),
     }).then((response) => {
-      console.log(response);
       if (response.ok) {
         setCourseMaterial(courseMaterial.filter((material) => material.id !== selectedMaterial));
         toast.success("Material deleted successfully");
@@ -274,7 +273,6 @@ const TeacherCourse = ({ userInfo }) => {
       }),
     });
     if (res.status !== 200) {
-      console.log(res);
       toast.error("An unexpected error occured");
       return;
     }
@@ -287,7 +285,6 @@ const TeacherCourse = ({ userInfo }) => {
   }
 
   async function deleteHomework() {
-    console.log(selectedHomework);
     const res = await fetch(`${import.meta.env.VITE_API_URL}/course/homework`, {
       method: "DELETE",
       headers: {
@@ -300,7 +297,6 @@ const TeacherCourse = ({ userInfo }) => {
       }),
     });
     if (res.status !== 200) {
-      console.log(res);
       toast.error("An unexpected error occured");
       return;
     }
@@ -313,7 +309,6 @@ const TeacherCourse = ({ userInfo }) => {
   }
 
   async function changeQuizVisibility(newVisibility) {
-    console.log(selectedQuiz);
     const newQuizData = {
       visibility: newVisibility,
       quizId: selectedQuiz.id,
@@ -322,7 +317,7 @@ const TeacherCourse = ({ userInfo }) => {
       quizTitle: selectedQuiz.QuizTitle,
       courseId: courseid,
     };
-    console.log(newQuizData);
+
     const res = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
       method: "PUT",
       headers: {
@@ -332,7 +327,6 @@ const TeacherCourse = ({ userInfo }) => {
       body: JSON.stringify(newQuizData),
     });
     if (res.status !== 202) {
-      console.log(res);
       toast.error("An unexpected error occured");
       return;
     }
@@ -350,23 +344,18 @@ const TeacherCourse = ({ userInfo }) => {
         handleCourseInfo(getCourseAPI, setCourse);
         switch (category) {
           case "classlist":
-            console.log("classlist");
             await handleCourseClassList(getClassListAPI, setClassList);
             break;
           case "announcement":
-            console.log("announcement");
             await handleCourseAnnouncements(getCourseAnnouncementsAPI, setCourseAnnouncements);
             break;
           case "material":
-            console.log("material");
             await handleCourseMaterial(getMaterialAPI, setCourseMaterial);
             break;
           case "quiz":
-            console.log("quiz");
             await handleCourseQuiz(getQuizAPI, setCourseQuiz);
             break;
           case "homework":
-            console.log("homework");
             await handleCourseHomework(getHomeworkAPI, setCourseHomework);
             break;
           default:
@@ -659,39 +648,37 @@ const TeacherCourse = ({ userInfo }) => {
                 </Button>
               </Box>
               {/* end header */}
-              {courseAnnouncements
-                .sort((a, b) => b.Date - a.Date)
-                .map((announcement, key) => (
-                  <Card key={key} variant="outlined" sx={{ boxShadow: "none", mt: 2, p: 2 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" } }}>
-                      <Typography variant="subtitle1" sx={{}}>
-                        {announcement.Title}
-                      </Typography>
-                      <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
-                        <Typography
-                          variant="button"
-                          onClick={() => {
-                            var endpt = category == "announcement" ? `edit/${announcement.id}` : `announcement/edit/${announcement.id}`;
-                            navigate(endpt);
-                          }}>
-                          <Link underline="hover">Edit</Link>
-                        </Typography>
-                        <Typography
-                          variant="button"
-                          onClick={() => {
-                            setDeleteAnnouncementModal(true);
-                            setSelectedAnnouncement(announcement.id);
-                          }}>
-                          <Link underline="hover">Delete</Link>
-                        </Typography>
-                      </Stack>
-                    </Box>
-                    <Typography variant="subsubtitle" sx={{ mb: 1 }}>
-                      Posted {announcement.formattedDate}
+              {courseAnnouncements.map((announcement, key) => (
+                <Card key={key} variant="outlined" sx={{ boxShadow: "none", mt: 2, p: 2 }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" } }}>
+                    <Typography variant="subtitle1" sx={{}}>
+                      {announcement.Title}
                     </Typography>
-                    <Typography variant="body2">{announcement.Content}</Typography>
-                  </Card>
-                ))}
+                    <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} spacing={2}>
+                      <Typography
+                        variant="button"
+                        onClick={() => {
+                          var endpt = category == "announcement" ? `edit/${announcement.id}` : `announcement/edit/${announcement.id}`;
+                          navigate(endpt);
+                        }}>
+                        <Link underline="hover">Edit</Link>
+                      </Typography>
+                      <Typography
+                        variant="button"
+                        onClick={() => {
+                          setDeleteAnnouncementModal(true);
+                          setSelectedAnnouncement(announcement.id);
+                        }}>
+                        <Link underline="hover">Delete</Link>
+                      </Typography>
+                    </Stack>
+                  </Box>
+                  <Typography variant="subsubtitle" sx={{ mb: 1 }}>
+                    Posted {announcement.formattedDate}
+                  </Typography>
+                  <Typography variant="body2">{announcement.Content}</Typography>
+                </Card>
+              ))}
               {/* <MaterialReactTable
                 columns={courseAnnouncementColumns}
                 data={courseAnnouncements}

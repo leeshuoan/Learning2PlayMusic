@@ -21,6 +21,7 @@ export const handleCourseAnnouncements = async (getCourseAnnouncementsAPI, setCo
     const formattedDate = date.toLocaleDateString(); // change to pass date obj so that react table wil sort!
     return { ...announcement, id, Date: date, formattedDate: formattedDate };
   });
+  announcementsData.sort((a, b) => b.Date - a.Date);
   setCourseAnnouncements(announcementsData);
 };
 export const handleCourseHomework = async (getHomeworkAPI, setCourseHomework) => {

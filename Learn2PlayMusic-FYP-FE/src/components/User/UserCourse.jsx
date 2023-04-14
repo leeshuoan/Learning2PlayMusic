@@ -128,7 +128,6 @@ const UserCourse = ({ userInfo }) => {
       });
       setCourseMaterial(materialData);
 
-      console.log(data4);
       const quizData = data4.map((quiz) => {
         const id = quiz.SK.split("Quiz#")[1];
         const date = new Date(quiz.QuizDueDate);
@@ -141,8 +140,9 @@ const UserCourse = ({ userInfo }) => {
         const id = announcement.SK.split("Announcement#")[1];
         const date = new Date(announcement.Date);
         const formattedDate = date.toLocaleDateString();
-        return { ...announcement, id, Date: formattedDate };
+        return { ...announcement, id, Date: formattedDate, sortDate: date };
       });
+      announcementsData.sort((a, b) => b.sortDate - a.sortDate);
       setCourseAnnouncement(announcementsData);
 
       const progressReportData = data6.map((report) => {
@@ -157,22 +157,19 @@ const UserCourse = ({ userInfo }) => {
         const formattedDate = date.toLocaleDateString();
         return { ...report, id, availableDate: formattedDate };
       });
-      console.log(progressReportData);
       setCourseProgressReport(progressReportData);
 
-      data7.forEach(student => {
+      data7.forEach((student) => {
         if (student.studentId == userInfo.id) {
           setParticipationPoints(student.ParticipationPoints);
         }
       });
-
     }
 
     fetchData().then(() => {
       setOpen(false);
     });
   }, []);
-
 
   const menuNavigate = (option) => {
     if (option == "Announcements") navigate(`/home/course/${course.id}/announcement`);
@@ -385,7 +382,6 @@ const UserCourse = ({ userInfo }) => {
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-
                       <Typography variant="body1" sx={{ textAlign: "center", display: { xs: "none", sm: "block" }, color: homework.submission == 0 ? "grey" : "" }}>
                         {homework.NumAttempts ? homework.NumAttempts : "-"}
                       </Typography>
