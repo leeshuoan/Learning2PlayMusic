@@ -85,8 +85,20 @@ async function lambda_handler(event, context) {
         ":val": 1,
       },
     };
-
     await dynamodb.update(updateStudentQuizParams).promise();
+
+    const updateQuizParams = {
+      TableName: "LMS",
+      Key: {
+        PK: `Course#${courseId}`,
+        SK: `Quiz#${quizId}`,
+      },
+      UpdateExpression: "set NumberOfAttempts = NumberOfStudentsAttempted + :val, TotalScore = TotalScore + :quizscore",
+      ExpressionAttributeValues: {
+        ":quizscore": quizScore,
+        ":val": 1,
+      },
+    }
 
     return response_200(`Quiz ${quizId} successfully submitted`, {
       "score": quizScore
