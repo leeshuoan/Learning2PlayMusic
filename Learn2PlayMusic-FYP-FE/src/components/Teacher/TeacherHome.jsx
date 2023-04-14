@@ -26,6 +26,7 @@ const TeacherHome = ({ userInfo }) => {
     async function fetchData() {
       try {
         const [courses, announcements] = await Promise.all([fetchCourses, fetchAnnouncements]);
+        announcements.sort((a, b) => new Date(b.SK.split("Date#")[1]) - new Date(a.SK.split("Date#")[1]));
         const announcementsData = announcements.slice(0, 3).map((a) => ({
           ...a,
           date: new Date(a.SK.split("Date#")[1]).toLocaleDateString(),
