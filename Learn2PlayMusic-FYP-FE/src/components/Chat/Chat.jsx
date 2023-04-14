@@ -15,7 +15,7 @@ function Chat({ userInfo }) {
   const drawerWidth = 240;
   const [contacts, setContacts] = useState([{ id: "", name: "" }]);
   const [chats, setChats] = useState([]);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(true);
   const [openLoading, setOpenLoading] = useState(true);
   const [reload, setReload] = useState(false);
   const [openContactList, setOpenContactList] = useState(false);
