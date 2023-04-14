@@ -29,8 +29,8 @@ def lambda_handler(event, context):
             "QuizTitle": quiz_title,
             "QuizMaxAttempts": quiz_max_attempts,
             "QuizDescription": quiz_description,
-            "NumberOfStudentsAttempted": 0,
-            "AverageScore": 0,
+            "NumberOfAttempts": 0,
+            "TotalScore": 0,
             "Visibility": visibility,
             "QuestionCount": 0
 
