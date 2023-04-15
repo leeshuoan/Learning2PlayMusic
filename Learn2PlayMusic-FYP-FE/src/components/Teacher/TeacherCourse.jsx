@@ -709,7 +709,7 @@ const TeacherCourse = ({ userInfo }) => {
                     onClick={() => {
                       navigate("new");
                     }}>
-                    New Course Material
+                    New Class Material
                   </Button>
                 </Box>
                 {/* end header */}

@@ -122,7 +122,7 @@ const QuizSummary = (userInfo) => {
           </Grid>
           <Grid item xs={12} sm={12} md={5} lg={5}>
             <Typography variant="body1">
-              <b>Number of attempts:</b> {quiz.NumberOfAttempts == 0 ? "-" : quiz.NumberOfAttempts}
+              <b>Number of Attempts:</b> {quiz.NumberOfAttempts == 0 ? "-" : quiz.NumberOfAttempts}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={12} md={3} lg={3}>
