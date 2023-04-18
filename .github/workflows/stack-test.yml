@@ -19,7 +19,11 @@ jobs:
           python-version: "3.x"
 
       - name: Install dependencies
-        run: pip install aws-cdk.core aws-cdk.aws-s3 aws-cdk.assertions -r requirements.txt
+        run: |
+          cd serverless
+          python -m pip install --upgrade pip
+          python -m pip install -r "requirements.txt"
+          pip install aws-cdk.core aws-cdk.aws-s3 aws-cdk.assertions -r requirements.txt
 
       - name: Run tests
         run: |
