@@ -27,4 +27,7 @@ jobs:
 
       - name: Run tests
         run: |
+          cd serverless
+          cd tests
+          cd unit
           pytest test_course_stack.py
