@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import SuperAdminAppBar from "./SuperAdminAppBar";
 
 function DefaultAppBar({ role, handleResetRoles }) {
-  console.log(role);
   const theme = useTheme();
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);

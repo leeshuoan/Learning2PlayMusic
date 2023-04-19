@@ -26,7 +26,6 @@ const UserHome = ({ userInfo }) => {
     async function fetchData() {
       try {
         const [courses, announcements] = await Promise.all([fetchCourses, fetchAnnouncements]);
-        console.log(courses);
         if ("message" in courses) {
           setError(true);
         }

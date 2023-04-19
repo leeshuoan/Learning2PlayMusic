@@ -47,7 +47,6 @@ const UserClassMaterials = () => {
         setMaterial(mat)
 
       }).catch((error) => {
-        console.log(error)
         setOpen(false)
       })
 

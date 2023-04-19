@@ -33,7 +33,6 @@ export default function ConfirmDeleteQuestion({ question, handleClose, userInfo 
         handleClose();
       })
       .catch((err) => {
-        console.log(err);
         setOpen(false);
         handleClose();
         if (err.message == "Failed to fetch") {

@@ -145,7 +145,6 @@ const SuperAdminAnnouncementManagement = () => {
         return { id, date, content, title };
       });
       setAnnouncements(fetchedData);
-      console.log(fetchedData);
       setOpen(false);
     });
   }, [reloadData]);

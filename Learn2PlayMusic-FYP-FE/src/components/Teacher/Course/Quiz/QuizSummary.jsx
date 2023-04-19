@@ -42,7 +42,6 @@ const QuizSummary = (userInfo) => {
       try {
         [fetchedCourseData, fetchedQuizData, fetchedQuizQuestionData] = await Promise.all([getCourseAPI, getQuizAPI, getQuizQuestionAPI]);
       } catch (error) {
-        console.log(error);
       }
 
       let courseData = {
@@ -51,12 +50,10 @@ const QuizSummary = (userInfo) => {
         timeslot: fetchedCourseData[0].CourseSlot,
         teacher: fetchedCourseData[0].TeacherName,
       };
-      console.log(courseData);
       setCourse(courseData);
 
       let quizPerformance;
       let AverageScorePercent = fetchedQuizData.TotalScore == 0 || fetchedQuizData.NumberOfAttempts == 0 ? 0 : parseFloat(((fetchedQuizData.TotalScore / fetchedQuizData.NumberOfAttempts / fetchedQuizData.QuestionCount) * 100).toFixed(2));
-      console.log(AverageScorePercent);
       if (AverageScorePercent == 0) {
         // edge case of everyone get 0
         quizPerformance = fetchedQuizData.NumberOfAttempts > 0 ? red : "";
@@ -79,7 +76,6 @@ const QuizSummary = (userInfo) => {
         });
         return { ...q, questionId, percentCorrect, performance, optionsStats };
       });
-      console.log(questionsData);
       setQuizQuestions(questionsData);
     }
 

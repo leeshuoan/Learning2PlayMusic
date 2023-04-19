@@ -19,7 +19,6 @@ const PrivateRoutes = ({ userType }) => {
       .then((user) => {
         user.getSession((err, session) => {
           if (err) {
-            console.log(err);
             handleResetUserInfo();
           }
 
@@ -54,7 +53,6 @@ const PrivateRoutes = ({ userType }) => {
         });
       })
       .catch((err) => {
-        console.log(err);
         handleResetUserInfo();
         setLoading(false);
         setIsAuth(false);

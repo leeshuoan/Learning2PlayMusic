@@ -24,7 +24,6 @@ const QuizQuestionChart = ({ questionImage, data }) => {
       width: widthPercent + "%",
     };
   };
-  console.log(data);
   return (
     <div>
       {questionImage && <img src={questionImage} height="200" width="200" alt="question" />}

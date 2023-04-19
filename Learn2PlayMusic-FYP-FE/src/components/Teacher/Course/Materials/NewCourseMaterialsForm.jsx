@@ -110,7 +110,6 @@ const NewCourseMaterialsForm = ({ userInfo }) => {
     const materialTypeStr = file ? file.type.split("/")[1].toUpperCase() : "Link";
     const requestBody = buildRequestBody(materialTypeStr);
 
-    console.log(requestBody);
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/material`, {
       method: "POST",
       headers: {
@@ -147,7 +146,6 @@ const NewCourseMaterialsForm = ({ userInfo }) => {
     async function fetchData() {
       const data1 = await getCourseAPI;
 
-      console.log(data1[0]);
       let courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,

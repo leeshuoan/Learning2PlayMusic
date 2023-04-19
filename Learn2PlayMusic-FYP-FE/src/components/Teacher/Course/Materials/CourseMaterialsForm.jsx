@@ -98,7 +98,6 @@ const CourseMaterialsForm = ({ userInfo }) => {
     const requestBody = buildRequestBody(materialTypeStr);
     const apiUrl = type === "new" ? `${import.meta.env.VITE_API_URL}/course/material` : `${import.meta.env.VITE_API_URL}/course/material`;
     const method = type === "new" ? "POST" : "PUT";
-    console.log(requestBody);
     const response = await fetch(apiUrl, {
       method: method,
       headers: {
@@ -140,8 +139,6 @@ const CourseMaterialsForm = ({ userInfo }) => {
       } else {
         [data1, data2] = await Promise.all([getCourseAPI, getMaterialAPI]);
       }
-      console.log(data1[0]);
-      console.log(data2);
       let courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
@@ -154,7 +151,6 @@ const CourseMaterialsForm = ({ userInfo }) => {
         let fetchedDate = type == "view" ? data2.MaterialLessonDate.split("T")[0] : dayjs(data2.MaterialLessonDate, "YYYY-MM-DD");
         setTitle(data2.MaterialTitle);
         setEmbeddedLink(data2.MaterialLink);
-        console.log(data2.MaterialLink);
         setS3Url(data2.MaterialAttachment);
 
         if (type == "edit" && data2.MaterialLink == "") {
@@ -163,7 +159,6 @@ const CourseMaterialsForm = ({ userInfo }) => {
           // setFile(data2.MaterialAttachmentFileName);
         }
         setDate(fetchedDate);
-        console.log(fetchedDate);
       }
     }
     fetchData().then(() => {

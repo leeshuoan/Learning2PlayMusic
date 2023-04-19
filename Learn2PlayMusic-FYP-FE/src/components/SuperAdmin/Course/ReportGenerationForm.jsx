@@ -32,12 +32,6 @@ export default function ReportGenerationForm({ courseId, courseName, handleClose
         availableDate: date.add(1, "day").toISOString(),
       }),
     };
-    console.log(
-      JSON.stringify({
-        courseId: courseId,
-        availableDate: date.add(1, "day").toISOString(),
-      })
-    );
     const res = await fetch(endpoint, myInit);
     const data = await res.json();
     if (res.ok) {

@@ -90,7 +90,6 @@ function Chat({ userInfo }) {
           let name = "";
           let role = "";
           for (let k of contactKeys) {
-            console.log("k: ", k);
             if (k.endsWith("Id")) {
               id = contact[k];
               // role = k.split("Id")[0];
@@ -142,7 +141,6 @@ function Chat({ userInfo }) {
         });
       })
       .catch((err) => {
-        console.log(err);
         setOpenLoading(false);
       });
   };

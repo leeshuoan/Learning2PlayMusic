@@ -24,20 +24,16 @@ export default function ChangePassword() {
 
     Auth.signIn(data.get("email"), data.get("current-password"))
       .then((user) => {
-        console.log(user)
         Auth.completeNewPassword(user, data.get("new-password"))
           .then((user) => {
             toast.success("Password changed successfully");
             const role = user.challengeParam.userAttributes["custom:role"]
-            console.log(role)
             navigate("/");
           }).catch((err) => {
             toast.error(err.message);
-            console.log(err)
           })
       }).catch((err) => {
         toast.error(err.message);
-        console.log(err)
       })
   }
 

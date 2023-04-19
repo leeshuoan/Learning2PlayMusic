@@ -22,7 +22,6 @@ const Announcements = (userInfo) => {
         const [data1] = await Promise.all([res1.json()]);
         // sort annoucnement first
         data1.sort((a, b) => new Date(b.SK.split("Date#")[1]) - new Date(a.SK.split("Date#")[1]));
-        console.log(data1);
         for (let idx in data1) {
           data1[idx].date = new Date(data1[idx].SK.split("Date#")[1]).toLocaleDateString();
         }
@@ -30,7 +29,6 @@ const Announcements = (userInfo) => {
         setOpen(false);
       })
       .catch((error) => {
-        console.log(error);
       });
   }, []);
 

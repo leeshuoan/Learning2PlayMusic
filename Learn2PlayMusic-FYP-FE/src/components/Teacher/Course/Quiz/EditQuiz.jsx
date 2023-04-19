@@ -42,7 +42,6 @@ const EditQuiz = ({ userInfo }) => {
 
     if (!response.ok) {
       // handle non-2xx HTTP status codes
-      console.log(response);
       throw new Error(`${response}`);
     }
 
@@ -61,7 +60,6 @@ const EditQuiz = ({ userInfo }) => {
       try {
         [data1, data2, data3] = await Promise.all([getCourseAPI, getQuizAPI, getQuizQuestionAPI]);
       } catch (error) {
-        console.log(error);
       }
 
       let courseData = {
@@ -112,7 +110,6 @@ const EditQuiz = ({ userInfo }) => {
       courseId: courseid,
       quizId: quizId,
     };
-    console.log(newQuiz);
 
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/quiz`, {
       method: "PUT",

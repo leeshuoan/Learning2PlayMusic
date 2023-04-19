@@ -111,7 +111,6 @@ const EditQuizNewQuestion = ({ setOpenAddQuestion, handleRefreshData, handleDisa
         }
       })
       .catch((err) => {
-        console.log(err);
         toast.error("Error adding question. Please try again later.");
       });
   };

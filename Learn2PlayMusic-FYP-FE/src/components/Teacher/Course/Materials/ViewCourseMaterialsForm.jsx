@@ -56,8 +56,6 @@ const ViewCourseMaterialsForm = ({ userInfo }) => {
         MaterialAttachmentFileName: data.MaterialAttachmentFileName,
       };
       setCourseMaterial(materialData);
-      console.log(courseData);
-      console.log(materialData);
     }
     fetchData().then(() => setOpen(false));
   }, []);

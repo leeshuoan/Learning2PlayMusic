@@ -132,7 +132,6 @@ const EditCourseMaterialsForm = ({ userInfo }) => {
     } else {
       requestBody = buildRequestBodyWOChangeInOriginalFile();
     }
-    console.log(requestBody);
     const response = await fetch(`${import.meta.env.VITE_API_URL}/course/material`, {
       method: "PUT",
       headers: {
@@ -168,8 +167,6 @@ const EditCourseMaterialsForm = ({ userInfo }) => {
     async function fetchData() {
       const [data1, data2] = await Promise.all([getCourseAPI, getMaterialAPI]);
 
-      console.log(data1[0]);
-      console.log(data2);
       let courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,
@@ -184,7 +181,6 @@ const EditCourseMaterialsForm = ({ userInfo }) => {
 
       setTitle(data2.MaterialTitle);
       setEmbeddedLink(data2.MaterialLink);
-      console.log(data2.MaterialLink);
       setS3Url(data2.MaterialAttachment);
 
       if (data2.MaterialLink == "") {

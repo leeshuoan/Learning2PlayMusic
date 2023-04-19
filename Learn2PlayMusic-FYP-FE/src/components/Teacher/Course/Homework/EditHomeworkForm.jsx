@@ -81,7 +81,6 @@ const EditHomeworkForm = () => {
       homeworkAssignedDate: homeworkAssignedDate,
       courseId: courseid,
     };
-    console.log(updatedHomework);
     const res = await fetch(`${import.meta.env.VITE_API_URL}/course/homework`, {
       method: "PUT",
       headers: {

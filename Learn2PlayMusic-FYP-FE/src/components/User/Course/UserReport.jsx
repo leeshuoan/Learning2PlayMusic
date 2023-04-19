@@ -62,7 +62,6 @@ const UserReport = (userInfo) => {
         setOpen(false);
       })
       .catch((error) => {
-        console.log(error);
         setOpen(false);
       });
   }, []);

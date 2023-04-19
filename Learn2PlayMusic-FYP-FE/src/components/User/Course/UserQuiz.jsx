@@ -49,18 +49,10 @@ const UserQuiz = (userInfo) => {
   };
 
   useEffect(() => {
-    /*     
-      try {
-      } catch (error) {
-        console.log(error);
-      } */
-
     Promise.all([getCourse, getQuizAPI, getQuizQuestionAPI])
       .then(async ([courseInfoRes, quizInfoRes, quizQnRes]) => {
-        console.log(quizQnRes);
         if (quizInfoRes.status === 404 || quizQnRes.status === 404 || courseInfoRes.status === 404) {
           toast.error("Invalid ID");
-          // navigate(`/home/course/${courseid}/quiz`);
           return;
         }
         if (quizInfoRes.status === 500 || quizQnRes.status === 500 || courseInfoRes.status === 500) {
@@ -73,7 +65,6 @@ const UserQuiz = (userInfo) => {
         let quizQns = [];
         [courseInfo, quizInfo, quizQns] = await Promise.all([courseInfoRes.json(), quizInfoRes.json(), quizQnRes.json()]);
 
-        console.log(quizQns);
         let courseData = {
           id: courseInfo[0].SK.split("#")[1],
           name: courseInfo[0].CourseName,
@@ -101,7 +92,6 @@ const UserQuiz = (userInfo) => {
         setOpen(false);
       })
       .catch((error) => {
-        console.log(error);
         setOpen(false);
       });
   }, []);
@@ -125,15 +115,12 @@ const UserQuiz = (userInfo) => {
       quizId: quizId,
       submissions: selectedOptions,
     };
-    console.log(requestBody);
     // submit
     try {
       const submitQuizData = await submitQuiz(requestBody);
       setScore(submitQuizData.score);
       setSubmitted(true);
     } catch (error) {
-      // todo: handle error?
-      console.log(error);
     }
   };
 

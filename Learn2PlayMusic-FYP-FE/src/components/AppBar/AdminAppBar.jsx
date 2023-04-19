@@ -23,7 +23,6 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
           setImage(res);
         })
         .catch((err) => {
-          console.log(err);
         });
     }
   }, [userInfo]);
@@ -40,10 +39,10 @@ const AdminAppBar = ({ userInfo, handleResetUserInfo }) => {
     handleResetUserInfo();
     Auth.signOut()
       .then(() => {
-        console.log("Signed out");
         navigate("/");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+      });
   };
 
   const handleOpenNavMenu = (event) => {

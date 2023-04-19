@@ -95,7 +95,6 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
     });
     // settle courses user is enrolled in
     let userCoursesDict = await postAPIWithBody(`${import.meta.env.VITE_API_URL}/user/course/enrolled`, { userIds: fetchedUserIds });
-    console.log(userCoursesDict);
     setUserCoursesEnrolled(userCoursesDict);
     setData(nonAdminUsersData);
   };
@@ -155,7 +154,6 @@ const SuperAdminEnrolmentManagement = ({ userInfo }) => {
     let start = new Date().getTime();
     Promise.all([listNonAdminUsers()]).then(() => {
       setOpen(false);
-      console.log("time taken to load users: " + (new Date().getTime() - start) / 1000 + "s");
     });
 
     return () => {};

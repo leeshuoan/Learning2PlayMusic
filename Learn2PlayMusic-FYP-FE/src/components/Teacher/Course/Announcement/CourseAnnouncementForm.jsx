@@ -60,7 +60,6 @@ export default function CourseAnnouncementForm({ userInfo }) {
       var response = handleAddAnnouncement(title, content)
         .then((response) => response.json())
         .then((res) => {
-          console.log(res);
           if (res.message.includes("SUCCESS")) {
             toast.success("Announcement added successfully!");
             navigate(`/teacher/course/${courseid}/announcement`);
@@ -78,7 +77,6 @@ export default function CourseAnnouncementForm({ userInfo }) {
       var response = handleEditAnnouncement(title, content)
         .then((response) => response.json())
         .then((res) => {
-          console.log(res);
           if (res.message.includes("SUCCESS")) {
             toast.success("Announcement updated successfully!");
             navigate(`/teacher/course/${courseid}/announcement`);
@@ -107,7 +105,7 @@ export default function CourseAnnouncementForm({ userInfo }) {
           return response.json();
         })
         .then((res) => {
-          console.log(res);
+          (res);
           const courseData = {
             id: res[0].SK.split("#")[1],
             name: res[0].CourseName,
@@ -132,14 +130,12 @@ export default function CourseAnnouncementForm({ userInfo }) {
             return response.json();
           })
           .then((res) => {
-            console.log(res);
             setOriginalAnnouncement({ title: res[0].Title, content: res[0].Content });
             setTitle(res[0].Title);
             setContent(res[0].Content);
             setOpen(false);
           })
           .catch((error) => {
-            console.log(error);
             setOpen(false);
           });
       }

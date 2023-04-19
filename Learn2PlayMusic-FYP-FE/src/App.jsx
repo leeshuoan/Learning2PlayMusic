@@ -80,7 +80,6 @@ const App = () => {
       .then((user) => {
         user.getSession((err, session) => {
           if (err) {
-            console.log(err);
             handleResetUserInfo();
           }
 
@@ -105,13 +104,11 @@ const App = () => {
               profileImage: session.getIdToken().payload["custom:profileImage"],
               token: session.getIdToken().jwtToken,
             };
-            console.log(userInfo);
             setUserInfo(userInfo);
           }
         });
       })
       .catch((err) => {
-        console.log(err);
         handleResetUserInfo();
       });
   }, [fetchUserInfo]);

@@ -10,7 +10,6 @@ const ChatUser = ({ chatId, userInfo }) => {
   const messagesRef = collection(db, `Chat#${chatId}`);
   const messagesEndRef = useRef(null);
   const chatQuery = query(messagesRef, orderBy("createdAt", "asc"), limit(25));
-  console.log(chatId)
 
   const [newMsg, setNewMsg] = useState("");
   const [messages, loadingMsgs, error] = useCollectionData(chatQuery, { idField: "id" });
@@ -27,14 +26,11 @@ const ChatUser = ({ chatId, userInfo }) => {
 
   const sendMsg = async () => {
     var chatMsg = newMsg.replace(/[6|8|9]\d{7}|\+65[6|8|9]\d{7}|\+65\s[6|8|9]\d{7}/g, "*********").replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/, "*********");
-    console.log(chatMsg);
-    console.log(chatId);
     await addDoc(messagesRef, {
       text: chatMsg,
       createdAt: new Date(),
       uid: userInfo.id,
     });
-    console.log("Message sent!");
     setNewMsg("");
   };
 

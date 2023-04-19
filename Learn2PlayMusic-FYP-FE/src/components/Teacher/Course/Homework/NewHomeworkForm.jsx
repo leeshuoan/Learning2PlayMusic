@@ -80,7 +80,6 @@ const NewHomeworkForm = () => {
       homeworkAssignedDate: new Date().toISOString(),
       courseId: courseid,
     };
-    console.log(newHomework);
     const res = fetch(`${import.meta.env.VITE_API_URL}/course/homework`, {
       method: "POST",
       headers: {
@@ -126,7 +125,6 @@ const NewHomeworkForm = () => {
                 label="Due Date *"
                 value={value}
                 onChange={(newValue) => {
-                  console.log(newValue);
                   setValue(newValue);
                 }}
                 component={(params) => <TextField {...params} fullWidth />}

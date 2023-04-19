@@ -55,7 +55,6 @@ const TeacherHomeworkOverview = () => {
         percentageSubmission: +((data3.length / data4.length) * 100).toFixed(2),
       };
       setHomework(homeworkData);
-      console.log(data3);
 
       const data = data3.map((homework) => {
         const studentId = homework.SK.split("#")[1].split("Homework")[0];
@@ -75,7 +74,6 @@ const TeacherHomeworkOverview = () => {
         };
       });
       setData(data);
-      console.log(data);
     }
 
     fetchData().then(() => {

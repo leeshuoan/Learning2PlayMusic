@@ -109,7 +109,6 @@ const UserCourse = ({ userInfo }) => {
           homeworkData.sort((a, b) => a.assignedDate - b.assignedDate);
           return homeworkData;
         } catch (error) {
-          console.log(error);
         }
       }
 

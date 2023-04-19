@@ -52,7 +52,6 @@ export default function EditCourseForm({ courseId, ogCourseName, ogTimeSlot, ogT
       requestBody.teacherId = selectedTeacher.teacherId;
       requestBody.originalTeacherId = ogTeacherId;
     }
-    console.log(requestBody);
     let response;
     try {
       response = await fetch(courseEndpoint, {
@@ -88,7 +87,6 @@ export default function EditCourseForm({ courseId, ogCourseName, ogTimeSlot, ogT
         },
       });
       const data = await response.json();
-      console.log(data);
       setTeachers(data);
     };
     fetchTeachers();

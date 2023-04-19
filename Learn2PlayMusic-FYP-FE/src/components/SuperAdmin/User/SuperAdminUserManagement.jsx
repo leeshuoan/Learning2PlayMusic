@@ -87,7 +87,6 @@ const SuperAdminUserManagement = (userInfo) => {
         }
         return usr;
       }, {});
-      console.log(userAttributes.Role);
       user.Attributes = userAttributes;
       user.Enabled = user.Enabled ? "Enabled" : "Disabled";
       user.UserStatus = user.UserStatus == "FORCE_CHANGE_PASSWORD" ? "Change Password" : "Confirmed";
@@ -97,7 +96,6 @@ const SuperAdminUserManagement = (userInfo) => {
       user.UserCreateDate = formattedDate;
       parsedUserData.push(user);
     });
-    console.log(parsedUserData);
     setData(parsedUserData);
   };
 
@@ -138,7 +136,6 @@ const SuperAdminUserManagement = (userInfo) => {
     let start = new Date().getTime();
     Promise.all([listUsers(), listGroups()]).then(() => {
       setOpen(false);
-      console.log("time taken to load users: " + (new Date().getTime() - start) / 1000 + "s");
     });
 
     return () => {};

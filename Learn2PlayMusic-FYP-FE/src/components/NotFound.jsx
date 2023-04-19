@@ -5,7 +5,6 @@ const NotFound = ({ userRole }) => {
   let redirectLink = "";
   const navigate = useNavigate();
 
-  console.log(userRole);
   if (userRole === "Admin") {
     redirectLink = "admin";
   } else if (userRole === "Teacher") {

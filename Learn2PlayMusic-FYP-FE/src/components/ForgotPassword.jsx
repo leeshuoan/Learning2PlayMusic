@@ -27,12 +27,10 @@ export default function ForgotPassword({ handleSetUserInfo }) {
     if (nextStage) {
       Auth.forgotPasswordSubmit(username, data.get("code"), data.get("password"))
         .then((data) => {
-          console.log(data)
           toast.success("Password has been successfully changed");
           navigate("/")
         })
         .catch(err => {
-          console.log(err)
           toast.error(err.message);
         });
       return;
@@ -40,7 +38,6 @@ export default function ForgotPassword({ handleSetUserInfo }) {
 
     Auth.forgotPassword(data.get("email"))
       .then((res) => {
-        console.log(res)
         toast.success("Code has been successfully sent to email");
         setUsername(data.get("email"))
         setNextStage(true)

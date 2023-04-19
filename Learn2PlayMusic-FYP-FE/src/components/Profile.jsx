@@ -16,7 +16,6 @@ const Profile = (userInfo) => {
   const [image, setImage] = useState(null)
   const navigate = useNavigate()
 
-  console.log(userInfo)
   const back = () => {
     if (userInfo.userInfo.role == "Teacher")
       navigate('/teacher')
@@ -29,12 +28,10 @@ const Profile = (userInfo) => {
 
   useEffect(() => {
     setName(userInfo.userInfo.name || "")
-    console.log(userInfo.userInfo.profileImage)
     if (userInfo.userInfo.profileImage != "none") {
       Storage.get(userInfo.userInfo.profileImage, { level: "protected" }).then((res) => {
         setImage(res)
       }).catch((err) => {
-        console.log(err)
       })
     }
   }, [userInfo.userInfo.name])
@@ -57,21 +54,17 @@ const Profile = (userInfo) => {
         return Auth.updateUserAttributes(user, {
           'custom:profileImage': res.key
         }).then((res) => {
-          console.log(res)
           userInfo.refreshUserInfo()
         }).catch((err) => {
-          console.log(err)
         })
       })
       toast.success("Profile updated successfully")
     }).catch((err) => {
-      console.log(err)
     })
 
 
   }
 
-  console.log(userInfo)
   return (
     <>
       <Container maxWidth="xl" sx={{ width: { xs: 1, sm: 0.9 } }}>

@@ -35,7 +35,6 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
     setOptions(qnInfo.options);
     setAnswer(qnInfo.answer);
     setImage(qnInfo.questionImage == undefined ? "" : qnInfo.questionImage);
-    console.log(qnInfo);
   }, [qnInfo]);
 
   const handleQnTypeChange = (event) => {
@@ -117,7 +116,6 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
         }
       })
       .catch((err) => {
-        console.log(err);
         setLoading(false);
         toast.error("Failed to update question");
       });
@@ -145,8 +143,6 @@ const EditQuizEditQuestion = ({ userInfo, qnInfo, setEdit, handleDisableEditQuiz
           </Grid>
           <Grid item xs={12} md={6}>
             <InputLabel id="question-image-label">Image [Optional]</InputLabel>
-            {console.log(file)}
-            {console.log(image)}
             {file == null && image == "" ? (
               <Button variant="contained" sx={{ backgroundColor: "lightgrey", color: "black", boxShadow: "none", ":hover": { backgroundColor: "hovergrey" } }} component="label">
                 ADD A FILE

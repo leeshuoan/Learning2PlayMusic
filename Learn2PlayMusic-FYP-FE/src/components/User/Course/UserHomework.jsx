@@ -133,13 +133,10 @@ const UserHomework = (userInfo) => {
       body: buildRequestBody(),
     })
       .then((response) => {
-        console.log(response);
         setSubmitted(true);
         setOpen(false);
       })
       .catch((error) => {
-        console.log(error);
-        console.log(error.message);
       });
   };
 

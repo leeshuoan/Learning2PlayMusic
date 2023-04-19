@@ -27,7 +27,6 @@ const BaseProgressReport = () => {
 
     if (!response.ok) {
       // handle non-2xx HTTP status codes
-      console.log(response);
       throw new Error(`${response}`);
     }
 
@@ -46,7 +45,6 @@ const BaseProgressReport = () => {
       try {
         [data1, data2, data3] = await Promise.all([getCourseAPI, getReportAPI, getClassListAPI]);
       } catch (error) {
-        console.log(error);
       }
 
       let courseData = {
@@ -57,7 +55,6 @@ const BaseProgressReport = () => {
       };
       setCourse(courseData);
 
-      console.log(data2);
       const reportData = data2.map((report) => {
         const ReportId = report.SK.split("Report#")[1];
         const Available = new Date(report.AvailableDate) > new Date() ? false : true;

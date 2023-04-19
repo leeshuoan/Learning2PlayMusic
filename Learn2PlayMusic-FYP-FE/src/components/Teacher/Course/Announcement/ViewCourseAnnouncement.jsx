@@ -34,8 +34,6 @@ const ViewCourseAnnouncementForm = ({ userInfo }) => {
     async function fetchData() {
       const [data1, data2] = await Promise.all([getCourseAPI, getAnnouncementAPI]);
 
-      console.log(data1[0]);
-      console.log(data2);
       let courseData = {
         id: data1[0].SK.split("#")[1],
         name: data1[0].CourseName,

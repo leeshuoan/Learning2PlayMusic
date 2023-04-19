@@ -68,7 +68,6 @@ export default function CreateCourseForm({ handleCloseModal, handleCloseModalSuc
         },
       });
       const data = await response.json();
-      console.log(data);
       setTeachers(data);
     };
     fetchTeachers();

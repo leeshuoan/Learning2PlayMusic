@@ -17,7 +17,6 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
       Storage.get(userInfo.profileImage, { level: "protected" }).then((res) => {
         setImage(res)
       }).catch((err) => {
-        console.log(err)
       })
     }
   }, [userInfo])
@@ -33,9 +32,9 @@ const TeacherAppBar = ({ userInfo, handleResetUserInfo }) => {
   const handleLogout = () => {
     handleResetUserInfo()
     Auth.signOut().then(() => {
-      console.log("Signed out")
       navigate('/')
-    }).catch((err) => console.log(err))
+    }).catch((err) => {
+    })
   };
 
   return (

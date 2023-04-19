@@ -105,7 +105,6 @@ const AdminUserManagement = (userInfo) => {
     let start = new Date().getTime();
     Promise.all([listUsers()]).then(() => {
       setOpen(false);
-      console.log("time taken to load users: " + (new Date().getTime() - start) / 1000 + "s");
     });
 
     return () => {};

@@ -186,7 +186,6 @@ const SuperAdminCourseManagement = () => {
         return { id, courseName, teacherName, teacherId, name, timeSlot };
       });
       setCourses(fetchedData);
-      console.log(fetchedData);
       setOpen(false);
     });
   }, [reloadData]);

@@ -31,7 +31,6 @@ const TeacherHome = ({ userInfo }) => {
           ...a,
           date: new Date(a.SK.split("Date#")[1]).toLocaleDateString(),
         }));
-        console.log(announcementsData);
         setAnnouncements(announcementsData);
 
         if (courses.message === "[ERROR] studentId does not exist in database") {
@@ -39,7 +38,6 @@ const TeacherHome = ({ userInfo }) => {
         } else {
           setMyCourses(courses);
         }
-        console.log(courses);
         setOpen(false);
       } catch (error) {
         console.error(error);

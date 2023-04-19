@@ -37,7 +37,6 @@ const NewQuiz = ({ userInfo }) => {
 
     if (!response.ok) {
       // handle non-2xx HTTP status codes
-      console.log(response);
       throw new Error(`${response}`);
     }
 
@@ -54,7 +53,6 @@ const NewQuiz = ({ userInfo }) => {
       try {
         [data1] = await Promise.all([getCourseAPI]);
       } catch (error) {
-        console.log(error);
       }
 
       let courseData = {
@@ -75,7 +73,6 @@ const NewQuiz = ({ userInfo }) => {
     setIsLoading(true);
 
     e.preventDefault();
-    console.log(quizQuestions);
 
     // check the other fields
     let errorMsg = "";
@@ -86,8 +83,6 @@ const NewQuiz = ({ userInfo }) => {
       errorMsg = "Please enter the max attempts for the quiz";
     }
     for (let i = 0; i < quizQuestions.length; i++) {
-      console.log(quizQuestions[i].answer);
-      console.log(quizQuestions);
       if (quizQuestions[i].question === "") {
         errorMsg = "Please enter a question title for Question " + (i + 1) + ".";
       }
@@ -133,24 +128,19 @@ const NewQuiz = ({ userInfo }) => {
       body: JSON.stringify(newQuiz),
     });
     if (response.ok) {
-      console.log("newQuiz ok");
       const responseData = await response.json();
       newQuizId = responseData.message.split("id").splice(1, 1).join().split(" ")[1];
     } else {
       toast.error(`Error: ${response.status} - ${response.statusText}, Please try again later.`);
       return;
     }
-    console.log(newQuizId);
     let newQuizQuestions = [];
     for (let i = 0; i < quizQuestions.length; i++) {
       const { questionNumber, ...rest } = quizQuestions[i];
       const newQuizQuestion = { ...rest, courseId: courseid, quizId: newQuizId };
       newQuizQuestions.push(newQuizQuestion);
     }
-    console.log(newQuizQuestions);
     try {
-      console.log(newQuizQuestions);
-      console.log(JSON.stringify(newQuizQuestions));
       await fetch(`${import.meta.env.VITE_API_URL}/course/quiz/question`, {
         method: "POST",
         headers: {
@@ -166,7 +156,6 @@ const NewQuiz = ({ userInfo }) => {
         }
       });
     } catch (error) {
-      console.log(error);
       setIsLoading(false);
       toast.error("An unexpected error occurred during quiz creation");
       return;

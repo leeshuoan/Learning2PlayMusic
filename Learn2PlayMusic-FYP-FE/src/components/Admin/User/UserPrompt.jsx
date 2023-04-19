@@ -22,7 +22,6 @@ export default function UserPrompt({ selectedUser, handleClose, type }) {
       },
     };
     let success = await API.post(apiName, path, myInit);
-    console.log(success);
     if (success.message) {
       toast.success("User enabled successfully");
       setOpen;

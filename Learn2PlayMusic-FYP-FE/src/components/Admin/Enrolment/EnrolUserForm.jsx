@@ -111,7 +111,6 @@ export default function EnrolUserForm({ toEnrolUser, handleClose, displayText, u
   useEffect(() => {
     async function fetchData() {
       const courses = await getCoursesAPI();
-      console.log(courses);
       var fetchedCourses = courses.map((course) => {
         const id = course.SK.split("Course#")[1];
         const courseDetails = course.CourseName + " on " + course.CourseSlot;

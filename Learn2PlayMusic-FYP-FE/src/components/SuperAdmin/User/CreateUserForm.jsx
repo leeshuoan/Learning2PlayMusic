@@ -52,7 +52,6 @@ export default function CreateUserForm({ roles, handleClose }) {
         role: role,
       },
     };
-    console.log(myInit);
     try {
       let success = await API.post(apiName, path, myInit);
       if (success.message) {
@@ -62,7 +61,6 @@ export default function CreateUserForm({ roles, handleClose }) {
       }
     } catch (error) {
       setOpen(false);
-      console.log(error.message);
       toast.error("Error creating user");
     }
   };
